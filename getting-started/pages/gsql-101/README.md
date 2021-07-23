@@ -1,0 +1,20 @@
+# GSQL 101
+
+In this exercise, we will go through the 3-step process of writing GSQL-- define a schema, load data, and write a query.
+
+This tutorial is written so that you can follow along and perform the steps on your TigerGraph system as your read.
+
+{% page-ref page="get-set.md" %}
+
+{% page-ref page="define-a-schema.md" %}
+
+{% page-ref page="load-data-gsql-101.md" %}
+
+{% page-ref page="built-in-select-queries.md" %}
+
+{% page-ref page="parameterized-gsql-query.md" %}
+
+{% page-ref page="review.md" %}
+
+
+

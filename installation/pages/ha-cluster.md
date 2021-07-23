@@ -1,0 +1,36 @@
+# HA Cluster Configuration
+
+A TigerGraph system with High Availability \(HA\) is a cluster of server machines which uses replication to provide continuous service when one or more servers are not available or when some service components fail. TigerGraph HA service provides load balancing when all components are operational, as well as automatic failover in the event of a service disruption. The **replication factor** is the number of copies of data. In contrast, the **partitioning factor** is the number of machines across which one copy of the database is distribution.
+
+![Replication factor vs. partitioning factor](../../../.gitbook/assets/cluster_arch.png)
+
+If the replication factor is 2, a fully-functioning system maintains two copies of the data, stored on separate machines. Users can choose a higher replication factor for greater query throughput and greater system resiliency.
+
+## System Requirements
+
+* The total cluster size should be \(partitioning factor\) X \(replication factor\).
+* The smallest possible distributed database with HA is 2 x 2 = 4 machines.
+* The smallest possible non-distributed database with HA is 1 x 3 = 3 machines.
+* There is no upper limit for either partitioning factor or replication factor.
+* The same version of the TigerGraph software package is installed on each machine.
+
+## Configuring HA
+
+Starting from version 3.0, configuring a HA cluster is part of platform installation. See the [Installation Guide](install.md) page for details.
+
+{% hint style="danger" %}
+HA configuration can only be done at the time of system installation and before deploying the system for database use. HA configuration change after installation is not supported. Converting a non-HA system to an HA cluster would require reinstalling all the TigerGraph components and rebuilding the database from the start.
+{% endhint %}
+
+During TigerGraph platform installation, specify the replication factor. The default value for replication factor is 1, which means there is no HA setup for the cluster. The user does not explicitly set the partitioning factor. Instead, the TigerGraph system will set
+
+`partitioning factor = (number of machines / replication factor)`
+
+If the division does not produce an integer, some machines will be left unused.
+
+**Example**: If you install a 7-node cluster with replication factor = 2, the resulting configuration will be 2-way HA for a database with with a partitioning factor of 3. One machine will be unused.
+
+
+
+### 
+

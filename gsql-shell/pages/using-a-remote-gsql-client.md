@@ -1,0 +1,176 @@
+# Using a Remote GSQL Client
+
+## Installation
+
+When the TigerGraph platform is installed, the GSQL client and server are on the same machine.  The client is packaged as a Java jar file, `gsql_client.jar` ****located in the folder `<TigerGraph_root_dir>/app/<VERSION_NUM>/dev/gdk/gsql/lib/` ****. Installation consists of copying the file `gsql_client.jar` to the client machine and storing it anywhere the user finds appropriate.  The client machine needs to have Java 7.0 or higher.
+
+## Running the Client
+
+To run the client, execute the jar file each time that you would run gsql if you were local to the GSQL server.  That is, the command
+
+```sql
+java -jar <path>gsql_client.jar
+```
+
+takes the place of gsql.  For example, the commands
+
+```sql
+gsql DROP ALL
+gsql create_my_schema.gsql
+gsql LS
+```
+
+would become
+
+```sql
+java -jar gsql_client.jar DROP ALL
+java -jar gsql_client.jar create_my_schema.gsql
+java -jar gsql_client.jar LS
+```
+
+Therefore, it may be useful to define a Unix alias:
+
+```sql
+alias gsql="java -jar <path>/gsql_client.jar"
+```
+
+  
+The java operation alone is not sufficient, however, because it does not tell the client where to find the GSQL server. In addition, the client needs to satisfy three conditions:
+
+1. It must know the IP address of the GSQL server.
+2. It must have the authorization to access the server in general and to execute the requested GSQL commands in particular.
+3. If a SSL/TLS encrypted connection \(e.g., HTTPS\) is used, then it must provide the certificate chain.
+
+### Specifying Server IP Address
+
+There are two ways to provide the IP address of the GSQL Server.
+
+* Method 1: Store the address in a file. Create a one-line file called **gsql\_server\_ip\_config** containing the ip address of the GSQL server. **This file needs to be in the same directory where you run GSQL.**
+* Method 2 : Every time you run the client jar, provide the ip address on the command line, e.g., " _gsql -ip 192.168.55.46_ "
+
+### Client Authorization and Authentication
+
+The GSQL server applies the same user authentication procedures to remote GSQL users that it applies to local GSQL users. That is, if user authentication has been enabled, then each gsql command line must include valid user credentials.
+
+The client addresses the server at server port 14240. You need to make sure your security policy allows the access to this port.
+
+{% hint style="danger" %}
+ It is strongly recommended that you enable user authentication. See the document [_**Managing User Privileges and Authentication v2.1\#GSQLAuthentication**_](../admin/admin-guide/user-access/user-privileges-and-authentication.md#gsql-authentication) _****_for more details.
+{% endhint %}
+
+### HTTPS Connection
+
+If SSL/TLS is enabled for TigerGraph, to connect a GSQL remote client to the GSQL server, each GSQL command line should provide the certificate chain file via the -cacert option. This certificate file should be exactly the same as the file of entry Nginx.SSL.Cert setting SSL for Nginx. See [Encrypting Connections: Step 2. Configure SSL with Gadmin](../admin/admin-guide/data-encryption/encrypting-connections.md#step-2-configure-ssl-with-gadmin). For example:
+
+```text
+gsql -cacert /path/to/certificate -ip hostname:port
+```
+
+## File Path Semantics
+
+Data loading jobs always specify an input file location; logically the data should be on the server side, not on the client side. Because the command request comes from one machine and the target data file is on another machine, it no longer makes sense to use a relative path.
+
+{% hint style="danger" %}
+Rule: If a remote GSQL client invokes an instruction containing a relative path, the GSQL server considers the starting point of the path to be `<tigergraph_rootdir>/app/<VERSION_NUM>/dev/gdk/gsql` on the GSQL server.
+
+**It is strongly recommended that remotely-run GSQL commands use absolute paths only.**
+{% endhint %}
+
+For example, if the data file cf\_data.csv is in the folder /home/tigergraph/example/cf/, then the command to run the loading job might look like this:
+
+```sql
+java -jar gsql_client.jar 'RUN JOB load_cf USING FILENAME="/home/tigergraph/example/cf/cf_data.csv", SEPARATOR=",", EOL="\n"
+```
+
+## Example: Modifying a Bash Script for a Remote GSQL Client
+
+The GSQL Tutorials employ both GSQL and bash scripts to run the examples.  Typically, each example case contains 3 GSQL command files \(for schema creation, data loading, and querying\) and one bash script to run all the parts together and to display status information.  Below is a simplified version of the Collaborative Filtering \(cf\) bash script:
+
+{% code title="RUN\_cf.sh: Bash script for Collaborative Filtering \(cf\) example" %}
+```sql
+#!/bin/bash
+test='cf'
+###
+gsql 'DROP ALL'
+gsql ../${test}/${test}_model.gsql
+gsql 'CREATE GRAPH gsql_demo(*)'
+
+# Loading
+gsql -g gsql_demo ../${test}/${test}_load.gsql
+## loading script contains this line:
+## RUN JOB load_cf USING FILENAME="../cf/data/cf_data.csv", SEPARATOR=",", EOL="\n"
+
+# Querying
+gsql -g gsql_demo ../${test}/${test}_query.gsql
+gsql -g gsql_demo INSTALL QUERY ALL
+gsql -g gsql_demo 'RUN QUERY topCoLiked("id1", 10)'
+```
+{% endcode %}
+
+The bash script will not run from a remote GSQL client unless a few changes are made: We need to invoke "java -jar gsql\_client.jar" instead of "gsql", and need to specify the server ip address. If we use the gsql\_server\_ip\_config file, this file must be in the same folder as the command file. The GSQL Tutorial has several different folders, one for each example, so that suggests making several config files.  Below is an approach that minimizes the changes required and maximizes standardization.
+
+A. Do initial client setup. This is done only once.
+
+1. Store gsql\_client.jar in a standard location, say _~/gsql\_client/gsql\_client.jar_ \(e.g,, _/home/tigergraph/gsql\_client/ gsql\_client.jar_ \)
+2. Create a file called gsql\_server\_ip\_config containing the GSQL server's IP address, and store it a standard location, say _~/gsql\_client/gsql\_server\_ip\_config_ .
+
+{% code title="Sample config file: /home/tigergraph/gsql\_client/gsql\_server\_ip\_config" %}
+```sql
+123.45.67.255
+```
+{% endcode %}
+
+   3. In the .bashrc file in your home directory, add an alias for gsql which points to the standard location:
+
+```sql
+alias gsql='java -jar ~/gsql_client/gsql_client.jar'
+```
+
+ B. Add a standard header to each bash script.
+
+{% code title="standard which makes \'gsql\' work on remote clients" %}
+```sql
+alias gsql='java -jar gsql_client.jar'
+shopt -s expand_aliases
+ln -s ~/gsql_client/gsql_client.jar gsql_client.jar
+ln -s ~/gsql_client/gsql_server_ip_config gsql_server_ip_config
+```
+{% endcode %}
+
+This header does the following:
+
+1. Repeat the alias definition for the gsql command.  The definition in .bashrc may not be visible here.
+2. By default, bash scripts ignore aliases.  Instruct the script to use aliases.
+3. Define softlinks from the current folder to the locations of the client jar and config file.
+
+  C. Change any relative paths to absolute paths. This is the only step that must be customized for each script.
+
+Here is the resulting script.  Four standard lines were added to the beginning, and one line was edited in the cf\_load.gsql file.
+
+{% code title="RUN\_cf\_remote.sh: Modified bash script for Collaborative Filtering \(cf\) example" %}
+```sql
+#!/bin/bash
+alias gsql='java -jar gsql_client.jar'
+shopt -s expand_aliases
+ln -s ~/gsql_client/gsql_client.jar gsql_client.jar
+ln -s ~/gsql_client/gsql_server_ip_config gsql_server_ip_config
+test='cf'
+###
+gsql 'DROP ALL'
+gsql ../${test}/${test}_model.gsql
+gsql 'CREATE GRAPH gsql_demo(*)'
+
+# Loading
+gsql -g gsql_demo ../${test}/${test}_load.gsql
+## loading script contains this line:
+## RUN JOB load_cf USING FILENAME="/home/tigergraph/tigergraph/document/examples/tutorial_real_life/cf/data/cf_load.csv", SEPARATOR=",", EOL="\n"
+
+# Querying
+gsql -g gsql_demo ../${test}/${test}_query.gsql
+gsql -g gsql_demo INSTALL QUERY ALL
+gsql -g gsql_demo 'RUN QUERY topCoLiked("id1", 10)'
+```
+{% endcode %}
+
+
+

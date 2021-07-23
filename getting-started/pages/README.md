@@ -1,0 +1,22 @@
+# Getting Started
+
+Welcome to the TigerGraph™ Platform - the first real-time, Native Parallel Graph data analytics platform. This document covers the various options to get started with TigerGraph. 
+
+* If you are a laptop user \(macOS or Windows\), we recommend you use Docker to start up TigerGraph on your computer: 
+
+{% page-ref page="docker.md" %}
+
+* If you have a Linux machine that meets our Software and Hardware Requirements, you can install TigerGraph on your machine directly:
+
+{% page-ref page="../../admin/admin-guide/install-and-config/install.md" %}
+
+* If you would like to run TigerGraph on a Virtual Machine with Virtual Box, follow this guide:
+
+{% page-ref page="virtual-box.md" %}
+
+* You can also start up TigerGraph instances from Cloud Images on AWS, Microsoft Azure, or Google Cloud Platform:
+
+{% page-ref page="cloud-images/" %}
+
+
+

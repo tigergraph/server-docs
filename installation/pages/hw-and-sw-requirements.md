@@ -1,0 +1,94 @@
+---
+description: >-
+  This section provides an overview of the system requirements for running
+  TigerGraph in a production or development environment.
+---
+
+# Hardware and Software Requirements
+
+TigerGraph can be used for different scopes and the system requirements largely depend on the use of the software. This page provides a good reference, but actual hardware requirements will vary based on your data size and workload. 
+
+## Hardware Requirements
+
+| Component | Minimum | Recommended |
+| :--- | :--- | :--- |
+| CPU\* | 4 cores for &lt;500MB data, 8 cores for &gt;500MB data \(64-bit processor\) | 16+ cores \(64-bit processor\)  |
+| Memory\* | 8 GB | ≥ 64GB |
+| Storage\* | 20 GB | ≥ 1TB, RAID10 volumes for better I/O throughput.  SSD storage is recommended. |
+| Network | 1 Gigabit Ethernet adapter | 10Gigabit Ethernet adapter for inter-node communication |
+
+\*Actual needs \(CPU, memory, storage\) depend on data size and application requirements. Consult our solution architects for an estimate of memory and storage needs. 
+
+Comments:
+
+* The TigerGraph system is optimized to take advantage of multiple cores.
+* Performance is optimal when the memory is large enough to store the full graph and to perform computations.
+
+## Certified Operating Systems
+
+The TigerGraph Software Suite is built on 64-bit Linux. It can run on a variety of Linux 64-bit distributions. The software has been tested on the operating systems listed below:
+
+|  | On-Premises hosting | Java JDK version | GCC version \(C/C++\) |
+| :--- | :--- | :--- | :--- |
+| RedHat 6.5 to 6.9 \(x64\) | Yes | 1.8.0\_141 | 4.8.2 |
+| RedHat 7.0 to 7.8 \(x64\) | Yes | 1.8.0\_141 | 4.8.2 |
+| RedHat 8.0 to 8.2 \(x64\) | Yes | 1.8.0\_141 | 4.8.2 |
+| Centos 6.5 to 6.9 \(x64\) | Yes | 1.8.0\_141 | 4.8.2 |
+| Centos 7.0 to 7.4 \(x64\) | Yes | 1.8.0\_141 | 4.8.2 |
+| Centos 8.0 to 8.2 \(x64\) | Yes | 1.8.0\_141 | 4.8.2 |
+| Ubuntu 14.04 LTS  Ubuntu 16.04 LTS  Ubuntu 18.04 LTS  \(x64\) | Yes | 1.8.0\_141 | 4.8.4 |
+| Debian 8 \(jessie\) | Yes | 1.8.0\_141 | 4.8.4 |
+
+When a range of versions is given, it means that the software has been tested on the oldest and newest versions. We continually evaluate the operating systems on the market and work to update our set of supported operating systems as needed.  The TigerGraph installer will install its own copies of Java JDK and GCC, accessible only to the TigerGraph user account, to avoid interfering with any other applications on the same server.
+
+## Prerequisite Software
+
+### Shell
+
+Please use a bash shell for the installation process.
+
+### Utilities
+
+Before offline installation, the TigerGraph system needs a few basic software packages to be present:
+
+* `tar`
+* `curl`
+* `crontab`
+* `ip`
+* `ssh`/`sshd`
+* `more`
+* `netstat`
+* `sshpass`
+  * if you intend to use password login method \(P method\) instead of ssh key login method \(K method\) to install the TigerGraph platform.
+
+If they are not present, contact your system administrator to have them installed on your target system. For example, they can be installed with one of the following commands.
+
+```bash
+# Centos or RedHat:
+sudo yum install tar curl cronie iproute util-linux-ng net-tools coreutils openssh-clients openssh-server sshpass 
+
+# Ubuntu or Debian (Except Ver 18.04):
+sudo apt install tar curl cron iproute util-linux net-tools coreutils openssh-client openssh-server sshpass 
+
+# Ubuntu or Debian (Ver. 18.04):
+sudo apt install tar curl cron iproute2 util-linux net-tools coreutils openssh-client openssh-server sshpass 
+```
+
+### NTP
+
+If you are running TigerGraph on a multi-node cluster, you **must** install, configure and run the NTP \(Network Time Protocol\) daemon service. This service will synchronize system time among all cluster nodes.
+
+### Firewall
+
+If you are running TigerGraph on a multi-node cluster, you **must** configure the iptables/firewall rules to make all TCP ports open among all cluster nodes.
+
+### Browser
+
+In an on-premises installation, the system is fully functional without a web browser. To run the optional browser-based TigerGraph GraphStudio User Interface or Admin Portal, you need an appropriate browser:
+
+| Browser | Chrome | Safari | Firefox | Opera | Edge | Internet Explorer |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Supported version | 54.0+ | 11.1+ | 59.0+ | 52.0+ | 80.0+ | 10+ |
+
+
+
