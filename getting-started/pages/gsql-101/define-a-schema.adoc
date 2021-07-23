@@ -1,0 +1,121 @@
+= Define a Schema
+
+== Introduction
+
+For this tutorial, we will work mostly in the GSQL shell, in interactive mode. A few commands will be from a Linux shell. The first step in creating a GSQL graph is to define its schema. GSQL provides a set of DDL (Data Definition Language) commands, similar to SQL DDL commands, to model vertex types, edge types and a graph.
+
+== Create a Vertex Type
+
+Use CREATE VERTEX command to define a vertex type named *person.* Here, PRIMARY_ID is required: each person must have a unique identifier. The rest is the optional list of attributes which characterize each person vertex, in the format `+attribute_name  data_type, attribute_name  data_type, ...+`
+
+{% code title="GSQL command" %}
+
+[,sql]
+----
+CREATE VERTEX person (
+    PRIMARY_ID name STRING,
+    name STRING, age INT,
+    gender STRING, state STRING
+)
+----
+
+{% endcode %}
+
+{% hint style="info" %}
+We show GSQL keywords in ALL CAPS to highlight them, but they are case-insensitive.
+{% endhint %}
+
+GSQL will confirm the creation of the vertex type.
+
+{% code title="GSQL shell" %}
+
+[,sql]
+----
+GSQL > CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
+The vertex type person is created.
+GSQL >
+----
+
+{% endcode %}
+
+You can create as many vertex types as you need.
+
+== Create an Edge Type
+
+Next, use the CREATE ... EDGE command to create an edge type named *friendship*. The keyword UNDIRECTED indicates this edge is a bidirectional edge, meaning that information can flow starting from either vertex. If you'd rather have a unidirectional connection where information flows only from the FROM vertex, use the DIRECTED keyword in place of UNDIRECTED.  Here, FROM and TO are required to specify which two vertex types the edge type connects. An individual edge is specifying by giving the primary_ids of its source (FROM) vertex and target (TO) vertex. These are followed by an optional list of attributes, just as in the vertex definition.
+
+{% code title="GSQL command" %}
+
+[,sql]
+----
+CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
+----
+
+{% endcode %}
+
+GSQL will confirm the creation of the edge type.
+
+{% code title="GSQL shell" %}
+
+[,sql]
+----
+GSQL > CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
+The edge type friendship is created.
+GSQL >
+----
+
+{% endcode %}
+
+You can create as many edge types as you need.
+
+== Create a Graph
+
+Next, use the CREATE GRAPH command to create a graph named *social.* Here, we just list the vertex types and edge types that we want to include in this graph.
+
+{% code title="GSQL command" %}
+
+[,sql]
+----
+CREATE GRAPH social (person, friendship)
+----
+
+{% endcode %}
+
+GSQL will confirm the creation of the first graph after several seconds, during which it pushes the catalog information to all services, such as the GSE, GPE and RESTPP.
+
+{% code title="GSQL shell" %}
+
+[,sql]
+----
+GSQL > CREATE GRAPH social (person, friendship)
+
+Restarting gse gpe restpp ...
+
+Finish restarting services in 16.554 seconds!
+The graph social is created.
+----
+
+{% endcode %}
+
+At this point, we have created a *person* vertex type, a *friendship* edge type, and a *social* graph that includes them. You've now built your first graph schema! Let's take a look what's in the catalog by typing the `ls` command in the GSQL shell.
+
+{% code title="GSQL shell" %}
+
+[,coffeescript]
+----
+GSQL > ls
+---- Global vertices, edges, and all graphs
+Vertex Types:
+  - VERTEX person(PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+Edge Types:
+  - UNDIRECTED EDGE friendship(FROM person, TO person, connect_day DATETIME)
+
+Graphs:
+  - Graph social(person:v, friendship:e)
+Jobs:
+
+
+Json API version: v2
+----
+
+{% endcode %}

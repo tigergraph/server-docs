@@ -1,0 +1,76 @@
+= MultiGraph Overview
+
+{% hint style="success" %}
+*Beginning with Version 3.1,*
+
+* ****link:../start/vertex-level-access-control/[*Vertex-Level Access Control*] *greatly improves the granularity of data access control from partitioning data at the type-level (MultiGraph) to the individual vertex-level (VLAC).*
+{% endhint %}
+
+One TigerGraph instance can manage multiple graphs, each with its own set of user privileges. This first-of-its-kind capability, dubbed MultiGraph, is available as an optional service in the TigerGraph platform.
+
+image::../.gitbook/assets/image%20%2816%29.png[MultiGraph allows one graph schema to be shared accross all departments, with different levels of access control at the type level. ]
+
+MultiGraph enables several powerful use cases:
+
+* Multiple Tenancy: Use one TigerGraph instance to support several completely separate data sets, each with its own set of users. Each user community cannot see the other user communities or other data sets.
+* Fine-grained privileges on the same set of data: Role-based access control, available on single graphs, grants permission for the privilege to run queries (include data modification queries). In a single graph scheme, there is no way to say "Query X can be run by some users but not by others." Using multiple graphs defined over the same set of data, each graph can have its own set of queries and own set of users, in effect customizing who can run which queries.
+* Overlapping graphs: Graphs can partially overlap, to enable a combination of shared and private data.
+* Hierarchical subgraphs: A Graph X can be defined to cover the domains of Graphs Y and Z, that is, Graph X = (Graph Y) U (Graph Z). This provides an interesting way to describe a data partitioning or parent-child structure. (This is not the same as defining sub-classes of data types; data types are still independent.)
+
+If you implement only one graph now, you can upgrade to MultiGraph and add additional graphs at any time, without having to redo your existing design.
+
+== Concepts
+
+=== Graphs and Graph Domains
+
+A graph ****is defined as a set of vertex types and edge types. More precisely, it is all the vertices and edges of that collection of types. The domain ****of a graph is its set of vertex types and edge types. Each graph contains its own data loading jobs and queries, which do not affect and are not visible to other graphs.
+
+[,erlang]
+----
+CREATE GRAPH <gname> (<list of vertex types & edge types>)
+----
+
+{% hint style="info" %}
+*MultiGraph Principles*
+
+* A TigerGraph instance with a basic license key can have one graph. A TigerGraph instance with a MultiGraph license key can create multiple graphs.
++
+**`superuser`**and **`globaldesigner`**can define one or more graphs. The domains of the two graphs may be completely separate, may overlap, or may coincide exactly.
+
+* A vertex type or edge type created by a superuser is a global type.
+* A *`superuser`* or *`globaldesigner`* can include a global vertex or edge type in one or more graphs. Global types can be shared among multiple graphs.
+* Users with the *`admin`* or *`designer`* role for a particular graph can add local vertex types and edge types to their own graph. Local types cannot be shared among multiple graphs.
+{% endhint %}
+
+=== Graph-Specific Roles and Privileges
+
+The TigerGraph system includes several predefined roles**.** Each role is a fixed and logical set of privileges to perform operations. In order to access a graph, a user must be granted a role on that graph. Without a role, a user has no meaningful access.
+
+{% hint style="warning" %}
+*Role-Based MultiGraph Access Control*
+
+* User roles are granted or revoked on a per-graph basis. Each GRANT or REVOKE statement specifies not only a role but also a graph.
+* The `GRANT`/`REVOKE` privilege is reserved for superuser and admin users.
+* The *`superuser`* can grant a role to any user on any graph.
+* A *`superuser`* can pick a user to be an *`admin`* on a particular graph. The admin can then manage user privileges on their graph.
+* A user may be granted different roles on different graphs.
+{% endhint %}
+
+For details about managing users, privileges, and roles, see xref:../admin/admin-guide/user-access/user-privileges-and-authentication.adoc[User Privileges and Authentication]. There you will find a chart describing each of the roles in detail.
+
+=== Setting a Working Graph
+
+{% hint style="info" %}
+
+* A user must set their working graph in order to access that graph, either using the -g flag with the GSQL command, or by using the `USE GRAPH` command.
+* Users who have privileges on more than one graph (including superusers) may only work with one graph at a time. The `GLOBAL SCHEMA_CHANGE JOB` stretches this rule.
+{% endhint %}
+
+Note that the `CREATE` commands for queries, loading jobs, and schema_change jobs require that the graph name be specified, even for systems with only one graph.
+
+== Effect on Other Specifications
+
+. RESTPP Endpoints: Endpoints that pertain to the graph data must include the name of the graph in the request URL.  See link:../dev/restpp-api/[RESTPP API User Guide .]
+. User Authentication secrets and tokens: Our commands and procedures follow OAuth standards.  See xref:../admin/admin-guide/user-access/user-privileges-and-authentication.adoc[Managing User Privileges and Authentication.]
+
+There are many other details about using the MultiGraph feature, especially if your application has multiple users with different roles. In the documentation, the Multiple Graph logo is placed next to relevant topics: image:../.gitbook/assets/mg_logo_vl_50_new.jpg[]

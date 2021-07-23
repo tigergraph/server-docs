@@ -1,0 +1,88 @@
+= Get Started on AWS
+
+This tutorial will show you how to start TigerGraph Enterprise Edition from an image on AWS.
+
+== *Deploying Your Instance*
+
+. Go to https://aws.amazon.com/marketplace/[AWS Marketplace] and search for TigerGraph.
+. Click "Continue to Subscribe".
+
+image::../../../.gitbook/assets/subscribe-page%20%281%29.png[Subscribe Page]
+
+. Click on "Continue to Configuration".
+
+image::../../../.gitbook/assets/go-to-config-page%20%281%29.png[Pre Configuration Page]
+
+. Select the Software Version and Region. We recommend selecting the latest version for the most up-to-date features. After making your selections, click on "Continue to Launch".
+
+image::../../../.gitbook/assets/configuration-page%20%281%29.png[Configuration Page]
+
+. Select the instance type, security group settings, and other settings. The default settings are fine for most users, but feel free to modify them. Click "Launch" when finished.
+
+*Notes:* +
+The instance type needs to have at least 4 CPUs and 16GB RAM for TigerGraph to work properly.
+
+The security group must allow inbound TCP traffic to port 14240 if you want to access GraphStudio (TigerGraph's visualization platform). For more about GraphStudio, see the link:../../../ui/graphstudio/[GraphStudio UI Guide].
+
+The security group must allow inbound TCP traffic to port 9000 if you want to send RESTful requests to TigerGraph from outside the instance (this includes configuring the GSQL client on a remote machine). For more about the REST API, see the link:../../../dev/restpp-api/[TigerGraph RESTful API User Guide].
+
+For more about the TigerGraph Platform, see the xref:../../../tigergraph-platform-overview/internal-architecture.adoc[TigerGraph Platform Overview].
+
+image::../../../.gitbook/assets/configuration-page-2%20%281%29.png[Configuration Page 2]
+
+. That's it!  The TigerGraph instance has been successfully deployed on AWS.
+
+image::../../../.gitbook/assets/launch-successful%20%281%29.png[Deploying Page]
+
+== *Starting TigerGraph on Your Instance*
+
+. Log on to the instance and switch to user `tigergraph` using the following command:
+
+[,bash]
+----
+sudo su - tigergraph
+----
+
+image::../../../.gitbook/assets/login-to-tigergraph-user%20%282%29.png[TigerGraph Login]
+
+. Run the following command to check the current status of TigerGraph. The services *"ADMIN", "CTRL", "ETCD", "IFM", "KAFKA", and "ZK" are started automatically* and should be up at this point. If any of them are not or you get the following error message, *please wait for 30 to 60 seconds and check the status again* before reporting it to TigerGraph support.
+
+[,text]
+----
+gadmin status
+----
+
+image::../../../.gitbook/assets/gadmin-status%20%282%29.png[Output of gadmin status]
+
+image::../../../.gitbook/assets/gadmin-status-error-message%20%282%29.png[Gadmin status error message]
+
+. Run the following command to start TigerGraph:
+
+[,text]
+----
+gadmin start
+----
+
+image::../../../.gitbook/assets/gadmin-start%20%2810%29.png[Output of gadmin start]
+
+. Check the status again. All services should be up at this point:
+
+[,text]
+----
+gadmin status
+----
+
+image::../../../.gitbook/assets/gadmin-status-after-start%20%282%29.png[Gadmin status after running gadmin start]
+
+. TigerGraph has been successfully started on your cloud instance.
+
+== TigerGraph License on *AWS* Images
+
+The TigerGraph Enterprise edition image comes with *a perpetual license* that will *only work on the AWS instance it's installed on*. Please run the following command to see it:
+
+[,text]
+----
+gadmin license status
+----
+
+image::../../../.gitbook/assets/gadmin-license-status%20%283%29.png[Gadmin license status output]

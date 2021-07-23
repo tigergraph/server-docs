@@ -1,0 +1,82 @@
+= Get Started on Google Cloud
+
+This tutorial will show you how to start TigerGraph from an image on Google Cloud. Please select your edition from below:
+
+== *Deploying Your Instance*‌
+
+. Go to Google Cloud Marketplace https://console.cloud.google.com/marketplace and search for  "TigerGraph Enterprise Edition". Choose the latest edition to access the most up-to-date features.
+. Click on "Launch"​‌.
+
+image::../../../.gitbook/assets/console-page%20%289%29.png[]
+
+. The default settings are fine for most users, but feel free to modify them. When ready, click on "Deploy".
+
+*Notes:* +
+The instance type needs to have at least 4 CPUs and 16GB RAM for TigerGraph to work properly.
+
+The "Allow TCP port 14240 traffic from the Internet" checkbox must be checked if you want to access GraphStudio (TigerGraph's visualization platform). For more about GraphStudio, see the link:../../../ui/graphstudio/[GraphStudio UI Guide].
+
+For information on how to set up authentication please see link:../../../admin/admin-guide/user-access/[User access management].
+
+The "Allow TCP port 9000 traffic from the Internet" checkbox must be checked if you want to send RESTful requests to TigerGraph from outside the instance (this includes configuring the GSQL client on a remote machine). For more about the REST API, see the link:../../../dev/restpp-api/[TigerGraph RESTful API User Guide].‌
+
+For more about the TigerGraph Platform, see the xref:../../../tigergraph-platform-overview/internal-architecture.adoc[TigerGraph Platform Overview].​‌
+
+image::../../../.gitbook/assets/deployment-form%20%289%29.png[]
+
+. That's it! The TigerGraph instance has been successfully deployed on Google Cloud.​‌
+
+image::../../../.gitbook/assets/deploying-page%20%289%29.png[]
+
+== *Starting TigerGraph on Your Instance*
+
+‌1. Log on to the instance and switch to user `tigergraph` using the following command:
+
+[,text]
+----
+sudo su - tigergraph
+----
+
+image::../../../.gitbook/assets/login-to-tigergraph%20%288%29.png[]
+
+. Run the following command to check the current status of TigerGraph. The services *"ADMIN", "CTRL", "ETCD", "IFM", "KAFKA", and "ZK" are started automatically* and should be up at this point. If any of them are not or you get the following error message, *please wait for 30 to 60 seconds and check the status again* before reporting it to TigerGraph support.
+
+[,text]
+----
+gadmin status
+----
+
+image::../../../.gitbook/assets/gadmin-status%20%283%29.png[]
+
+image::../../../.gitbook/assets/gadmin-status-error-message%20%283%29.png[]
+
+. Run the following command to start TigerGraph:
+
+[,text]
+----
+gadmin start
+----
+
+image::../../../.gitbook/assets/gadmin-start%20%2811%29.png[]
+
+. Check the status again. All services should be up at this point:
+
+[,text]
+----
+gadmin status
+----
+
+image::../../../.gitbook/assets/gadmin-status-after-start%20%283%29.png[]
+
+. TigerGraph has been successfully started on your cloud instance.‌
+
+== TigerGraph License on Google Cloud Images
+
+The TigerGraph Enterprise edition image comes with *a perpetual license* that will *only work on the Google Cloud instance it's installed on*. Please run the following command to see it:
+
+[,text]
+----
+gadmin license status
+----
+
+image::../../../.gitbook/assets/gadmin-license-status%20%284%29.png[]

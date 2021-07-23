@@ -1,0 +1,107 @@
+= Upgrading an Existing Installation
+
+== Upgrading from v3.x to v3.x
+
+Any 3.x version of TigerGraph can up upgraded to another v3.x version by running the installation script with the upgrade(`-U`) flag.
+
+. Download the latest version of TigerGraph to your system.
+. Extract the tarball.
+. Run the install script under the Linux user created during installation with the upgrade flag (`-U`)  that was extracted from the tarball:
+
+[,text]
+----
+$ ./install.sh -U
+----
+
+== Previous Versions
+
+In-place cluster migration of schema and data is an important aspect of business continuity. TigerGraph supports full migration between compatible versions through simple upgrade operations. However, there are some special considerations when migrating to TigerGraph 3.0 version as noted below.
+
+{% hint style="danger" %}
+
+. Please contact TigerGraph Support to coordinate migration to TigerGraph 3.0 version. Even though all the steps for Migration are documented on this page, it is strongly recommended that you review the migration process with TigerGraph Support team
+. Migration from pre-3.0 versions (TigerGraph 2.4, 2.5 and 2.6 ) to 3.0 is supported. To migrate from versions prior to 2.4, users are advised to contact TigerGraph Support to check the feasibility of support the range of earlier versions.
+. Please be sure to take a backup of data on the cluster before starting the migration process.
+{% endhint %}
+
+{% hint style="danger" %}
+Developer Edition upgrade is not supported
+
+The Developer Edition is not designed for upgrades from one version to another +
+It is not possible to upgrade a Developer Edition installation to Enterprise Edition.
+{% endhint %}
+
+{% hint style="warning" %}
+If you have written User-Defined Functions for your queries, be sure to make a backup of these files : +
+`<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`
+
+`<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
+{% endhint %}
+
+=== Upgrading from v2.x to v3.x
+
+. Make sure all in-memory graph updates are persisted to disk data by running the link:../../../dev/restpp-api/built-in-endpoints.md#rebuild-graph-engine[`/rebuildnow` endpoint] and no active jobs are running. For graphs requiring an authentication token, the endpoint must be called for each graph utilizing their respective tokens. For graphs not requiring tokens, you can call the endpoint once for all graphs. The `/rebuildnow` endpoint does not guarantee that all KAFKA messages are consumed by the engine (you have to wait until there is no PullDelta in the GPE log to guarantee that all KAFKA messages have been consumed by the engine). It only guarantees that all the in-memory graph updates are persisted to disk data.
+. Make sure config is applied by using this command : `gadmin config-apply`.
+. Stop your TigerGraph system with this command : `gadmin stop all admin ts3 -y`.
+. Install version 3.0.0 with the same cluster config and HA options as your previous installation.
+ ** If you have enabled HA in your 2.5.x installation, you should specify the ReplicationFactor in 3.0.0 installer to be the same as previously configured. Otherwise, leave it as 1.
+ ** *NOTE: If your old 2.5.x system is installed in the cluster [m1, m2, m3, m4], you could only install 3.0.0 in the same [m1, m2, m3, m4], but you only need to maintain the IP of m1 to be the same. The order of m2 to m4 does not matter.*
+ ** Please specify a valid license key.
+. After installing, log in as user `tigergraph`. Now `gadmin version` should point to 3.0.0. If not, please check your installation. _**_
+. *For the following instructions, we assume to be under tigergraph user:*
+ .. Migration process instructions are documented in https://tigergraph.freshdesk.com/support/solutions/articles/5000859240-2-x-to-3-0-0-upgrade-flow
+ .. If any errors occur, please check the error message, as well as debug.log under the migration tool folder.
+
+{% hint style="warning" %}
+Notice: If you don't activate a valid license when installing 3.0, you might fail in the end when running these two commands. +
+`gsql recompile loading job
+gsql install query -force all`
+{% endhint %}
+
+=== Upgrading from 2.x to 2.x
+
+All sections below are for versions prior to v3.0. +
+If your specific versions are not listed below, please upgrade by :
+
+. Download the latest version of TigerGraph to your system.
+. Extract the tarball.
+. Run the TigerGraph.bin file that was extracted from the tarball : `bash tigergraph.bin`
+
+=== Upgrading from v2.1.7 to v2.2.x +++<a id="updating-from-v-2-1-7-to-v-2-2-5">++++++</a>+++
+
+These steps are assuming that v2.1.7 is installed. To upgrade to v2.2 from a version older than v2.1.7, please upgrade to v2.1.7 first. If the tigergraph username and password have been changed, please have them ready as you will need them in order to update the system.
+
+. Download tigergraph-2.2.x-offline.tar.gz with user "`tigergraph`" and extract the tarball file.
+. Download the `post_upgrade.sh` script that is attached https://tigergraph.freshdesk.com/support/solutions/articles/5000810844-v2-1-7-v2-2-x-upgrade-instructions[here].
+. Run tigergraph.bin under the same folder to upgrade to 2.2.x
+. Run the post-upgrade script that was downloaded in step 2 : *post_upgrade.sh* -u <sudoUser> [-P <sudoPass> | -K <sshKey> ] -p <tigergraphUserPass>
+
+=== Upgrading from v2.0 to v2.1
+
+v2.0 can be upgraded to v2.1 Enterprise Edition. The data store format and GSQL language scripts in v2.0 are forward compatible with v2.1.
+
+=== Upgrading from v1.x to v2.x
+
+The data store format between 1.x and 2.x for single servers is forward compatible but not backward compatible. For a single server platform, users can upgrade from 1.x to 2.x without reloading data or recreating the graph schema. Some details of the GSQL language have changed, so some loading jobs and queries will need to be revised and reinstalled.
+
+For a cluster configuration, a direct upgrade from 1.x to 2.x is not supported at this time.  Users interested in migrating from 1.x to 2.x need to export their data and metadata, install v2.x, and then reload data and metadata, with some small modifications.  Please contact link:mailto:support@tigergraph.com[support@tigergraph.com]for assistance.
+
+Please consult the Release Notes for all the versions between your current version and your target version (e.g., v2.1) to see a summary of specification changes.  Contain link:mailto:support@tigergraph.com[support@tigergraph.com]for assistance.
+
+=== Workflow for Direct Upgrade
+
+. Verify that your datastore is compatible and is eligible for direct update/upgrade.
+. Review the specification changes and how they may affect your applications (loading jobs and queries).
+. Stop issuing new commands to your TigerGraph system and allow any operations to complete.
+. (Recommended) Back up your data, as a precaution.
+. Follow the procedure at the beginning of this document for installing a new system.  The installer will automatically shut down your system and start it again.
+
+{% hint style="danger" %}
+ Be sure to specify the same username as your current installation. Otherwise, if you use a different user name, it will be treated as a new installation, with an empty graph.
+{% endhint %}
+
+. Pay attention to output messages during the installation process which may alert you to additional tasks or checks you should perform.
+. Run the command *gsql* to start the GSQL shell. The first time after an update, gsql performs two important operations:
+ .. Copies your catalog from your old installation to the new installation.
+ .. Compares the files in the backup `/dev_<datetime>/gdk/gsql/src` folder to the new `/dev/gdk/gsql/src` folder. Pay attention to any files residing in the old folder but not in the new folder.  Review them and copy them to the new folder if appropriate.  See the example below.
+. Revise and reinstall loading jobs, user-defined functions, and queries as needed.

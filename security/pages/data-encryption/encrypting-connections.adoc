@@ -1,0 +1,163 @@
+= Encrypting Connections
+
+TigerGraph supports secure data-in-flight communication, using SSL/TLS encryption protocol. This applies to any outward-facing channel, including GSQL clients, RESTPP endpoints, and the GraphStudio web interface. When SSL/TLS is enabled, HTTPS takes the place of HTTP for RESTPP and GraphStudio connections.
+
+== Prerequisites
+
+You should have basic knowledge about how SSL works:
+
+. What the SSL certificate and key are used for
+. That an SSL certificate is bound to a domain
+. How an SSL certificate chain works
+
+A good primer on SSL is available to https://httpd.apache.org/docs/2.4/ssl/ssl_intro.html
+
+== Nginx-Based
+
+TigerGraph uses the Nginx web server, so SSL configuration makes use of some built-in support in Nginx.
+
+http://nginx.org/en/docs/http/configuring_https_servers.html
+
+== Step 1. Obtain an SSL Certificate
+
+The two main options for obtaining an SSL Certificate are to generate your own self-signed certificate or to purchase a certificate from a trusted Certificate Authority. Regardless of which method you choose, your certificate should be chained to a trusted root certificate embedded in your browser. The options and details for producing a trusted SSL certificate are beyond the scope of this document. The focus of this document is how to configure your TigerGraph system to use the certificate to enable SSL.
+
+=== Option 1: Using a Certificate From A Trusted Agent
+
+First, obtain an SSL certificate from a trusted agent of your choice. Certificate vendors will provide clear instructions for ordering a certificate and then for installing it on your system.
+
+Then you can configure the certificate with `gadmin --configure ssl`
+
+=== Option 2: Create a Self-Signed Certificate
+
+There are multiple ways to create a self-signed certificate.  One example is shown below.
+
+{% hint style="danger" %}
+For simplicity, the method below will use the root certificate directly as the HTTPS server certificate.  This method is satisfactory for testing but should not be used for a production system.
+{% endhint %}
+
+{% hint style="info" %}
+In the example below, the Common Name value should be your server hostname, since HTTPS certificates are bound to domain names.
+{% endhint %}
+
+{% code title="Self-Signed Certificate generation example using openssl" %}
+
+[,bash]
+----
+$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/nginx-selfsigned.key -out ~/nginx-selfsigned.crt
+
+Generating a 2048 bit RSA private key
+.................................................................................................................................+++
+........+++
+writing new private key to '/home/tigergraph/nginx-selfsigned.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:US
+State or Province Name (full name) [Some-State]:California
+Locality Name (eg, city) []:Redwood City
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:TigerGraph
+Organizational Unit Name (eg, section) []:GLE
+Common Name (e.g. server FQDN or YOUR name) []: my.ip.addr.num
+Email Address []:engineer@tigergraph.com
+----
+
+{% endcode %}
+
+=== Change the Certificate Permission
+
+For security reasons, the certificates can only be used with permission 600 or less.
+
+[,text]
+----
+$ chmod 600 ~/nginx-selfsigned.*
+----
+
+== Step 2: Configure SSL with `gadmin`
+
+With the self-signed certificate successfully generated, you can configure it with `gadmin`, so that all the HTTP traffic will be protected with SSL.
+
+{% hint style="info" %}
+TigerGraph's SSL only accepts PEM-encoded certificates. If you have a certificate encoded in other formats (e.g. DER), you need to https://www.sslshopper.com/ssl-converter.html[convert it to a PEM-encoded certificate] first.
+{% endhint %}
+
+[,bash]
+----
+$ gadmin config entry ssl
+
+​Nginx.SSL.Enable [ false ]: Enable SSL connection for all HTTP requests
+New: true
+
+Nginx.SSL.Key [ <masked> ]: Private key for SSL
+New: @privateKey_file_path
+
+Nginx.SSL.Cert [ <masked> ]: Public certificate for SSL
+New: @ssl_cert_path
+
+# This config (Nginx.ProxySSLVerify) was removed in v3.1.1
+Nginx.ProxySSLVerify [ false ]: Enable verification of the proxied HTTPS server certificate. Recommend to turn on.
+New: true
+----
+
+After saving the settings, apply the configuration settings.
+
+[,text]
+----
+gadmin config apply -y
+
+[ Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+----
+
+Then restart the following services: `gsql`, `nginx`, `ts3`, and `gui`.
+
+[,text]
+----
+$ gadmin restart gsql nginx gui ts3 -y
+----
+
+== Testing Your SSL Connection
+
+Now you may test the connection.
+
+A direct curl request to the server will fail due to certificate verification failure:
+
+[,text]
+----
+$ curl https://localhost:14240
+
+curl: (60) server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
+More details here: http://curl.haxx.se/docs/sslcerts.html
+
+curl performs SSL certificate verification by default, using a "bundle"
+of Certificate Authority (CA) public keys (CA certs). If the default
+bundle file isn't adequate, you can specify an alternate file
+using the --cacert option.
+
+If this HTTPS server uses a certificate signed by a CA represented in
+the bundle, the certificate verification probably failed due to a
+problem with the certificate (it might be expired, or the name might
+not match the domain name in the URL).
+
+If you'd like to turn off curl's verification of the certificate, use
+the -k (or --insecure) option.
+----
+
+{% hint style="danger" %}
+ In v1.2, the default TCP/IP port for Nginx has changed from 44240 to 14240, to avoid possible port conflicts with Zookeeper.
+{% endhint %}
+
+You may use the -k option to turn off the verification, but it is unsafe and not recommended.
+
+To successfully make requests with curl, you will need to specify the certificate by using the `--cacert` parameter:
+
+[,bash]
+----
+$ curl --cacert /home/tigergraph/nginx-selfsigned.crt https://localhost:14240
+
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>GraphStudio</title><base href="/"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/x-icon" href="favicon.ico"><link href="styles.d67299ba9f5d73aecbe2.bundle.css" rel="stylesheet"/></head><body class="mat-typography"><app-root></app-root><script type="text/javascript" src="inline.4aae6a8088c30a61d5b0.bundle.js"></script><script type="text/javascript" src="polyfills.c9b879328f3396b2bbe8.bundle.js"></script><script type="text/javascript" src="vendor.5392e4ea4f904cd1658c.bundle.js"></script><script type="text/javascript" src="main.a39087227fcdf478cd2a.bundle.js"></script></body></html>
+----
