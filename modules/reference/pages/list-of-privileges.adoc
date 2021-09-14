@@ -1,0 +1,119 @@
+= List of Privileges
+
+This page provides a complete list of privileges in TigerGraph's Role-based Access Control system.
+
+* Any privilege marked "`on global only`" can only be granted to a global role. It cannot be granted to a local role (See link:../user-access/roles-and-privileges.md#global-vs-local-roles[Global role vs local role]).
+* The command `IMPORT GRAPH <gName>` needs multiple privileges, .e.g `WRITE_SCHEMA`, `WRITE_LOADING_JOB`, `WRITE_QUERY` and so on.
+* To run the command `CREATE SECRET` on a graph, the user must have at least one of the access database privileges: `READ_DATA`, `WRITE_DATA` and `EXECUTE_LOADINGJOB` on that graph. Thus the built-in `queryreader` role and above can create secrets on a graph, but the observer role cannot.
+
+[discrete]
+=== Table of Privileges+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">++++++<b>+++Privilege Name+++</b>++++++</th>+++
+      +++<th style="text-align:left">++++++<b>+++Commands Associated+++</b>++++++</th>+++
+      +++<th style="text-align:left">++++++<b>+++Global Only+++</b>++++++</th>++++++</tr>++++++</thead>+++
+  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++READ_SCHEMA+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++ls+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show vertex <vName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show edge <eName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show graph <gName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show job (<schema_changeJobName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_SCHEMA+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++create schema_change job <scjName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++run schema_change job <scjName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop schema_change job <scjName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++create vertex <vName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop vertex <vName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++create edge <eName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop edge <eName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++create graph <gName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++create global schema_change job <gscjName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++run global schema_change job <gscjName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop global schema_change job <gscjName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++READ_LOADINGJOB+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++show job <loadingJobName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show data_source <dsName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++EXECUTE_LOADINGJOB+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++run loading job <ljName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show loading status <jobId>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++abort loading job <ljName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++resume loading job <ljName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_LOADINGJOB+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++create loading job <ljName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop loading job <ljName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++READ_QUERY+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++show query <qName>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_QUERY+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++create query <qName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++install query <qName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop query <qName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++READ_DATA+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++run Read_Only_Query <qName>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_DATA+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++run Query_With_Update <qName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++(including create, delete, update in its own or any sub-query)+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_DATASOURCE+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++create data_source <dsName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++grant data_source <dsName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++revoke data_source <dsName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop data_source <dsName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++READ_ROLE+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++show role+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show privilege on role <rName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_ROLE+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++create role <rName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++grant role <rName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++revoke role <rName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop role <rName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++grant privilege <pName> on graph <gName> to <rName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++revoke privilege <pName> on graph <gName> from <rName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++READ_USER+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++show user+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show privilege on user <uName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++show secret+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_USER+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++create user <uName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop user <uName>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++alter password+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++Yes+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++READ_PROXYGROUP+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++show group+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++No+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_PROXYGROUP+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++create group <pgName> proxy <rule>+++</code>++++++</p>+++
+        +++<p>++++++<code>+++drop group <pgName>+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++Yes+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++READ_FILE+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++get <fileName> to <path-to-file>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Yes+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++WRITE_FILE+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++put <fileName> from <path-to-file>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Yes+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++DROP_GRAPH+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++drop graph <gName>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Yes+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++EXPORT_GRAPH+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++export graph <gName>+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Yes+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++CLEAR_GRAPHSTORE+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++clear graph store+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Yes+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++DROP ALL+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<code>+++drop all+++</code>++++++</td>+++
+      +++<td style="text-align:left">+++Yes+++</td>++++++</tr>+++
+    +++<tr>++++++<td style="text-align:left">++++++<code>+++ACCESS_TAG+++</code>++++++</td>+++
+      +++<td style="text-align:left">++++++<p>++++++<code>+++create/drop/run schema_change jobs involving tags+++</code>++++++</p>+++
+        +++<p>++++++<code>+++create/drop/install/run queries involving tags+++</code>++++++</p>+++
+        +++<p>++++++<code>+++create/drop/run loading jobs involving tags+++</code>++++++</p>++++++</td>+++
+      +++<td style="text-align:left">+++NO+++</td>++++++</tr>++++++</tbody>++++++</table>+++

@@ -1,0 +1,297 @@
+= System Administration FAQs
+
+[discrete]
+=== How do I apply or update my license key? +++<a id="TigerGraphSystemAdministrationFAQs-HowdoIapplyorupdatemylicensekey?">++++++</a>+++
+
+If you have a version 1.0 string-type license key, then during initial platform installation, you can either specify your license key as an argument, for example:
+
+[source,text]
+----
+./install.sh -l <your_license_key>
+----
+
+Or you may input it when prompted.
+
+To apply a new license key string, use the following command:
+
+[source,text]
+----
+gadmin license set <license_key>
+or
+gadmin license set @textfile
+----
+
+If you have a version 2.0 file-type license key which is linked to a specific machine or cluster:
+
+* If this is the initial installation or you are updating a previous key file, then please see the document xref:install-and-config/system-specific-license-activation.adoc[Activating a System-Specific License]
+* If you are updating from a version 1.0 key string to a version 2.0 key file, please contact link:mailto:support@tigergraph.com[support@tigergraph.com]for the correct procedure.
+
+[discrete]
+=== When does my license key expire? +++<a id="TigerGraphSystemAdministrationFAQs-Whendoesmylicensekeyexpire?">++++++</a>+++
+
+If you have a version 1.0 string-type license key, the following command will tell you your key's expiration date:
+
+[source,text]
+----
+gadmin status license
+----
+
+If you have a version 2.0 file-type license key which is linked to a specific machine or cluster, then run the following command:
+
+[source,text]
+----
+curl -X GET "localhost:9000/showlicenseinfo"
+----
+
+If you are running TigerGraph v3.0+, run the following command:
+
+[source,text]
+----
+gadmin license status
+----
+
+[discrete]
+=== What are the components of the TigerGraph platform? +++<a id="TigerGraphSystemAdministrationFAQs-WhatarethecomponentsoftheTigerGraphplatform?">++++++</a>+++
+
+[source,text]
+----
+Command Line Usage Name : Official Name
+
+"GPE" : GPE,
+"GSE" : GSE,
+"RESTPP" : RESTPP,
+"GSQL" : GSQL,
+"EXE" : EXECUTOR,
+"IFM" : INFORMANT,
+"GUI" : GUI,
+"CTRL" : CONTROLLER,
+"KAFKA" : KAFKA,
+"ETCD" : ETCD,
+"ZK" : ZK,
+"NGINX" : NGINX,
+"TS3" : TS3,
+"TS3SERV" : TS3SERV,
+"DICT" : DICT,
+"ADMIN" : ADMIN,
+"KAFKACONN" : KAFKACONN,
+"KAFKASTRM-LL" : KAFKASTRMLL,
+----
+
+A description of each component is given in the Glossary section of the xref:../../tigergraph-platform-overview/internal-architecture.adoc[TigerGraph Platform Overview]document.
+
+[discrete]
+=== How can I find out current status of the system? +++<a id="TigerGraphSystemAdministrationFAQs-HowcanIfindoutcurrentstatusofthesystem?">++++++</a>+++
+
+The following command tells you the basic summary of each component:
+
+[source,text]
+----
+gadmin status
+----
+
+If you want to know more, including process information, memory/cpu usage information of each component, use the -v option for verbose output.
+
+[source,text]
+----
+gadmin status -v
+----
+
+[discrete]
+=== How can I find out the port of a service? +++<a id="TigerGraphSystemAdministrationFAQs-HowcanIfindouttheportofaservice?">++++++</a>+++
+
+To find out the port of a service, use the `gadmin config get <port_name>` command:
+
+[source,text]
+----
+$ gadmin config get RESTPP.NginxPort
+----
+
+To list and edit all ports, use the following command:
+
+[source,text]
+----
+gadmin config group port
+----
+
+To change the port number of one service, use the following command:
+
+[source,text]
+----
+gadmin config set <port_name> <port_number>
+----
+
+[discrete]
+=== How do I backup my data? +++<a id="TigerGraphSystemAdministrationFAQs-HowdoIbackupmydata?">++++++</a>+++
+
+*GBAR* is the utility to do backup and restore of TigerGraph system.  Before a backup, GBAR needs to be configured. Please see xref:system-management/backup-and-restore.adoc[GBAR - Graph Backup and Restore]for details.
+
+To backup the current system:
+
+[source,text]
+----
+gbar backup -t <tag_of_the_backup>
+----
+
+Please be advised that GBAR only backs up data and configuration. No logs or binaries will be backed up.
+
+[discrete]
+=== How do I restore a backup? +++<a id="TigerGraphSystemAdministrationFAQs-HowdoIrestoreabackup?">++++++</a>+++
+
+To restore an existing backup:
+
+[source,text]
+----
+gbar restore <tag_of_the_backup>
+----
+
+Please be advised that running restore will STOP the service and ERASE existing data.
+
+[discrete]
+=== How can I find out statistics of my graph data? +++<a id="TigerGraphSystemAdministrationFAQs-HowcanIfindoutstatisticsofmygraphdata?">++++++</a>+++
+
+You can get statistics of Graph data on TigerGraph database instance using *gstatusgraph* utility:
+
+[source,text]
+----
+Syntax:
+
+gstatusgraph [-s <node_name>]
+
+using -s to do statistics for one node
+----
+
+[source,text]
+----
+$ gstatusgraph
+=== graph ===
+[GRAPH  ] Graph was loaded (/data/tigergraph/tigergraph3/data/gstore/0/part/):
+[m1     ] Partition size: 43GiB, IDS size: 16GiB, Vertex count: 262053633, Edge count: 1115267545, NumOfDeletedVertices: 130988916 NumOfSkippedVertices: 0
+[m2     ] Partition size: 40GiB, IDS size: 16GiB, Vertex count: 261996922, Edge count: 971304656, NumOfDeletedVertices: 130998461 NumOfSkippedVertices: 0
+[m3     ] Partition size: 44GiB, IDS size: 16GiB, Vertex count: 271436710, Edge count: 1115214212, NumOfDeletedVertices: 121605839 NumOfSkippedVertices: 0
+[m4     ] Partition size: 44GiB, IDS size: 16GiB, Vertex count: 262030593, Edge count: 1191498785, NumOfDeletedVertices: 130964790 NumOfSkippedVertices: 0
+[WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
+----
+
+{% hint style="danger" %}
+Due to a known bug, *gstatusgraph* command will count each undirected edge as two edges. To get an accurate number of undirected edges,  user should use the built-in queries instead. The message below is sent as a warning to users when *gstatusgraph* is used.
+
+`"[WARN ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information"`
+{% endhint %}
+
+[discrete]
+=== How can I find out statistics of requests? +++<a id="TigerGraphSystemAdministrationFAQs-HowcanIfindoutstatisticsofrequests?">++++++</a>+++
+
+TigerGraph provides a RESTful API to tell request statistics. Assuming REST port is 9000, use command below:
+
+[source,text]
+----
+curl -l http://localhost:9000/statistics
+----
+
+[discrete]
+=== How do I restart a service? +++<a id="TigerGraphSystemAdministrationFAQs-HowdoIrestartaservice?">++++++</a>+++
+
+If you need to restart everything, use the following:
+
+[source,text]
+----
+gadmin restart
+----
+
+If you know which component(s) you want to restart,you can list them:
+
+[source,text]
+----
+gadmin restart <component_name(s)>
+----
+
+Multiple component names are separated by spaces.
+
+[discrete]
+=== How to I stop some or all services? +++<a id="TigerGraphSystemAdministrationFAQs-HowtoIstopsomeorallservices?">++++++</a>+++
+
+Normally it is not necessary to manually turn off any services. However if you wish to, use the stop command.
+
+[source,text]
+----
+# stop (nearly) all services
+# will stop services except for infrastructure services
+gadmin stop
+
+# stop selected services
+gadmin stop <component_name(s)>
+----
+
+[discrete]
+=== Why the service is down? +++<a id="TigerGraphSystemAdministrationFAQs-Whytheserviceisdown?">++++++</a>+++
+
+There are a few typical causes for a service being down:
+
+. Expired license key.  Double check your license key expiration date, and contact link:mailto:support@tigergraph.com[support@tigergraph.com]if it is expired. After applying a new license key, your service will come back online.  Usually, TigerGraph will reach out before your license key expires. Please act accordingly when that happens.
+. Not enough memory.  TigerGraph is a memory intensive system. When there is not much free memory, Linux may kill a process based on memory usage. Please check your memory usage after TigerGraph starts. We suggest at least 30% free memory after TigerGraph starts up.  To confirm if one of TigerGraph's processes is a victim, use http://man7.org/linux/man-pages/man1/dmesg.1.html[dmesg]to check.
+. Not enough free disk space.  TigerGraph writes data, logs, as well as some temporary files onto disk(s). It requires enough free space to function properly. If TigerGraph service or one of its components is down, please check whether there is enough free space on the disk using http://man7.org/linux/man-pages/man1/df.1.html[df].
+
+[discrete]
+=== Where are the logs? +++<a id="TigerGraphSystemAdministrationFAQs-Wherearethelogs?">++++++</a>+++
+
+Use following command to figure out where are log files for each component:
+
+[source,text]
+----
+gadmin log
+----
+
+To log at the log file for a particular component:
+
+[source,text]
+----
+gadmin log <component>
+----
+
+[discrete]
+=== Why has my request timed out? +++<a id="TigerGraphSystemAdministrationFAQs-Whyhasmyrequesttimedout?">++++++</a>+++
+
+Timeout is applied to any request coming into TigerGraph system. If a request runs longer than the Timeout value, it will be killed. The default timeout value is 16 second.
+
+If you knows that your query will run longer than the value, configure all related timeouts to a bigger value. To do this:
+
+[source,text]
+----
+gadmin config entry RESTPP.Factory.DefaultQueryTimeoutSec
+----
+
+Input a value you expected, the unit is in second. Then apply the config to the system and restart the service.
+
+[source,text]
+----
+gadmin config apply
+gadmin restart
+----
+
+The timeout can also be changed for each query, but only when calling the REST endpoint. You would need to use a timeout value each time you run a query, otherwise the default timeout value will be assumed.
+
+[source,text]
+----
+curl -X <GET/POST> -H "GSQL-TIMEOUT: <timeout value in milliseconds>" '<request_URL>'
+----
+
+[discrete]
+=== Where are the core dump files located? +++<a id="TigerGraphSystemAdministrationFAQs-Wherearethecoredumpfileslocated?">++++++</a>+++
+
+A core dump file is produced by the OS when a certain signal causes a process to terminate. The core dump is a disk file containing an image of the process's memory at the time of termination. This image can be used in a debugger (e.g., gdb) to inspect the state of the program at the time that it terminated.
+
+The TigerGraph installation process configures the operating system to place core dump files in the TigerGraph root directory, with the name *core-%e-%s-%p.%t,* where
+
+* %e: executable filename (without path prefix)
+* %s: signal number which caused the dump
+* %p: PID of dumped process
+* %t:  time of dump, expressed as seconds since the epoch
+
+The coredump configuration was set by the following command:
+
+[source,text]
+----
+echo "$coreLocation/core-%e-%s-%p.%t" > /proc/sys/kernel/core_pattern
+----
+
+If you want to alter the location or file name template, you can edit the contents of `/proc/sys/kernel/core_pattern`

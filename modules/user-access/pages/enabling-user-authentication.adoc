@@ -1,0 +1,69 @@
+= Enabling User Authentication
+:pp: {plus}{plus}
+
+Enabling user authentication on TigerGraph enforces access control, requiring users to identify themselves and ensuring that users can only perform actions allowed by their roles.
+
+When the TigerGraph platform is first installed, user authentication is disabled. The installation process creates a gsql superuser who has the name `tigergraph` and password `tigergraph`. As long as this user's password is `tigergraph`, GSQL authentication remains disabled.
+
+Because there are two ways to access the TigerGraph system, either through the GSQL shell or through REST{pp} requests, there are two steps needed to secure your system with authentication enabled for both points of entry:
+
+* link:enabling-user-authentication.md#enable-gsql-authentication[Enable user authentication for the GSQL Shell]
+* link:enabling-user-authentication.md#enable-restpp-authentication[Enable OAuth 2 authentication for REST{pp}]
+
+== Enable *GSQL authentication*
+
+To enable user authentication for GSQL, change the password of the default user whose username `tigergraph` to something other than `tigergraph`.
+
+=== Procedure
+
+. Log in to the GSQL shell as the default user `tigergraph`. Since authentication is not enabled, entering `gsql` into the Linux terminal under the TigerGraph Linux user will log you in as user `tigergraph` automatically.
+. Run the following command to change the password, and enter the new password as prompted:
++
+[source,text]
+----
+GSQL > ALTER PASSWORD
+----
+
+. User authentication has been enabled. Exit the GSQL shell and try to reenter, and confirm that GSQL will now prompt for your password.
++
+[source,text]
+----
+$ gsql
+Password for tigergraph : ********
+----
+
+. To log in as a different user, use the `-u` option when you enter the GSQL shell. You can also supply the password in the same command with the `-p` option.
++
+[source,text]
+----
+$ gsql -u newuser -p mypassword
+----
+
+== Enable RESTPP authentication
+
+To enable RESTPP authentication, set the `RESTPP.Factory.EnableAuth` parameter to `true`.
+
+=== Procedure
+
+. As the TigerGraph Linux user, run the following command:
++
+{% code title="Enabling REST{pp} OAuth Authentication" %}
++
+[source,bash]
+----
+$ gadmin config set RESTPP.Factory.EnableAuth true
+----
++
+{% endcode %}
+
+. Run the following commands to save the configuration and restart system services:
++
+{% code title="Enabling REST{pp} OAuth Authentication" %}
++
+[source,bash]
+----
+$ gadmin config apply
+$ gadmin restart restpp nginx gui -y
+----
++
+{% endcode %}

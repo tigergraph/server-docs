@@ -66,7 +66,7 @@ The data should be formatted as a single string without linebreaks. If using cur
 
 {% code title="Syntax for a POST request with Inline Data Payload" %}
 
-[,bash]
+[source,bash]
 ----
 curl -X POST -d 'json_string' "http://server_ip:9000/path_to_endpoint?request_parameters"
 ----
@@ -77,7 +77,7 @@ The following example uses the `POST /graph` endpoint to insert one User type ve
 
 {% code title="Example using inline input data" %}
 
-[,bash]
+[source,bash]
 ----
 curl -X POST -d '{"vertices":{"User":{"id6":{"id":{"value":"id6"}}}}}' "http://localhost:9000/graph/socialNet"
 ----
@@ -92,7 +92,7 @@ For curl, use `--data-binary <path_to_file>` __**__as in the example below:
 
 {% code title="Syntax for a POST request with Payload Data File" %}
 
-[,bash]
+[source,bash]
 ----
 curl -X POST --data-binary <path_to_file> "http://server_ip:9000/path_to_endpoint?parameter1=<parameter1>"
 ----
@@ -143,7 +143,7 @@ Data of primitive types, including `INT, UINT, FLOAT, DOUBLE, STRING, BOOL`, and
 {% tabs %}
 {% tab title="Example: UDT Definition " %}
 
-[,sql]
+[source,sql]
 ----
 TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> myTuple
 ----
@@ -161,7 +161,7 @@ The example below shows the two methods for a  vertex `v` having a composite pri
 {% tab title="Option1" %}
 {% code title="Vertex v with composite key as JSON object" %}
 
-[,javascript]
+[source,javascript]
 ----
 {
   "v": {
@@ -181,7 +181,7 @@ The example below shows the two methods for a  vertex `v` having a composite pri
 {% tab title="Option2" %}
 {% code title="Vertex v with composite key as JSON array" %}
 
-[,javascript]
+[source,javascript]
 ----
 {
   "v": {
@@ -211,7 +211,7 @@ All TigerGraph REST responses are in JSON format. The output JSON object has fou
 * `"message"` - the error message when there is an error. If a request is successful, the field will be an empty string or a brief message conveying the result of the request.
 * `"results"` - this field contains the resulting data from the request. Details about the result of each built-in endpoint are described in the xref:built-in-endpoints.adoc[Built-in Endpoints] section.
 
-[,javascript]
+[source,javascript]
 ----
 // Example response
 {
@@ -234,7 +234,7 @@ All TigerGraph REST responses are in JSON format. The output JSON object has fou
 {% hint style="success" %}
 To make the JSON output more human-readable in the terminal, use the https://stedolan.github.io/jq/[`jq`] command or Python json library built into most Linux installations:
 
-[,bash]
+[source,bash]
 ----
 curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | jq .
 curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | python -m json.tool
@@ -242,54 +242,15 @@ curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | pyt
 
 {% endhint %}
 
-== Authentication
-
-=== REST{pp} Server Requests
-
-By default, TigerGraph REST{pp} endpoints are public: anyone with access to the HTTP ports of the TigerGraph server can run your endpoints. When link:../../admin/admin-guide/user-access/user-privileges-and-authentication.md#enabling-rest-authentication[REST{pp} authentication is enabled], then a valid authorization token must be included in the header.
-
-The REST{pp} server implements OAuth 2.0-style authorization as follows: Each user can create one or more *secrets* (unique pseudorandom strings). Each secret is associated with a particular user and the user's privileges for a particular graph. Anyone who has this secret can invoke a special REST endpoint to link:built-in-endpoints.md#request-a-token-get[generate authorization *tokens*] _**_(other pseudorandom strings). An authorization token can then be used to perform TigerGraph database operations via other REST endpoints. Each token will expire after a certain period of time. The TigerGraph default lifetime for a token is 1 month.
-
-==== *Using Tokens*
-
-Once REST{pp} authentication is enabled, a valid token should always be included in the HTTP header. If you are using curl to format and submit your REST{pp} requests, then use the following syntax:
-
-{% code title="curl GSQL request, with authorization token in header" %}
-
-[,bash]
-----
-curl -X GET -H "Authorization: Bearer <token>" '<request_URL>'
-----
-
-{% endcode %}
-
-Here is a sample request:
-
-[,bash]
-----
-curl -X GET -H "Authorization: Bearer 01234567abcdefgh01234567abcdefgh" "http://localhost:9000/graph/socialNet/vertices/User?limit=3"
-----
-
-=== GSQL Server Requests
-
-All requests made to the GSQL Server must be accompanied by your user credentials. You can use the `curl -u` option to pass in the username and password of the TigerGraph user:
-
-[,bash]
-----
-curl -X GET -u <username>:<password> "http://localhost:14240/<path_to_endpoint>
-----
-
-To keep your credentials more secure, one way to avoid having the user name and password on the command line is to instead use a https://everything.curl.dev/usingcurl/netrc[.netrc file] or a https://everything.curl.dev/cmdline/configfile[config file]. If you are in interactive mode, you can also use the `-u` option without specifying the password, and then curl will prompt for the password.
-
 == Size and Time limits
 
 The maximum length for the request URL is 8K bytes, including the query string. Requests with a large parameter size should use a data payload file instead of inline data.
 
 === Request Body Size
 
-The maximum size for a request body, including the payload file, is set by the system parameter `nginx.client_max_body_size`. The default value is 200 (in MB). To increase this limit, use the following `gadmin` command:
+The maximum size for a request body, including the payload file, is set by the system parameter `Nginx.ClientMaxBodySize`. The default value is 200 (in MB). To increase this limit, use the following `gadmin` command:
 
-[,text]
+[source,text]
 ----
 gadmin config set Nginx.ClientMaxBodySize NNN
 ----
@@ -300,7 +261,7 @@ The upper limit of this setting is 1024 MB. Raising the size limit for the data 
 
 By default, an HTTP request in the TigerGraph system times out after 16 seconds.  to customize this timeout limit for a particular query instance, you can set the GSQL-TIMEOUT parameter in the request header. If you are using curl to submit your RESTPP request, the syntax would be the following:
 
-[,bash]
+[source,bash]
 ----
 curl -X <GET/POST> -H "GSQL-TIMEOUT: <timeout value in ms>" '<request_URL>'
 ----
@@ -309,14 +270,14 @@ curl -X <GET/POST> -H "GSQL-TIMEOUT: <timeout value in ms>" '<request_URL>'
 
 You can specify the response size limit of an HTTP request with the following header:
 
-[,bash]
+[source,bash]
 ----
 curl -X <GET/POST> -H "RESPONSE-LIMIT: <size limit in byte>" '<request_URL>'
 ----
 
 If the response size is larger than the given limit, an error message will be returned instead of the actual query result:
 
-[,bash]
+[source,bash]
 ----
 {
   "error": true,

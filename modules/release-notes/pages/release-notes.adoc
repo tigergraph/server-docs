@@ -1,0 +1,135 @@
+= Release Notes - TigerGraph Server 3.2
+
+Release Date: August 13, 2021
+
+[discrete]
+==== Release Notes for Previous Versions:
+
+* https://docs.tigergraph.com/faqs/release-notes-tigergraph-3.1[Release Notes - TigerGraph 3.1]
+* https://docs.tigergraph.com/v/3.0/faqs/release-notes-tigergraph-3.0[Release Notes - TigerGraph 3.0]
+* https://docs.tigergraph.com/v/2.6/release-notes-change-log/release-notes-tigergraph-2.6[Release Notes - TigerGraph 2.6]
+* https://docs.tigergraph.com/v/2.5/release-notes-change-log/release-notes-tigergraph-2.5[Release Notes - TigerGraph 2.5]
+* https://docs.tigergraph.com/v/2.4/release-notes-change-log/release-notes-tigergraph-2.4[Release Notes - TigerGraph 2.4]
+* https://docs.tigergraph.com/v/2.3/release-notes-change-log/release-notes-tigergraph-2.3[Release Notes - TigerGraph 2.3]
+* https://docs.tigergraph.com/v/2.2/release-notes-change-log/release-notes-for-tigergraph-2.2[Release Notes - TigerGraph 2.2]
+* For v2.1 and older, contact TigerGraph Support
+
+*For the running log of bug fixes, see the* link:change-log-1/[*Change Log*]*.*
+
+== Compatibility with TigerGraph 3.1
+
+The following changes were made to the built-in roles in TigerGraph's Role-based Access Control
+
+* The built-in role `queryreader` can no longer run queries that include updates to the database.
+ ** You can link:../admin/admin-guide/user-access/role-management.md#create-a-local-role[create a role] with link:../admin/admin-guide/user-access/roles-and-privileges.md#built-in-roles[all `queryreader` privileges], and also link:../admin/admin-guide/user-access/role-management.md#grant-privileges-to-a-role[grant the `WRITE_DATA` privilege to the new role] to allow users with the role to run queries that update the graph.
+* The built-in role `admin` can no longer create users
+ ** You can link:../admin/admin-guide/user-access/role-management.md#create-a-global-role[create a global role] with link:../admin/admin-guide/user-access/roles-and-privileges.md#built-in-roles[all `admin` privileges], and also link:../admin/admin-guide/user-access/role-management.md#grant-privileges-to-a-role[grant the `WRITE_USER` privilege to the new role] to allow users with the role to create users.
+
+== Compatibility with TigerGraph 2
+
+Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to deliver significant improvements. While we make every effort to maintain backward compatibility, in selected cases APIs have changed or deprecated features have been dropped, in order to advance the overall product.
+
+*Data migration*: A tool is available to migrate the data in TigerGraph 2.6 to TigerGraph 3.0. Please contact TigerGraph Support for assistance.
+
+*Query and API compatibility*:
+
+* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.  Please see xref:../admin/admin-guide/system-management/management-with-gadmin.adoc[Managing with gadmin].
+* Some features which were previously deprecated have been dropped. Please see xref:change-log-1/v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
+
+== New Features
+
+=== User-defined Roles
+
+Privileges are introduced as the atomic unit for managing database user access. Database administrators can now define their own roles with customizable collections of privileges.
+
+For details on this feature, see link:../admin/admin-guide/user-access/[User Access Management].
+
+=== Cross-region replication
+
+TigerGraph 3.2 provides complete native support for all data and metadata cross-region replication including automated schema changes, user and query management.
+
+For details on this feature, see Disaster Recovery.
+
+=== Containerization of services
+
+TigerGraph 3.2 allows users to deploy TigerGraph single servers and clusters on Kubernetes. +
+Running applications in containers on Kubernetes provides rapid spin-up and repeatability across environments.
+
+For details on this feature, see link:../admin/admin-guide/kubernetes/[Kubernetes].
+
+=== Cluster resizing
+
+TigerGraph 3.2 provides built-in cluster management features that allow users to expand, shrink, and repartition their TigerGraph clusters.
+
+For details on this feature, see link:../admin/admin-guide/cluster-resizing/[Cluster resizing].
+
+=== Workload Management
+
+TigerGraph 3.2 provides the `GSQL-REPILCA` and `GSQL-THREAD-LIMIT` header to specify the replica for a query to run on and a thread limit that a query is allowed to use.
+
+For details on this feature, see link:../dev/restpp-api/built-in-endpoints.md#run-an-installed-query-get[Run a query].
+
+=== GraphStudio geospatial layout
+
+Starting with TigerGraph 3.2, if a vertex type has attributes named `latitute` and `longitute` , each with valid latitude and longitude values, users can choose the geospatial layout option in GraphStudio and display the vertices on the world map.
+
+=== File output policy
+
+Starting in TigerGraph 3.2, GSQL has a xref:../admin/admin-guide/system-management/file-output-policy.adoc[file output policy] that contains a whitelist and a blacklist. GSQL queries will only write to the whitelist and are forbidden from writing to the blacklist.
+
+== General Improvements
+
+=== Expanded library of built-in GSQL functions
+
+TigerGraph 3.2 added link:../dev/gsql-ref/querying/func/[over 30 built-in functions] to the GSQL query language.
+
+=== Relaxed variable declaration rules
+
+Starting in TigerGraph 3.2, link:../dev/gsql-ref/querying/declaration-and-assignment-statements.md#variable-scopes[base type variables and accumulators can be declared anywhere in a query] and are block-scoped.
+
+=== Parameter passing with JSON
+
+Starting in TigerGraph 3.2, link:../dev/gsql-ref/querying/query-operations.md#run-query[users can pass in parameters to a GSQL query with a JSON object].
+
+=== Subquery return anonymous tuples
+
+Starting in TigerGraph 3.2, subqueries in GSQL can return an anonymous tuple or a collection of anonymous tuples.
+
+=== Query installation improvements
+
+TigerGraph 3.2 implemented the following improvements for query installation:
+
+* Updating a subquery will no longer require reinstalling all dependent queries
+* Schema change will no longer trigger reinstalling all queries of the graph
+* Concurrent query installation between graphs is now supported
+* When installing queries on a cluster, TigerGraph will now utilize the computing power of multiple nodes to compile the queries, greatly improving installation performance
+
+=== *WCAG-compliant accessibility features*
+
+The user interfaces of GraphStudio and Admin Portal - TigerGraph's GUI are improved to meet WCAG accessibility criteria. More users across a wider range of physical abilities will now be able to work effectively with GraphStudio and the visual Admin Portal.
+
+=== Function overloading
+
+Starting in TigerGraph 3.2, function overloading is now available. Query UDFs with the same name but different signatures can be defined in the UDF library.
+
+== Known Issues
+
+=== Applications
+
+* *GraphStudio*
+ ** xref:../ui/graphstudio/known-issues.adoc[Known Issues for GraphStudio]
+ ** The No-Code Data Migration feature is in Alpha release. Your feedback would be appreciated.
+ ** The No-Code Visual Query Builder is in Beta release. Your feedback would be appreciated.
+* *AdminPortal*
+ ** xref:../ui/admin-portal/known-issues.adoc[Known Issues for AdminPortal]
+
+=== *GSQL*
+
+* *Multiple (Conjunctive) Path Patterns*:
+ ** There are no known functional problems, but the performance has not be optimized. Your feedback would be appreciated.
+* *DML type check error in V2 Syntax:*
+ ** GSQL will report a wrong type check error for Query block with multiple POST-ACCUM clauses and Delete/Update attribute operation.
+* *Turn on GSQL HA manually when upgrading from 3.0.x*
+ ** Users who are upgrading from 3.0.X need to manually start GSQL HA service. Please reach out to support for help with the process documented in: https://tigergraph.freshdesk.com/a/solutions/articles/5000865072
+* *Stale data visible after Deletes using index*
+ ** Queries that use secondary index may still see the vertices being deleted until after the snapshots are fully rebuilt.

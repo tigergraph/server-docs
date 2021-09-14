@@ -1,0 +1,90 @@
+= Log files
+
+TigerGraph Database captures key information on activities occurring across its different components through log functions that output to log files. These log files are not only helpful in xref:troubleshooting-guide.adoc[troubleshooting] but also serve as an auditory resource. This document gives a high-level overview of TigerGraph's logging structure and lists some common information one might need to monitor their database services and where to obtain them in the logs.
+
+== Overall Logging Structure
+
+Logs in TigerGraph are stored at `<tigergraph_root_dir>/log/`. TigerGraph's logs are divided into different folders by the different internal components and each folder corresponds to a different component. Log formats also vary across the different components. In folders where logs are checked often, such as `restpp`, `gsql`, and `admin`,  there are three symbolic links that help you quickly get to the most recent log file of that category:
+
+* `log.INFO`
+ ** Contains regular output and errors
+* `log.ERROR`
+ ** Contains errors only
+* `<component_name>.out`
+ ** Contains all output from the component process
+* `log.WARNING` or `log.DEBUG`
+ ** `log.WARNING` contains warnings
+ ** In the``gsql`` folder, `log.DEBUG` contains very specific information you only need when certain errors happen
+
+Knowing where certain activities are recorded allows one to use tools such as the Linux `grep` command to easily obtain critical information from your database.
+
+== Monitor request history
+
+All requests made to TigerGraph's REST endpoints are recorded by the RESTPP logs and Nginx logs. Information available in the logs includes:
+
+* Timestamp of the request
+* API request parameters
+* Request Status
+* User information (when RESTPP authentication is turned on)
+
+RESTPP is responsible for many tasks in the TigerGraph internal architecture and records many internal API calls, which can be hard to distinguish from manual requests. When link:[RESTPP authentication is on], the RESTPP log will record the user information and mark a call if it is made by an internal API. Therefore, you can use the command below to filter for manual requests:
+
+[source,bash]
+----
+# In the restpp log directory
+$ grep -i "requestinfo" log.INFO | grep -v "__INTERNAL_API__"
+
+# All requests exluding the ones made by internal API
+I0315 21:11:59.666318 14535 handler.cpp:351] RequestInfo|,1.RESTPP_1_1.1615842719666.N,NNN,0,0,0|user:tigergraph|api:v2|function:NoSchema|graph_name:social|libudf:
+I0315 21:41:36.462616 14541 handler.cpp:351] RequestInfo|,196622.RESTPP_1_1.1615844496462.N,NNN,0,0,0|user:tigergraph|api:v2|function:NoSchema|graph_name:social|libudf:
+----
+
+`RequestInfo` contains the ID of the request, which you can use to look up more information on the request :
+
+image::../.gitbook/assets/image%20%2875%29.png[Request ID]
+
+Here is an example of using a request ID to look up a request in the restpp log:
+
+[source,bash]
+----
+$ grep "1615842719666" log.INFO
+
+# Returns all information about the specific request
+# RawRequest log is captured at the entry point of a query
+I0315 21:11:59.666026 14535 handler.cpp:285] RawRequest|,1.RESTPP_1_1.1615842719666.N,NNN,0,0,0|GET|/echo?parameter1=parameter_value|async = 0|payload_data.size() = 0|api = v2
+# RequestInfo log is captured after the request has been parsed,
+# and contains information such as username and the function or UDF to run
+I0315 21:11:59.666318 14535 handler.cpp:351] RequestInfo|,1.RESTPP_1_1.1615842719666.N,NNN,0,0,0|user:tigergraph|api:v2|function:NoSchema|graph_name:social|libudf:
+# ReturnResult is captured when the request has been processed
+I0315 21:11:59.666509 14535 requestrecord.cpp:325] ReturnResult|0|0ms|RESTPP|1.RESTPP_1_1.1615842719666.N|user:tigergraph|/echo|graph_id=1&graph_name=social&parameter1=parameter_value|39
+----
+
+== Monitor user management tasks
+
+User management activities, such as logins, role and privilege changes are recorded in the GSQL logs in the folder `gsql`.
+
+To view recent activities, use the symlink `log.INFO`. There is a lot of information in the logs - to filter for information that you need, you can use Linux commands such as https://linuxcommand.org/lc3_man_pages/grep1.html[`grep`] and http://linuxcommand.org/lc3_man_pages/tail1.html[`tail`] For example, to view recent changes in roles, you can run the following command in the `gsql` log directory:
+
+[source,bash]
+----
+$ grep -i "role" log.INFO
+
+# Returns all lines containing the word "role"
+#                        username     source IP
+I@20210312 22:41:16.167 tigergraph|127.0.0.1:45854|00000000077 (BaseHandler.java:133) Received|POST|/gsql/roles?action=grant&role=globaldesigner&name=lennessy|0
+I@20210312 22:41:16.863 tigergraph|127.0.0.1:45854|00000000077 (BaseHandler.java:167) Successful|POST|/gsql/roles?action=grant&role=globaldesigner&name=lennessy|application/json; charset=UTF-8|696ms
+----
+
+To view login activities, search `log.INFO` for `"login"` instead.
+
+[source,bash]
+----
+$ grep -i "login" log.INFO
+
+# Returns all lines containing the world "login"
+I@20210315 21:08:42.047 tigergraph|127.0.0.1:53960|00000000001 (BaseHandler.java:133) Received|POST|/gsql/login|28
+I@20210315 21:08:42.061 tigergraph|127.0.0.1:53960|00000000001 (LoginHandler.java:52) The gsql client is started on the server, and the working directory
+is /home/tigergraph/tigergraph/log/restpp
+I@20210315 21:08:42.072 tigergraph|127.0.0.1:53960|00000000001 (LoginHandler.java:80) Successful|Login|tigergraph
+I@20210315 21:08:42.080 tigergraph|127.0.0.1:53960|00000000001 (BaseHandler.java:167) Successful|POST|/gsql/login|application/json; charset=UTF-8|35ms
+----

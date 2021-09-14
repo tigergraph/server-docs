@@ -1,0 +1,164 @@
+= Cross-Region Replication
+
+TigerGraph's Cross-Region Replication (CRR) feature allows users to keep two or more TigerGraph clusters in different data centers or regions in sync. One cluster is the primary cluster, where users would perform all normal database operations, while the other is a read-only Disaster Recovery(CR) cluster that syncs with the primary cluster. CRR includes complete native support for syncing all data and metadata including automated schema, user, and query changes.
+
+image::https://lh5.googleusercontent.com/rfYwJYgfd2jHPJoBSgGy_ZoPc7DGnbE5VxHlBTaRFuAz2yFxPTzCF1kmha9VCuq2ZQQw5PZcFF6l07hJ-Oc1Nb2RN0j3ZtOjcGVwaCB07U63VAMCqWROG98iJE0KovUg5-_PTx2L[]
+
+For users of TigerGraph, cross-region replication will help deliver on the following business goals:
+
+* *Disaster Recovery*: Support Disaster Recovery functionality with the use of a dedicated remote cluster
+* *Enhanced Availability*: Enhance Inter-cluster data availability by synchronizing data using Read Replicas across two clusters
+* *Enhanced Performance*: If the customer application is spread over different regions, CRR can take advantage of data locality to avoid network latency.
+* *Improved System Load-balancing*: CRR allows you to distribute computation load evenly across two clusters if the same data sets are accessed in both clusters.
+* *Data Residency Compliance*: Cross-Region replication allows you to replicate data between different data centers or Regions to satisfy compliance requirements. Additionally, this feature can be used to set up clusters in the same region to satisfy more stringent Data sovereignty or localization business requirements.
+* Besides providing disaster recovery and enhanced business continuity, CRR also allows you to set up the clusters as part of Blue/Green deployment purposes for agile upgrades.
+
+This page describes the procedure to set up a DR cluster, and the steps to perform a failover in the event of a disaster.
+
+== What is included
+
+The following information is automatically synced from the primary cluster to the DR cluster:
+
+* All data in every graph
+* All graph schemas, including tag-based graphs
+* All schema change jobs
+* All users and roles
+* All queries in every graph. Queries that are installed in the primary cluster will be automatically installed in the DR cluster.
+
+== Exclusions
+
+The following information and commands are *not* synced to the DR cluster
+
+* GraphStudio metadata
+ ** This includes graph layout data and user icons for GraphStudio.
+* Loading jobs
+* `gadmin` configurations
+* `gsql --reset` command
+* The following GSQL commands:
+ ** `EXPORT` and `IMPORT` commands
+ ** `DROP ALL` and `CLEAR GRAPH STORE`
+
+{% hint style="danger" %}
+When the primary cluster executes an `IMPORT` , `DROP ALL`, or``CLEAR GRAPH STORE`` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
+
+See link:cross-region-replication.md#sync-an-outdated-dr-cluster[Sync an outdated DR cluster] on how to bring an outdated DR cluster back in sync.
+{% endhint %}
+
+== Before you begin
+
+* Install TigerGraph 3.2 or higher on both the primary cluster and the DR cluster *in the same version*.
+* Make sure that your DR cluster has the same number of partitions as the primary cluster.
+
+== *Setup*
+
+The following setup is needed in order to perform a failover in the event of a disaster.
+
+{% hint style="info" %}
+This setup assumes that you are setting up a DR cluster for an existing primary cluster. If you are setting up both the primary cluster and DR cluster from scratch, you only need perform Step 3 after TigerGraph is installed on both clusters.
+{% endhint %}
+
+=== Step 1: Backup primary data
+
+Use GBAR to link:system-management/backup-and-restore.md#backup[create a backup] of the primary cluster. See xref:system-management/backup-and-restore.adoc[Backup and Restore] on how to create a backup.
+
+If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
+
+=== Step 2: Restore on the DR cluster
+
+Copy the backup files from every node to every node on the new cluster.  link:system-management/backup-and-restore.md#restore[Restore the backup] of the primary cluster on the DR cluster. See xref:system-management/backup-and-restore.adoc[Backup and Restore] on how to restore a backup.
+
+=== Step 3: Enable CRR on the DR cluster
+
+Run the following commands on the DR cluster to enable CRR on the DR cluster.
+
+[source,text]
+----
+# Enable Kafka Mirrormaker
+gadmin config set System.CrossRegionReplication.Enabled true
+
+# Kafka mirrormaker primary cluster's IPs, separator by ','
+gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
+
+# Kafka mirrormaker primary cluster's KafkaPort
+gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
+
+# The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+gadmin config set System.CrossRegionReplication.TopicPrefix Primary
+
+# Apply the config changes, init Kafka, and restart
+gadmin config apply -y
+gadmin init kafka -y
+gadmin restart all -y
+----
+
+=== Step 4: Force install queries on primary
+
+Run the `INSTALL QUERY -force ALL` command on the primary cluster. After the command is finished, all other metadata operations on the primary cluster will start syncing to the DR cluster.
+
+== Restrictions on the DR cluster
+
+After being set up, the DR cluster will be read-only and all data update operations will be blocked. This includes the following operations:
+
+* All metadata operations
+ ** Schema changes
+ ** User access management operations
+ ** Query creation, installation, and dropping
+ ** User-defined function operations
+* Data-loading operations
+ ** Loading jobs operations
+ ** RESTPP calls that modify graph data
+* Queries that modify the graph
+
+== *Fail over to the DR cluster*
+
+In the event of catastrophic failure that has impacted the full cluster due to Data Center or Region failure, the user can initiate the failover to the DR cluster. This is a manual process. Users will have to make the following configuration changes on the DR cluster to upgrade it to the primary cluster.
+
+[source,text]
+----
+gadmin config set System.CrossRegionReplication.Enabled false
+gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs
+gadmin config set System.CrossRegionReplication.PrimaryKafkaPort
+gadmin config set System.CrossRegionReplication.TopicPrefix Primary
+gadmin config apply -y
+gadmin restart -y
+----
+
+== Set up a new DR cluster after failover
+
+After you fail over to your DR cluster, your DR cluster is now the primary cluster. You may want to set up a new DR cluster to still be able to recover your services in the event of another disaster.
+
+To set up a new DR cluster over the upgraded primary cluster:
+
+. Make a backup of the upgraded primary cluster
+. Run the following command on the new cluster. The commands are the mostly same as setting up the first DR cluster, except that in the fourth command, the value for `System.CrossRegionReplication.TopicPrefix` becomes `Primary.Primary` instead of `Primary`
+. On the new DR cluster, restore from the backup of the upgraded primary cluster
+
+[source,text]
+----
+# Enable Kafka Mirrormaker
+gadmin config set System.CrossRegionReplication.Enabled true
+
+# Kafka mirrormaker primary cluster's IPs, separator by ','
+gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
+
+# Kafka mirrormaker primary cluster's KafkaPort
+gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
+
+# The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
+
+# Apply the config changes, init Kafka, and restart
+gadmin config apply -y
+gadmin init kafka -y
+gadmin restart all -y
+----
+
+There is no limit on the number of times a cluster can fail over to another cluster. When designating a new DR cluster, make sure that you set the `System.CrossRegionReplication.TopicPrefix` parameter correctly by adding an additional `.Primary` .
+
+For example, if your original cluster fails over once, and the current cluster's `TopicPrefix` is `Primary`, then the new DR cluster needs to have its `TopicPrefix` be `Primary.Primary`. If it needs to fail over again, the new DR cluster needs to have its `TopicPrefix` be set to `Primary.Primary.Primary`.
+
+== Sync an outdated DR cluster
+
+When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
+
+To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the link:cross-region-replication.md#setup[setup steps] again. However, you can skip Step 3: Enable CRR on the DR cluster, because CRR will have already been enabled.

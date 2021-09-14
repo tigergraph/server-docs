@@ -1,0 +1,116 @@
+= Advanced License Issues
+
+This guide covers two advanced license issues:
+
+. Activating a System-Specific License
+. Usage limits enforced by certain license keys
+
+== System-Specific License Activation
+
+This section provides step-to-step instructions for activating or renewing a TigerGraph license, by generating and installing a license key unique to that TigerGraph system. This document applies to both non-distributed and distributed systems. In this document, a cluster acting cooperatively as one TigerGraph database is considered one system.
+
+A valid license key activates the TigerGraph system for normal operation. A license key has a built-in expiration date and is valid on only one system. Some license keys may apply other restrictions, depending on your contract. Without a valid license key, a TigerGraph system can perform certain administrative functions, but database operations will not work.
+
+To activate a new license, a user first configures their TigerGraph system. The user then collects the fingerprint of the TigerGraph system (license seed) using a TigerGraph-provided utility program. Then the collected materials are sent to TigerGraph or an authorized agent via email or web form. TigerGraph certifies the license based on the collected materials and sends a license key back to the user. The user then installs the license key on their system using another TigerGraph command. A new license key (e.g., one with a later expiration) can be installed on a live system that already has a valid license; the installation process does not disrupt database operations.
+
+{% hint style="info" %}
+If your system is currently using an older string-based license key that does not use a license seed, please contact link:mailto:support@tigergraph.com[support@tigergraph.com]for the procedure to upgrade to the new system-specific license type.
+{% endhint %}
+
+=== Step-by-Step Guide
+
+{% hint style="info" %}
+Before beginning the license activation process, the TigerGraph package must be installed on each server, and the TigerGraph system must be configured with gadmin.
+{% endhint %}
+
+. Collect the fingerprint of the whole TigerGraph system using the command `gadmin license seed <host_signature_type>` , which can be executed on any machine in the system. The command packs all the collected data to generate the license seed and writes it into a file. When the command has completed successfully, it outputs the path of the file to the console.
++
+Depending on the host machine, the user needs to choose the appropriate type of host signature for `gadmin` to collect. The options are: `aws`. `azure`, `gcp`, `hardware,` and `node-id`. If you are generating the seed on a cloud instance, choose the corresponding cloud provider for the host signature type. If you are generating the seed on your own machines, choose either `hardware` or `node-id`. Signatures generated with the `hardware` parameter will use unique hardware information that persists through software changes, while signatures generated with `node-id` will use a unique https://man7.org/linux/man-pages/man5/machine-id.5.html#:~:text=The%20%2Fetc%2Fmachine%2Did,may%20not%20be%20all%20zeros.[machine ID]that may change during an OS reinstall. Most users installing their own instances should use the `hardware` option.
++
+{% code title="Collect Fingerprint of TigerGraph System" %}
++
+[source,bash]
+----
+$ gadmin license seed hardware
+[   Info] seed generated at: ./tigergraph_v3_seed, please send it to TigerGraph
+----
++
+{% endcode %}
+
+. Send the license seed file to TigerGraph, either through our license activation web portal (preferred) or by email to link:mailto:license@tigergraph.com.[license@tigergraph.com.]If using email, please include the following information:
+ .. Company/Organization name
+ .. Contract number. If you do not know your contract number, please contact your sales representative or link:mailto:sales@tigergraph.com.[sales@tigergraph.com.]
+. A new license key file will be certificated and sent back to you.
+. Copy the license key file to a directory on the TigerGraph system where the TigerGraph Linux user has read permission.
+. Run the following three commands to install the license key:
++
+[source,text]
+----
+$ gadmin license set <new_license_key>
+[   Info] Configuration has been changed.
+Please use 'gadmin config apply' to persist the changes.
+
+$ gadmin config apply
+[Warning] No difference from staging config, config apply is skipped.
+[   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+
+$ gadmin restart
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping DICT ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 GUI
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 GUI
+----
+
+If the installation completes successfully, the message "install license successfully" will be displayed in the console.
+
+=== Checking License Information
+
+After a license key has been installed successfully on a TigerGraph system, the information of the installed license is available via either the CLI command `gadmin license status` or via the following REST API:
+
+{% code title="Get License Information" %}
+
+[source,bash]
+----
+ $ curl -X GET "localhost:9000/showlicenseinfo"
+  {
+    "message": "",
+    "error": false,
+    "version": {
+      "edition": "developer",
+      "schema": 0,
+      "api": "v2",
+    }
+    "code": "",
+    "results": [
+      {
+        "Days remaining": 10160,
+        "Expiration date": "Mon Oct  2 04:00:00 2045\n"
+      }
+    ]
+  }
+----
+
+{% endcode %}
+
+== Usage Limits Controlled by License Key
+
+Some license keys include a limit on the graph size, or on the number and size of machines which may be used, or restrict the use of certain optional features. In the case of a memory usage or graph size limit, when a TigerGraph system reaches its license's limit, additional data will not be loaded into the graph. You may still query the graph and delete data. To check whether or not you have exceeded your license limits, use the command *gstatusgraph* and collect the VertexCount, EdgeCount, and Partition Size. Compare this information to the limits established for your license.
+
+{% code title="Checking graph limits" %}
+
+[source,bash]
+----
+~/tigergraph/loadingData$ gstatusgraph
+=== graph ===
+[GRAPH  ] Graph was loaded (/home/tigergraph/tigergraph/data/gstore/0/part/):
+[m1     ] Partition size: 23KiB, IDS size: 47KiB, Vertex count: 5, Edge count: 8, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
+----
+
+{% endcode %}
+
+The output may include a warning message such such as the following:
+
+[source,text]
+----
+[Warning] License limit exceeded. The system is running in limited capacity mode
+----

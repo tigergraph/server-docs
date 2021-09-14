@@ -1,0 +1,239 @@
+= User Management
+
+This page explains the procedures for various user management tasks under TigerGraph's authorization model.
+
+[discrete]
+=== Create a user
+
+*Syntax*
+
+[source,text]
+----
+CREATE USER
+----
+
+*Required privilege*
+
+`WRITE_USER`
+
+*Procedure*
+
+. From the GSQL shell, run the `CREATE USER` command:
++
+[source,bash]
+----
+GSQL > CREATE USER
+----
+
+. Enter the user information in the prompts that follow:
++
+{% code title="Example: Create user" %}
++
+[source,bash]
+----
+User Name : frank
+New Password : ************
+Re-enter Password : ************
+The user "frank" is created.
+----
++
+{% endcode %}
+
+[discrete]
+=== View roles of a user
+
+*Syntax*
+
+[source,text]
+----
+SHOW USER
+----
+
+*Required privilege*
+
+`READ_USER` for displaying roles of other users
+
+*Procedure*
+
+. From the GSQL shell, run the `SHOW USER` command:
++
+[source,text]
+----
+GSQL > SHOW USER
+----
+
+If the user running the command has the `READ_USER` privilege, role information on all users will be displayed. Otherwise, only the current user's roles will be displayed.
+
+[discrete]
+=== View privileges of a user
+
+*Syntax*
+
+[source,erlang]
+----
+SHOW PRIVILEGE ON USER <username> (, <username>)*
+----
+
+*Required privilege*
+
+`READ_USER`
+
+*Procedure*
+
+. From the GSQL shell, run the `SHOW PRIVILEGE ON USER` command :
++
+[source,text]
+----
+GSQL > SHOW PRIVILEGE ON USER tigergraph
+----
+
+The above command will show the privileges of user `tigergraph`:
+
+[source,text]
+----
+User: "tigergraph"
+  - Global Privileges:
+    READ_SCHEMA
+    WRITE_SCHEMA
+    READ_LOADINGJOB
+    EXECUTE_LOADINGJOB
+    WRITE_LOADINGJOB
+    READ_QUERY
+    WRITE_QUERY
+    READ_DATA
+    WRITE_DATA
+    WRITE_DATASOURCE
+    READ_ROLE
+    WRITE_ROLE
+    READ_USER
+    WRITE_USER
+    READ_PROXYGROUP
+    WRITE_PROXYGROUP
+    READ_FILE
+    WRITE_FILE
+    DROP_GRAPH
+    EXPORT_GRAPH
+    CLEAR_GRAPHSTORE
+    DROP_ALL
+    ACCESS_TAG
+----
+
+[discrete]
+=== Grant a role to a user
+
+*Syntax*
+
+[source,erlang]
+----
+GRANT ROLE <role_name1> (, role_name2)* [ON GRAPH <graph_name>]
+        TO <username1> (, <username2>)*
+----
+
+*Required privilege*
+
+`WRITE_ROLE`
+
+*Procedure*
+
+. Start the GSQL shell and make sure you are using the correct graph
++
+[source,text]
+----
+$ gsql
+GSQL > USE GRAPH example_graph
+----
+
+. From the GSQL shell, run the `GRANT ROLE` command. You can grant multiple roles to multiple users:
++
+[source,text]
+----
+GSQL > GRANT ROLE role1 , role2 ON GRAPH example_graph
+        TO user1, use2
+----
+
+The above command will grant roles `role1` and `role2` on graph `example_graph` to users `user1` and `user2`.
+
+[discrete]
+=== Revoke a role from a user
+
+*Syntax*
+
+[source,erlang]
+----
+REVOKE ROLE <roleName1> (, <roleName2)* [ON GRAPH <graphName>]
+        FROM <userName1> (, <userName2>)*
+----
+
+*Required privilege*
+
+`WRITE_ROLE`
+
+*Procedure*
+
+. Start the GSQL shell and make sure you are using the correct graph
++
+[source,text]
+----
+$ gsql
+GSQL > USE GRAPH example_graph
+----
+
+. From the GSQL shell, run the `REVOKE_ROLE` command. You can revoke multiple roles from multiple users at the same time:
++
+[source,text]
+----
+GSQL > REVOKE ROLE role1, role2 ON GRAPH example_graph
+        FROM user1, user2
+----
+
+The above command will revoke roles `role1` and `role2` on graph `example_graph` from users `user1` and `user2`.
+
+[discrete]
+=== Change a user's password
+
+*Syntax*
+
+[source,erlang]
+----
+ALTER PASSWORD <username>
+----
+
+*Required privilege*
+
+`WRITE_USER` for changing the password of a user other than the current user
+
+*Procedure*
+
+. From the GSQL shell, run the following command. Replace `username` with the user whose password you want to change
++
+[source,text]
+----
+GSQL > ALTER PASSWORD username
+----
+
+. Enter the new password in the prompt that follows.
+
+[discrete]
+=== Drop a user
+
+*Syntax*
+
+[source,erlang]
+----
+DROP USER <user1> (,<user2>)*
+----
+
+*Required privilege*
+
+`WRITE_USER`
+
+*Procedure*
+
+. From the GSQL shell, run the `DROP USER` command. You can drop multiple users in the same command.
++
+[source,text]
+----
+GSQL > DROP USER user1, user2
+----
+
+. GSQL will confirm that the users you entered have been dropped

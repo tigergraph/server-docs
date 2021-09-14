@@ -1,0 +1,85 @@
+= File Output Policy
+
+GSQL restricts where a query can produce output to files through a file output policy. The policy consists of a _whitelist_ and a _blacklist_.
+
+* GSQL queries must only output to the directories and their descendants or the files indicated by paths in the whitelist.
+* GSQL queries _cannot_ output to the directories and their descendants or the files indicated by paths in the blacklist. The blacklist takes precedence over the whitelist.
+
+By default, the file output policy allows outputs to all files.
+
+[discrete]
+=== `GSQL.FileOutputPolicy`
+
+The file output policy is implemented through the system configuration parameter``GSQL.FileOutputPolicy``, which is a JSON array of strings that represents a list of paths. If there is an exclamation mark (`!`) preceding a path, the path is on the blacklist. If there is no exclamation mark preceding a path, the path is on the whitelist.
+
+[discrete]
+==== Example
+
+For example, if the value for `GSQL.FileOutputPolicy` is `["/home/tigergraph",  "!/home/tigergraph/documents", "!/home/tigergraph/desktop"]`, then below are the paths on the white list and on the black list:
+
+* Whitelist: `/home/tigergraph` and all its descendants
+* Blacklist: `/home/tigergraph/documents, /home/tigergraph/desktop` and all their descendants.
+
+Since the blacklist takes precedence, GSQL will allow queries to write to all files and directories under `/home/tigergraph` except the `documents` and `destktop` folders.
+
+[discrete]
+=== Edit the file output policy
+
+. To edit the file policy, ensure that you are logged in as the TigerGraph Linux user, and run the following command:
++
+[source,text]
+----
+$ gadmin config entry GSQL.FileOutputPolicy
+----
+
+. In the prompt, enter the new value for the parameter:
++
+[source,bash]
+----
+GSQL.FileOutputPolicy [ ["/"] ]: The policy to control file outputs in GSQL queries
+New: ["/home/tigergraph", "!/home/tigergraph/app"]
+# Whitelist: /home/tigergraph and all its descendants
+# Blacklist: /home/tigergraph/app and all its decendants
+# Effect: GSQL can output to /home/tigergraph and all its decendants except /home/tigergraph/app
+----
+
+. Apply the new configurations and restart GSQL
++
+[source,bash]
+----
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
+After implementing the file output policy, queries that write to paths that are not on the whitelist are forbidden:
+
+[source,text]
+----
+GSQL > BEGIN
+GSQL > CREATE QUERY fileOutput() FOR GRAPH tpc_graph {
+GSQL >   FILE f ("/home/documents/data.txt");
+GSQL > }
+GSQL > END
+
+Semantic Check Error in query fileOutput (SEM-2502): line 2, col 7
+The path '/home/documents/data.txt' is not allowed by the file output policy.
+For more info, please check log at node 'm2': /home/tigergraph/tigergraph/log/gsql/log.ERROR
+Failed to create queries: [fileOutput].
+----
+
+Additionally, queries that write to paths on the whitelist, but also on the blacklist are also forbidden:
+
+[source,text]
+----
+GSQL > BEGIN
+GSQL > CREATE QUERY fileOutput() FOR GRAPH tpc_graph {
+GSQL >   FILE f ("/home/tigergraph/app/data.txt");
+GSQL > }
+GSQL > END
+
+Semantic Check Error in query fileOutput (SEM-2502): line 3, col 7
+The path '/home/tigergraph/app/data.txt' is not allowed by the file output
+policy.
+For more info, please check log at node 'm2': /home/tigergraph/tigergraph/log/gsql/log.ERROR
+Failed to create queries: [fileOutput].
+----

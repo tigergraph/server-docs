@@ -1,0 +1,223 @@
+= Role Management
+
+This page explains the procedures for various role management tasks under TigerGraph's authorization model.
+
+[discrete]
+=== Create a local role
+
+*Syntax*
+
+[source,sql]
+----
+CREATE ROLE <role_name> (, <role_name>)* [ON GRAPH <graph_name>]
+----
+
+*Required privilege*
+
+`WRITE_ROLE`
+
+*Procedure*
+
+. To create a local role, run the `CREATE ROLE` command like below. If you choose not to specify a graph in the command, the current scope will be used as the scope of the role:
++
+[source,sql]
+----
+GSQL > USE GRAPH example_graph
+GSQL > CREATE ROLE role1, role2
+----
+
+This will create two roles named `role1` and `role2` on graph `example_graph`. By default, these two roles do not have any privilege:
+
+----
+Successfully created local roles for graph 'example_graph': [role1, role2].
+----
+
+[discrete]
+=== Create a global role
+
+[discrete]
+==== Syntax
+
+[source,sql]
+----
+CREATE ROLE <role_name> (, <role_name>)* ON GLOBAL
+----
+
+[discrete]
+==== Required privilege
+
+`WRITE_ROLE` on the global scope
+
+[discrete]
+==== Procedure
+
+. To create a global role, run the `CREATE ROLE` command like below. Replace `role1` with the name of the role you are creating.
+
+[source,sql]
+----
+CREATE ROLE role1 ON GLOBAL
+----
+
+This will create a role named `role1` on the global scope. By default, this role has no privileges:
+
+[source,bash]
+----
+Successfully created global roles: [role1].
+----
+
+[discrete]
+=== View privileges of a role
+
+*Syntax*
+
+[source,text]
+----
+SHOW PRIVILEGE ON ROLE <role_name> (, <role_name2>)*
+----
+
+*Required privilege*
+
+`READ_ROLE`
+
+*Procedure*
+
+. To view the privileges of a role, run the `SHOW PRIVILEGE ON ROLE` command, and replace `role1, role2` with the names of the roles whose privileges you want to view:
+
+[source,text]
+----
+GSQL > SHOW PRIVILEGE ON ROLE role1 , role2
+----
+
+This will show the privileges of the role `role1` and `role2:`
+
+[source,text]
+----
+Role: "role1"
+  - Graph 'tpc_graph' Privileges:
+    WRITE_QUERY
+
+Role: "role2"
+This role has no privilege.
+----
+
+[discrete]
+=== List all existing roles
+
+*Syntax*
+
+[source,text]
+----
+SHOW ROLE
+----
+
+*Required privilege*
+
+`READ_ROLE`
+
+*Procedure*
+
+. To list all existing roles, first ensure that you are in the correct scope. Run `USE <graph_name>` or `USE GLOBAL` to switch to your desired scope.
+. Run the `SHOW ROLE` command:
++
+[source,text]
+----
+GSQL > SHOW ROLE
+----
+
+This will show all the roles in your current scope:
+
+[source,text]
+----
+  - Builtin Roles:
+    observer
+    queryreader
+    querywriter
+    designer
+    admin
+    globaldesigner
+    superuser
+
+  - User Defined Roles:
+    - Graph 'tpc_graph' Roles:
+      role1
+      role2
+----
+
+[discrete]
+=== Grant privileges to a role
+
+*Syntax*
+
+[source,text]
+----
+GRANT PRIVILEGE <privilege_name1> (, privilege_name2)*
+        [ON GRAPH <graph_name>] TO <role_name1> (, <role_name2>)*
+----
+
+*Require privilege*
+
+`WRITE_ROLE`
+
+*Procedure*
+
+. To grant privileges to a role, run the `GRANT PRIVILEGE` command from the GSQL shell:
++
+[source,text]
+----
+GSQL > GRANT PRIVILEGE WRITE_QUERY, WRITE_ROLE
+        ON GRAPH example_graph TO role1 , role2
+----
+
+This will allow users with the roles `role1` and `role2` to edit and install queries, as well as modify roles on the graph `example_graph`. To see a full list of privileges and the command they allow users to run, see xref:../reference/list-of-privileges.adoc[List of Privileges].
+
+[discrete]
+=== Revoke privileges from a role
+
+*Syntax*
+
+[source,text]
+----
+REVOKE PRIVILEGE <privilege_name1> (, privilege_name2)*
+        [ON GRAPH <graph_name>] FROM <role_name1> (, <role_name2>)*
+----
+
+*Required privilege*
+
+`WRITE_ROLE`
+
+*Procedure*
+
+. To revoke privileges from a role, run the `REVOKE PRIVILEGE` command from the GSQL shell:
++
+[source,text]
+----
+GSQL > REVOKE PRIVILEGE WRITE_QUERY
+        ON GRAPH example_graph FROM role1
+----
+
+This will revoke the `WRITE_QUERY` privilege from the role `role1` on graph `example_graph.`
+
+[discrete]
+=== Drop a role
+
+*Syntax*
+
+[source,text]
+----
+DROP ROLE <role_name> (, <role_name2>)*
+----
+
+*Required privilege*
+
+`WRITE_ROLE`
+
+*Procedure*
+
+. To drop a role, run the `DROP ROLE` command from the GSQL shell:
++
+[source,text]
+----
+GSQL > DROP ROLE role1 , role2
+----
+
+This will drop the roles `role1` and `role2`. This will also revoke the roles from users who have been granted these roles.

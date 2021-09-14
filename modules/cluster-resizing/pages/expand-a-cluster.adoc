@@ -1,0 +1,57 @@
+= Cluster Expansion
+
+As your workload changes, you can expand your cluster to improve its query performance, system availability, and fault tolerance. Expanding a cluster adds more nodes to the cluster. During an expansion, you can also change the replication factor of your cluster.
+
+== Before you begin
+
+* TigerGraph must already be installed on the new nodes in *exactly the same version* as the cluster.
+* No loading jobs, queries, or REST requests are running on the new node or the cluster.
+* Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the expansion completes.
+* If the original cluster is a single node installation, make sure the IP used is not a https://en.wikipedia.org/wiki/Localhost[local loopback address] such as 127.0.0.1.
+
+== Procedure
+
+=== Step 1: Identify new cluster replication and partition
+
+Before running any commands to expand a cluster, make sure you have a clear idea of how the new cluster should be distributed. You should have the following information:
+
+* The new replication factor of the cluster
+* The new partitioning factor of the cluster
+* The IP addresses of the new nodes to be added to the cluster
+
+=== Step 2: Expand the cluster
+
+To expand the cluster, run the `gadmin cluster expand` command like below. If the expansion involves changing the replication factor, use the `--ha` option to indicate the new replication factor:
+
+[source,bash]
+----
+$ gadmin cluster expand node_ip_list [--ha <replication_factor>]
+----
+
+`node_ip_list` is the machine aliases of the nodes you are adding to the cluster mapped to their IP addresses with a colon(`:`), and separated by a comma. Below is an example:
+
+[source,bash]
+----
+$ gadmin cluster expand m3:10.128.0.81,m4:10.128.0.82 --ha 1
+----
+
+We suggest naming the new nodes following the convention of `m<serial>`, such as `m1`, `m2`, and `m3` for a 3-node cluster. If you are adding a fourth node, then the fourth node would be named `m4`. If you decide to name them differently, make sure that all names are unique within the cluster.
+
+==== Supply a staging location
+
+Extra disk space is required during cluster expansion. If more space is not available on the same disk, you can supply a staging location on a different disk to hold temporary data:
+
+[source,bash]
+----
+$ gadmin cluster expand m3:192.168.1.3,m4:192.168.1.4 --stagingPath /tmp/
+----
+
+If you choose to supply a staging location, make sure that the TigerGraph Linux user has write permission to the path you provide. The overall amount of space required for expansion on each node is `(1 + Math.ceil(oldPartition/newPartition) ) * dataRootSize`. `oldPartion` and `newPartition` each stand for the partitioning factor of the cluster before and after expansion; `dataRootSize` stands for the size of the data root folder on the node.
+
+For example, if you are expanding from a 6 node cluster with a replication factor of 2 and a partitioning factor of 3, to a 10-node cluster with a replication factor of 2 and a partitioning factor of 5, and the size of the data root folder on a node is 50GB. Then you would need more than `(1 + Math.ceil(3/5)) * 50) = 100 GB` of free space on the staging path.
+
+=== Step 3: Verify success and delete temporary files
+
+When the expansion completes, you should see a message confirming the completion of the cluster change. The message will also include the location of the temporary files created during the expansion.
+
+Verify data integrity by comparing vertex/edge counts or query results. After confirming a successful expansion, delete the temporary files to free up disk space.

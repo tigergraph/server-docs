@@ -1,0 +1,55 @@
+= Quickstart with Docker Desktop
+
+This guide provides instructions to deploy a single-server TigerGraph instance to a local Kubernetes cluster via Docker Desktop.
+
+== Before you begin
+
+* https://www.docker.com/products/docker-desktop[Install Docker Desktop] on your computer.
+* https://kubernetes.io/docs/tasks/tools/[Install the Kubernetes CLI `kubectl`].
+* Enable the Docker Desktop Kubernetes engine. For more information, see https://docs.docker.com/desktop/kubernetes/[Docker official documentation].
+* Verify that you have sufficient CPU, RAM and DISK for your TigerGraph deployment.
+
+== Procedure
+
+=== 1. Download Kubernetes manifest
+
+Download https://raw.githubusercontent.com/tigergraph/ecosys/053b9abe8610e9a63d6fbfc1f4d4b0618841467f/k8s/deploy/tigergraph-docker.yaml[`tigergraph-docker.yaml`]. This is the file that describes your Kubernetes deployment.
+
+=== 2. Create deployment
+
+Make sure that you have configured `kubectl` to use the correct context. In this case, the name of the context should be `docker-desktop`. Then run `kubectl apply`  to create the deployment. Replace `<path_to_tigergraph.yaml>` with the path to the `tigergraph-docker.yaml` file you downloaded in the step before.
+
+[source,text]
+----
+$ kubectl apply -f <path_to_tigergraph.yaml>
+----
+
+=== 3. Verify deployment
+
+Verify that the pods were created successfully:
+
+[source,text]
+----
+$ kubectl get pods -l app=tigergraph -w
+----
+
+=== 4. Test deployment
+
+The deployment maps port 9000 of the pod to port 30090 of `localhost`. We can test that the REST API is up and running by making a curl call to port 30090:
+
+[source,bash]
+----
+$ curl http://localhost:30090/echo
+{"error":false, "message":"Hello GSQL"}%
+----
+
+Port 14240 of the pod is mapped to port 30240 of `localhost`. Visit `+http://localhost:30240+` to access GraphStudio.
+
+== Cleanup
+
+Run the following command to delete all cluster resources:
+
+[source,text]
+----
+$ kubectl delete -f <path_to_tigergraph.yaml> &&  kubectl delete pvc -l app=tigergraph
+----

@@ -2,12 +2,12 @@
 :description: GBAR - Graph Backup and Restore
 :pp: {plus}{plus}
 
-Graph Backup And Restore (GBAR, is an integrated tool for backing up and restoring the data and data dictionary (schema, loading jobs, and queries) of a single TigerGraph node.
+Graph Backup And Restore (GBAR), is an integrated tool for backing up and restoring the data and data dictionary (schema, loading jobs, and queries) of a TigerGraph instance or cluster.
 
-The backup feature packs TigerGraph data and configuration information in a single file onto the disk or a remote AWS S3 bucket. Multiple backup files can be archived. Later, you can use the restore feature to roll back the system to any backup point. This tool can also be integrated easily with Linux cron to perform periodic backup jobs.
+The backup feature packs TigerGraph data and configuration information into a directory on the local disk or a remote AWS S3 bucket. Multiple backup files can be archived. Later, you can use the restore feature to roll back the system to any backup point. This tool can also be integrated easily with Linux cron to perform periodic backup jobs.
 
 [discrete]
-=== Introduction and Syntax +++<a id="GBAR-GraphBackupandRestorev2.1-IntroductionandSyntax">++++++</a>+++
+=== Syntax +++<a id="GBAR-GraphBackupandRestorev2.1-IntroductionandSyntax">++++++</a>+++
 
 {% hint style="info" %}
 The current version of GBAR is intended for restoring the same machine that was backed up. For help with cloning a database (i.e., backing up machine A and restoring the database to machine B), please contact link:mailto:support@tigergraph.com[support@tigergraph.com].
@@ -15,19 +15,26 @@ The current version of GBAR is intended for restoring the same machine that was 
 
 {% code title="Synopsis" %}
 
-[,text]
+[source,text]
 ----
 Usage: gbar backup [options] -t <backup_tag>
-       gbar restore [options] <backup_tag>
-       gbar config
-       gbar list
+		      gbar restore [options] <backup_tag>
+		      gbar list [backup_tag] [-j]
+		      gbar remove|rm <backup_tag>
+		      gbar cleanup
+		      gbar expand [-a] <new_nodes>
+		           New nodes must be written in <name>:<host> pairs separated by comma
+		           Example:
+		               m1:192.168.1.2,m2:192.168.1.3,m3:192.168.1.4
 
-Options:
-  -h, --help     Show this help message and exit
-  -v             Run with debug info dumped
-  -vv            Run with verbose debug info dumped
-  -y             Run without prompt
-  -t BACKUP_TAG  Tag for backup file, required on backup
+		Options:
+		 -h, --help     	Show this help message and exit
+		 -v             	Run with debug info dumped
+		 -vv            	Run with verbose debug info dumped
+		 -y             	Run without prompt
+		 -j            		Print gbar list as JSON
+		 -t BACKUP_TAG  	Tag for backup file, required on backup
+		 -a, --advanced    Enable advanced mode for node expansion
 ----
 
 {% endcode %}
@@ -41,9 +48,9 @@ The `-y` option forces GBAR to skip interactive prompt questions by selecting th
 
 Before using the backup or the restore feature, GBAR must be configured.
 
-. Run `gadmin config entry system.backup`, At each prompt, enter the appropriate values for each config parameter.
+. Run `gadmin config entry system.backup`. At each prompt, enter the appropriate values for each config parameter.
 +
-[,bash]
+[source,bash]
 ----
 $ gadmin config entry system.backup
 
@@ -74,7 +81,7 @@ New:
 
 . After entering the configuration values, run the following command to apply the new configurations
 +
-[,text]
+[source,text]
 ----
 gadmin config apply -y
 ----
@@ -92,12 +99,12 @@ gadmin config apply -y
 
 To perform a backup, run the following command as the TigerGraph Linux user:
 
-[,text]
+[source,text]
 ----
 gbar backup -t <backup_tag>
 ----
 
-Depending on your configuration settings, your backup archive will be output to your local backup path and/or your AWS S3 bucket.
+Depending on your configuration settings, your backup archive will be output to your local backup path and/or your AWS S3 bucket. If you are running a cluster, there will be a backup archive on every node in the same path.
 
 A backup archive is stored as several files in a folder, rather than as a single file. The backup tag acts like a filename prefix for the archive filename. The full name of the backup archive will be `<backup_tag>-<timestamp>`, which is a subfolder of the backup repository.
 
@@ -106,7 +113,7 @@ A backup archive is stored as several files in a folder, rather than as a single
 
 GBAR Backup performs a live backup, meaning that normal operations may continue while the backup is in progress. When GBAR backup starts, GBAR will check if there are running loading jobs. If there are, it will pause loading for 1 minute to generate a snapshot and then continue the backup process. You can specify the loading pausing interval by the environment variable `PAUSE_LOADING`.
 
-And then, it sends a request to the admin server, which then requests the GPE and GSE to create snapshots of their data. Per the request, the GPE and GSE store their data under GBAR's own working directory. GBAR also directly contacts the Dictionary and obtains a dump of its system configuration information. In addition, GBAR gathers the TigerGraph system version and customized information including user-defined functions, token functions, schema layouts and user-uploaded icons. Then, GBAR compresses each of these data and configuration information files in tgz format and stores them in the `<backup_tag>-<timestamp>` subfolder on each node. As the last step, GBAR copies that file to local storage or AWS S3, according to the Config settings, and removes all temporary files generated during backup.
+GBAR then sends a request to the admin server, which then requests the GPE and GSE to create snapshots of their data. Per the request, the GPE and GSE store their data under GBAR's own working directory. GBAR also directly contacts the Dictionary and obtains a dump of its system configuration information. In addition, GBAR gathers the TigerGraph system version and customized information including user-defined functions, token functions, schema layouts and user-uploaded icons. Then, GBAR compresses each of these data and configuration information files in tgz format and stores them in the `<backup_tag>-<timestamp>` subfolder on each node. As the last step, GBAR copies that file to local storage or AWS S3, according to the Config settings, and removes all temporary files generated during backup.
 
 The current version of GBAR Backup takes snapshots quickly to make it very likely that all the components (GPE, GSE, and Dictionary) are in a consistent state, but it does not fully guarantee consistency.
 
@@ -117,7 +124,7 @@ Backup does not save input message queues for REST{pp} or Kafka.
 [discrete]
 === List Backup Files +++<a id="list-backup-files">++++++</a>+++
 
-[,text]
+[source,text]
 ----
 gbar list
 ----
@@ -127,17 +134,16 @@ This command lists all generated backup files in the storage place configured by
 [discrete]
 === Restore from a backup archive +++<a id="restore">++++++</a>+++
 
-. Before restoring a backup, you should ensure that the backup you are restoring from is compatible with your current version of TigerGraph:
- ** TigerGraph version numbers have the format X.Y[.Z], where X is the major version number and Y is the minor version number.
- ** Restore is supported if the backup archive and the current system have the same major version number AND the current system has a minor version number that is greater than or equal to the backup archive minor version number.
-. To restore a backup, run the following command:
+Before restoring a backup, you should ensure that the backup you are restoring from is in the *same exact version* as your current version of TigerGraph.
 
-[,text]
+To restore a backup, run the following command:
+
+[source,text]
 ----
 gbar restore <archive_name>
 ----
 
-If GBAR can verify that the backup archive exists and that the backup's system version is compatible with the current system version, GBAR will shut down the TigerGraph servers temporarily as it restores the backup. After completing the restore, GBAR will restart the TigerGraph servers.
+If GBAR can verify that the backup archive exists and that the backup's system version is compatible with the current system version, GBAR will shut down the TigerGraph servers temporarily as it restores the backup. After completing the restore, GBAR will restart the TigerGraph servers. If you are running a cluster, and you have copied the backup files to each individual node in the cluster, running `gbar restore` on any node will restore the entire cluster.
 
 Restore is an offline operation, requiring the data services to be temporarily shut down. The user must specify the full archive name ( `<backup_tag>-<timestamp>` ) to be restored. When GBAR restore begins, it first searches for a backup archive exactly matching the archive name supplied in the command line. Then it decompresses the backup files to a working directory. Next, GBAR will compare the TigerGraph system version in the backup archive with the current system's version, to make sure that the backup archive is compatible with that current system. It will then shut down the TigerGraph servers (GSE, RESTPP, etc.) temporarily. Then, GBAR makes a copy of the current graph data, as a precaution. Next, GBAR copies the backup graph data into the GPE and GSE and notifies the Dictionary to load the configuration data. Also, GBAR will notify the GST to load backup user data and copy the backup user-defined token/functions to the right location. When these actions are all done, GBAR will restart the TigerGraph servers.
 
@@ -150,6 +156,28 @@ The primary purpose of GBAR is to save snapshots of the data configuration of a 
 {% hint style="danger" %}
 Restore needs enough free space to accommodate both the old gstore and the gstore to be restored.
 {% endhint %}
+
+[discrete]
+=== Remove a backup +++<a id="gbar-detailed-example">++++++</a>+++
+
+To remove a backup, run the `gbar remove` command:
+
+[source,text]
+----
+$ gbar remove <backup_tag>
+----
+
+The command removes a backup from the backup storage path. To retrieve the tag of a backup, you can use the `gbar list` command.
+
+[discrete]
+=== Clean up temporary files
+
+Run `gbar cleanup` to delete the temporary files created during backup or restore operations:
+
+[source,text]
+----
+$ gbar cleanup
+----
 
 [discrete]
 === GBAR Detailed Example +++<a id="gbar-detailed-example">++++++</a>+++
@@ -165,7 +193,7 @@ Naturally, backup and restore time will vary depending on the hardware used.
 
 To run a daily backup, we tell GBAR to backup with the tag name _daily_.
 
-[,text]
+[source,text]
 ----
 $ gbar backup -t daily
 [23:21:46] Retrieve TigerGraph system configuration
@@ -187,7 +215,7 @@ The total backup process took about 31 minutes, and the generated archive is abo
 
 To restore from a backup archive, a full archive name needs to be provided, such as _daily-20180607232159_. By default, restore will ask the user to approve to continue. If you want to pre-approve these actions, use the "-y" option. GBAR will make the default choice for you.
 
-[,text]
+[source,text]
 ----
 $ gbar restore daily-20180607232159
 [23:57:06] Retrieve TigerGraph system configuration

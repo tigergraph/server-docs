@@ -1,0 +1,1097 @@
+= Change Log
+:description: This page will document all the changes to TigerGraph product including New Features and Bug Fixes.
+
+{% hint style="info" %}
+Distributed Graph support and certain other enterprise-level features are available in the Enterprise Edition only.  They do not pertain to the Developer Edition.
+{% endhint %}
+
+== Documentation Changes
+
+* 07/02/20 link:../../dev/restpp-api/built-in-endpoints.md#gsql-server-endpoints[RESTPP Built-in Endpoints] - Corrected the URL for the GET Schema REST endpoint
+* 07/02/20 link:../../dev/gsql-ref/querying/operators-and-expressions.md#vertex-functions[Vertex Functions] - Clarified the behavior of outdegree()
+
+== *TigerGraph 3.2*
+
+Release Date: 2021-mm-ddd
+
+=== *Features*
+
+Check release notes: https://docs.tigergraph.com/v/3.2/faqs/release-notes-tigergraph-3.2[3.2.0 Release notes]
+
+=== *Changes:*
+
+==== *GSQL:*
+
+* ADD Edge Pair commands as part of Schema Change operations are now allowed.
+* Query-calling-query limitation: Distributed main query cannot call a distributed sub-query.
+* Default logging level for GSQL logs has been changed from DEBUG to INFO
+
+=== *Enhancements*
+
+==== *Database Server:*
+
+* Core: Improve Abort transaction if the transaction is too long
+* Core: GPE hung under high number of concurrent queries
+* Core: Turn on transaction for RestPP Post for atomicity
+* Core: Workload management: Specify replica for a query to run in a distributed cluster
+* Core: Standardize the correct http response code for query requests
+* GSQL: Query Installation Performance Improvements
+ ** Support longer reload time for Query installation on 1000's of queries
+ ** Don't drop parent queries when subquery is installed
+* GSQL: Support for new built-in functions:
+ ** Math-related functions: round(), reverse(), repeat(), insert(), cot(), degrees(), radians, square, truncate, log2
+ ** String-related functions instr(), length(), substr(), PI(), rand(), lpad(), rpad(), replace(), ascii(), chr(), soundex(), difference(), translate(), space(), ltrim(), rtrim(), find_in_set(), left(), right();
+* GSQL: Support FROM/TO vertex type change for edge type metadata
+* GSQL: Support VLAC tags in Import and Export operations
+* GSQL: Allow variable declaration anywhere in query body
+* GSQL: Support initialization from an expression;
+* GSQL: Support revoking superuser role from default user
+* GSQL: Improve the error message displayed when connecting to LDAP server
+* Platform: Upgrade to Java 11
+* Platform: Add support for ubuntu20
+* Platform: Show executor status and updated status of other services
+* Platform: Run upgrade locally without ssh if user is local with only a single node
+* Platform: Start/stop local executor will no longer need ssh,
+* Platform:  Increase Backup/Restore S3 upload Partition Size
+* Platform: Make Backup/Restore Heartbeat timeout configurable to allow media with slower speeds.
+
+==== *GraphStudio:*
+
+* WCAG compliance changes
+* Support overwriting exploration result
+* Support duplicate file-edge mappings and fix setSelection error;
+* Add graph information and variable names  to auto-complete list;
+
+==== *Admin Portal:*
+
+* WCAG changes
+* Support Privilege based management
+* Improve unauthorized access warning popup message
+* Display secrets table for each graph
+
+=== *Fixed*
+
+==== *Database Server:*
+
+* Core: Kafka loader should exit gracefully
+* Core: GPE crash if the request specifies an invalid replica
+* Core: Health check for 1 mins in RESTPP startup
+* Core: Fixed file loading failed due to OOM
+* Core: Fixed no error message when edge does not exist
+* Core: Fixed issue with deleted_vertex_check API after dropping vertex type;
+* GSQL: LDAP user privilege parsing missed authorization checks
+* GSQL: Fixed rhs check issue for direct interpret query;
+* GSQL: Fixed print Vset issue with vertex accum declaration order;
+* GSQL: Added semantic checker for rhs with the same name;
+* GSQL: Export fails due to mismatching token of an unexpected graph
+* GSQL: Fixed wrong name when looking up variable from global
+* GSQL: Fix datetime_format function not working for v2 syntax
+* GSQL: The result of printing string differs in interpret mode and installed mode
+* GSQL: Fixed issue with Order by for interpret query
+* GSQL: Fix to handle abort while adding queries if a concurrent delete fails
+* Platform: Service status for KAFKA is down when one zookeeper server offline
+* Platform: Fix for Admin log rotation time issue
+
+==== *GraphStudio:*
+
+* Addressed Schema change logic for reversed edge
+* Fix for privilege based access control issue
+* Fix for loading job information migration failure
+* Remove loading job log on export;
+* Remove graphName from loading job information interface;
+* Use authorization token in header instead of logging in;
+* Send heartbeat to keep client connection alive
+
+== *TigerGraph 3.1.6*
+
+Release Date: 2021-08-09
+
+=== *Fixed*
+
+==== *Application*
+
+* Configuration for light or dark mode in GraphStudio/Admin Portal
+* Multiple maps from a single file to an edge are indistinguishable
+* GraphStudio: Implement responsive design for all sizes of screens
+* GraphStudio: Rearrange elements to avoid overlay in small screen
+* GraphStudio: Support toolbar button announcement for screen readers
+* GraphStudio: Support keyboard shortcut for focusing elements within working panels
+
+== *TigerGraph 3.1.5*
+
+Release Date: 2021-07-23
+
+=== *Fixed*
+
+==== *Database Server*
+
+* Core: GPE on DR cluster stuck in warm up state after failover due to invalid requests
+* GSQL: Prevent QueryReader role to run any graph updates query
+* GSQL: Validation script to check schema consistency issue
+* Platform: Increase in proxy request buffer size for NGINX
+* Platform: Change in GRPC maximum message size for GBAR backup of catalog data
+
+==== *Application*
+
+* GraphStudio: Reuse controller connections to avoid running out of used ports
+* GraphStudio: Remove "change layout" button in toolbar in Visual Editor
+
+== *TigerGraph 3.1.4*
+
+Release Date: 2021-07-01
+
+=== *Enhancements*
+
+* GSQL: `\requesttoken` API can be used to create authorization tokens using User name/password in addition to secret.
+* GSQL: Secrets created without alias will be assigned a system-generated alias so that they can be dropped
+* Platform: Nginx upgrade from 1.18.0 to 1.21.0
+* Platform: Backup/Restore configuration improvements to allow use of slower HDD media for storage
+* GraphStudio: UI enhancements to support WCAG compliance
+
+=== *Fixed*
+
+==== *Database Server*
+
+* Core: GPE need to verify catalog updates after new schema changes are applied
+* Core: Running Louvain algorithm as a distributed query crashed GPE due to unnecessary vertex activation
+* Core: Backup failed with WaitForDeltaToBeProcessed timeout
+* Core: Updated log messages to reference /deleted_vertex_check endpoint in RESTPP correctly
+* GSQL: Fix schema consistency issues due to duplicate Vertex/Edge type names
+* GSQL: Fix for schema consistency issue due to GPE referencing a dropped Vertex
+* GSQL: Additional semantic check for local schema change job to prevent schema inconsistency
+* GSQL: Error when making schema changes using UI/ Install all queries fails
+* GSQL:  Inconsistency between GSQL and GPE catalog data after '`Drop graph`' fails
+* GSQL: '`From`' clause missing from delete loading jobs when Export Graph command is run
+* GSQL: Query installation will fail due to wrong order of arguments in PRINT statement
+* GSQL: _"`Incompatible argument types for function/tuple evaluate"_ error when using evaluate without second argument on v2 syntax
+* GSQL: Designer Role unable to run a query in Interpret Mode
+* Platform: Updates to Nginx templates for security updates
+* Platform: Change in default value for UI request timeout to 3600
+
+==== *Application*
+
+* GraphStudio: Vertex and Edge statistics generation optimization to avoid Cluster CPU usage spike
+* GraphStudio: Unexpected error when dropping edge with reversed edge
+* GraphStudio: Fix for failure to migrate loading job info from 3.0.x to 3.1.2+
+
+== *TigerGraph 3.1.3*
+
+Release Date: 2021-06-05
+
+=== *Enhancements*
+
+==== GraphStudio
+
+* Theme color adjustment to meet Web Content Accessibility Guidelines(WCAG).
+* Support responsive page layout for "Home" page, "Load Data" page and "Write Queries" page.
+* Add information transcripts for visualization areas in each page.
+* Add keyboard navigation in graph charts.
+* Improve tabbing capability and tabbing order.
+* Improve element status announcement.
+* Add headings for the entire application.
+* Add aria-labels for the entire application to meet WCAG compliance.
+* Add captions for all table elements.
+
+==== AdminPortal
+
+* Theme color adjustment to meet WCAG compliance.
+
+== *TigerGraph 3.1.2*
+
+Release Date: 2021-05-20
+
+=== *Features*
+
+* *SQL to GSQL translation* for Enterprise BI tools like Tableau and Power BI
+ ** This enriches data visualization tools with graph-enabled dashboards
+
+=== *Enhancements*
+
+* Core: Increase the maximum allowed size of Vertex/Edge delta files to allow larger number of updates for write-heavy applications.
+* GSQL: Support for more than 10K elements in a Set<> of a query parameter
+* GSQL: Support VertexAccessControl Tags in DBImportExport
+
+=== *Fixed*
+
+*Database Server*
+
+* Core: Pick the latest version of GPE data for backup
+* GSQL: datetime attribute type in a schema-level user-defined tuple translated as int32_t
+* GSQL: NullPointerException when handle VSet variable in nested if statement
+* GSQL: NullPointerException when using multiple POST-ACCUM clauses
+* GSQL: INSERT statement with non-existent edge does not report error in V1 syntax
+* GSQL: GSQL does not produce type error when inserting non-existent edge with vertices from query parameters
+* GSQL: NoSuchElementException when using a non-existent edge on INSERT statement
+* GSQL: Lexical error when a newline is followed by an exclamation mark (!) in a string
+* GSQL: Printing string with newline fails compilation
+* GSQL: Refresh RESTPP Token: output and default lifetime is not correct
+* GSQL: Multiplicity propagation ACCUM clauses should reset only if the block is within a loop
+* GSQL: Create user don't allow an empty password
+* GSQL: Pattern match - propagation accumulator values not cleared
+* GSQL: Push-down error reported for non-alias expressions
+* GSQL: Support TAGS in DBImportExport
+* GSQL: Fix TokenBank compilation slowdown
+* Platform: Graceful handling of port used by Executor component
+* Platform: Got failed to authenticate with GSQL server error when login with SSO on tg3.1.1
+* Platform: Remove gsql password printing
+
+==== GraphStudio
+
+* The loading data status is incorrect while import a solution
+* Imported solution with no modification, should not ask user to publish Data mapping.
+* Failed to overwrite datafile in Map Data to Graph
+
+*AdminPortal*
+
+* Display of secrets on AdminPortal - User management should be paginated.
+
+== *TigerGraph 3.1.1*
+
+Release Date: 2021-04-02
+
+=== *Changes:*
+
+* Change *BY(OR|OVERWRITE)* syntax to *BY OR|OVERWRITE* for explicit tag creation
+* Changed name of 'dbsanitycheck' endpoint to 'deleted_vertex_check'
+
+=== *Enhancements*
+
+==== *Database Server*
+
+* Core: Improved throttling mechanism for Updates when memory usage has hit critical threshold
+* Core: Improved reliability of transferring in-memory data to on-disk within GSE
+* Core: Logging improvements to support both time-based and size-based configuration for all the component logs
+* Fixes/Enhancements for Vertex Level Access Control feature
+ ** GSQL: Performance improvement for tag creation only operations
+ ** GSQL: Make tag description optional
+ ** GSQL: Block altering taggable value of global vertex if being used in tag based graph
+ ** GSQL: Show tag expression of tag graphs in base graph "`ls`" command
+ ** GSQL: Allow vertex taggable property to be updated even if it is currently being used in a tag-based graph
+* GSQL: Support for accumulators in table-style SELECT clause expression lists
+* GSQL Query syntax extensions for table support
+* GADMIN: Allow script to be used to configure LDAP TrustStore Path
+* Platform: Security enhancement to allow HTTPS traffic only access securely through dedicated interfaces when SSLis enabled.
+* Platform: Upgrade grpc to 1.33.0
+
+==== GraphStudio
+
+* Add a * in the label of a data source if the loading job is changed
+* Return detailed error messages when install queries failed
+* Enable only one column header to be editable at the same time
+* Enable closing popup with Escape
+* Add a max validator for timeout field for configuration
+* Query name conflict check uses all available type names from GSQL
+
+=== *Fixed*
+
+==== *Database Server*
+
+* Core: Retry logic for adding data to GSE in the DR cluster
+* Core: Fix for GPE crash due to potential race condition between queries and updates.
+* Core: Partial result output in extreme cases before a running query has finished
+* Core: restpp crashed when missing parameter name
+* Core: Fixed file loading job failures due to OOM
+* GSQL: Fix for catalog access issue due to concurrent schema change requests
+* GSQL: GPE crash due to incorrect catalog update issued by GSQL
+* GSQL: LDAP password visible in GSQL logs
+* GSQL: Exit code from GSQL CLI needs to return non-zero code if there is an error
+* GSQL: Unable to run global schema change on global vertex if local vertex with same name exists
+* GSQL: Query created through GSQL shell, but returns error through GraphStudio
+* GSQL: Add check for GPE readiness for create/drop vertex/edge operations for global schema changes
+* GSQL: GSQL v2 syntax - vertex-attached containers cannot be read in WHERE/ACCUM clauses
+* GSQL: Enhance Export/Import by pre-creating necessary directories
+* GSQL: Fix calling subquery without RETURNS clause
+* GSQL: Code generation error for multiple dynamic expressions with the same parameter
+* GSQL: Wrong result for the output of datetime_format function
+* GSQL: SET<VERTEX> Not Working in Query Parameter
+* GSQL: GLE error message uses incorrect terminology: 'batch mode' should say 'distributed query mode'
+* GSQL: Printing vertex set variable with parentheses causes wrong printing for attributes
+* GSQL: GSQL pattern match - incorrect WHERE condition parsing
+* GSQL: GSQL query doesn't work on HA cluster when RESTPP#1 is down
+* GSQL: Fix for Catalog backup file cleaning failure
+* GSQL: Empty gsql password should not be allowed.
+* GSQL: NullPointerException on creating a query with a body-level DML delete statement
+* GSQL: Query cannot be dropped after its caller queries have been dropped
+* Platform: Remove user authentication information after installation
+* Platform: GSQL user defined functions are not backed up
+* Platform: Residual GPE/GSE processes are not terminated before restore
+* Platform: GBAR gracefully exit after ctrl-c
+* Platform: guninstall does not take into account the password login
+* Platform: gbar restore failed with message: Failed to import key-value store
+* Platform: Single node 3.1 installation in in VMware private cloud environment in VMWare Private Cloud Environment
+* Platform: Restore failure from S3 didn't update the replicas correctly
+* Platform: Check to prevent migration tool running twice
+* Platform: GBAR restore fails with invalid checksums
+* Platform: User didn't receive correct feedback when incorrect password entered during 3.1 upgrade
+
+==== GraphStudio
+
+* Query goes back to a previous version after schema change in query editor
+* Remove the use of regex for GSQL CLI and rely on exit code instead
+* Progress bar hangs if query installation fails
+* datetime's default value field does not support rfc3339 nor iso8601 format
+* Export solution is only available for superuser
+* Unexpected error when changing the schema (Fix from GSQL side)
+* Update global schema after a local schema is dropped
+* Uploading progress bar hangs after choosing unsupported file type
+* Query editor does not display full text if line cannot break
+* Undo button should clear the expand list
+* JSON result of "write query" is not updated in error mode
+* Not possible to unset/cancel custom radius in Graph Exploration
+* Syntax highlighting is incomplete
+* Link to License page from GST is wrong
+* Long messages in Design Schema overlap vertex properties editor's ✓ button
+* The loading progress bar is stuck if import fails
+* The data mapping will disappear after change the global vertex's attribute
+* Address Export/Import solution migration issues
+
+==== Admin Portal
+
+* Validate input on config management
+* Ignore blank spaces in log search
+
+== *TigerGraph 3.1.0*
+
+Release Date: 2020-12-02
+
+=== *Features*
+
+New features are described in https://docs.tigergraph.com/v/3.1/faqs/release-notes-tigergraph-3.1[3.1.0 Release notes].
+
+=== *Changes:*
+
+* GSQL: STRING COMPRESS data type will no longer be allowed for new data objects. However, existing objects with STRING COMPRESS data type will continue to work.
+* GSQL: Changes to ADD/DROP Edge Pair commands
+ ** ADD edge pair in schema change will not be allowed
+ ** Drop vertex will be disallowed if it is currently being used in edge pair.
+* Platform: _tigergraph_ user id included with default installation will be allowed to be dropped
+* Platform: Root user will now be disallowed to do an upgrade using installer -U option
+
+=== *Enhancements*
+
+==== *Database Server*
+
+* Engine: License enforcement check improvements
+* Engine: Restpp memory footprint reduction by recycling memory periodically
+* GSQL: Support JSON Payload Method for Calling GSQL Built-In Dynamic Endpoints
+* GSQL: Support Async query execution with query status/result functionality
+* GSQL: Enhanced Interpreted Query support:
+ ** Support graph update for interpreted query
+ ** Support Where filter in PRINT statement for interpreted query
+* GSQL: Logging for /requesttoken API endpoint
+* GSQL: Reset function for vertex attached accumulators
+* GSQL: Make token expiration maximum limit configurable
+* Platform: Enterprise Free Package improvement to make pre-installed license work in both interactive and non-interactive modes
+* Platform: Allow users to set hard coded timeout for Backup jobs
+* Platform: Allow configurable minimum and maximum memory limits for Kafka, Kafka Connect and Kafka Stream
+* Platform: Software upgrades for the following packages:
+ ** etcd, Kafka plugins, Jsoncpp library
+
+==== GraphStudio
+
+* Add new application server framework to offer continuous availability in GraphStudio and Admin Portal
+* Update APIs for the new application server
+* Support solution export/import without graph metadata
+* Integrate GraphStudio with the new application server
+* Increase unit test timeout
+
+*Admin Portal*
+
+* Add log management for viewing, searching and downloading
+* Add configuration management settings
+* Add Restpp setting: Default query timeout
+* Add Nginx setting: SSL setting and whitelist IP setting
+* Add application server setting: Query return size
+* Add security management settings: LDAP, SSO
+* Integrate Admin Portal with the new application server
+* Change SSO authorization request URL
+* Handle SAML ACS for SSO
+* Disable authorization check for SSO metadata
+
+=== *Fixed*
+
+==== *Database Server:*
+
+* Engine: Correct HTTP response code will be returned when query times out
+* Engine: GPE status reporting is delayed due to backlog of large number of Kafka messages in the queue.
+* Engine: GPE crash in Sub-query print statement
+* Engine: Infinite loop in refresh index when some attributes are disabled
+* Engine: RESTPP memory consumption increase caused by timed out queries
+* Engine: Query using index will not fully utilize compute resources.
+* Engine: When query times out, JSON may not be well formed
+* Engine: Failed to post data when id is int and primary_id_as_attribute is true
+* Engine: Avoid converting string compress index hint in remote topology edge action
+* Engine: GPE not responding to SIGTERM
+* GSQL: Refactor memory usage in query installation to reduce the memory footprint when there is a large number of queries
+* GSQL: When creating the edge pairs, allow use of new vertex types that will be added from the current schema change job
+* Platform: Backup/Restore fails to backup GUI related data
+* Platform: Installer will print progress message during package install to avoid ssh timeout
+
+== *TigerGraph 3.0.6*
+
+Release Date: 2020-11-11
+
+=== *Enhancements*
+
+*Database Server*
+
+* Audit Logging Enhancements
+ ** User information for all requests.
+ ** Request Status (request succeeded or failed) for all requests irrespective of access mode
+* Remove Hard timeout limit for Backup/Restore operations
+
+=== *Fixed*
+
+*Database Server*
+
+* Platform: Resolve the issues where Kafka start-up will hang in certain OS and shell environment.
+* Platform: Backup/Restore hangs if there are too many files
+* Platform: Backup/Restore list error when backup files on S3 are corrupted
+* Engine: Builtin query running background blocks schema change
+* GSQL: Fix for SSL certificate exception
+
+== *TigerGraph 3.0.5*
+
+Release Date: 2020-09-05
+
+=== *Features*
+
+New features and described in https://docs.tigergraph.com/faqs/release-notes-tigergraph-3.0#features-in-3-0-5-version[3.0.5 Release notes].
+
+=== *Enhancements*
+
+*Database Server*
+
+* Longer timeout for retrieving enum maps when using STRING COMPRESS
+* Socket timeout adjustment to improve RESTPP stability
+* Implement SetAccum<vertex> as bitset
+* Semantic check for println of File object for compiled query
+* Installer improvements
+* {blank}
+ ** Enhancement to change the user and group separately.
+ ** Check permission of parent dir of App/Temp/Data/Log Roots
+* TigerGraph 2.x to 3.x Migration tool enhancements
+ ** Support for copying UDFs and other functions during migration
+* Enhanced license support for Cloud deployments
+* Enhanced upgrade version checking
+* Zookeeper client connection retry mechanism to avoid Zookeeper operation failures
+
+=== *Changes*
+
+*Installer Configuration JSON format*
+
+* Install Configuration is separated into basic configuration and advanced configuration sections
+* Support for allowing replication factor to be set during installation as opposed to limited HA on/off setting previously
+
+=== *Fixed*
+
+*Database Server*
+
+* Core: GPE down during Backup for large number of files
+* Core: GPE will crash if the data comes from a machine without relevant metadata.
+* Core: Query failure due to string overflow
+* Core: Query with large UDF job didn't stop for configured time out setting
+* Platform: Kafka loading bug when number of loaders exceeds 10
+* Platform: Backup hangs when there are very large number of files in Graph Store
+* Platform: Backup reports successful operation even if it's actually incomplete
+* Platform: gadmin reset does not reset all files
+* GSQL: V2 syntax removes edge type that is excluded by Accum clause.
+* GSQL: Force query install should regenerate the endpoints
+* GSQL: Loading Job failed with SSL enabled
+* GSQL: Query installation performance issue for V2 syntax
+* GSQL: ArrayAccum value is not accessible in the ACCUM block when query is installed in distributed mode.
+* GSQL: Dictionary Fails when Tokens are too many
+* GSQL: Query installation fails due to schema change
+* GSQL: gsql_client strips out newlines when writing gsql queries by pasting into gsql shell
+
+*GraphStudio*
+
+* Apply previous visualization result should handle empty saved schema
+* Displaying attribute for raw type in visualization should not use JSON stringify
+* Remove clear text user password in error log for migration from RDBMS to Graph
+
+== *TigerGraph 3.0*
+
+Release Date: 2020-06-30
+
+=== *Features*
+
+New and modified features and described in the https://docs.tigergraph.com/release-notes-change-log/release-notes-tigergraph-3.0[TigerGraph 3.0 Release Notes].
+
+=== *Enhancements*
+
+==== Database Server
+
+* Support for reload libudf command
+* Schema validation before apply settings
+* Relax Developer Edition restrictions
+* YAML parsing support for edge pairs
+* Support SPLIT for UDT loading, Load From/To Type from File
+* Data generator 2.0
+* Change log level by SIGUSER1, avoid unnecessary error log
+* Restpp self-report status
+* Allow users to remove data for reinstallation
+* Upgrade kafka to 2.3.0
+* Path pattern optimization with pattern flipping and PER clause
+* Combine service status and processState into one log event
+* Support validation of entry value during gadmin config set command
+* Add strong check for symlinks
+* Support to_datetime builtin function in expressions
+* Support string set filter for edge and target vertex
+* Support local vertex and edge with same name in multiple graphs
+* Index hint for interpret mode
+* Support string compress attributes in built-in Query filters
+* Enable jemalloc profiling
+* Utility function to get disk free percentage
+* Allow concurrent user query access during  Query Installation
+* {blank}
++
+==== *GraphStudio:*
+* Support multiple-pair edge type
+* Schema change job for add/drop attribute index
+* Improved clear graph warning
+* New layout for logo and multiple graphs
+* Allow user edit header for sample data
+* Support multiple files upload
+* Cancel autofit for adding vertex and double click actions
+* Cancel auto login if user has logged out
+* Save JSON format of query result to local storage
+* Create Edge Type from Multiple Vertex Types to Multiple Vertex Types
+
+=== *Fixed*
+
+==== Database Server
+
+* Add on-demand heap profiling for jemalloc
+* Delete legacy ids data
+* Periodically force Jemalloc release memory to OS / on demand profiling
+* Change debug log in convertids into verbose
+* Print warning but no assert in ZMQ
+* Wrong JSON format for tempTables
+* Fix wrong check for loading job completion
+* Allow interpret query to recognize html encoded string constant
+* Handle logical type in json converter
+* Corrected URL decode for whitespace character
+* Add time before delete edges command to ensure rebuild has enough time to complete
+* Fix remove session bug for the aborted handler after 'ctrl + c'
+* Synchronize concurrent install queries
+* Change logic to check service status for cluster mode
+* Support the '`='` operator SumAccum;
+* Drop vertex/edge/graph when there are local and global vertex/edge have the same name;
+* Support removing a SetAccum from another SetAccum;
+* Remove the reversed edge too when removing an edge;
+* Cannot create query due to the overflow of the size of the HeapAccum;
+* Query referred as subquery from interpreted mode query can not be dropped;
+* Index out of bound when ignoring the parameter checking for interpret query
+* Output error message for invalid job id
+* Fix codegen to insert a vertex/edge without attributes
+* Support file regexp in checking header of filename
+* Support the true value of key word header and transaction in the loading data job to be case-insensitive
+* Dedupe proxy user's own roles from groups
+* Make schema change metadata modification a transaction
+* Fix builtin k_step expansion query bug
+* Check disk space before exporting each vertex/edge type
+* Allowed non-English string constants in interpreted queries
+* Edge variable prints attribute by default
+* Print developer information only in gadmin status
+* Restrict symlinks and check their existence
+
+==== *GraphStudio:*
+
+* Fix error message for new secret creation
+* Refactor keywords
+* Do not emit explorer config if saved exploration doesn't have it
+* Check for Valid date time
+* Extend wait time for progress bar finish
+* Add right border for side navigation
+* Upgrade color-picker
+* Fix check accumulator format
+* Fix percentage of performing schema change
+* Run interpreted query through websocket
+
+== *TigerGraph 2.6.6*
+
+Release Date: 2021-03-23
+
+=== Fixed
+
+*Database Server*
+
+* Core: Fix concurrent access of abort messages
+* Core: Fix for GPE crash due to wrong license
+* Core: Fixes to gcollect utility:
+* {blank}
+ ** Improvements to work in clustered environments
+ ** Accidental removal of directory with old data collection run
+* GSQL: Fix for catalog access issue due to concurrent schema change requests
+* GSQL: Increase timeout for download upload catalog, make it configurable
+* Platform: Upgrade of gRPC version to 1.33.0
+* Platform: Remove user authentication information after installation
+
+== *TigerGraph 2.6.5*
+
+Release Date: 2021-01-15
+
+=== *Enhancements:*
+
+*Database Server*
+
+* GSE/GPE segment consistency check utility
+* Integration with GSE/GPE consistency check utility with Backup/Restore
+
+=== Changes
+
+* Increase in refresh timeout for RESTPP from 20 to 60 seconds;
+
+=== Fixed
+
+*Database Server*
+
+* GSE replica synchronization for Zookeeper errors
+* Explicitly check replica follower status before automatic promotion to leader is allowed
+* RESTPP fix - memory leaks caused by timed out queries
+* Backup/Restore: Ensure GPE and GSE snapshots are done in correct order
+
+== *TigerGraph 2.6.4*
+
+Release Date: 2020-11-02
+
+=== *Enhancements*
+
+*Database Server*
+
+* Allow RESTPP to manage log files based on timestamp
+* Upgrade NGINX to 1.18 version
+* Correct status code to indicate GSQL operation result
+* Remove Hard timeout limit for Backup/Restore operations
+* Token Management Improvements:
+ ** Improve GSQL stability by setting a limit on number of tokens allowed
+ ** Logging improvement to indicate new and refreshed tokens separately
+
+=== *Fixed*
+
+*Database Server*
+
+* Core: GSE follower replicas lag leader replica on the data updates
+* Core: Shuffle abort causing GPE crash
+* Core: Handle un-released lock gracefully during json print command failure
+* Core: Incremental Snapshot triggers creation of all segments causing delays
+* Core: Kafka loading fails when number of loaders exceed 10
+* GSQL: Query Install fails for batch installs
+* Backup/Restore hangs if there are too many files
+
+== TigerGraph 2.6.3
+
+Release Date 2020-08-21
+
+=== Enhancements
+
+* Improved handling of query time outs for distributed queries.
+
+=== Fixed
+
+* Longer timeout for retrieving large memory map for attributes of STRING COMPRESS data type with large number of distinct values.
+* Backup jobs report incorrect successful runs
+* Incorrect type check logic for trim function;
+
+== TigerGraph 2.6.2
+
+Release Date 2020-08-14
+
+=== Enhancements
+
+* Improvements to GSE Upsert performance
+* Add User Id information to RESTPP logs for all user initiated calls
+* Improvements to Query Installation performance time
+* Provide warning message when revoking a role from proxy user if needed
+
+=== Fixed
+
+* Core: GPE crash on unknown vertex / segment
+* Core: PostWriter needs to skip vertices if the internal vertex id is invalid one.
+* Core: Handle exception in ResponseThread of RemoteTopology
+* Core: Query re-installation issue caused by non-deterministic transformation
+* Core: Address Data Loading speed for hub loading
+* Core: Inconsistent result with and without using local accumulators
+* Core: RestPP payload scale issue due to 3rd party FCGI library
+* GSQL: GSQL pattern match - translation error when vertex type is the keyword "ANY"
+* GSQL: Issue with reduce function with Bitwise OR operator in the LOAD functions
+* GSQL: _gsql_client_ strips out newlines when writing gsql queries by pasting into gsql shell
+* GSQL: Secrets and token associated with a graph and not removed during graph delete
+* GraphStudio: Displaying attribute for raw type in visualization should not use JSON _stringify_ method
+
+== TigerGraph 2.6.1
+
+Release Date 2020-06-12
+
+=== Enhancements
+
+* Allow concurrent user query access during  Query Installation
+* GPE & GSE Data Sync Check Utility
+* Use of POST for /requesttoken API so that user password is not exposed
+* Write Performance improvements
+* Error handling and reporting improvements for Query Timeout and Failures
+* UX improvement for '`Clear Graph`' command in GraphStudio
+
+=== Fixed
+
+* Ensure cleanup and  compaction of delta records in a large transaction even in the event of TigerGraph service restart
+* Performance improvement to make Graph Updates faster by parallelizing and sharing transaction
+* Fix for the leftover Shuffle threads after Query Abort/Timeout
+* Change in the error message of AbortQuery request inside the Shuffle Operator
+* Bug fixes for GSE compaction feature to address exporting with mixed segments of data and  load data from the database in worker mode
+* Fix for GSE crash triggered by schema change
+* Enable background thread on JEMALLOC for memory cleanup even when system is idle
+* /showprocesslist and /abortquery APIs do not list the running queries of old worker if RESTPP is refreshed
+* S3 loader header check doesn't apply file filter regex
+* GSQL V2 syntax does not handle ACCUM operator correctly
+* Fix for RESTPP timeout error
+
+== TigerGraph 2.6.0
+
+=== Changes
+
+Release Date 2020-04-24
+
+New and modified features and described in the https://docs.tigergraph.com/v/2.6/release-notes-change-log/release-notes-tigergraph-2.6[TigerGraph 2.6 Release Notes.]
+
+=== Enhancements
+
+* Remove SSH connection use dependency for GSQL Install Query command
+* New 'force' parameter to RebuildNow so that engine to start the rebuild.
+
+=== Fixed
+
+* Core: GSE crash in HA setup when CPU usage is extremely high
+* Core: Out Of Memory handling improvements to prevent GPE crash due bad memory allocation call
+* GLE: fix builtin query crash in worker due to graph id missing
+* Core: Skewed CPU usage for high-query throughput scenarios
+* Fixes in Rebuild to address broken edge count
+* Fix for 2.5.2 bug - Inconsistent query results when running non-distributed query on a cluster
+* Unable to find local vertex and edge with same name in multiple graphs
+* RESTPP memory leak due to yaml file
+* Reverse edge id is wrong when two local edges with reverse edge are created with same name
+
+== TigerGraph 2.5.4
+
+Release Date: 2020-04-24
+
+=== Enhancements
+
+* New 'force' parameter to RebuildNow so that engine to start the rebuild.
+* Improved version of /abortquery so that query can be aborted more quickly
+
+=== *Fixed*
+
+* Fixes in Rebuild to address broken edge count
+* RESTPP memory leak due to yaml file
+* Builtin query crashed due to missing Graph Id
+* RESTPP crash for same vertex name in the global graph
+* Resolved the distributed query hanging issue which could block rebuild and schema change
+* Core: Skewed CPU usage for high-query throughput scenarios
+
+== TigerGraph 2.5.3
+
+Release Date: 2020-02-26
+
+=== *Fixed*
+
+* Ensure catalog data backed up before schema change
+* Support creation of two local edges with same name with one being a reverse edge
+* Support Local vertex and edge type with same name in multiple graphs in
+* Support for multi-lingual string constant in Interpret query mode
+* Upgrade to Release 2.5.2 leads to inconsistent query results
+* Compute resource usage spikes on particular node in cluster
+* GCleanUp failed to cleanup all pointers when adjusting thread
+
+== TigerGraph 2.5.2
+
+Release Date: 2020-01-27
+
+{% hint style="danger" %}
+*TigerGraph 2.5.2 is not compatible with versions prior to 2.5.1. Customers who are using Pre-2.5.1 version and intending to migrate to 2.5.2 are advised to take backup of their existing version before upgrading to 2.5.2. This will enable them to downgrade back to the original Pre-2.5.1 version if nee*
+{% endhint %}
+
+=== *New Features*
+
+* GPE: Increase MemoryCheck frequency  based on Resource Usage
+* GPE: Abort Query if Memory usage crosses critical threshold
+* GSE: Support Log compaction as part of startup for GSE
+* GraphStudio: Support Multi-edge pair in design schema.
+* Core: Support OS RHEL 8.0 in Installer
+
+=== Enhancements
+
+* REST: Increase the RESTPP reload timeout
+* GSQL: Change error message to specify user when default _tigergraph_ user is dropped
+* GSQL: Make user _tigergraph_ droppable
+* GraphStudio: Do not change layout when adding/updating/deleting vertex and edge
+
+=== *Fixed*
+
+* Core: GPE crashed running distributed LDBC query
+* GST: Incorrect vertex count in TigerGraph GraphStudio
+* Core: Shuffle deadlock causing full system memory use
+* Core: Replace GASSERT with GWARN in GDataBox
+* Core: BATCH_SIZE of Kafka loader set from GSQL console doesn't work
+* GPE: Schema Change failed due to Query Install OOM
+* GSQL: Quote in string key is not escaped
+* GraphStudio: Reverse edge filter doesn't work
+* Core: Don't display LDAP password in IUM
+
+== TigerGraph 2.5.1
+
+Release Date:  2019-11-25
+
+=== *Fixed*
+
+* Core: Distributed delete affects data consistency after GPE restart
+* Core: Shuffle hangs when sendingQueue is full
+* Core: Longevity test failing due to change in memory allocator (TCMalloc)
+* GPE: Crash after upgrade from 2.4.1 to 2.5
+* GPE: Serialization error when reading from input stream
+* GPE: Query state can result in race condition inside ReadOneDelta;
+* GPE: GPE crashes when a query calls a sub-query with a write operation
+* GSE: Script to resolve delete inconsistency between GSE and GPE
+* GSE: Multiple Kafka loading jobs fail
+* GSQL: Built-in function names in GSQL are case sensitive
+* GSQL: Interpret query doesn't work when authentication is on
+* GSQL: Deadlock when graph store is being cleared and authentication is on
+* GSQL: Token authentication returning null during Global schema change
+* GSQL: SSO login failure due to missing org.apache.santuario:xmlsec library
+* GraphStudio: Vertex to edge expansion settings are not retained
+* GBAR Backup: Backup failure if loading jobs are in progress
+
+== TigerGraph 2.5.0
+
+Release Date 2019-09-18
+
+=== Changes
+
+New and modified features and described in the https://docs.tigergraph.com/v/2.5/release-notes-change-log/release-notes-tigergraph-2.5[TigerGraph 2.5 Release Notes].
+
+=== Fixed
+
+* Improvements to fix possible crash, deadlock, overflow, and memory leak situations
+* Improve query performance stability
+* Fix some query string passing and parsing issues
+* Correct some inconsistencies between the documented specification and actual behavior
+* Improve robustness of Kakfa and S3 Loaders
+* Clean up files and graph properly after certain failed operations
+* Fix some installation issues
+
+== TigerGraph 2.4.1
+
+Release Date 2019-07-23
+
+=== Changes
+
+* To select pattern matching support in a query, the syntax is now `+CREATE QUERY ... SYNTAX v2+` instead of  `+CREATE QUERY ... SYNTAX("v2")+`
+
+=== Fixed
+
+* GPE: Fix uint32 overflow
+* Loader: Allow temp_table to be used without flatten function
+* IDS: Disable empty UID
+* ZMQ: Fix crash on ill-formed message
+* Util: Fix Unix domain socket file not generated correctly in cron job
+* Util: Extend data size for GoutputStreamBuffer beyond 4GB
+* Connector: Fix first line is not ignored with has_header enabled
+* Connector: Fix failures on retrieving connector status
+* GSQL: Fix syntax version setting inconsistency issues
+* GSQL: Fix schema change with USING primary_id_as_attribute
+* GSQL: Fix JSON output format of requesttoken API
+* Admin Portal: Display correct counts of physical vertices and edges on each machine
+
+== TigerGraph 2.4.0
+
+Release Date 2019-06-25
+
+=== New Features
+
+See https://docs.tigergraph.com/v/2.4/release-notes-change-log/release-notes-tigergraph-2.4[Release Notes - TigerGraph 2.4]
+
+=== Fixed
+
+* GSQL: The built-in count() function gives the correct value in all cases.
+* GPE: startup hang
+* GSQL server start/stop command not working
+* LDAP config truncated by space
+* GSE: boolean values are not displayed correctly
+* Security issue CVE-2013-7459 caused by unused python crypto library
+* IUM status is displayed incorrectly in some cases;
+
+== TigerGraph 2.3.2
+
+Release Date 2019-04-01
+
+=== Issues
+
+* GSQL: The built-in count() function may give the incorrect value for clustered systems after some vertices have been deleted.
+
+=== Fixed
+
+* GraphStudio: Send query pre-install dependency analysis result through WebSocket
+* GraphStudio: filter out improper attributes in when building filter expressions
+* GPE: fix wrong enumerator id issue
+* GPE: avoid using /tmp
+* GPE: handle exceptions for LIKE <expr>
+* GPE: Fix crash due to writing wrong size of STRING_LIST
+* GPE: Fix global schema change error which added local vertex twice
+* GSE (Developer Edition): Keep one copy of segment
+
+== TigerGraph 2.3.1
+
+Release Date 2019-02-19
+
+=== New Features
+
+See https://docs.tigergraph.com/v/2.3/release-notes-change-log/release-notes-tigergraph-2.3[Release Notes-TigerGraph 2.3]
+
+=== Issues
+
+* GSQL: The built-in count() function may give the incorrect value for clustered systems after some vertices have been deleted.
+
+=== Fixed
+
+* Install: The IP list fetched by the installer could be incomplete.
+* Loading: Speed up batch-delta loading.
+* GraphStudio: Disable Install Query button for queryreader users.
+* GraphStudio: Re-initialize the database after import.
+* GraphStudio: Could not drop query with non-default username/password.
+* AdminPortal: Queries-Per-Second display didn't work if RESTPP authorization was enabled.
+* Schema change: Improve schema change stability by reducing schema change history and increasing gRPC max message limit.
+* GPE: Improve  query HA stability.
+* GPE: Fix crash under certain conditions.
+* Core: Memory leak due to yamlcpp.
+* Core: compatibility issue between libc and ssh utility.
+* IUM: Fix exceptions due to legacy config entries.
+
+== TigerGraph 2.2.4
+
+Release Date: 2018-12-13
+
+=== Fixed
+
+* Distributed System: Fix possible deadlock and race conditions
+* GSE Storage Engine: Fix disk seek overflow
+* RESTPP: Optimize the memory consumption when system is idle
+* RESTPP: Optimize config reload time
+* GSQL: Fix query installation error with option -optimize
+* GSQL: Fix a code generation bug related to static variable
+* GSQL: Fix a compilation error when a statement is in nested if statement
+* GraphStudio: Security update for npm-run-all
+* GraphStudio: Change Help button to point to new docs.tigergraph.com site
+* Gadmin: Fix gadmin/ts3 restart and status error after changing port of TS3
+
+== TigerGraph 2.2.3
+
+Release Date: 2018-11-30
+
+=== Fixed
+
+* GraphStudio: Fix schema change bug (Note: In 2.2, GraphStudio now does not drop all data when making a schema change.)
+* GraphStudio: Fix display issue in Graph Explore when switch to a new graph
+* GraphStudio: Improve password security
+* GraphStudio: Modify URL to AdminPortal for better universal support
+* IUM: Fix kafka-loader configuration after cluster expansion
+* IUM: Resolve python module name conflict
+* IUM: Fix ssh_port is always 1 under bash interactive mode
+* GSE Storage Engine: Reduce memory consumption
+* RESTPP: Improve logging messages
+
+== TigerGraph 2.2
+
+Release Date: 2018-11-05
+
+=== New Features
+
+See https://docs.tigergraph.com/v/2.2/[Release Notes-TigerGraph 2.2]
+
+=== Fixed
+
+* GraphStudio: When both a query draft and an installed query  exist, Export Solution will keep the installed query code instead of the query draft
+* Admin Portal: Number of nodes in the cluster is reported as 0 when no graph yet exists
+
+== TigerGraph 2.1.8
+
+Release Date: 2018-11-05
+
+=== Issues
+
+* GBAR Backup fails if HA is enabled
+* GSE status shows unknown with HA enabled
+* TS3 fails to collect QPS when RESTPP Authentication is enabled (Admin Portal QPS monitor will be unavailable in this case).
+* GraphStudio: When both a query draft and an installed query  exist, Export Solution will keep the installed query code instead of the query draft.
+* Admin Portal: Number of cluster nodes is reported as 0 when no graph exists.
+
+=== Fixed
+
+* GSQL server error if schema is too large
+* In a cluster, not all servers may be aware of deleted vertices.
+* PAM limit set-up issue in installer
+* In MultiGraph, a local (FROM *, TO *) local edge has global side effects.
+* RESTPP's default API version is not set after installation
+* An engine bug which occasionally causes crash
+
+=== Added
+
+* SSH port configuration in installer.
+* Installation script checks that the machine meets the minimum RAM (8GB) and CPU (2-core) requirements.
+* For Ubuntu 16.04/18.04, support logon with systemd service.
+
+== TigerGraph 2.1.7
+
+Release Date: 2018-08-20
+
+=== Issues
+
+* GBAR backup fails if HA is enabled.
+* TS3 fails to collect QPS when RESTPP Authentication is enabled (Admin Portal QPS monitor will be unavailable in this case).
+* GraphStudio: When both a query draft and an installed query  exist, Export Solution will keep the installed query code instead of the query draft.
+* Admin Portal: Number of cluster nodes is reported as 0 when no graph exists.
+
+=== Fixed
+
+* Cluster configuration with HA enabled is wrong if the number of nodes is odd (3, 5, 7, 9...).
+* GraphStudio and GSQL inconsistent checking for some keywords
+* GBAR backup and restore fail if special character is in tag name
+
+== TigerGraph 2.1.6
+
+Release Date: 2018-08-15
+
+=== Issues
+
+* Cluster configuration with HA enabled is wrong if the number of nodes is odd (3, 5, 7, 9...).
+* GraphStudio: When both a query draft and an installed query  exist, Export Solution will keep the installed query code instead of the query draft.
+* TS3 fails to collect QPS when RESTPP Authentication is enabled (Admin Portal QPS monitor will be unavailable in this case).
+* Admin Portal: Number of cluster nodes is reported as 0 when no graph exists.
+
+=== Fixed
+
+* GSQL null pointer exception during schema change if a directed edge is dropped but its partner reverse edge is kept.
+* Some complex attribute types cannot be correctly posted via /graph endpoint.
+* In some cases, tuple on reverse edge crashes GPE.
+* GraphStudio throws an authentication error if RESTPP authentication is enabled.
+
+=== Added
+
+* License level control of MultiGraph functionality.
+
+== Tigergraph 2.1.5
+
+Release Date: 2018-07-24
+
+=== Known Issues
+
+* GSQL null pointer exception during schema change if a directed edge is dropped but its partner reverse edge is kept.
+* Some complex attribute types cannot be correctly posted via /graph endpoint.
+* In some cases, tuple on reverse edge crashes GPE.
+
+=== Fixed
+
+* GraphStudio Export package is occasionally incomplete.
+* GSE status is always "not ready" if schema is too large.
+* Cannot modify RESTPP port configuration.
+* IUM error in a cluster when not running on node m1

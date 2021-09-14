@@ -1,0 +1,79 @@
+= Introduction
+This page provides a brief overview of TigerGraph's key features, the GSQL language, versioning, and internal architecture.  
+
+TigerGraph, the world's fastest and most scalable graph analytics platform, breaks through the limitations of other graph technologies to enable real-time big data graph applications. 
+It also lowers cost by getting more done with less storage, less memory, and less time.
+
+== GSQL
+The GSQL™ software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis.  In short, TigerGraph users do most of their work via the GSQL program. 
+
+To learn more about GSQL, see the GSQL Language Reference.
+
+=== TigerGraph Data Science Library
+TigerGraph provides a collection of expertly written GSQL queries that efficiently implement common graph algorithms.
+For more information, see TigerGraph Data Science Library.
+
+== GraphStudio and Admin Portal
+GraphStudio and Admin Portal are TigerGraph's Graphic User Interfaces. 
+
+The TigerGraph GraphStudio™ UI (User Interface) provides an intuitive, browser-based interface that helps users get started quickly with graph-based application development tasks: designing a graph schema, creating a schema mapping, loading data, exploring the graph, and writing GSQL queries. 
+
+The TigerGraph Admin Portal is a browser-based devops tool which provides users an overview of a running TigerGraph system, from an application and infrastructure point of view. It also allows the users to configure the TigerGraph system through a user-friendly interface. 
+
+To learn more about GraphStudio and Admin Portal, see Web UI Guide.
+
+== TigerGraph Cloud
+TigerGraph Cloud is a fully-managed cloud database built on the same TigerGraph Enterprise Server engine that is delivering the fastest and most scalable graph database.
+TigerGraoh Cloud handles all the complexity of deploying and managing your deployments on the cloud service provider of your choice (AWS, Azure, and GCP).
+
+For more information, see TigerGraph Cloud.
+
+== Versioning
+TigerGraph uses https://semver.org/[semantic versioning]. Given a version number `MAJOR.MINOR.PATCH`:
+
+* `MAJOR` version increases when there are incompatible API changes to the previous major version
+* `MINOR` version increases when the added functionality in a backwards compatible manner
+* `PATCH` version increases when there are backwards compatible bug fixes.
+
+
+== Architecture overview
+The TigerGraph Platform runs on standard, commodity-grade Linux servers. 
+The core components (GSE and GPE) are implemented in C++ for optimal performance. TigerGraph system is designed to fit into your existing environment with a minimum of fuss.
+
+* Data Sources: The platform includes a flexible, high-performance data loader which can stream in tabular or semi-structured data, while the system is online.
+* Infrastructure : The platform is available for on-premises, cloud, or hybrid use.
+* Integration : REST APIs are provided to integrate your TigerGraph with your existing enterprise data infrastructure and workflow.
+
+The TigerGraph system uses a message-passing design to coordinate the activities of the components. RESTPP, an enhanced RESTful server, is central to the task management. Users can choose how they wish to interact with the system:
+GSQL client.  One TigerGraph instance can support multiple GSQL clients, on remote nodes.
+GraphStudio - our graphical user interface, which provides most of the basic GSQL functionality, with a graphical and intuitive interface.
+REST API. Enterprise applications which need to run the same queries many times can maximize their efficiency by communicating directly with RESTPP.
+gAdmin is used for system adminstration.
+
+== Key features
+=== High performance
+TigerGraph provides high-performance data ingestion and querying. In particular:
+
+* Fast data loading speed to build graphs - able to load 50 to 150 GB of data per hour, per machine.
+* Fast execution of parallel graph algorithms - able to traverse hundreds of million of vertices/edges per second, per machine.
+* Real-time updates and inserts using REST - able to stream 2B+ daily events in real-time to a graph with 100B+ vertices and 600B+ edges on a cluster of only 20 commodity machines.
+* Ability to unify real-time analytics with large scale offline data processing - the first and only such system.
+
+=== Rich query language
+TigerGraph's GSQL is a turing-complete language for the exploration and analysis of large scale graphs. 
+
+=== Continuous Availability
+TigerGraph goes beyond the standard scope and definition of High Availability (HA) and provides Continuous Availability with the following functionality: 
+
+* Fault tolerance against loss of database server(s) 
+** Automated recovery of services for Intra-cluster failure
+* Full native HA support for user-facing applications 
+** Seamless automatic client reconnection to standby GSQL server and GraphStudio servers 
+* Failover to remote cluster during Disaster Recovery
+* Improve RoI with additional Replicas
+** Enhanced Query Throughput performance
+** Increased concurrency for operational workloads
+
+=== ACID transactions
+The TigerGraph distributed database provides full ACID transactions with sequential consistency.
+
