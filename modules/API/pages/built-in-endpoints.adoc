@@ -180,40 +180,39 @@ TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service
 
 On a TigerGraph cluster, this endpoint is only present on the `m1` node.
 
-==== Parameters+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Name+++</th>+++
-      +++<th style="text-align:left">+++Required+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++from+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Epoch timestamp that indicates the start of the time filter. Only data
-        points reported after the timestamp will be included in the return results.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++to+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Epoch timestamp that indicates the end of the time filter. Only data points
-        reported before the timestamp will be included in the return results.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++latest+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Number of latest data points to return. If provided, the endpoint will
-        return the latest data points that satisfy the +++<code>+++what+++</code>+++, +++<code>+++who+++</code>+++ and +++<code>+++where+++</code>+++ filters
-        and ignore other time-related filters.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++what+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Name of the metric to filter for. Possible values are:+++</p>+++
-        +++<ul>++++++<li>++++++<code>+++cpu+++</code>+++: Percentage of CPU usage by component+++</li>+++
-          +++<li>++++++<code>+++mem+++</code>+++: Memory usage in megabytes by component+++</li>+++
-          +++<li>++++++<code>+++diskspace+++</code>+++: Disk usage in megabytes by directory+++</li>+++
-          +++<li>++++++<code>+++network+++</code>+++: Network traffic in bytes since the service started+++</li>+++
-          +++<li>++++++<code>+++qps+++</code>+++: Number of requests per second by endpoint+++</li>+++
-          +++<li>++++++<code>+++servicestate+++</code>+++: Whether or not the service is online. A value
-            of +++<code>+++0+++</code>+++ indicates that the service is offline while a value of +++<code>+++1+++</code>+++ means
-            the service is online+++</li>+++
-          +++<li>++++++<code>+++connection+++</code>+++: Number of open TCP connections+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++who+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Name of the component that reported the datapoint+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++where+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Name of the node that the datapoint is reported for+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+==== Parameters
+[width="100%",cols="12%,10%,78%",options="header",]
+|===
+|Name |Required |Description
+|`+from+` |No |Epoch timestamp that indicates the start of the time
+filter. Only data points reported after the timestamp will be included
+in the return results.
+
+|`+to+` |No |Epoch timestamp that indicates the end of the time filter.
+Only data points reported before the timestamp will be included in the
+return results.
+
+|`+latest+` |No |Number of latest data points to return. If provided,
+the endpoint will return the latest data points that satisfy the
+`+what+`, `+who+` and `+where+` filters and ignore other time-related
+filters.
+
+|`+what+` |No a|Name of the metric to filter for. Possible values are:
+
+* `+cpu+`: Percentage of CPU usage by component
+* `+mem+`: Memory usage in megabytes by component
+* `+diskspace+`: Disk usage in megabytes by
+directory
+* `+network+`: Network traffic in bytes since the service
+started
+* `+qps+`: Number of requests per second by
+endpoint
+* `+servicestate+`: Whether or not the service is online. A value of `+0+` indicates that the service is offline while a value of `+1+` means the service is online`+connection+`: Number of open TCP connections.
+
+|`+who+` |No |Name of the component that reported the datapoint
+
+|`+where+` |No |Name of the node that the datapoint is reported for
+|===
 
 ==== Sample requests
 
@@ -423,42 +422,32 @@ If there is no query sent in the past given seconds, an empty json will be retur
 
 In TigerGraph, when new data is being loaded into the graph (such as new vertices or edges), data is first stored in memory before it is saved to disk permanently. TigerGraph runs a rebuild of the Graph Processing Engine (GPE) to commit the data in memory to disk every 30 seconds, but you can also call this endpoint to trigger a rebuild immediately.
 
-==== Parameters:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Name+++</th>+++
-      +++<th style="text-align:left">+++Required+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++threadnum+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Number of threads used to execute the rebuild. If not specified, the number
-          specified in line 185 of the +++<code>+++.tg.cfg+++</code>+++ file (+++<code>+++&quot;RebuildThreadNumber&quot;+++</code>+++)
-          in the home directory of the server on which TigerGraph is running will
-          be used; it is set to 3 by default.+++</p>+++
-        +++<p>++++++</p>+++
-        +++<p>+++The maximum value for this parameter is the number of vCPUs per node in
-          your distributed system. If you are running a single-node server, the maximum
-          is the number of vCPUs on that node. You can run +++<code>+++lscpu+++</code>+++ in the
-          command line of your Linux server and look in the +++<code>+++CPU(s)+++</code>+++ column
-          to view the number of vCPUs.+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++vertextype+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Vertex type to perform the rebuild for. If not provided, the rebuild will
-        be run for all the vertex types.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++segid+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Segment ID of the segments to rebuild. If not provided, all segments will
-        be rebuilt. In general, it is recommended not to provide this parameter
-        and rebuild all segments.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++path+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Path to save the summary of the rebuild to. If not provided, the default
-        path is +++<code>+++/tmp/rebuildnow+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++force+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Boolean value that indicates whether to perform rebuilds for segments
-        for which there are no records of new data. Normally, a rebuild would skip
-        such segments, but if +++<code>+++force+++</code>+++ is set true, the segments will not
-        be skipped.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+==== Parameters
 
-==== Example:
+[width="100%",cols="15%,10%,75%",options="header",]
+|===
+|Name |Required |Description
+|`+threadnum+` |No |Number of threads used to execute the rebuild. If
+not specified, the number specified in line 185 of the `+.tg.cfg+` file
+(`+"RebuildThreadNumber"+`) in the home directory of the server on which
+TigerGraph is running will be used; it is set to 3 by default. The
+maximum value for this parameter is the number of vCPUs per node in your
+distributed system. If you are running a single-node server, the maximum
+is the number of vCPUs on that node. You can run `+lscpu+` in the
+command line of your Linux server and look in the `+CPU(s)+` column to
+view the number of vCPUs.
+
+|`+vertextype+` |No |Vertex type to perform the rebuild for. If not provided, the rebuild will be run for all the vertex types.
+
+|`+segid+` |No |Segment ID of the segments to rebuild. If not provided, all segments will be rebuilt. In general, it is recommended not to provide this parameter and rebuild all segments.
+
+|`+path+` |No |Path to save the summary of the rebuild to. If not provided, the default path is `+/tmp/rebuildnow+`
+
+|`+force+` |No |Boolean value that indicates whether to perform rebuilds for segments for which there are no records of new data. Normally, a rebuild would skip such segments, but if `+force+` is set true, the
+segments will not be skipped.
+|===
+
+==== Example
 
 [source,bash]
 ----
@@ -492,42 +481,36 @@ In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Stor
 
 The check passes if there are no discrepancies between the GSE and GPE in terms of deleted vertices. If there is a discrepancy, the check fails and the return result will contain the IDs of the deleted vertices that are not synced properly. If you are running TigerGraph on a distributed cluster, the check will be performed on each node of the cluster, and the endpoint will return a list containing the results of the check for every node.
 
-==== Parameters:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Name+++</th>+++
-      +++<th style="text-align:left">+++Required+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++threadnum+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Integer that indicates the number of threads used to execute the deleted
-        vertex check jobs. This parameter is optional and the default value is
-        6 if none is provided+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++segid+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++IDs of segments to perform the deleted vertex check for. If none is provided,
-        the check will be performed on all segments.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++vertextype+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Vertex types to perform the deleted vertex check for. If none is provided,
-        the check will be performed on all vertex types.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++verbose+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Integer that indicates the level of detail in the return results. Here
-          is a list of accepted values and their corresponding level of detail:+++</p>+++
-        +++<ul>++++++<li>++++++<code>+++0+++</code>+++ (default) : Only return whether the check passed and the
-            list of unsynced vertex IDs+++</li>+++
-          +++<li>++++++<code>+++1+++</code>+++: In addition to the previous level, also return vertex
-            count information+++</li>+++
-          +++<li>++++++<code>+++2+++</code>+++: In addition to the previous level, return vertex count
-            information for every segment+++</li>+++
-          +++<li>++++++<code>+++4+++</code>+++: In addition to the previous level, also return the IDs
-            of deleted vertices for every segment+++</li>++++++</ul>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++log+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Integer that indicates the log level of the deleted vertex check. This
-          log is not returned in the endpoint&apos;s HTTP response, but is printed
-          to the logs of the GPE component at +++<code>+++/tigergraph/log/gpe/log.INFO+++</code>+++:+++</p>+++
-        +++<ul>++++++<li>++++++<code>+++0+++</code>+++ (default): Report brief log for the check as a whole+++</li>+++
-          +++<li>++++++<code>+++1+++</code>+++: Report logs for each segment+++</li>+++
-          +++<li>++++++<code>+++2+++</code>+++: Report additional logs on the obtained deleted ID list+++</li>++++++</ul>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+==== Parameters
+[width="100%",cols="15%,10%,75%",options="header",]
+|===
+|Name |Required |Description
+|`threadnum` |No |Integer that indicates the number of threads used to
+execute the deleted vertex check jobs. This parameter is optional and
+the default value is 6 if none is provided
+
+|`segid` |No |IDs of segments to perform the deleted vertex check for.
+If none is provided, the check will be performed on all segments.
+
+|`vertextype` |No |Vertex types to perform the deleted vertex check for.
+If none is provided, the check will be performed on all vertex types.
+
+|`verbose` |No |Integer that indicates the level of detail in the return
+results. Here is a list of accepted values and their corresponding level
+of detail:`0` (default) : Only return whether the check passed and the
+list of unsynced vertex IDs`1`: In addition to the previous level, also
+return vertex count information `2`: In addition to the previous level,
+return vertex count information for every segment`4`: In addition to the
+previous level, also return the IDs of deleted vertices for every
+segment
+
+|`log` |No |Integer that indicates the log level of the deleted vertex
+check. This log is not returned in the endpoint’s HTTP response, but is
+printed to the logs of the GPE component at
+`/tigergraph/log/gpe/log.INFO`:`0` (default): Report brief log for the
+check as a whole`1`: Report logs for each segment`2`: Report additional
+logs on the obtained deleted ID list
+|===
 
 ==== Example:
 
@@ -1214,33 +1197,26 @@ If you add the `atomic_post` parameter to the request URL and set its value to t
 curl --data-binary @vertices.json http://localhost:9000/graph/social?automic_post=true
 ----
 
-==== Parameters:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Name+++</th>+++
-      +++<th style="text-align:left">+++Required+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++ack+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++The value of this parameter can either be +++<code>+++&quot;all&quot;+++</code>+++ or +++<code>+++&quot;none&quot;+++</code>+++.+++</p>+++
-        +++<p>++++++<code>+++&quot;all&quot;+++</code>+++: request will return after all GPE instances
-          have acknowledged the POST
-          +++<br>++++++</br>++++++<code>+++&quot;none&quot;+++</code>+++: request will return immediately after RESTPP
-          processed the POST.+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++new_vertex_only+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Boolean value that indicates whether or not to update existing vertices.
-        If the value is true, it will only insert new vertices and not update existing
-        ones.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++vertex_must_exist+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Boolean value that indicates whether or not to insert new edges when the +++<code>+++FROM+++</code>+++ or +++<code>+++TO+++</code>+++ vertices
-        don&apos;t exist.
-        +++<br>++++++</br>+++If the value is true, the request will only insert edge if both the +++<code>+++FROM+++</code>+++ and +++<code>+++TO+++</code>+++ vertices
-        of the edge already exist.
-        +++<br>++++++</br>+++If the value is false, the request will always insert new edges, and create
-        the necessary vertices with default values for their attributes.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++atomic_post+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Boolean value that indicates whether or not this request is an atomic
-        transaction. Default value is false.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+==== Parameters
+[width="100%",cols="23%,9%,68%",options="header",]
+|===
+|Name |Required |Description
+|`ack` |No |The value of this parameter can either be `"all"` or
+`"none"`. `"all"`: request will return after all GPE instances have
+acknowledged the POST `"none"`: request will return immediately after
+RESTPP processed the POST.
+
+|`new_vertex_only` |No |Boolean value that indicates whether or not to
+update existing vertices. If the value is true, it will only insert new
+vertices and not update existing ones.
+
+|`vertex_must_exist` |No |Boolean value that indicates whether or not to
+insert new edges when the `FROM` or `TO` vertices don’t exist. If the
+value is true, the request will only insert edge if both the `FROM` and
+`TO` vertices of the edge already exist. If the value is false, the
+request will always insert new edges, and create the necessary vertices
+with default values for their attributes.
+|===
 
 The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted. The JSON code can be stored in a text file or specified directly in a command line. There is a maximum size for a `POST` data payload (see the link:intro.md#size-and-time-limits[*Size Limits*] __**__section). The JSON format for describing a vertex set or edge set is summarized below.
 
@@ -1607,39 +1583,38 @@ curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User"
 }
 ----
 
-==== Parameters:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Name+++</th>+++
-      +++<th style="text-align:left">+++Required+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++permanent+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Takes a boolean value. If the value is true, the deleted vertex IDs can
-        never be inserted back, unless the graph is dropped or the graph store
-        is cleared.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++filter+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Conditions used to filter the vertices to delete. The parameter takes
-        a list of conditions, which is a string of comma-separated values. If any
-        filter conditions are provided, the endpoint will only delete the vertices
-        that satisfy the conditions. Six comparison operators are supported for
-        this parameter: +++<code>+++=+++</code>+++, +++<code>+++!=+++</code>+++, +++<code>+++>+++</code>+++, +++<code>+++>=+++</code>+++, +++<code>+++<+++</code>+++ and +++<code>+++<=+++</code>+++.
-        If the value on the right side of an operator is a string literal, it should
-        be enclosed in double-quotes.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++limit+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Integer value that specifies the total number of vertices to delete.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++sort+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">+++Attributes to sort the vertices by. In delete operations,+++<code>+++sort+++</code>+++ should
-        always be used together with +++<code>+++limit+++</code>+++. The endpoint will delete
-        the number of vertices under the limit specified in the order specified.
-        The parameter takes a list of attributes, and the endpoint will sort all
-        vertices based on the attributes provided in the list in order. Add +++<code>+++&quot;-&quot;+++</code>+++ in
-        front of the attribute to sort by that attribute in descending order.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++timeout+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Integer that specifies the number of seconds after which the query will
-          time out. If the parameter is set to 0 or isn&apos;t provided, the system-wide+++</p>+++
-        +++<p>+++endpoint timeout setting is applied.+++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+==== Parameters
+[width="100%",cols="15%,10%,75%",options="header",]
+|===
+|Name |Required |Description
+|`permanent` |No |Takes a boolean value. If the value is true, the
+deleted vertex IDs can never be inserted back, unless the graph is
+dropped or the graph store is cleared.
+
+|`filter` |No |Conditions used to filter the vertices to delete. The
+parameter takes a list of conditions, which is a string of
+comma-separated values. If any filter conditions are provided, the
+endpoint will only delete the vertices that satisfy the conditions. Six
+comparison operators are supported for this parameter: `=`, `!=`, `>`,
+`>=`, `<` and `<=`. If the value on the right side of an operator is a
+string literal, it should be enclosed in double-quotes.
+
+|`limit` |No |Integer value that specifies the total number of vertices
+to delete.
+
+|`sort` |No |Attributes to sort the vertices by. In delete
+operations,`sort` should always be used together with `limit`. The
+endpoint will delete the number of vertices under the limit specified in
+the order specified. The parameter takes a list of attributes, and the
+endpoint will sort all vertices based on the attributes provided in the
+list in order. Add `"-"` in front of the attribute to sort by that
+attribute in descending order.
+
+|`timeout` |No |Integer that specifies the number of seconds after which
+the query will time out. If the parameter is set to 0 or isn’t provided,
+the system-wide endpoint timeout setting is applied.
+|===
+
 
 === Delete vertices by type
 
@@ -2155,38 +2130,30 @@ Each time a new TigerGraph query is installed, a dynamic endpoint is generated. 
 
 ==== Query parameter passing
 
-When using a `GET` request to run an installed query, the query parameters are link:intro.md#query-string-parameter-passing[passed in through the query string of the URL].+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
-      +++<th style="text-align:left">+++Query string format+++</th>+++
-      +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++Set or bag of primitives+++</td>+++
-      +++<td style="text-align:left">+++Assign multiple values to the same parameter name.+++</td>+++
-      +++<td style="text-align:left">+++A set +++<code>+++p1+++</code>+++ of integers: +++<b>++++++<code>+++p1=1&p1=5&p1=10+++</code>++++++</b>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX<type>+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Use the ID of the vertex:+++</p>+++
-        +++<p>++++++<code>+++parameterName=vertex_id+++</code>++++++</p>++++++</td>+++
-      +++<td style="text-align:left">+++A vertex with parameter name +++<code>+++vp+++</code>+++ and an ID of person2:
-        +++<br>++++++</br>++++++<b>++++++<code>+++vp=person2+++</code>++++++</b>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>++++++<code>+++VERTEX+++</code>++++++</p>+++
-        +++<p>+++(type not pre-specified)+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Use two query string parameters+++<b>+++:+++</b>++++++</p>+++
-        +++<p>++++++<code>+++parameterName=vertex_id+++</code>++++++</p>+++
-        +++<p>++++++<code>+++parameterName.type=vertex_type+++</code>++++++</p>+++
-        +++<p>++++++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++A vertex with parameter name +++<code>+++va+++</code>+++ , type +++<code>+++person+++</code>+++ and
-          and ID +++<code>+++person1+++</code>+++:+++</p>+++
-        +++<p>++++++<code>+++va=person1&va.type=person+++</code>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of +++<code>+++VERTEX<type>+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Assign multiple vertex IDs to the same +++<code>+++SET+++</code>+++ or +++<code>+++BAG+++</code>+++ parameter
-        name.
-        +++<br>++++++</br>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++A set parameter named +++<code>+++vp+++</code>+++ of vertices of type person:+++</p>+++
-        +++<p>++++++<code>+++vp=person3&vp=person4+++</code>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++Set or bag of +++<code>+++VERTEX+++</code>++++++</p>+++
-        +++<p>+++(type not pre-specified)+++</p>++++++</td>+++
-      +++<td style="text-align:left">+++The +++<code>+++SET+++</code>+++ or +++<code>+++BAG+++</code>+++ must be treated as an array. A vertex
-        ID and type must be provided for the vertex element at each index.+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++A set parameter named +++<code>+++vp+++</code>+++ of vertices:+++</p>+++
-        +++<p>++++++<code>+++vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post+++</code>++++++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+When using a `GET` request to run an installed query, the query parameters are link:intro.md#query-string-parameter-passing[passed in through the query string of the URL].
+[width="100%",cols="28%,36%,36%",options="header",]
+|===
+|Parameter type |Query string format |Example
+|Set or bag of primitives |Assign multiple values to the same parameter
+name. |A set `p1` of integers: `**p1=1&p1=5&p1=10**`
+
+|`VERTEX<type>` |Use the ID of the vertex:`parameterName=vertex_id` |A
+vertex with parameter name `vp` and an ID of person2: `**vp=person2**`
+
+|`VERTEX`(type not pre-specified) |Use two query string
+parameters**:**`parameterName=vertex_id\'\'parameterName.type=vertex_type`
+|A vertex with parameter name `va` , type `person` and and ID
+`person1`:`va=person1&va.type=person`
+
+|Set or bag of `VERTEX<type>` |Assign multiple vertex IDs to the same
+`SET` or `BAG` parameter name. |A set parameter named `vp` of vertices
+of type person:`vp=person3&vp=person4`
+
+|Set or bag of `VERTEX`(type not pre-specified) |The `SET` or `BAG` must
+be treated as an array. A vertex ID and type must be provided for the
+vertex element at each index. |A set parameter named `vp` of
+vertices:`vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
+|===
 
 ==== Specify replica
 
@@ -2238,32 +2205,31 @@ Users can also run queries through a `POST` request, which allows them to pass q
 
 ==== Query parameter Passing
 
-When using a `POST` request to run an installed query, the query parameters are passed in through the request body and link:intro.md#formatting-data-in-json[encoded in JSON format]. The formatting rules for the JSON payload is the same as link:../gsql-ref/querying/query-operations.md#parameter-json-object[using JSON to pass in parameters in the `RUN QUERY` command].+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
-      +++<th style="text-align:left">+++Syntax+++</th>+++
-      +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++DATETIME+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a string formatted as +++<code>+++&quot;YYYY-MM-DD HH-MM-SS&quot;+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<code>+++&quot;2019-02-19 19:19:19&quot;+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of primitives+++</td>+++
-      +++<td style="text-align:left">+++Use a JSON array containing the primitive values+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++[&quot;a&quot;, &quot;list&quot;, &quot;of&quot;, &quot;args&quot;]+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX<type>+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a JSON object containing a field +++<code>+++&quot;id&quot;+++</code>+++ for the
-        vertex ID and a field +++<code>+++&quot;type&quot;+++</code>+++ for the type of the vertex+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++<code>+++{&quot;id&quot;: &quot;person1&quot;,+++</code>++++++</p>+++
-        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;}+++</code>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX+++</code>+++ (type not specified)+++</td>+++
-      +++<td style="text-align:left">+++Use a JSON object containing a field +++<code>+++&quot;id&quot;+++</code>+++ for the
-        vertex ID+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++{&quot;id&quot;: &quot;person1&quot;}+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of +++<code>+++VERTEX<type>+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a JSON array containing a list of JSON +++<code>+++VERTEX<type>+++</code>+++ object+++</td>+++
-      +++<td style="text-align:left">++++++<code>+++[{&quot;id&quot;: &quot;person1&quot;}, {&quot;id&quot;: &quot;person2&quot;}]+++</code>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++Set or bag of vertices of unspecified types+++</td>+++
-      +++<td style="text-align:left">+++Use a JSON array containing a list of JSON +++<code>+++VERTEX+++</code>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++<code>+++[{&quot;id&quot;: &quot;person1&quot;,+++</code>++++++</p>+++
-        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;},{&quot;id&quot;: &quot;person2&quot;,+++</code>++++++</p>+++
-        +++<p>++++++<code>+++&quot;type&quot;: &quot;person&quot;}]+++</code>++++++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+When using a `POST` request to run an installed query, the query parameters are passed in through the request body and link:intro.md#formatting-data-in-json[encoded in JSON format]. The formatting rules for the JSON payload is the same as link:../gsql-ref/querying/query-operations.md#parameter-json-object[using JSON to pass in parameters in the `RUN QUERY` command].
+
+[width="99%",cols="28%,36%,36%",options="header",]
+|===
+|Parameter type |Syntax |Example
+|`DATETIME` |Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
+|`"2019-02-19 19:19:19"`
+
+|Set or bag of primitives |Use a JSON array containing the primitive
+values |`["a", "list", "of", "args"]`
+
+|`VERTEX<type>` |Use a JSON object containing a field `"id"` for the
+vertex ID and a field `"type"` for the type of the vertex
+|`{"id": "person1",\'\'"type": "person"}`
+
+|`VERTEX` (type not specified) |Use a JSON object containing a field
+`"id"` for the vertex ID |`{"id": "person1"}`
+
+|Set or bag of `VERTEX<type>` |Use a JSON array containing a list of
+JSON `VERTEX<type>` object |`[{"id": "person1"}, {"id": "person2"}]`
+
+|Set or bag of vertices of unspecified types |Use a JSON array
+containing a list of JSON `VERTEX`
+|`[{"id": "person1",\'\'"type": "person"},{"id": "person2",\'\'"type": "person"}]`
+|===
 
 ==== Specify replica
 
@@ -2477,21 +2443,30 @@ $ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&reques
 
 If one or more of the provided query IDs (`requestid`) are invalid, the return JSON will include an``unknown_requestid``field containing all the invalid query IDs. If a query ID is marked as unknown, it means either the query does not exist or that it was not run in Detached Mode.
 
-==== Parameters:+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">++++++<b>+++Name+++</b>++++++</th>+++
-      +++<th style="text-align:left">++++++<b>+++Required+++</b>++++++</th>+++
-      +++<th style="text-align:left">++++++<b>+++Description+++</b>++++++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++graph_name+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Yes+++</td>+++
-      +++<td style="text-align:left">+++Name of the graph the query belongs to. Required parameter.+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++requestid+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++No+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++String ID of the query. It also accepts the value +++<code>+++&quot;all&quot;+++</code>+++,
-          in which case it will return a status report for every running query. When
-          multiple +++<code>+++requestid+++</code>+++ are provided, it will return the status of
-          all corresponding queries. If no +++<code>+++requestid+++</code>+++ is provided, or if
-          the value of +++<code>+++requestid+++</code>+++ is +++<code>+++&quot;all&quot;+++</code>+++, it will
-          return the status of all queries that are currently running.+++</p>+++
-        +++<p>+++The output will contain one JSON object for each query.+++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+==== Parameters
+[width="100%",cols="22%,78%",options="header",]
+|===
+|*Field* |*Description*
+|`url` |URL of the given query.
+
+|`status` |The status of the given query. Possible values are
+`“success”`, `“timeout”`, `“aborted”`, or `“running”`.
+
+|`startTime` |The timestamp for the start time of the given query.
+
+|`requestid` |The query ID associated with the given query status JSON
+object.
+
+|`expirationTime` |The timestamp for when the given query times out. The
+default timeout limit is 16 seconds and can be set using
+thehttps://docs.tigergraph.com/v/3.2/dev/restpp-api/intro#gsql-query-timeout[`GSQL-TIMEOUT`]
+header.
+
+|`elapsedTime` |Elapsed real time of the given query measured in
+milliseconds. For completed queries, the value shows the total runtime
+of the request. For ongoing queries, it shows the amount of time taken
+so far.
+|===
 
 === Check query results (Detached Mode)
 
