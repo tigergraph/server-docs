@@ -1,4 +1,4 @@
-= Advanced Platform-layer Commands
+= Cluster Commands
 
 This page documents a list of advanced Linux commands that simplify platform operations that are performed often during debugging, especially on high availability (HA) clusters. Only the TigerGraph platform owner - the Linux user created during installation has access to the commands on this page.
 
@@ -28,58 +28,6 @@ Last login: Fri Apr 23 18:24:27 2021
 [[tigergraph@ip-172-31-93-187 ~]$
 ----
 
-== Loading data
-
-=== Offline loading
-
-[source,bash]
-----
-$ gautoloading.sh (-g <graph_name> -j <loading_job_name> | path_to_config_file)
-----
-
-With huge data volumes, data loading can be time-consuming. If you find yourself often loading huge volumes of data into an empty graph, and your data volume is so large that your loading jobs are taking hours to complete, you might consider using offline loading to speed up data loading.
-
-In order to use offline loading, all the filename variables in the loading job must take an initial path value. After creating the loading job and ensuring that all the data files are referenced correctly in the loading job, use the options `-g` and `-j` to specify the graph and loading job to run. During offline loading, your database is focused on loading data and will not be able to handle requests and queries.
-
-{% hint style="danger" %}
-Offline loading deletes all existing graph data before it starts. Back up your data before using offline loading.
-{% endhint %}
-
-==== Options
-
-* `-g <graph_name>`: Name of the graph whose loading job to run
-* `-j <loading_job_name>`: Name of the loading job to run
-
-==== Example
-
-The following command runs the loading job `load_ldbc_snb` on the graph `ldbc_snb`:
-
-[source,bash]
-----
-$ gautoloading.sh -g ldbc_snb -j load_ldbc_snb
-----
-
-You can also provide the graph name and the loading job name with a config file written in Bash:
-
-{% code title="~/example_config" %}
-
-[source,bash]
-----
-# the name of the graph for the initial loading
-GRAPH_NAME="tpc_graph"
-
-# the name of loading jobs separated by white space
-LOADING_JOBS=("load_test")
-----
-
-{% endcode %}
-
-Once you have the config file, you can run `gautoloading.sh` with the config file instead of the `-g` and `-j` options:
-
-[source,bash]
-----
-$ gautoloading.sh ~/example_config
-----
 
 == File operations
 
