@@ -7,7 +7,7 @@ This page explains the procedures for various role management tasks under TigerG
 
 *Syntax*
 
-[source,sql]
+[source,gsql]
 ----
 CREATE ROLE <role_name> (, <role_name>)* [ON GRAPH <graph_name>]
 ----
@@ -20,7 +20,7 @@ CREATE ROLE <role_name> (, <role_name>)* [ON GRAPH <graph_name>]
 
 . To create a local role, run the `CREATE ROLE` command like below. If you choose not to specify a graph in the command, the current scope will be used as the scope of the role:
 +
-[source,sql]
+[source,gsql]
 ----
 GSQL > USE GRAPH example_graph
 GSQL > CREATE ROLE role1, role2
@@ -38,7 +38,7 @@ Successfully created local roles for graph 'example_graph': [role1, role2].
 [discrete]
 ==== Syntax
 
-[source,sql]
+[source,gsql]
 ----
 CREATE ROLE <role_name> (, <role_name>)* ON GLOBAL
 ----
@@ -53,7 +53,7 @@ CREATE ROLE <role_name> (, <role_name>)* ON GLOBAL
 
 . To create a global role, run the `CREATE ROLE` command like below. Replace `role1` with the name of the role you are creating.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE ROLE role1 ON GLOBAL
 ----

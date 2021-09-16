@@ -86,7 +86,7 @@ Yes. Normally, an end-of-line character triggers execution of a line.  You can u
 
 This is an example of a loading statement split into multiple lines using BEGIN and END:
 
-[source,sql]
+[source,gsql]
 ----
 BEGIN
 CREATE ONLINE_POST JOB load1 FOR GRAPH LaborForce {
@@ -108,7 +108,7 @@ When a license limit has been reached, your system will be placed in a read-only
 
 A TigerGraph graph schema consists of (A) one or more vertex types, (B) one or more edge types, and (C) a graph type.  Each edge type is defined to be either DIRECTED or UNDIRECTED. The graph type is simply the list of vertex types and edges types which may exist in the graph. For more: See the section "Defining a Graph Schema" in thelink:../dev/gsql-ref/ddl-and-loading/[_*GSQL Language Reference, Part 1: Defining Graphs and Loading Data*_].  Below is an example of a graph schema containing two vertex types, one edge type, and one graph type:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX user (PRIMARY_ID user_id UINT, age UINT, gender STRING, postalCode STRING)
 CREATE VERTEX occupation (PRIMARY_ID occ_id STRING, occ_name STRING)
@@ -292,14 +292,14 @@ The next two parameters, FILENAME and EOL are required if the job is an ONLINE_P
 
 All of the these five parameters are combined into one USING clause with a list of parameter/value pairs.  The parameters may appear in any order.
 
-[source,sql]
+[source,gsql]
 ----
 USING parameter1="value1", parameter2="value2",... , parameterN="valueN"
 ----
 
 The location of the USING clause depends on whether the job is an offline loading job or an online loading job. For offline loading, the USING clause appears at the end of the LOAD statement. For example:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE LOADING JOB load1 FOR GRAPH LaborForce{
   LOAD "jobs.csv" TO VERTEX occupation VALUES ($0, $1) USING HEADER="true", SEPARATOR="|", QUOTE="double";
@@ -308,7 +308,7 @@ CREATE LOADING JOB load1 FOR GRAPH LaborForce{
 
 For online loading, the USING clause appears at the end of the RUN statement
 
-[source,sql]
+[source,gsql]
 ----
 CREATE ONLINE_POST JOB load2 FOR GRAPH LaborForce{
   LOAD TO VERTEX occupation VALUES ($0, $1);
@@ -320,14 +320,14 @@ RUN JOB load2 USING FILENAME="./jobs.csv", HEADER="true", SEPARATOR="|", QUOTE="
 
 You can define a header line (a sequence of column names) within a loading job using a DEFINE HEADER statement, such as the following:
 
-[source,sql]
+[source,gsql]
 ----
 DEFINE HEADER head1 = "jobId", "jobName";
 ----
 
 This statement must appear before the LOAD statement that wishes to use the header definition.  Then, the LOAD statement must set the USER_DEFINED_HEADER parameter in the USING clause. A brief example is shown below:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE ONLINE_POST JOB load2 FOR GRAPH LaborForce{
   DEFINE HEADER head1 = "jobId", "jobName";
@@ -355,7 +355,7 @@ First, to clarify the task, consider a graph schema with two vertex types, Book 
 {% tabs %}
 {% tab title="create_book_schema.gsql" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX Book  (PRIMARY_ID bookcode STRING, title STRING)
 CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
@@ -371,7 +371,7 @@ Further, each row of the input data file contains three fields: bookcode , title
 {% tabs %}
 {% tab title="book.dat" %}
 
-[source,sql]
+[source,gsql]
 ----
 bookcode|title|genres
 101|"Harry Potter and the Philosopher's Stone"|fiction,fantasy,young adult
@@ -388,7 +388,7 @@ To flatten the data, we use a two-step load. The first LOAD statement uses the f
 {% tabs %}
 {% tab title="load_books.gsql" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE ONLINE_POST JOB load_books FOR GRAPH book_rating {
   LOAD
@@ -439,7 +439,7 @@ There is another version of the flatten function which has four arguments and wh
 {% tabs %}
 {% tab title="book2.dat" %}
 
-[source,sql]
+[source,gsql]
 ----
 bookcode|title|genres
 101|"Harry Potter and the Philosopher's Stone"|FIC:fiction,ADV:adventure,FTS:fantasy,YA:young adult
@@ -454,7 +454,7 @@ Then the following loading statements would be appropriate:
 {% tabs %}
 {% tab title="load_books2.gsql" %}
 
-[source,sql]
+[source,gsql]
 ----
 CREATE ONLINE_POST JOB load_books2 FOR GRAPH book_rating {
   LOAD
@@ -485,7 +485,7 @@ No. One of the advantages of the TigerGraph loading system is the flexible relat
 
 From the LOAD statement perspective for a online loading job:
 
-[source,sql]
+[source,gsql]
 ----
 LOAD
   TO VERTEX vertex_type VALUES (attr_expr...) [WHERE conditions],
@@ -606,7 +606,7 @@ Vertices :
 
 In a CREATE VERTEX statement, the PRIMARY_ID is required and is always listed first. User-defined attributes are optional and come after the required ID fields.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE VERTEX Book  (PRIMARY_ID bookcode STRING, title STRING)
 CREATE VERTEX Genre (PRIMARY_ID genre_id STRING, genre_name STRING)
@@ -616,14 +616,14 @@ CREATE GRAPH book_rating (Book, Genre, book_genre)
 
 In a built-in query, if you wish to select vertices by specifying an attribute value, you use the attribute name (e.g., title):
 
-[source,sql]
+[source,gsql]
 ----
 SELECT * FROM Book WHERE title=="The Three-Body Problem"
 ----
 
 In contrast, if you wish to reference vertices by the id value, the lowercase keyword *`primary_id`* must be used. Note that that query does not use the id name *`pid`* .
 
-[source,sql]
+[source,gsql]
 ----
 SELECT * FROM Book WHERE primary_id=="101"
 ----
@@ -632,7 +632,7 @@ Edges :
 
 In a CREATE EDGE statement, the FROM and TO vertex identifiers are required and are always listed first. The FROM and TO values should match the PRIMARY_ID values of a source vertex and a target vertex. In the example below, *`rating`* and *`date_time`* are user-defined optional attributes.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE UNDIRECTED EDGE book_genre (FROM Book, TO Genre, rating uint, date_time datetime)
 ----
@@ -670,7 +670,7 @@ The optional additional operation INSTALL QUERY -OPTIMIZE will take more time, b
 
 _Legal:_
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY query1...
 INSTALL QUERY query1
@@ -695,7 +695,7 @@ In short, yes. They will not be executed at the same time, but the installations
 
 Yes. A ListAccum is like an array, a 1-dimensional array.  If you nest ListAccums as the elements within an outer ListAccum, you have effectively made a 2-dimensional array. Please read Section "Nested Accumulators" in the link:../dev/gsql-ref/querying/[_*GSQL Language Reference Part 2 - Querying*_]for more details. Here is an example:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY nestedAccumEx() FOR GRAPH anyGraph {
   ListAccum<ListAccum<INT>> @@_2d_list;
@@ -739,7 +739,7 @@ Yes, please read Section "Nested Accumulators" in the link:../dev/gsql-ref/query
 
 Here is an example:
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY nestedMap() FOR GRAPH anyGraph
 {

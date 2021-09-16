@@ -8,14 +8,14 @@ When the TigerGraph platform is installed, the GSQL client and server are on the
 
 To run the client, execute the jar file each time that you would run gsql if you were local to the GSQL server.  That is, the command
 
-[,sql]
+[,gsql]
 ----
 java -jar <path>gsql_client.jar
 ----
 
 takes the place of gsql.  For example, the commands
 
-[,sql]
+[,gsql]
 ----
 gsql DROP ALL
 gsql create_my_schema.gsql
@@ -24,7 +24,7 @@ gsql LS
 
 would become
 
-[,sql]
+[,gsql]
 ----
 java -jar gsql_client.jar DROP ALL
 java -jar gsql_client.jar create_my_schema.gsql
@@ -33,7 +33,7 @@ java -jar gsql_client.jar LS
 
 Therefore, it may be useful to define a Unix alias:
 
-[,sql]
+[,gsql]
 ----
 alias gsql="java -jar <path>/gsql_client.jar"
 ----
@@ -82,7 +82,7 @@ Rule: If a remote GSQL client invokes an instruction containing a relative path,
 
 For example, if the data file cf_data.csv is in the folder /home/tigergraph/example/cf/, then the command to run the loading job might look like this:
 
-[,sql]
+[,gsql]
 ----
 java -jar gsql_client.jar 'RUN JOB load_cf USING FILENAME="/home/tigergraph/example/cf/cf_data.csv", SEPARATOR=",", EOL="\n"
 ----
@@ -121,7 +121,7 @@ A. Do initial client setup. This is done only once.
 
 {% code title="Sample config file: /home/tigergraph/gsql_client/gsql_server_ip_config" %}
 
-[,sql]
+[,gsql]
 ----
 123.45.67.255
 ----
@@ -130,7 +130,7 @@ A. Do initial client setup. This is done only once.
 
 . In the .bashrc file in your home directory, add an alias for gsql which points to the standard location:
 
-[,sql]
+[,gsql]
 ----
 alias gsql='java -jar ~/gsql_client/gsql_client.jar'
 ----
@@ -139,7 +139,7 @@ B. Add a standard header to each bash script.
 
 {% code title="standard which makes 'gsql' work on remote clients" %}
 
-[,sql]
+[,gsql]
 ----
 alias gsql='java -jar gsql_client.jar'
 shopt -s expand_aliases
@@ -161,7 +161,7 @@ Here is the resulting script.  Four standard lines were added to the beginning, 
 
 {% code title="RUN_cf_remote.sh: Modified bash script for Collaborative Filtering (cf) example" %}
 
-[,sql]
+[,gsql]
 ----
 #!/bin/bash
 alias gsql='java -jar gsql_client.jar'

@@ -72,7 +72,7 @@ A tag name has to be defined via `ADD TAG` before it can be used. Each base grap
 
 {% code title="Syntax for ADD TAG" %}
 
-[source,erlang]
+[source,gsql]
 ----
 ADD TAG <tag_name> [DESCRIPTION <tag_description>]
 ----
@@ -81,7 +81,7 @@ ADD TAG <tag_name> [DESCRIPTION <tag_description>]
 
 `ADD TAG` can only be used inside a `SCHEMA_CHANGE JOB`. An example is below:
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH socialNet
 
@@ -98,7 +98,7 @@ RUN SCHEMA_CHANGE JOB add_tags
 
 Run `ls` to see a list of defined tags:
 
-[source,erlang]
+[source,gsql]
 ----
 ...
 
@@ -115,7 +115,7 @@ The `DROP TAG` command not only removes the given tag(s) from the catalog of ava
 
 {% code title="Syntax for DROP TAG" %}
 
-[source,erlang]
+[source,gsql]
 ----
 DROP TAG <tag_name> ["," <tag_name>]*
 ----
@@ -124,7 +124,7 @@ DROP TAG <tag_name> ["," <tag_name>]*
 
 Like `ADD TAG`, `DROP TAG` also needs to be inside a `SCHEMA_CHANGE JOB`:
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH socialNet
 
@@ -148,7 +148,7 @@ A tag-based graph is a filtered view of a base graph, where a base graph is a si
 
 A vertex type has to be _*taggable*_ to accept tags. `TAGGABLE` is a boolean property of a vertex type that can be set with `CREATE VERTEX` initially or with `ALTER VERTEX` in a schema change job:
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH socialNet
 
@@ -164,7 +164,7 @@ RUN GLOBAL SCHEMA_CHANGE JOB make_taggable
 
 The property TAGGABLE is false by default. To change this default, use the `WITH` clause below when creating a vertex type:
 
-[source,erlang]
+[source,gsql]
 ----
 CREATE VERTEX v2(PRIMARY_ID id UINT, name STRING) WITH TAGGABLE="true"
 ----
@@ -184,7 +184,7 @@ After a tag set and taggable vertex types have been created, we can use the tags
 
 Here is an example of creating a tag-based graph from the base graph `socialNet`.
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH socialNet
 CREATE GRAPH vipNet AS socialNet(person:vip, post, friend, posted, liked)
@@ -196,7 +196,7 @@ Edges do not have tag expressions. An edge will be included when both of its ver
 
 To describe a combination of tags, use the `&` operator to combine the tags:
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH socialNet
 CREATE GRAPH mixedNet AS socialNet(person:public&vip, post:public&tech&dummy, friend, posted, liked)
@@ -208,7 +208,7 @@ The graph `mixedNet` will only include the `person` vertices having both the `pu
 
 If the desired tag-based graph is "anything in the base graph that has these tags", there is a convenient shortcut:
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH socialNet
 CREATE GRAPH publicNet2 AS socialNet:public
@@ -216,7 +216,7 @@ CREATE GRAPH publicNet2 AS socialNet:public
 
 is the same as
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH socialNet
 CREATE GRAPH publicNet1 AS socialNet(person:public, post:public, friend, posted, liked)
@@ -228,7 +228,7 @@ The formal syntax for both the general form and the simplified form of creating 
 
 {% code title="Syntax for CREATE GRAPH for a tag-based graph" %}
 
-[source,erlang]
+[source,gsql]
 ----
 <create_tag_graph> :=
     CREATE GRAPH <tag_graph_name> AS <base_graph_name>
@@ -269,7 +269,7 @@ To add or modify tags, you should work at the base graph level.
 
 `addTags()` is shown below. This query will add tags to person vertices to achieve the same effect as a base graph loading job example in the previous section.
 
-[source,sql]
+[source,gsql]
 ----
 CREATE QUERY addTagsToPerson() {
   Seed = { any };
@@ -295,7 +295,7 @@ CREATE QUERY addTagsToPerson() {
 
 Use link:../reference/vertex-level-access-control-functions.md#removetags-string-tag-1-string-tagn[`removeTags()`] and link:../reference/vertex-level-access-control-functions.md#removealltags[`removeAllTags()`] to remove tags from vertices:
 
-[source,erlang]
+[source,gsql]
 ----
 // remove tag “vip” and “public” from all person vertices.
 CREATE QUERY removetagsFromPerson() {
@@ -335,7 +335,7 @@ The `LOAD` statement has an optional clause for explicit tagging of loaded data.
 
 Suppose we want to put the tags `vip` and `public` on the `person` vertex data coming from a certain file. We have three files: `persons1`, `persons2`, `persons3`.
 
-[source,erlang]
+[source,gsql]
 ----
 $ cat persons1
 person1,Male
@@ -355,7 +355,7 @@ person8,Male,vip
 
 Create and run three loading jobs:
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH socialNet
 
@@ -387,7 +387,7 @@ Note that the `TAGS` clause can specify a tag with a string literal (`"vip"`) so
 
 We have three post files: `posts1`, `posts2`, and `posts3`.
 
-[source,erlang]
+[source,gsql]
 ----
 $ cat posts1
 3,cats,2011-02-05 01:02:44
@@ -410,7 +410,7 @@ $ cat posts3
 
 We create and run the following loading jobs:
 
-[source,sql]
+[source,gsql]
 ----
 USE GRAPH socialNet
 
@@ -437,7 +437,7 @@ Loading data to a tag-based graph automatically tags each vertex with the tags s
 
 If you load data into a tag-based graph, these vertices are actually being added to the parent base graph. If two tag-based graphs have overlapping views (e.g. if the graph `vipNet2` also includes `person:vip`), then when one adds a vertex via the tag-based graph, the other tag-based graph may also see it.
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH vipNet
 
@@ -460,7 +460,7 @@ RUN LOADING JOB loadMember USING f="./persons3"
 
 The graph `vipNet` only includes vertices with the tag `vip`. We can verify this by running a simple query to return all person vertices in `vipNet`:
 
-[source,erlang]
+[source,gsql]
 ----
 USE GRAPH vipNet
 
@@ -479,7 +479,7 @@ RUN QUERY findAll()
 
 The output of the query would be:
 
-[source,erlang]
+[source,gsql]
 ----
 {
   "error": false,
