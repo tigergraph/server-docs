@@ -27,6 +27,10 @@ The `{% hint style %}` template marker remained untouched.
 This is an admonition
 ====
 ----
+[IMPORTANT]
+====
+hello this is important
+====
 
 [#style-matching]
 === Admonition style matching
@@ -180,6 +184,24 @@ needs to change to:
 ----
 image::diagram-draft-1-.svg[]
 ----
+
+==== Inline images
+
+WARNING: Inline images are very similar, but still different from block images that take up a block.
+
+Inline images have a different marker in Asciidoc. Instead of two colons, they only have one.
+
+.Example inline image in GraphStudio docs
+[source]
+----
+Select one or more data files (holding down the "shift" key to select multiple data files), and click on the "start loading" buttonimage:start_loading.png[]on the toolbar.
+----
+
+In the GraphStudio docs, the inline images are left together with the paragraph.
+In many cases there is not even a space.
+In the example above, `image:` directly follows the word "button".
+
+However, they always start with `image:` with only one colon, and ends with a pair of square brackets, inside which are captions for the image.
 
 == Code languages
 Gitbook did not allow us to customize syntax highlighting, so we have been using ErLang and SQL highlighting rules in our documentation.
