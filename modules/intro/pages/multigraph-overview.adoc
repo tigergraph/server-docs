@@ -31,7 +31,8 @@ A graph ****is defined as a set of vertex types and edge types. More precisely, 
 CREATE GRAPH <gname> (<list of vertex types & edge types>)
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 *MultiGraph Principles*
 
 * A TigerGraph instance with a basic license key can have one graph. A TigerGraph instance with a MultiGraph license key can create multiple graphs.
@@ -41,13 +42,14 @@ CREATE GRAPH <gname> (<list of vertex types & edge types>)
 * A vertex type or edge type created by a superuser is a global type.
 * A *`superuser`* or *`globaldesigner`* can include a global vertex or edge type in one or more graphs. Global types can be shared among multiple graphs.
 * Users with the *`admin`* or *`designer`* role for a particular graph can add local vertex types and edge types to their own graph. Local types cannot be shared among multiple graphs.
-{% endhint %}
+====
 
 === Graph-Specific Roles and Privileges
 
 The TigerGraph system includes several predefined roles**.** Each role is a fixed and logical set of privileges to perform operations. In order to access a graph, a user must be granted a role on that graph. Without a role, a user has no meaningful access.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 *Role-Based MultiGraph Access Control*
 
 * User roles are granted or revoked on a per-graph basis. Each GRANT or REVOKE statement specifies not only a role but also a graph.
@@ -55,17 +57,18 @@ The TigerGraph system includes several predefined roles**.** Each role is a fixe
 * The *`superuser`* can grant a role to any user on any graph.
 * A *`superuser`* can pick a user to be an *`admin`* on a particular graph. The admin can then manage user privileges on their graph.
 * A user may be granted different roles on different graphs.
-{% endhint %}
+====
 
 For details about managing users, privileges, and roles, see xref:user-access:README.adoc[User Privileges and Authentication]. There you will find a chart describing each of the roles in detail.
 
 === Setting a Working Graph
 
-{% hint style="info" %}
+[NOTE]
+====
 
 * A user must set their working graph in order to access that graph, either using the -g flag with the GSQL command, or by using the `USE GRAPH` command.
 * Users who have privileges on more than one graph (including superusers) may only work with one graph at a time. The `GLOBAL SCHEMA_CHANGE JOB` stretches this rule.
-{% endhint %}
+====
 
 Note that the `CREATE` commands for queries, loading jobs, and schema_change jobs require that the graph name be specified, even for systems with only one graph.
 

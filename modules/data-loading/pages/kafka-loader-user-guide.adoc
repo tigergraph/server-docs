@@ -75,11 +75,12 @@ For simplicity, you can merge the `CREATE DATA_SOURCE` and `SET` statements:
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "/path/to/kafka.config"
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 
 * If you have a TigerGraph cluster, the configuration file must be on machine m1, where the GSQL server and GSQL client both reside,  and it must be in JSON format. If the configuration file uses a relative path, the path should be relative to the GSQL client working directory.
 * Each time when the config file is updated, you must run "SET data_source_name"  to update the data source details in the dictionary.
-{% endhint %}
+====
 
 To further simplify, instead of specifying the Kafka data source config file path, you can also directly provide the Kafka data source configuration as a string argument, as shown below:
 
@@ -88,9 +89,10 @@ To further simplify, instead of specifying the Kafka data source config file pat
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "{\"broker\":\"broker.full.domain.name:9092\"}"
 ----
 
-{% hint style="success" %}
+[NOTE]
+====
 *Tip*: The above simplified statement is useful for using Kafka Data Loader in TigerGraph Cloud. In TigerGraph Cloud (tgcloud.io), you can use GSQL web shell to define and create Kafka data sources, without creating the Kafka data source configuration file in filesystem.
-{% endhint %}
+====
 
 *Local data source vs global data source:*
 
@@ -123,9 +125,10 @@ GSQL > REVOKE DATA_SOURCE k1 FROM GRAPH graph1, graph2
 GSQL > CREATE DATA_SOURCE KAFKA k1 = "/path/to/config" FOR GRAPH test_graph
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 In the above statement, the local data_source k1 is only accessible to graph test_graph. A superuser cannot grant it to another graph**.**
-{% endhint %}
+====
 
 ==== DROP DATA_SOURCE
 
@@ -253,9 +256,10 @@ The Kafka Loader uses the same https://docs.tigergraph.com/dev/gsql-ref/ddl-and-
 RUN LOADING JOB job1 USING f1, f3="$k1:~/topic_part3_config.json", f4="$k1:~/topic_part4_config.json", EOF="true";
 ----
 
-{% hint style="warning" %}
+[CAUTION]
+====
 A `RUN LOADING JOB` command may only use one type of data source.  E.g., you may not mix both Kafka data sources and regular file data sources in one loading job.
-{% endhint %}
+====
 
 All filename variables in one loading job statement must refer to the same `DATA_SOURCE` variable.
 

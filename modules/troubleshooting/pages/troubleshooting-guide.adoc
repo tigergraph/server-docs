@@ -1,10 +1,11 @@
 = Troubleshooting Guide
 :pp: {plus}{plus}
 
-{% hint style="warning" %}
+[CAUTION]
+====
 This troubleshooting guide is only up to date for v2.6 and below. +
 Additional guidance for v3.0+ is in development.
-{% endhint %}
+====
 
 == Introduction
 
@@ -41,10 +42,11 @@ gadmin log
 
 You will be presented with a list of log files. The left side of the resulting file paths is the component for which the respective log file is logging information. The majority of the time, these files will contain what you are looking for. You may notice that there are multiple files for each TigerGraph component.
 
-{% hint style="info" %}
+[NOTE]
+====
 The .out file extension is for errors. +
 The .INFO file extension is for normal behaviors.
-{% endhint %}
+====
 
 In order to diagnose an issue for a given component, you'll want to check the .out log file extension for that component.
 
@@ -118,9 +120,10 @@ From calling a query to returning the result, here is how the information flows:
 grep <QUERY_NAME> /home/tigergraph/tigergraph/logs/nginx/ngingx_1.access.log
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 You can click on the image below to expand it.
-{% endhint %}
+====
 
 image::https://lh5.googleusercontent.com/n2ehgN21jrvzuXUj2JJmg-xxqwj4o7Dlc_f1oPAAJDAmxv-1KLwyblrfS4FkWq2vOwHsAVbxYYt2qI_EcG9e4sWEGOSvVjCXtb5yFObazfzBEnVh5juPICoUA2Rc0iseifiCHfDllrE[]
 
@@ -232,9 +235,10 @@ Query Installation may fail for a handful of reasons. If a query fails to instal
 
 Go down to the last error and it will point you to the error. This will show you any query errors that could be causing the failed installation. If you have created a xref:3.2@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined function], you could potentially have a c{pp} compilation error.
 
-{% hint style="danger" %}
+[WARNING]
+====
 If you have a c{pp} user-defined function error, your query will fail to install, even if it does not utilize the UDF.
-{% endhint %}
+====
 
 === *Debugging Memory-related Failures*
 
@@ -402,12 +406,13 @@ Understanding what happens behind the scenes during a schema change.
 . *DSC Apply* - Actual step where the schema is being changed.
 . *DSC Resume* - Traffic resumes after schema change is completed. Resume will automatically happen if a schema change fails. RESTPP comes back online. All buffered query requests will go through after RESTPP resumes, and will use the new updated schema.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Schema changes are not recommended for production environments. +
 Even if attributes are deleted, TigerGraph's engine will still scan all previous attributes. We recommend limiting schema changes to dev environments.
 
 Schema changes are all or nothing. If a schema change fails in the middle, changes will not be made to the schema.
-{% endhint %}
+====
 
 === Signs of Schema Change Failure
 
@@ -491,19 +496,21 @@ Usually in this state, GSE is warming up. This process can take quite some time 
 
 <INCLUDE PROCESS NAME SHOWING CPU USAGE TO VERIFY THE "WARMING UP" STATE>
 
-{% hint style="info" %}
+[NOTE]
+====
 Very rarely, this will be a ZEROMQ issue. Restarting TigerGraph should resolve this issue
 
 `gadmin restart -y`
-{% endhint %}
+====
 
 === GSE crash
 
 GSE crashes are likely due to and Out Of Memory issue. Use the `dmesg -T` command to check any errors.
 
-{% hint style="danger" %}
+[WARNING]
+====
 If GSE crashes, and there are no reports of OOM, please reach out to TigerGraph support.
-{% endhint %}
+====
 
 === GSE High Memory Consumption
 

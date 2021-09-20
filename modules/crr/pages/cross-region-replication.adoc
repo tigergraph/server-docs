@@ -38,11 +38,12 @@ The following information and commands are *not* synced to the DR cluster
  ** `EXPORT` and `IMPORT` commands
  ** `DROP ALL` and `CLEAR GRAPH STORE`
 
-{% hint style="danger" %}
+[WARNING]
+====
 When the primary cluster executes an `IMPORT` , `DROP ALL`, or``CLEAR GRAPH STORE`` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
 
 See <<Sync an outdated DR cluster>> on how to bring an outdated DR cluster back in sync.
-{% endhint %}
+====
 
 == Before you begin
 
@@ -53,9 +54,10 @@ See <<Sync an outdated DR cluster>> on how to bring an outdated DR cluster back 
 
 The following setup is needed in order to perform a failover in the event of a disaster.
 
-{% hint style="info" %}
+[NOTE]
+====
 This setup assumes that you are setting up a DR cluster for an existing primary cluster. If you are setting up both the primary cluster and DR cluster from scratch, you only need perform Step 3 after TigerGraph is installed on both clusters.
-{% endhint %}
+====
 
 === Step 1: Backup primary data
 

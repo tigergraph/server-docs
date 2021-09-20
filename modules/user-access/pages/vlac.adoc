@@ -51,14 +51,15 @@ Users with data read and write privileges (e.g., the `querywriter` and `queryrea
 
 The rest of this tutorial will first describe tag management: creating and dropping tags, making vertex type taggable, and using tags to define tag-based graphs. Next, the three ways to tag vertices are described and illustrated. We summarize the privilege scheme of tag-based graphs in terms of GSQL's predefined roles. Finally, we give some use cases that can be solved by VLAC.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Features not yet supported:
 
 * DDL tag operations can only be done in GSQL. They are not yet supported in GraphStudio. This includes create/drop tags, create/alter vertices that are taggable, define a tag-based graph.
 * The privilege control for DDL operations (only admin and designer users should be able to explicitly manage tags) is not fully functional.
 
 In summary, all necessary operations to set up VLAC graphs and users are supported in GSQL. Due to a known bug, standard users (with `querywriter` and `queryreader` roles) can run some DDL operations which they should not be able to.
-{% endhint %}
+====
 
 We'll use the graph xref:3.2@gsql-ref:querying:appendix-query/example-graphs.adoc#_socialnet[socialNet] as an example in the following sections.
 
@@ -134,11 +135,12 @@ CREATE SCHEMA_CHANGE JOB drop_dummy_tag {
 RUN SCHEMA_CHANGE JOB drop_dummy_tag
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 
 . You cannot drop a tag if it is used in the definition of a tag-based graph. You must drop the graph first.
 . When `DROP TAG` is executed, the specified tags will be made invalid, and then the foreground process will complete. A background process will continue to run to remove the tags from all data. In the meantime, each dropped tag still takes up one of the 64 slots for tags. The slot(s) will become available once the background process finishes.
-{% endhint %}
+====
 
 == Create a tag-based graph
 
@@ -169,12 +171,13 @@ The property TAGGABLE is false by default. To change this default, use the `WITH
 CREATE VERTEX v2(PRIMARY_ID id UINT, name STRING) WITH TAGGABLE="true"
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 
 . To change a vertex type from taggable to untaggable, use `WITH TAGGABLE="false".`
 . You cannot make a vertex type untaggable if it is used in the definition of a tag-based graph.
 . Edge types are never tagged. See the next section to see how we determine which edges to include in the tag-based graph.
-{% endhint %}
+====
 
 === Create a Tag-Based Graph
 
@@ -262,9 +265,10 @@ There are xref:3.2@gsql-ref:querying:func/vertex-methods.adoc[8 DML-level tag-ac
 
 `READ_DATA`, `WRITE_DATA`, `WRITE_QUERY` , `ACCESS_TAG`
 
-{% hint style="info" %}
+[NOTE]
+====
 To add or modify tags, you should work at the base graph level.
-{% endhint %}
+====
 
 *Examples*
 
@@ -451,11 +455,12 @@ CREATE LOADING JOB loadMember {
 RUN LOADING JOB loadMember USING f="./persons3"
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 
 * *Portability and Reusability*: The same loading job works for `socialNet` or any graph derived from `socialNet` which contains `person`. The difference is in the effect: running it with `vipNet` will apply the `vip` tag. Running it with a different tag-based graph would apply different tags. _Users of a given tag-based graph automatically insert and query data for that tag-based graph._
 * *Tagging Shared Data*: The default behavior of GSQL loading is upsert: if you attempt to *insert* a vertex or edge which already exists (e.g., uses an existing ID), you will instead *update* the existing element with the new attribute values. If the attribute is a list or set, the new values will be added to the existing list/set.  This applies to tags. If you attempt to load an existing vertex, the new tag(s) will be added to any existing tags. _Loading a vertex that already exists extends the tag set with the guidance of the tag-graph schema._
-{% endhint %}
+====
 
 == Query a Tag-based Graph
 

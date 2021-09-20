@@ -68,7 +68,8 @@ $ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulim
  ** `-t`: allocate a pseudo-TTY
  ** `docker.tigergraph.com/tigergraph:latest`:  download the latest docker image from the TigerGraph docker registry URL docker.tigergraph.com/tigergraph.
 
-{% hint style="info" %}
+[NOTE]
+====
 Replace "latest" with a specific version number if a dedicated version of TigerGraph is to be used. E.g., if you want to get the 3.0.5 version, the URL should be:
 
 `docker.tigergraph.com/tigergraph:3.0.5`
@@ -76,7 +77,7 @@ Replace "latest" with a specific version number if a dedicated version of TigerG
 To use the legacy developer editions, use:
 
 `docker.tigergraph.com/tigergraph-dev`
-{% endhint %}
+====
 
 If you use Windows and have disk drive permission issues with the above command,  try the following command instead (this command does not map the shared folder on your host machine to your container) :
 

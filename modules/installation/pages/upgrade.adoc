@@ -17,26 +17,29 @@ $ ./install.sh -U
 
 In-place cluster migration of schema and data is an important aspect of business continuity. TigerGraph supports full migration between compatible versions through simple upgrade operations. However, there are some special considerations when migrating to TigerGraph 3.0 version as noted below.
 
-{% hint style="danger" %}
+[WARNING]
+====
 
 . Please contact TigerGraph Support to coordinate migration to TigerGraph 3.0 version. Even though all the steps for Migration are documented on this page, it is strongly recommended that you review the migration process with TigerGraph Support team
 . Migration from pre-3.0 versions (TigerGraph 2.4, 2.5 and 2.6 ) to 3.0 is supported. To migrate from versions prior to 2.4, users are advised to contact TigerGraph Support to check the feasibility of support the range of earlier versions.
 . Please be sure to take a backup of data on the cluster before starting the migration process.
-{% endhint %}
+====
 
-{% hint style="danger" %}
+[WARNING]
+====
 Developer Edition upgrade is not supported
 
 The Developer Edition is not designed for upgrades from one version to another +
 It is not possible to upgrade a Developer Edition installation to Enterprise Edition.
-{% endhint %}
+====
 
-{% hint style="warning" %}
+[CAUTION]
+====
 If you have written User-Defined Functions for your queries, be sure to make a backup of these files : +
 `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`
 
 `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
-{% endhint %}
+====
 
 === Upgrading from v2.x to v3.x
 
@@ -52,11 +55,12 @@ If you have written User-Defined Functions for your queries, be sure to make a b
  .. Migration process instructions are documented in https://tigergraph.freshdesk.com/support/solutions/articles/5000859240-2-x-to-3-0-0-upgrade-flow
  .. If any errors occur, please check the error message, as well as debug.log under the migration tool folder.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Notice: If you don't activate a valid license when installing 3.0, you might fail in the end when running these two commands. +
 `gsql recompile loading job
 gsql install query -force all`
-{% endhint %}
+====
 
 === Upgrading from 2.x to 2.x
 
@@ -96,9 +100,10 @@ Please consult the Release Notes for all the versions between your current versi
 . (Recommended) Back up your data, as a precaution.
 . Follow the procedure at the beginning of this document for installing a new system.  The installer will automatically shut down your system and start it again.
 
-{% hint style="danger" %}
+[WARNING]
+====
  Be sure to specify the same username as your current installation. Otherwise, if you use a different user name, it will be treated as a new installation, with an empty graph.
-{% endhint %}
+====
 
 . Pay attention to output messages during the installation process which may alert you to additional tasks or checks you should perform.
 . Run the command *gsql* to start the GSQL shell. The first time after an update, gsql performs two important operations:

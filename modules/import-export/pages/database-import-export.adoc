@@ -7,12 +7,13 @@ The GSQL `EXPORT` and `IMPORT` commands perform a logical backup and restore. A 
 
 To import an exported database, ensure that the export files are from a database that was running *the exact same version* of TigerGraph as the database that you are importing into.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Known Issues (Updated Feb 16th):
 
 * User-defined loading jobs containing xref:3.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
 * If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be reimported.
-{% endhint %}
+====
 
 == EXPORT GRAPH
 
@@ -38,9 +39,10 @@ exportOptions ::=
 {% endtab %}
 {% endtabs %}
 
-{% hint style="warning" %}
+[CAUTION]
+====
 The export directory should be empty before running `EXPORT GRAPH` because all contents are zipped and compressed.
-{% endhint %}
+====
 
 `EXPORT_GRAPH`
 
@@ -57,9 +59,10 @@ The export contains four categories of files:
 
 The following files are created in the specified directory when exporting and are then zipped into a single file called ExportedGraphs.zip.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 If the file is password-protected, it can only be unzipped using GSQL IMPORT. The security feature prevents users from directly unzipping it.
-{% endhint %}
+====
 
 * A *DBImportExport_<graphName>.gsql* for each graph called <graphName> in a multigraph database that contains a series of GSQL DDL statements that do the following:
  ** Create the exported graph, along with its local vertex, edge, and tuple types,
@@ -105,9 +108,10 @@ EXPORT GRAPH ALL TO "/tmp/export_graphs/"
 
 If not enough disk space is available for the data to be exported, the system returns an error message indicating not all data has been exported. Some data may have already been written to disk. If an insufficient disk error occurs, the files will not be zipped, due to the possibility of corrupted data which would then corrupt the zip file. The user should clear enough disk space, including deleting the partially exported data, before reattempting the export.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 It is possible for all the files to be written to disk and then to run out of disk space during the zip operation. If that is the case, the system will report this error. The unzipped files will be present in the specified export directory.
-{% endhint %}
+====
 
 === Default Timeout and Session Parameter export_timeout
 
@@ -150,13 +154,15 @@ IMPORT GRAPH ALL FROM "/tmp/export_graphs/"
 {% endtab %}
 {% endtabs %}
 
-{% hint style="danger" %}
+[WARNING]
+====
 `IMPORT GRAPH` looks for specific filenames.  If either the zip file or any of its contents are renamed by the user, IMPORT GRAPH may fail.
-{% endhint %}
+====
 
-{% hint style="danger" %}
+[WARNING]
+====
 `IMPORT GRAPH` erases the current database (equivalent to running DROP ALL). The current version does not support incremental or supplemental changes to an existing database (except for the --keep-users option)
-{% endhint %}
+====
 
 === Required privilege
 
@@ -171,9 +177,10 @@ There are two sets of loading jobs:
 
 The catalog loading jobs are not needed to restore the data. They are included for archival purposes.
 
-{% hint style="warning" %}
+[CAUTION]
+====
 Some special rules apply to importing loading jobs. Some catalog loading jobs will not be imported.
-{% endhint %}
+====
 
 . *If a catalog loading job contains `DEFINE FILENAME F = "/path/to/file/"`*, the path will be removed and the imported loading job will only contain *`DEFINE FILENAME F`*.  This is to allow a loading job to still be imported even though the file may no longer exist or the path may be different due to moving to another TigerGraph instance.
 . *If a specific file path is used directly in the LOAD statement, and the file cannot be found, the loading job cannot be created and will be skipped.*  For example, `LOAD "/path/to/file" to vertex v1` cannot be created if `/path/to/file` does not exist.

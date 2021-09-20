@@ -57,9 +57,10 @@ The GSQL server applies the same user authentication procedures to remote GSQL u
 
 The client addresses the server at server port 14240. You need to make sure your security policy allows the access to this port.
 
-{% hint style="danger" %}
+[WARNING]
+====
  It is strongly recommended that you enable user authentication. See the document xref:user-access:enabling-user-authentication.adoc[] for more details.
-{% endhint %}
+====
 
 === HTTPS Connection
 
@@ -74,11 +75,12 @@ gsql -cacert /path/to/certificate -ip hostname:port
 
 Data loading jobs always specify an input file location; logically the data should be on the server side, not on the client side. Because the command request comes from one machine and the target data file is on another machine, it no longer makes sense to use a relative path.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Rule: If a remote GSQL client invokes an instruction containing a relative path, the GSQL server considers the starting point of the path to be `<tigergraph_rootdir>/app/<VERSION_NUM>/dev/gdk/gsql` on the GSQL server.
 
 *It is strongly recommended that remotely-run GSQL commands use absolute paths only.*
-{% endhint %}
+====
 
 For example, if the data file cf_data.csv is in the folder /home/tigergraph/example/cf/, then the command to run the loading job might look like this:
 

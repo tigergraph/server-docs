@@ -172,11 +172,12 @@ $ gstatusgraph
 [WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
 ----
 
-{% hint style="danger" %}
+[WARNING]
+====
 Due to a known bug, *gstatusgraph* command will count each undirected edge as two edges. To get an accurate number of undirected edges,  user should use the built-in queries instead. The message below is sent as a warning to users when *gstatusgraph* is used.
 
 `"[WARN ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information"`
-{% endhint %}
+====
 
 [discrete]
 === How can I find out statistics of requests?

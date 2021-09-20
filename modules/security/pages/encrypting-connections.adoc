@@ -32,13 +32,15 @@ Then you can configure the certificate with `gadmin config entry ssl`
 
 There are multiple ways to create a self-signed certificate.  One example is shown below.
 
-{% hint style="danger" %}
+[WARNING]
+====
 For simplicity, the method below will use the root certificate directly as the HTTPS server certificate.  This method is satisfactory for testing but should not be used for a production system.
-{% endhint %}
+====
 
-{% hint style="info" %}
+[NOTE]
+====
 In the example below, the Common Name value should be your server hostname, since HTTPS certificates are bound to domain names.
-{% endhint %}
+====
 
 {% code title="Self-Signed Certificate generation example using openssl" %}
 
@@ -82,9 +84,10 @@ $ chmod 600 ~/nginx-selfsigned.*
 
 With the self-signed certificate successfully generated, you can configure it with `gadmin`, so that all the HTTP traffic will be protected with SSL.
 
-{% hint style="info" %}
+[NOTE]
+====
 TigerGraph's SSL only accepts PEM-encoded certificates. If you have a certificate encoded in other formats (e.g. DER), you need to https://www.sslshopper.com/ssl-converter.html[convert it to a PEM-encoded certificate] first.
-{% endhint %}
+====
 
 [source,bash]
 ----
@@ -147,9 +150,10 @@ If you'd like to turn off curl's verification of the certificate, use
 the -k (or --insecure) option.
 ----
 
-{% hint style="danger" %}
+[WARNING]
+====
  In v1.2, the default TCP/IP port for Nginx has changed from 44240 to 14240, to avoid possible port conflicts with Zookeeper.
-{% endhint %}
+====
 
 You may use the -k option to turn off the verification, but it is unsafe and not recommended.
 

@@ -10,16 +10,17 @@ Markdown does not support admonitions. Therefore, Gitbook implemented their own 
 The `{% hint style %}` template marker remained untouched.
 [source]
 ----
-{% hint style="info" %}
+[NOTE]
+====
     This is an admonition
-{% endhint %}
+====
 ----
 
 === Target adoc
 * Change `{% hint style %}` into Asciidoc admonition markers.
 ** `NOTE`, `IMPORTANT`, `CAUTION`, `TIP`, `WARNING` in square brackets `[]` followed by four equal signs in the next line.
 ** See <<style-matching>> for how to map Gitbook admonition style to Asciidoc style.
-* Change `{% endhint %}` into `====`
+* Change `====` into `====`
 [source,adoc]
 ----
 [NOTE]

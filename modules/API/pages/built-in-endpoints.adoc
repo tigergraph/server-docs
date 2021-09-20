@@ -713,9 +713,10 @@ curl -X PUT "http://localhost:9000/requesttoken?lifetime=15&secret=ksdoilrvpl0r0
 }
 ----
 
-{% hint style="warning" %}
+[CAUTION]
+====
 *Known bug*: The output shows the lifetime instead of the expiration time.
-{% endhint %}
+====
 
 === Delete a token
 
@@ -1436,9 +1437,10 @@ $ curl -X POST --data-binary @add_id6.json \
 
 == Vertices
 
-{% hint style="info" %}
+[NOTE]
+====
 To support multiple graphs within one system, the graph data REST endpoint URLs include an optional graph name.
-{% endhint %}
+====
 
 === Insert vertices
 
@@ -1847,9 +1849,10 @@ GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type
 
 This endpoint lists edges connected to a given vertex by edge type and target vertex type
 
-{% hint style="info" %}
+[NOTE]
+====
 Use `"_"` for `edge_type` in the URL to permit any edge type.
-{% endhint %}
+====
 
 ==== Sample request:
 
@@ -2261,9 +2264,10 @@ curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' \
 "http://localhost:9000/query/social/hello"
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 Installed queries can run in link:../gsql-ref/querying/query-operations.md#detached-mode-async-option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The link:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
-{% endhint %}
+====
 
 === Run an interpreted query
 
@@ -2678,9 +2682,10 @@ This endpoint expects a request body that describes the source and target vertex
 | Maximum path length.
 |===
 
-{% hint style="danger" %}
+[WARNING]
+====
 The current implementation of this endpoint will include paths with loops. Since it is possible to go around a loop an infinite number of times, it is important that you select the smallest value of maxLength which you consider appropriate.  Even if there are no loops in your graph, a smaller maxLength will allow your query to run faster.
-{% endhint %}
+====
 
 ==== Sample request:
 

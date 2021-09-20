@@ -13,15 +13,17 @@ A valid license key activates the TigerGraph system for normal operation. A lice
 
 To activate a new license, a user first configures their TigerGraph system. The user then collects the fingerprint of the TigerGraph system (license seed) using a TigerGraph-provided utility program. Then the collected materials are sent to TigerGraph or an authorized agent via email or web form. TigerGraph certifies the license based on the collected materials and sends a license key back to the user. The user then installs the license key on their system using another TigerGraph command. A new license key (e.g., one with a later expiration) can be installed on a live system that already has a valid license; the installation process does not disrupt database operations.
 
-{% hint style="info" %}
+[NOTE]
+====
 If your system is currently using an older string-based license key that does not use a license seed, please contact link:mailto:support@tigergraph.com[support@tigergraph.com]for the procedure to upgrade to the new system-specific license type.
-{% endhint %}
+====
 
 === Step-by-Step Guide
 
-{% hint style="info" %}
+[NOTE]
+====
 Before beginning the license activation process, the TigerGraph package must be installed on each server, and the TigerGraph system must be configured with gadmin.
-{% endhint %}
+====
 
 . Collect the fingerprint of the whole TigerGraph system using the command `gadmin license seed <host_signature_type>` , which can be executed on any machine in the system. The command packs all the collected data to generate the license seed and writes it into a file. When the command has completed successfully, it outputs the path of the file to the console.
 +

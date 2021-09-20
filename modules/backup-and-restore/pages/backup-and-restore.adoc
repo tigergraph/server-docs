@@ -9,9 +9,10 @@ The backup feature packs TigerGraph data and configuration information into a di
 [discrete]
 === Syntax
 
-{% hint style="info" %}
+[NOTE]
+====
 The current version of GBAR is intended for restoring the same machine that was backed up. For help with cloning a database (i.e., backing up machine A and restoring the database to machine B), please contact link:mailto:support@tigergraph.com[support@tigergraph.com].
-{% endhint %}
+====
 
 {% code title="Synopsis" %}
 
@@ -117,9 +118,10 @@ GBAR then sends a request to the admin server, which then requests the GPE and G
 
 The current version of GBAR Backup takes snapshots quickly to make it very likely that all the components (GPE, GSE, and Dictionary) are in a consistent state, but it does not fully guarantee consistency.
 
-{% hint style="danger" %}
+[WARNING]
+====
 Backup does not save input message queues for REST{pp} or Kafka.
-{% endhint %}
+====
 
 [discrete]
 === List Backup Files
@@ -149,13 +151,15 @@ Restore is an offline operation, requiring the data services to be temporarily s
 
 NOTE: GBAR restore does not estimate the uncompressed data size and check whether there is sufficient disk space.
 
-{% hint style="info" %}
+[NOTE]
+====
 The primary purpose of GBAR is to save snapshots of the data configuration of a TigerGraph system, so that in the future the same system can be rolled back (restored) to one of the saved states. A key assumption is that Backup and Restore are performed on the same machine, and that the file structure of the TigerGraph software has not changed.
-{% endhint %}
+====
 
-{% hint style="danger" %}
+[WARNING]
+====
 Restore needs enough free space to accommodate both the old gstore and the gstore to be restored.
-{% endhint %}
+====
 
 [discrete]
 === Remove a backup

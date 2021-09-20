@@ -72,11 +72,12 @@ For simplicity, you can merge the CREATE DATA_SOURCE and SET statements:
 CREATE DATA_SOURCE S3 data_source_name = "/path/to/s3.config"
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 
 . If you have a TigerGraph cluster, the configuration file must be on machine m1, where the GSQL server and GSQL client both reside,  and it must be in JSON format. If the configuration file uses a relative path, the path should be relative to the GSQL client working directory.
 . Each time when the config file is updated, you must run "SET data_source_name"  to update the data source details in the dictionary.
-{% endhint %}
+====
 
 To further simplify, instead of specifying the S3 data source config file path, you can also directly provide the S3 data source configuration as a string argument, as shown below:
 
@@ -85,9 +86,10 @@ To further simplify, instead of specifying the S3 data source config file path, 
 CREATE DATA_SOURCE S3 data_source_name = "{\"file.reader.settings.fs.s3a.access.key\":\"AKIAJ****4YGHQ\",\"file.reader.settings.fs.s3a.secret.key\":\"R8bli****p+dT4\"}"
 ----
 
-{% hint style="success" %}
+[NOTE]
+====
 *Tip*: The above simplified statement is useful for using S3 Data Loader in TigerGraph Cloud when you are not loading S3 data through GraphStudio. In TigerGraph Cloud (tgcloud.io), you can also use GSQL web shell to define and create S3 data sources, without creating the S3 data source configuration file in filesystem.
-{% endhint %}
+====
 
 ==== ADVANCED: MultiGraph Support
 
@@ -122,9 +124,10 @@ REVOKE DATA_SOURCE s1 FROM GRAPH graph1, graph2
 CREATE DATA_SOURCE S3 s1 = "/path/to/config" FOR GRAPH test_graph
 ----
 
-{% hint style="info" %}
+[NOTE]
+====
 In the above statement, the local data_source s1 is only accessible to graph test_graph. A superuser cannot grant it to another graph**.**
-{% endhint %}
+====
 
 ==== DROP DATA_SOURCE
 
@@ -249,9 +252,10 @@ Following is a detailed explanation of each option:
 * "*tasks.max*" (default is *1*): specifies the maximum number of tasks which can run in parallel. E.g. if there are 2 files and 2 tasks, each task will handle 1 file. If there are 2 files and 1 task, the single task will handle 2 files. If there is 1 file and 2 tasks, one of the tasks will handle the file.
 * "*file.uris*": specifies the path(s) to the data files on Amazon S3. The path can also be dynamic by using expressions to modify the URIs at runtime. These expressions have the form `+${XX}+` where XX represents a pattern from https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html[`DateTimeFormatter`] Java class.
 
-{% hint style="info" %}
+[NOTE]
+====
 if you want to ingest data dynamically, i.e. directories/files created every day and avoid adding new URIs every time, you can include expressions in URIs to do that. For example, for the URI``+s3://my-bucket/${yyyy}+``, it is converted to``s3://my-bucket/2019``when running the loader. You can use as many as you like in the URIs, for instance:``+s3://my-bucket/${yyyy}/${MM}/${DD}/${HH}-${mm}+``
-{% endhint %}
+====
 
 * "*file.regexp*" (default is *.** which matches all files): the regular expression to filter which files to read.
 * "*file.recursive*" (default is *false*): whether to recursively access all files in a directory.
@@ -263,9 +267,10 @@ if you want to ingest data dynamically, i.e. directories/files created every day
 * "*file.reader.text.archive.extensions.zip*" (default is *zip*):  __**__the list of file extensions to be read with zip format.
 * "*file.reader.text.archive.extensions.gzip*" (default is *gzip*): the list of file extensions to be read with gzip format.
 
-{% hint style="info" %}
+[NOTE]
+====
 The archive type is applied to all files in "file.uris" when loading. If you have different archive type files to be read at the same time, set *auto* for "file.reader.text.archive.type" and configure how to detect each archive extensions by providing the extensions list. Currently we support *tar*, *zip* and *gzip* archive types.
-{% endhint %}
+====
 
 === 3. Run the Loading Job
 
@@ -276,9 +281,10 @@ The S3 Loader uses the same https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loa
 RUN LOADING JOB job1 USING f1, f2="$s1:~/files1.config", f3="$s2:~/files2.config", EOF="true";
 ----
 
-{% hint style="warning" %}
+[CAUTION]
+====
 A RUN LOADING JOB instance may only use one type of data source.  E.g., you may not mix both S3 data sources and regular file data sources in one loading job.
-{% endhint %}
+====
 
 All filename variables in one loading job statement must refer to the same DATA_SOURCE variable.
 

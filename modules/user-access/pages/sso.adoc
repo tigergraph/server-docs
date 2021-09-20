@@ -58,15 +58,17 @@ Both are URLs in our case. You need to know the hostname of the TigerGraph machi
 
 The Assertion Consumer Service URL, or Single sign on URL, is
 
-{% hint style="info" %}
+[NOTE]
+====
  http://tigergraph-machine-hostname:14240/api/auth/saml/acs
-{% endhint %}
+====
 
 The SP entity id URL is:
 
-{% hint style="info" %}
+[NOTE]
+====
 http://tigergraph-machine-hostname:14240/gsqlserver/gsql/saml/meta
-{% endhint %}
+====
 
 image::../../../.gitbook/assets/11.6%20%281%29%20%281%29%20%281%29.png[]
 
@@ -122,9 +124,10 @@ image::../../../.gitbook/assets/11.19.png[]
 
 In the pop-up window, enter the Assertion Consumer Service URL in the Application Callback URL input box:
 
-{% hint style="info" %}
+[NOTE]
+====
 http://tigergraph-machine-hostname:14240/api/auth/saml/acs
-{% endhint %}
+====
 
 image::../../../.gitbook/assets/11.20.png[]
 
@@ -196,9 +199,10 @@ From a TigerGraph machine, run the following command: gadmin config entry Securi
 
 Answering the questions is straightforward; an example is shown below.
 
-{% hint style="info" %}
+[NOTE]
+====
 Since v2.3, the requirements for the Security.SSO.SAML.SP.Hostname parameter changed. The url must be a full url, starting with protocol (such as http) and ending with port number.
-{% endhint %}
+====
 
 {% code title="configure sso.saml example" %}
 

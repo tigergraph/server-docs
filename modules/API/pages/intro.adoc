@@ -13,9 +13,10 @@ To submit a request, send an HTTP request to the REST{pp} server or the GSQL ser
 
 For requests that are sent to the GSQL server, the sender needs to provide TigerGraph user credentials for the request to be accepted. If authentication is enabled on the RESTPP server, a request token needs to be included in the request header as well.
 
-{% hint style="info" %}
+[NOTE]
+====
 In a test or development environment, the requester may be on the same server as REST{pp}. In this case, the server IP is *localhost*.
-{% endhint %}
+====
 
 == Query String Parameters
 
@@ -231,7 +232,8 @@ All TigerGraph REST responses are in JSON format. The output JSON object has fou
 }
 ----
 
-{% hint style="success" %}
+[NOTE]
+====
 To make the JSON output more human-readable in the terminal, use the https://stedolan.github.io/jq/[`jq`] command or Python json library built into most Linux installations:
 
 [source,bash]
@@ -240,7 +242,7 @@ curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | jq 
 curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | python -m json.tool
 ----
 
-{% endhint %}
+====
 
 == Size and Time limits
 

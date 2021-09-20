@@ -130,9 +130,10 @@ echo "$encryption_password" | cryptsetup luksOpen $loop_device tigergraph_gstore
 
 * Clear the password from bash variables and bash history.
 
-{% hint style="warning" %}
+[CAUTION]
+====
  The following commands may clear your previous bash histories as well. Instead, you may edit ~/.bash_history to selectively delete the related entries.
-{% endhint %}
+====
 
 [source,bash]
 ----
@@ -188,9 +189,10 @@ To automatically deploy this encryption solution, you may
 . Remove all "sudo" since the script will be running as root.
 . Run the script as root user after TigerGraph Installation.
 
-{% hint style="warning" %}
+[CAUTION]
+====
  The setup scripts contain your encryption password. To follow good security procedures, do not leave your password in plaintext format in any files on your disk. Either remove the setup scripts or edit out the password.
-{% endhint %}
+====
 
 === Performance Evaluation
 
@@ -222,9 +224,10 @@ In this section, we provide a simple example for configuring file system encrypt
 
 The basic idea of this solution is to create a file, map an encrypted file system to it, and mount it as a storage directory for TigerGraph with permission only to authorized users.
 
-{% hint style="danger" %}
+[WARNING]
+====
  Angle brackets <...> are used to mark placeholders which you should replace with your own values (without the angle brackets).
-{% endhint %}
+====
 
 === *Prerequisites*
 
@@ -309,9 +312,10 @@ The preceding commands encrypt the password (Base64 is used to decode the cipher
 
 In this section, you launch a new EC2 instance with the new IAM role and a bootstrap script that executes the steps to encrypt the file system.
 
-{% hint style="danger" %}
+[WARNING]
+====
  The script in this section requires root permission, and it cannot be run manually through an ssh tunnel or by an unprivileged user.
-{% endhint %}
+====
 
 image::../../../.gitbook/assets/13.2.png[]
 
