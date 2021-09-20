@@ -7,7 +7,7 @@ Graph Backup And Restore (GBAR), is an integrated tool for backing up and restor
 The backup feature packs TigerGraph data and configuration information into a directory on the local disk or a remote AWS S3 bucket. Multiple backup files can be archived. Later, you can use the restore feature to roll back the system to any backup point. This tool can also be integrated easily with Linux cron to perform periodic backup jobs.
 
 [discrete]
-=== Syntax +++<a id="GBAR-GraphBackupandRestorev2.1-IntroductionandSyntax">++++++</a>+++
+=== Syntax
 
 {% hint style="info" %}
 The current version of GBAR is intended for restoring the same machine that was backed up. For help with cloning a database (i.e., backing up machine A and restoring the database to machine B), please contact link:mailto:support@tigergraph.com[support@tigergraph.com].
@@ -44,7 +44,7 @@ The `-y` option forces GBAR to skip interactive prompt questions by selecting th
 * At the start of restore, GBAR will always ask if it is okay to stop and reset the TigerGraph services: (y/N)? The default answer is yes.
 
 [discrete]
-=== Configure GBAR  +++<a id="config">++++++</a>+++
+=== Configure GBAR
 
 Before using the backup or the restore feature, GBAR must be configured.
 
@@ -95,7 +95,7 @@ gadmin config apply -y
  $ GSQL_USERNAME=tigergraph GSQL_PASSWORD=tigergraph gbar backup -t daily
 
 [discrete]
-=== Perform a backup +++<a id="backup">++++++</a>+++
+=== Perform a backup
 
 To perform a backup, run the following command as the TigerGraph Linux user:
 
@@ -122,7 +122,7 @@ Backup does not save input message queues for REST{pp} or Kafka.
 {% endhint %}
 
 [discrete]
-=== List Backup Files +++<a id="list-backup-files">++++++</a>+++
+=== List Backup Files
 
 [source,text]
 ----
@@ -132,7 +132,7 @@ gbar list
 This command lists all generated backup files in the storage place configured by the user. For each file, it shows the file's full tag, its size in human-readable format, and its creation time.
 
 [discrete]
-=== Restore from a backup archive +++<a id="restore">++++++</a>+++
+=== Restore from a backup archive
 
 Before restoring a backup, you should ensure that the backup you are restoring from is in the *same exact version* as your current version of TigerGraph.
 
@@ -158,7 +158,7 @@ Restore needs enough free space to accommodate both the old gstore and the gstor
 {% endhint %}
 
 [discrete]
-=== Remove a backup +++<a id="gbar-detailed-example">++++++</a>+++
+=== Remove a backup
 
 To remove a backup, run the `gbar remove` command:
 
@@ -180,7 +180,7 @@ $ gbar cleanup
 ----
 
 [discrete]
-=== GBAR Detailed Example +++<a id="gbar-detailed-example">++++++</a>+++
+=== GBAR Detailed Example
 
 The following example describes a real example, to show the actual commands, the expected output, and the amount of time and disk space used, for a given set of graph data. For this example, an Amazon EC2 instance was used, with the following specifications:
 
@@ -189,7 +189,7 @@ Single instance with 32 vCPU + 244GB memory + 2TB HDD.
 Naturally, backup and restore time will vary depending on the hardware used.
 
 [discrete]
-==== GBAR Backup Operational Details +++<a id="gbar-backup-operational-details">++++++</a>+++
+==== GBAR Backup Operational Details
 
 To run a daily backup, we tell GBAR to backup with the tag name _daily_.
 
@@ -211,7 +211,7 @@ Backup to daily-20180607232159 finished in 31m33s.
 The total backup process took about 31 minutes, and the generated archive is about 49 GB. Dumping the GPE + GSE data to disk took 12 minutes. Compressing the files took another 20 minutes.
 
 [discrete]
-==== GBAR Restore Operational Details +++<a id="gbar-restore-operational-details">++++++</a>+++
+==== GBAR Restore Operational Details
 
 To restore from a backup archive, a full archive name needs to be provided, such as _daily-20180607232159_. By default, restore will ask the user to approve to continue. If you want to pre-approve these actions, use the "-y" option. GBAR will make the default choice for you.
 
@@ -246,7 +246,7 @@ For our test, GBAR restore took about 23 minutes. Most of the time (20 minutes) 
 Note that after the restore is done, GBAR informs you were the pre-restore graph data (gstore) has been saved. After you have verified that the restore was successful, you may want to delete the old gstore files to free up disk space.
 
 [discrete]
-==== Performance Summary of Example +++<a id="perf-summary-of-example">++++++</a>+++
+==== Performance Summary of Example
 
 |===
 | GStore size | Backup file size | Backup time | Restore time

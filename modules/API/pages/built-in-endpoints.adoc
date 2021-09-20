@@ -176,7 +176,7 @@ This endpoint does not take any parameters.
 
 `POST /ts3/api/datapoints`
 
-TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events. Many TigerGraph components will report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals. You can use this endpoint to read from TS3,  filtering for the data points you need by time (`when`, `from`, and `to`), component(`who`), metric(`what`) and location(`where`). Visualization of such metrics are available in Admin Portal - Dashboard - link:../../ui/admin-portal/dashboard.md#TigerGraphAdminPortalUIGuide-Charts[Cluster Monitoring].
+TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events. Many TigerGraph components will report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals. You can use this endpoint to read from TS3,  filtering for the data points you need by time (`when`, `from`, and `to`), component(`who`), metric(`what`) and location(`where`). Visualization of such metrics are available in Admin Portal - Dashboard - xref:3.2@tigergraph-gui:admin-portal:dashboard.adoc[Cluster Monitoring].
 
 On a TigerGraph cluster, this endpoint is only present on the `m1` node.
 
@@ -595,7 +595,7 @@ $ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0
 
 == Authentication
 
-The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server. *These endpoints only exist when* link:[*user authentication is enabled*] *on RESTPP endpoints.*
+The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server. *These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
 
 === Request a token (`GET`)
 
@@ -603,7 +603,7 @@ The endpoints in this subsection allow users to create, refresh and delete authe
 
 If authentication is enabled on RESTPP endpoints, a token needs to be included in the request header for all requests sent to the RESTPP server. A user can generate a token using either
 
-* A secret, which is a random string generated in GSQL (seelink:[Managing User Privileges and Authentication])
+* A secret, which is a random string generated in GSQL (see xref:user-access:managing-credentials.adoc[Managing User Privileges and Authentication])
 * Their username and password in their request header as well as specifying the graph
 
 ==== Sample request:
@@ -743,11 +743,9 @@ This endpoint takes a token and its associated secret, and deletes the token.
 
 `+POST /ddl/{graph_name}+`
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please seelink:../gsql-ref/ddl-and-loading/[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:3.2@gsql-ref:ddl-and-loading:README.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
 If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename varibale at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.  To provide data for a filename variable, put the data in the request body and use the `filename` parameter (explained in the parameter table below) to match the variable name defined in the loading job.
-
-If a `LOAD` statement is written using a filepath string instead of a file variable, even though the filepath is already provided in the loading job, you still need to provide data in the request body for the `LOAD` statement to run. Since there isn't a file variable in this case, use a link:../gsql-ref/ddl-and-loading/creating-a-loading-job.md#position-based-file-identifier[position-based file identifier] to identify the filepath string you are providing data for in the `filename` parameter.
 
 ==== Request body:
 
@@ -862,7 +860,7 @@ curl -X POST --data-binary @./work_at.csv \
 
 If there are special characters in your parameter values, the special characters should use https://www.w3schools.com/tags/ref_urlencode.asp[URL encoding]. To avoid confusion about whether you should you one or two backslashes, we do not support backslash escapes for the `eol` or `sep` parameter.
 
-The maximum size of data you can upload via this endpoint is controlled by the link:intro.md#request-body-size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
+The maximum size of data you can upload via this endpoint is controlled by the link:intro.adoc#_request_body_size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
 
 == Graphs
 
@@ -1218,7 +1216,7 @@ request will always insert new edges, and create the necessary vertices
 with default values for their attributes.
 |===
 
-The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted. The JSON code can be stored in a text file or specified directly in a command line. There is a maximum size for a `POST` data payload (see the link:intro.md#size-and-time-limits[*Size Limits*] __**__section). The JSON format for describing a vertex set or edge set is summarized below.
+The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted. The JSON code can be stored in a text file or specified directly in a command line. There is a maximum size for a `POST` data payload (see the link:intro.adoc#_size_and_time_limits[*Size Limits*] section). The JSON format for describing a vertex set or edge set is summarized below.
 
 ==== Request body:
 
@@ -1329,7 +1327,7 @@ The second example starts with one `User` vertex. If `id6` already exists, it is
 
 {% endcode %}
 
-Follow the instructions in the Introduction section to link:intro.md#formatting-data-in-json[format advanced data types]. For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
+Follow the instructions in the Introduction section to link:intro.adoc#_formatting_data_in_json[format advanced data types]. For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
 
 [source,bash]
 ----
@@ -1444,7 +1442,7 @@ To support multiple graphs within one system, the graph data REST endpoint URLs 
 
 === Insert vertices
 
-To insert vertices or edges, use the link:built-in-endpoints.md#upsert-data-to-graph[Upsert data to graph] endpoint.
+To insert vertices or edges, use the link:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
 
 === List vertices
 
@@ -1682,7 +1680,7 @@ curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User/id1"
 
 === Insert edges
 
-To insert vertices or edges, use the link:built-in-endpoints.md#upsert-data-to-graph[Upsert data to graph] endpoint.
+To insert vertices or edges, use the link:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
 
 === List edges of a vertex
 
@@ -2130,7 +2128,7 @@ Each time a new TigerGraph query is installed, a dynamic endpoint is generated. 
 
 ==== Query parameter passing
 
-When using a `GET` request to run an installed query, the query parameters are link:intro.md#query-string-parameter-passing[passed in through the query string of the URL].
+When using a `GET` request to run an installed query, the query parameters are link:intro.adoc#_query_string_parameter_passing[passed in through the query string of the URL].
 [width="100%",cols="28%,36%,36%",options="header",]
 |===
 |Parameter type |Query string format |Example
@@ -2205,7 +2203,7 @@ Users can also run queries through a `POST` request, which allows them to pass q
 
 ==== Query parameter Passing
 
-When using a `POST` request to run an installed query, the query parameters are passed in through the request body and link:intro.md#formatting-data-in-json[encoded in JSON format]. The formatting rules for the JSON payload is the same as link:../gsql-ref/querying/query-operations.md#parameter-json-object[using JSON to pass in parameters in the `RUN QUERY` command].
+When using a `POST` request to run an installed query, the query parameters are passed in through the request body and link:intro.adoc#_formatting_data_in_json[encoded in JSON format]. The formatting rules for the JSON payload is the same as xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
 
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
@@ -2264,7 +2262,7 @@ curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' \
 ----
 
 {% hint style="info" %}
-Installed queries can run in link:../gsql-ref/querying/query-operations.md#detached-mode-async-option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The link:built-in-endpoints.md#check-query-status-detached-mode[results] and link:built-in-endpoints.md#check-query-status-detached-mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
+Installed queries can run in link:../gsql-ref/querying/query-operations.md#detached-mode-async-option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The link:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
 {% endhint %}
 
 === Run an interpreted query
@@ -2281,7 +2279,7 @@ The request body for this endpoint should be the entire `INTERPRET QUERY` statem
 
 ==== Parameter passing:
 
-When running an interpreted query through this endpoint, the query parameters should be link:intro.md#query-string-parameter-passing[passed in through the URL query string].
+When running an interpreted query through this endpoint, the query parameters should be link:intro.adoc#_query_string_parameters[passed in through the URL query string].
 
 ==== Sample request:
 
@@ -2392,7 +2390,7 @@ curl -X GET "localhost:9000/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1
 
 `GET /query_status`
 
-This endpoint allows you to check the status of a query run in link:../gsql-ref/querying/query-operations.md#detached-mode-async-option[detached mode].
+This endpoint allows you to check the status of a query run in xref:3.2@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
 ==== Sample request:
 
@@ -2435,7 +2433,7 @@ $ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&reques
 | The query ID associated with the given query status JSON object.
 
 | `expirationTime`
-| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using thelink:intro.md#gsql-query-timeout[`GSQL-TIMEOUT`] header.
+| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the link:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
 
 | `elapsedTime`
 | Elapsed real time of the given query measured in milliseconds. For completed queries, the value shows the total runtime of the request. For ongoing queries, it shows the amount of time taken so far.
@@ -2759,4 +2757,4 @@ curl -s -X POST "http://localhost:9000/allpaths/movieNet" \
 }
 ----
 
-Other versions of pathfinding algorithms are available in the link:../../graph-algorithm-library/#path-algorithms[GSQL Graph Algorithm Library].
+Other versions of pathfinding algorithms are available in the xref:graph-ml:intro.adoc[GSQL Graph Algorithm Library].

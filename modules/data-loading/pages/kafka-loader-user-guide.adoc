@@ -18,16 +18,16 @@ You should have a Kafka cluster configured and set up in your environment.
 
 Once you have the external Kafka cluster setup, you need to prepare the following two configuration files and place them in your desired location in TigerGraph system:
 
-. Kafka data source configuration file: This file includes the external Kafka broker's domain name and port. Through the configuration file, TigerGraph system knows the location and port of the external Kafka broker.  Please see an example in link:kafka-loader-user-guide.md#KafkaLoaderUserDocumentationDraft-CREATEDATA_SOURCEVariable[*Step 1. Define the Data Source*].
-. Kafka topic and partition configuration file: This file includes the Kafka topic, partition list, and start offset for the loading messages.  Please see an example in link:kafka-loader-user-guide.md#2-create-a-loading-job[*Step 2. Create a Loading Job*]*.*
+. Kafka data source configuration file: This file includes the external Kafka broker's domain name and port. Through the configuration file, TigerGraph system knows the location and port of the external Kafka broker.  Please see an example in link:#_1_define_the_data_source[*Step 1. Define the Data Source*].
+. Kafka topic and partition configuration file: This file includes the Kafka topic, partition list, and start offset for the loading messages.  Please see an example in link:#_2_create_a_loading_job[*Step 2. Create a Loading Job*].
 
 == Configuring and Using the Kafka Loader
 
 There are three basic steps:
 
-. link:kafka-loader-user-guide.md#KafkaLoaderUserDocumentationDraft-CREATEDATA_SOURCEVariable[Define the data source]
-. link:kafka-loader-user-guide.md#2-create-loading-job-statement[Create a loading job]
-. link:kafka-loader-user-guide.md#KafkaLoaderUserDocumentationDraft-RunLoadingJobStatement[Run the loading job]
+. link:#_1_define_the_data_source[Define the data source]
+. link:#_2_create_a_loading_job[Create a loading job]
+. link:#_3_run_the_loading_job[Run the loading job]
 
 The GSQL syntax for the Kafka Loader is designed to be consistent with the existing GSQL loading syntax.
 
@@ -270,7 +270,7 @@ RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
    [, CONCURRENCY="cnum"][,BATCH_SIZE="bnum"]][, EOF="true"]
 ----
 
-To learn about each option and parameter of the `RUN LOADING JOB` command, see link:../gsql-ref/ddl-and-loading/running-a-loading-job.md#options[Loading job options].
+To learn about each option and parameter of the `RUN LOADING JOB` command, see xref:3.2@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_options[Loading job options].
 
 == Manage Loading Jobs
 

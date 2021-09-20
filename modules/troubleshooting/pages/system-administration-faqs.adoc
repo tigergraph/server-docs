@@ -1,7 +1,7 @@
 = System Administration FAQs
 
 [discrete]
-=== How do I apply or update my license key? +++<a id="TigerGraphSystemAdministrationFAQs-HowdoIapplyorupdatemylicensekey?">++++++</a>+++
+=== How do I apply or update my license key?
 
 If you have a version 1.0 string-type license key, then during initial platform installation, you can either specify your license key as an argument, for example:
 
@@ -23,11 +23,11 @@ gadmin license set @textfile
 
 If you have a version 2.0 file-type license key which is linked to a specific machine or cluster:
 
-* If this is the initial installation or you are updating a previous key file, then please see the document xref:install-and-config/system-specific-license-activation.adoc[Activating a System-Specific License]
+* If this is the initial installation or you are updating a previous key file, then please see the document xref:installation:license.adoc[]
 * If you are updating from a version 1.0 key string to a version 2.0 key file, please contact link:mailto:support@tigergraph.com[support@tigergraph.com]for the correct procedure.
 
 [discrete]
-=== When does my license key expire? +++<a id="TigerGraphSystemAdministrationFAQs-Whendoesmylicensekeyexpire?">++++++</a>+++
+=== When does my license key expire?
 
 If you have a version 1.0 string-type license key, the following command will tell you your key's expiration date:
 
@@ -51,7 +51,7 @@ gadmin license status
 ----
 
 [discrete]
-=== What are the components of the TigerGraph platform? +++<a id="TigerGraphSystemAdministrationFAQs-WhatarethecomponentsoftheTigerGraphplatform?">++++++</a>+++
+=== What are the components of the TigerGraph platform?
 
 [source,text]
 ----
@@ -77,10 +77,10 @@ Command Line Usage Name : Official Name
 "KAFKASTRM-LL" : KAFKASTRMLL,
 ----
 
-A description of each component is given in the Glossary section of the xref:../../tigergraph-platform-overview/internal-architecture.adoc[TigerGraph Platform Overview]document.
+A description of each component is given in the Glossary section of the xref:intro:internal-architecture.adoc[] document.
 
 [discrete]
-=== How can I find out current status of the system? +++<a id="TigerGraphSystemAdministrationFAQs-HowcanIfindoutcurrentstatusofthesystem?">++++++</a>+++
+=== How can I find out current status of the system?
 
 The following command tells you the basic summary of each component:
 
@@ -97,7 +97,7 @@ gadmin status -v
 ----
 
 [discrete]
-=== How can I find out the port of a service? +++<a id="TigerGraphSystemAdministrationFAQs-HowcanIfindouttheportofaservice?">++++++</a>+++
+=== How can I find out the port of a service?
 
 To find out the port of a service, use the `gadmin config get <port_name>` command:
 
@@ -121,9 +121,9 @@ gadmin config set <port_name> <port_number>
 ----
 
 [discrete]
-=== How do I backup my data? +++<a id="TigerGraphSystemAdministrationFAQs-HowdoIbackupmydata?">++++++</a>+++
+=== How do I backup my data?
 
-*GBAR* is the utility to do backup and restore of TigerGraph system.  Before a backup, GBAR needs to be configured. Please see xref:system-management/backup-and-restore.adoc[GBAR - Graph Backup and Restore]for details.
+*GBAR* is the utility to do backup and restore of TigerGraph system.  Before a backup, GBAR needs to be configured. Please see xref:backup-and-restore:backup-and-restore.adoc[GBAR - Graph Backup and Restore] for details.
 
 To backup the current system:
 
@@ -135,7 +135,7 @@ gbar backup -t <tag_of_the_backup>
 Please be advised that GBAR only backs up data and configuration. No logs or binaries will be backed up.
 
 [discrete]
-=== How do I restore a backup? +++<a id="TigerGraphSystemAdministrationFAQs-HowdoIrestoreabackup?">++++++</a>+++
+=== How do I restore a backup?
 
 To restore an existing backup:
 
@@ -147,7 +147,7 @@ gbar restore <tag_of_the_backup>
 Please be advised that running restore will STOP the service and ERASE existing data.
 
 [discrete]
-=== How can I find out statistics of my graph data? +++<a id="TigerGraphSystemAdministrationFAQs-HowcanIfindoutstatisticsofmygraphdata?">++++++</a>+++
+=== How can I find out statistics of my graph data?
 
 You can get statistics of Graph data on TigerGraph database instance using *gstatusgraph* utility:
 
@@ -179,7 +179,7 @@ Due to a known bug, *gstatusgraph* command will count each undirected edge as tw
 {% endhint %}
 
 [discrete]
-=== How can I find out statistics of requests? +++<a id="TigerGraphSystemAdministrationFAQs-HowcanIfindoutstatisticsofrequests?">++++++</a>+++
+=== How can I find out statistics of requests?
 
 TigerGraph provides a RESTful API to tell request statistics. Assuming REST port is 9000, use command below:
 
@@ -189,7 +189,7 @@ curl -l http://localhost:9000/statistics
 ----
 
 [discrete]
-=== How do I restart a service? +++<a id="TigerGraphSystemAdministrationFAQs-HowdoIrestartaservice?">++++++</a>+++
+=== How do I restart a service?
 
 If you need to restart everything, use the following:
 
@@ -208,7 +208,7 @@ gadmin restart <component_name(s)>
 Multiple component names are separated by spaces.
 
 [discrete]
-=== How to I stop some or all services? +++<a id="TigerGraphSystemAdministrationFAQs-HowtoIstopsomeorallservices?">++++++</a>+++
+=== How to I stop some or all services?
 
 Normally it is not necessary to manually turn off any services. However if you wish to, use the stop command.
 
@@ -223,7 +223,7 @@ gadmin stop <component_name(s)>
 ----
 
 [discrete]
-=== Why the service is down? +++<a id="TigerGraphSystemAdministrationFAQs-Whytheserviceisdown?">++++++</a>+++
+=== Why the service is down?
 
 There are a few typical causes for a service being down:
 
@@ -232,7 +232,7 @@ There are a few typical causes for a service being down:
 . Not enough free disk space.  TigerGraph writes data, logs, as well as some temporary files onto disk(s). It requires enough free space to function properly. If TigerGraph service or one of its components is down, please check whether there is enough free space on the disk using http://man7.org/linux/man-pages/man1/df.1.html[df].
 
 [discrete]
-=== Where are the logs? +++<a id="TigerGraphSystemAdministrationFAQs-Wherearethelogs?">++++++</a>+++
+=== Where are the logs?
 
 Use following command to figure out where are log files for each component:
 
@@ -249,7 +249,7 @@ gadmin log <component>
 ----
 
 [discrete]
-=== Why has my request timed out? +++<a id="TigerGraphSystemAdministrationFAQs-Whyhasmyrequesttimedout?">++++++</a>+++
+=== Why has my request timed out?
 
 Timeout is applied to any request coming into TigerGraph system. If a request runs longer than the Timeout value, it will be killed. The default timeout value is 16 second.
 
@@ -276,7 +276,7 @@ curl -X <GET/POST> -H "GSQL-TIMEOUT: <timeout value in milliseconds>" '<request_
 ----
 
 [discrete]
-=== Where are the core dump files located? +++<a id="TigerGraphSystemAdministrationFAQs-Wherearethecoredumpfileslocated?">++++++</a>+++
+=== Where are the core dump files located?
 
 A core dump file is produced by the OS when a certain signal causes a process to terminate. The core dump is a disk file containing an image of the process's memory at the time of termination. This image can be used in a debugger (e.g., gdb) to inspect the state of the program at the time that it terminated.
 

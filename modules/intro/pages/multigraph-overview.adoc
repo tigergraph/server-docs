@@ -1,9 +1,10 @@
 = Multigraph Overview
+
 [NOTE]
 ====
 *Beginning with Version 3.1,*
 
-* ****link:../start/vertex-level-access-control/[*Vertex-Level Access Control*] *greatly improves the granularity of data access control from partitioning data at the type-level (MultiGraph) to the individual vertex-level (VLAC).*
+* xref:user-access:vlac.adoc[*Vertex-Level Access Control*] greatly improves the granularity of data access control from partitioning data at the type-level (MultiGraph) to the individual vertex-level (VLAC).
 ====
 
 One TigerGraph instance can manage multiple graphs, each with its own set of user privileges. This first-of-its-kind capability, dubbed MultiGraph, is available as an optional service in the TigerGraph platform.
@@ -56,7 +57,7 @@ The TigerGraph system includes several predefined roles**.** Each role is a fixe
 * A user may be granted different roles on different graphs.
 {% endhint %}
 
-For details about managing users, privileges, and roles, see xref:../admin/admin-guide/user-access/user-privileges-and-authentication.adoc[User Privileges and Authentication]. There you will find a chart describing each of the roles in detail.
+For details about managing users, privileges, and roles, see xref:user-access:README.adoc[User Privileges and Authentication]. There you will find a chart describing each of the roles in detail.
 
 === Setting a Working Graph
 
@@ -71,6 +72,6 @@ Note that the `CREATE` commands for queries, loading jobs, and schema_change job
 == Effect on Other Specifications
 
 . RESTPP Endpoints: Endpoints that pertain to the graph data must include the name of the graph in the request URL.  See link:../dev/restpp-api/[RESTPP API User Guide .]
-. User Authentication secrets and tokens: Our commands and procedures follow OAuth standards.  See xref:../admin/admin-guide/user-access/user-privileges-and-authentication.adoc[Managing User Privileges and Authentication.]
+. User Authentication secrets and tokens: Our commands and procedures follow OAuth standards.  See xref:user-access:README.adoc[].
 
 There are many other details about using the MultiGraph feature, especially if your application has multiple users with different roles. In the documentation, the Multiple Graph logo is placed next to relevant topics: image:../.gitbook/assets/mg_logo_vl_50_new.jpg[]

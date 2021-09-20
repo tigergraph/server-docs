@@ -41,7 +41,7 @@ The following information and commands are *not* synced to the DR cluster
 {% hint style="danger" %}
 When the primary cluster executes an `IMPORT` , `DROP ALL`, or``CLEAR GRAPH STORE`` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
 
-See link:cross-region-replication.md#sync-an-outdated-dr-cluster[Sync an outdated DR cluster] on how to bring an outdated DR cluster back in sync.
+See <<Sync an outdated DR cluster>> on how to bring an outdated DR cluster back in sync.
 {% endhint %}
 
 == Before you begin
@@ -59,13 +59,13 @@ This setup assumes that you are setting up a DR cluster for an existing primary 
 
 === Step 1: Backup primary data
 
-Use GBAR to link:system-management/backup-and-restore.md#backup[create a backup] of the primary cluster. See xref:system-management/backup-and-restore.adoc[Backup and Restore] on how to create a backup.
+Use GBAR to xref:backup-and-restore:backup-and-restore.adoc[create a backup] of the primary cluster. See xref:backup-and-restore:backup-and-restore.adoc[Backup and Restore] on how to create a backup.
 
 If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
 
 === Step 2: Restore on the DR cluster
 
-Copy the backup files from every node to every node on the new cluster.  link:system-management/backup-and-restore.md#restore[Restore the backup] of the primary cluster on the DR cluster. See xref:system-management/backup-and-restore.adoc[Backup and Restore] on how to restore a backup.
+Copy the backup files from every node to every node on the new cluster.  xref:backup-and-restore:backup-and-restore.adoc#restore[Restore the backup] of the primary cluster on the DR cluster. See xref:backup-and-restore:backup-and-restore.adoc[Backup and Restore] on how to restore a backup.
 
 === Step 3: Enable CRR on the DR cluster
 
@@ -161,4 +161,4 @@ For example, if your original cluster fails over once, and the current cluster's
 
 When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
 
-To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the link:cross-region-replication.md#setup[setup steps] again. However, you can skip Step 3: Enable CRR on the DR cluster, because CRR will have already been enabled.
+To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the link:#_setup[setup steps] again. However, you can skip Step 3: Enable CRR on the DR cluster, because CRR will have already been enabled.

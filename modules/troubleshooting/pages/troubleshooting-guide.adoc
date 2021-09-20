@@ -191,7 +191,7 @@ $ grun all “grep UDF:: /home/tigergraph/tigergraph/logs/GPE_*/log.INFO | tail 
 
 Multiple situations can lead to slower than expected query performance:
 
-* *Insufficient Memory* When a query begins to use too much memory, the engine will start to put data onto the disk, and memory swapping will also kick in. Use the Linux command: *`free -g`* to check available memory and swap status, or you can also link:troubleshooting-guide.md#how-to-monitor-memory-usage-by-query[monitor the memory usage of specific queries through GPE logs]. To avoid running into insufficient memory problems, optimize the data structure used within the query or increase the physical memory size on the machine.
+* *Insufficient Memory* When a query begins to use too much memory, the engine will start to put data onto the disk, and memory swapping will also kick in. Use the Linux command: *`free -g`* to check available memory and swap status, or you can also link:troubleshooting-guide.adoc#_how_to_monitor_memory_usage_by_query[monitor the memory usage of specific queries through GPE logs]. To avoid running into insufficient memory problems, optimize the data structure used within the query or increase the physical memory size on the machine.
 * *GSQL Logic* Usually, a single server machine can process up to 20 million edges per second. If the actual number of vertices or edges is much much lower,  most of the time it can be due to inefficient query logic. That is, the query logic is now following the natural execution of GSQL. You will need to optimize your query to tune the performance.
 * *Disk IO* When the query writes the result to the local disk, the disk IO may be the bottleneck for the query's performance. Disk performance can be checked with this Linux command : *`sar 1 10`*. If you are writing (PRINT) one line at a time and there are many lines, storing the data in one data structure before printing may improve the query performance.
 * *Huge JSON Response* If the JSON response size of a query is too massive, it may take longer to compose and transfer the JSON result than to actually traverse the graph. To see if this is the cause, check the GPE log.INFO file. If the query execution is already completed in GPE but has not been returned, and CPU usage is at about 200%, this is the most probable cause. If possible, please reduce the size of the JSON being printed.
@@ -205,7 +205,7 @@ When a query hangs or seems to run forever, it can be attributed to these possib
 
 * *Services are down* Please check that TigerGraph services are online and running. Run *`gadmin status`* and possibly check the logs for any issues that you find from the status check.
 * *Query is in an infinite loop* To verify this is the issue, check the GPE log.INFO file to see if graph iteration log lines are continuing to be produced. If they are, and the edgeMaps log the same number of edges every few iterations, you have an infinite loop in your query.  If this is the case, please restart GPE to stop the query : *`gadmin restart gpe -y`*. Proceed to refine your query and make sure your loops within the query are able to break out of the loop.
-* *Query is simply slow* If you have a very large graph, please be patient. Ensure that there is no infinite loop in your query, and refer to the link:troubleshooting-guide.md#slow-query-performance[slow query performance] section for possible causes.
+* *Query is simply slow* If you have a very large graph, please be patient. Ensure that there is no infinite loop in your query, and refer to the link:troubleshooting-guide.adoc#_slow_query_performance[slow query performance] section for possible causes.
 * *GraphStudio Error* If you are running the query from GraphStudio, the loading bar may continue spinning as if the query has not finished running. You can right-click the page and select _inspect->console_ (in the Google Chrome browser) __and try to find any suspicious errors there.
 
 === Query Returns No Result
@@ -230,7 +230,7 @@ Query Installation may fail for a handful of reasons. If a query fails to instal
 /home/tigergraph/tigergraph/logs/gsql_server_log/GSQL_LOG
 ----
 
-Go down to the last error and it will point you to the error. This will show you any query errors that could be causing the failed installation. If you have created a link:../dev/gsql-ref/querying/operators-and-expressions.md#user-defined-functions[user-defined function], you could potentially have a c{pp} compilation error.
+Go down to the last error and it will point you to the error. This will show you any query errors that could be causing the failed installation. If you have created a xref:3.2@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined function], you could potentially have a c{pp} compilation error.
 
 {% hint style="danger" %}
 If you have a c{pp} user-defined function error, your query will fail to install, even if it does not utilize the UDF.
@@ -287,7 +287,7 @@ System_GSystem|GSystemWatcher|Health|ProcMaxGB|0|ProcAlertGB|0|
 CurrentGB|1|SysMinFreePct|10|SysAlertFreePct|30|FreePct|69
 ----
 
-When free memory drops below 10 percent (`SysMinFreePct`), all queries are aborted. This threshold is adjustable through link:../admin/admin-guide/system-management/management-with-gadmin.md#gadmin-config[`gadmin config`].
+When free memory drops below 10 percent (`SysMinFreePct`), all queries are aborted. This threshold is adjustable through xref:gadmin:management-with-gadmin.adoc#_gadmin_config[`gadmin config`].
 
 ==== *How to retrieve information on queries aborted due to memory usage*
 
@@ -369,7 +369,7 @@ When a loading job seems to be stuck, here are things to check for :
 If  the loading job completes, but data is not loaded, there may be issues with the data source or your loading job. Here are things to check for:
 
 * Any invalid lines in the data source file. Check the log file for any errors. If an input value does not match the vertex or edge type, the corresponding vertex or edge will not be created.
-* Using quotes in the data file may cause interference with the tokenization of elements in the data file. Please check the GSQL Language Reference section under link:../dev/gsql-ref/ddl-and-loading/creating-a-loading-job.md#other-optional-load-clauses[Other Optional LOAD Clauses]. Look for the QUOTE parameter to see how you should set up your loading job.
+* Using quotes in the data file may cause interference with the tokenization of elements in the data file. Please check the GSQL Language Reference section under xref:3.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_other_optional_load_clauses[Other Optional LOAD Clauses]. Look for the QUOTE parameter to see how you should set up your loading job.
 * Your loading job loads edges in the incorrect order. When you defined the graph schema, the *from*  and *to* vertex order will affect the way you write the loading job. If you wrote the loading job in reversed order, the edges will not be created, possibly also affecting the population of vertices.
 
 === Loading is Incorrect
@@ -393,7 +393,7 @@ Possible causes of a loading job failure are:
 
 == Schema Change Debugging
 
-This section will only cover the debugging schema change jobs, for more information about schema changes, please read the xref:../dev/gsql-ref/ddl-and-loading/modifying-a-graph-schema.adoc[Modifying a Graph Schema] page.
+This section will only cover the debugging schema change jobs, for more information about schema changes, please read the xref:3.2@gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc[Modifying a Graph Schema] page.
 
 Understanding what happens behind the scenes during a schema change.
 
@@ -524,9 +524,9 @@ image::https://lh6.googleusercontent.com/3vmIx6BF3S0YuwLQ9-PrKip5c-Bh15NymmAlGh8
 
 If you suspect GraphStudio has crashed, first run `gadmin status` to verify all the components are in good shape. Two known causes of GraphStudio crashes are :
 
-* *Huge JSON response* User-written queries can return very large JSON responses. If GraphStudio often crashes on large query responses, you can try reducing the size limit for JSON responses by changing the `GUI.RESTPPResponseMaxSizeBytes` configuration using link:../admin/admin-guide/system-management/management-with-gadmin.md#gadmin-config[`gadmin config`]. The default limit is 33554432 bytes.
+* *Huge JSON response* User-written queries can return very large JSON responses. If GraphStudio often crashes on large query responses, you can try reducing the size limit for JSON responses by changing the `GUI.RESTPPResponseMaxSizeBytes` configuration using xref:gadmin:management-with-gadmin.adoc#_gadmin_config[`gadmin config`]. The default limit is 33554432 bytes.
 
-[source,text]
+[source,bash]
 ----
 $ gadmin config entry GUI.RESTPPResponseMaxSizeBytes
 New: 33554431
@@ -560,7 +560,7 @@ Repeat the error-inducing operations in GraphStudio and view the logs.
 
 ==== Known Issues
 
-There is a list of known GraphStudio issues xref:../ui/graphstudio/known-issues.adoc[here].
+There is a list of known GraphStudio issues xref:gui:graphstudio:known-issues.adoc[here].
 
 == Further Debugging
 

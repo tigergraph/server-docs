@@ -5,7 +5,7 @@ TigerGraph 2.x contained some features which were labeled as deprecated. These f
 [discrete]
 === Data Types
 
-See xref:../../dev/gsql-ref/querying/data-types.adoc[Data Types in GSQL Language Reference]
+See xref:3.2@gsql-ref:querying:data-types.adoc[Data Types in GSQL Language Reference]
 
 |===
 | Deprecated Type | Alternate Approach
@@ -44,7 +44,8 @@ See xref:../../dev/gsql-ref/querying/data-types.adoc[Data Types in GSQL Language
 [discrete]
 === Syntax for Control Flow Statements
 
-See xref:../../dev/gsql-ref/querying/control-flow-statements.adoc[Control Flow Statements in GSQL Language Reference]+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Statement+++</th>+++
+See xref:3.2@gsql-ref:querying:control-flow-statements.adoc[Control Flow Statements in GSQL Language Reference]
++++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Statement+++</th>+++
       +++<th style="text-align:left">+++Alternate Statement+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">+++FOREACH \... DO \... DONE+++</td>+++
       +++<td style="text-align:left">+++FOREACH\... DO\... END+++</td>++++++</tr>+++
@@ -88,13 +89,8 @@ If a vertex type is specified, the vertex type must be within parentheses.
 [discrete]
 === Query, Job, and Token Management
 
-These are documented in several places throughout the GSQL Language Reference:
 
-* link:../../dev/gsql-ref/querying/query-operations.md#create-query-statement[CREATE QUERY Statement]
-* xref:../../dev/gsql-ref/ddl-and-loading/creating-a-loading-job.adoc[Creating a Loading Job] and xref:../../dev/gsql-ref/ddl-and-loading/running-a-loading-job.adoc[Running a Loading Job]
-* link:../../dev/gsql-ref/ddl-and-loading/modifying-a-graph-schema.md#run-schema_change-job[RUN SCHEMA_CHANGE JOB], and link:../../dev/gsql-ref/ddl-and-loading/modifying-a-graph-schema.md#run-global-schema_change-job[RUN GLOBAL SCHEMA_CHANGE JOB]
-* link:[CREATE / SHOW / DROP / REFRESH Token]
-* link:../../dev/gsql-ref/ddl-and-loading/creating-a-loading-job.md#offline-2-online-job-conversion-deprecated[offline2online in 'Creating a Loading Job']+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Operation+++</th>+++
++++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Operation+++</th>+++
       +++<th style="text-align:left">+++Alternate Operation+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">+++CREATE JOB [loading job definition]+++</td>+++
       +++<td style="text-align:left">+++CREATE LOADING JOB [loading job definition]+++</td>++++++</tr>+++
@@ -127,11 +123,11 @@ See link:../../dev/gsql-ref/querying/output-statements-and-file-objects.md#print
 [discrete]
 === Built-in Queries
 
-See xref:../../start/gsql-101/built-in-select-queries.adoc[Run Built-in Queries in 'GSQL 101']+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Statement+++</th>+++
+[Run Built-in Queries in 'GSQL 101']+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Statement+++</th>+++
       +++<th style="text-align:left">+++Alternate Statement+++</th>++++++</tr>++++++</thead>+++
   +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<p>+++SELECT count() FROM \...+++</p>+++
         +++<p>+++// count may be out of date+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++SELECT approx_count(*) FROM \...+++</p>+++
+      +++<td style="text-align:left">++++++<p>+++SELECT approx_count(\*) FROM \...+++</p>+++
         +++<p>+++// same behavior as count(); may not include all the latest data updates
           +++<br>++++++</br>++++++</p>+++
         +++<p>+++SELECT count(*) FROM \...+++</p>+++

@@ -28,9 +28,9 @@ Below is the basic workflow on using the VLAC to control data access for a datab
 
 === *1. Create a tag-based graph*
 
-. link:vertex-level-access-control-beta.md#define-a-tag[Define tags].
-. link:vertex-level-access-control-beta.md#mark-vertex-types-as-taggable[Mark vertex types as taggable].
-. link:vertex-level-access-control-beta.md#create-a-tag-based-graph-1[Create a tag-based graph].
+. <<_define_a_tag>>.
+. <<Mark vertex types as taggable>>.
+. <<Create a Tag-Based Graph>>.
 
 === *2. Manage users of the tag-based graph*
 
@@ -41,9 +41,9 @@ Below is the basic workflow on using the VLAC to control data access for a datab
 
 There are three main options for tagging vertices.
 
-. link:vertex-level-access-control-beta.md#add-tags-on-existing-data[Explicitly add/modify tags on existing data]: A user with the privilege `ACCESS_TAG` and `WRITE_DATA` privileges on the base graph can create and run a DML query that sets tags on selected individual vertices.
-. link:vertex-level-access-control-beta.md#set-tags-explicitly-with-tags-clause[Explicitly set tags when loading data] into to a base graph: A user with `EXECUTE_LOADINGJOB` , `WRITE_LOADINGJOB` and `ACCESS_TAG` privileges on the base graph can create and run a loading job that explicitly sets tags on the newly loaded base graph vertices.
-. link:vertex-level-access-control-beta.md#set-tags-implicitly-by-inserting-into-a-tag-based-graph[Implicitly set tags when loading into a tag-based graph]: A user with tag-based graph loading or insert privilege (e.g., a `designer` or `querywriter`) can create an ordinary loading or upsert job which inserts new vertices. The new vertices will be automatically tagged according to the tag-based graph's schema definition.
+. <<_add_tags_on_existing_data>>: A user with the privilege `ACCESS_TAG` and `WRITE_DATA` privileges on the base graph can create and run a DML query that sets tags on selected individual vertices.
+. <<Set tags explicitly with `TAGS` clause>>: A user with `EXECUTE_LOADINGJOB` , `WRITE_LOADINGJOB` and `ACCESS_TAG` privileges on the base graph can create and run a loading job that explicitly sets tags on the newly loaded base graph vertices.
+. <<_set_tags_implicitly_by_inserting_into_a_tag_based_graph>>: A user with tag-based graph loading or insert privilege (e.g., a `designer` or `querywriter`) can create an ordinary loading or upsert job which inserts new vertices. The new vertices will be automatically tagged according to the tag-based graph's schema definition.
 
 === *4. Query and update Data*
 
@@ -60,7 +60,7 @@ Features not yet supported:
 In summary, all necessary operations to set up VLAC graphs and users are supported in GSQL. Due to a known bug, standard users (with `querywriter` and `queryreader` roles) can run some DDL operations which they should not be able to.
 {% endhint %}
 
-We'll use the graph link:../../../dev/gsql-ref/querying/appendix-query/example-graphs.md#socialnet[socialNet] as an example in the following sections.
+We'll use the graph xref:3.2@gsql-ref:querying:appendix-query/example-graphs.adoc#_socialnet[socialNet] as an example in the following sections.
 
 == Tag Management
 
@@ -253,9 +253,10 @@ There are three main options for tagging vertices in the base graph.
 
 === Add tags on existing data
 
-In GSQL, special vertex methods are provided to access and modify the tags of a vertex in a DML query (full list available on page link:../../../dev/gsql-ref/querying/func/vertex-methods.md#vlac-vertex-alias-methods[Vertex Functions]).  These functions are only available for vertex aliases (defined in the `FROM` clause of a `SELECT` statement); they cannot be applied to vertex variables in other contexts.
+In GSQL, special vertex methods are provided to access and modify the tags of a vertex in a DML query (full list available on page xref:3.2@gsql-ref:querying:func/vertex-methods.adoc[]).
+These functions are only available for vertex aliases (defined in the `FROM` clause of a `SELECT` statement); they cannot be applied to vertex variables in other contexts.
 
-There are xref:../reference/vertex-level-access-control-functions.adoc[8 DML-level tag-access functions] in the vertex-query block or edge-query block. Use the link:../reference/reference.md#addtags-string-tag-1-string-tagn[`v.addTags()`] function to tag a vertex.
+There are xref:3.2@gsql-ref:querying:func/vertex-methods.adoc[8 DML-level tag-access functions] in the vertex-query block or edge-query block. Use the xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_addtags[addTags()] function to tag a vertex.
 
 ==== Required privilege
 
@@ -293,7 +294,7 @@ CREATE QUERY addTagsToPerson() {
 }
 ----
 
-Use link:../reference/vertex-level-access-control-functions.md#removetags-string-tag-1-string-tagn[`removeTags()`] and link:../reference/vertex-level-access-control-functions.md#removealltags[`removeAllTags()`] to remove tags from vertices:
+Use xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_removetags[] and xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_removealltags[] to remove tags from vertices:
 
 [source,gsql]
 ----
@@ -551,14 +552,14 @@ A user with `admin` role on a graph wants to grant a group of users access to a 
 
 The base graph admin can do the following security setup.
 
-. *Define a tag*. In a schema change job, link:vertex-level-access-control.md#define-a-tag[declare a tag] `T` for this application.
-. *Mark vertex types as taggable*. Identify the vertex types you want to give selective access for, and link:vertex-level-access-control.md#taggable-vertex-types[mark those vertex types as taggable] in a schema change job.
-. *Define a tag-based graph*. link:vertex-level-access-control.md#create-a-tag-based-graph[Define a tag-based graph] `B` with the taggable vertex types, with `T` as their tag expression.
-. *Tag vertices*. Write a DML query on the base graph and use the tag functions in the query to link:vertex-level-access-control.md#Use-tag-functions-in-a-DML-query-to-update-base-graph-vertices[tag the vertices] you want to include in the tag-based graph, and run the query.
+. *Define a tag*. In a schema change job, <<_define_a_tag>> `T` for this application.
+. *Mark vertex types as taggable*. Identify the vertex types you want to give selective access for, and link:vlac.adoc#_mark_vertex_types_as_taggable[mark those vertex types as taggable] in a schema change job.
+. *Define a tag-based graph*. link:vlac.adoc#_create_a_tag_based_graph[Define a tag-based graph] `B` with the taggable vertex types, with `T` as their tag expression.
+. *Tag vertices*. Write a DML query on the base graph and use the tag functions in the query to link:vlac.adoc#_add_tags_on_existing_data[tag the vertices] you want to include in the tag-based graph, and run the query.
 . *Grant users permission to the tag-based graph*. On the tag-based graph B, grant roles that have the appropriate privileges for graph `B` to the target users.
 
 [discrete]
-==== *Scenario II* +++<a id="Scenario-II:-Before-you-ingest-a-source-file-to-a-base-graph,-you-can-derive-tags(classes)-of-each-vertex-type.-You-want-to-grant-a-group-of-users-access-permissions-based-on-the-vertex-tags.">++++++</a>+++
+==== *Scenario II*
 
 *Problem*
 
@@ -568,14 +569,14 @@ You have a source file containing class annotations (tags) on vertex data. You w
 
 The base graph `admin` user can do the following setup.
 
-. *Define tags*. link:vertex-level-access-control.md#define-a-tag[Declare tags] `T1, T2, … Tn` for all the classes in your source file in a schema change job.
-. *Mark vertex types as taggable*. Identify the vertex types of the vertices in your source file that have class annotations, andlink:vertex-level-access-control.md#taggable-vertex-types[mark those vertex types as taggable] in a schema change job.
-. *Define a tag-based graph*.link:vertex-level-access-control.md#create-a-tag-based-graph[Define a tag-based graph] `B` with `T1` as the tag expression.
-. *Explicitly tag vertices during data loading*. Write a base graph loading job, and in the loading job, use a `TAGS() BY` clause to link:vertex-level-access-control.md#set-tags-explicitly-during-data-loading[explicitly add tags] to the ingested vertices.
+. *Define tags*. link:vlac.adoc#_define_a_tag[Declare tags] `T1, T2, … Tn` for all the classes in your source file in a schema change job.
+. *Mark vertex types as taggable*. Identify the vertex types of the vertices in your source file that have class annotations, and link:#_mark_vertex_types_as_taggable[mark those vertex types as taggable] in a schema change job.
+. *Define a tag-based graph*. link:vlac.adoc#_create_a_tag_based_graph[Define a tag-based graph] `B` with `T1` as the tag expression.
+. *Explicitly tag vertices during data loading*. Write a base graph loading job, and in the loading job, use a `TAGS() BY` clause to link:vlac.adoc#_set_tags_explicitly_with_tags_clause[explicitly add tags] to the ingested vertices.
 . *Grant roles on the tag-based graph*. On the tag-based graph `B`, grant roles that have the appropriate privileges for the graph `B` to target users.
 
 [discrete]
-==== *Scenario III* +++<a id="Scenario-III:-A-base-graph-admin-want-to-give-read/write-access-to-a-group-of-user-who-only-generate-a-class-of-vertices.">++++++</a>+++
+==== *Scenario III*
 
 *Problem*
 
@@ -585,9 +586,9 @@ An `admin` user on a graph wants to give a group of users read/write access for 
 
 The base graph admin can do the following setup.
 
-* *Define a tag*. link:vertex-level-access-control.md#define-a-tag[Declare a tag] `T` for this application in a schema change job.
-* *Mark vertex types as taggable*. Identify the vertex types to give selective access to, and link:vertex-level-access-control.md#taggable-vertex-types[mark the relevant vertex types as taggable] in a schema change job.
-* *Define a tag-based graph*. link:vertex-level-access-control.md#create-a-tag-based-graph[Define a tag-based graph] `B` with `T` as the tag expression.
+* *Define a tag*. link:vlac.adoc#_define_a_tag[Declare a tag] `T` for this application in a schema change job.
+* *Mark vertex types as taggable*. Identify the vertex types to give selective access to, and link:vlac.adoc#_mark_vertex_types_as_taggable[mark the relevant vertex types as taggable] in a schema change job.
+* *Define a tag-based graph*. link:#_create_a_tag_based_graph[Define a tag-based graph] `B` with `T` as the tag expression.
 * *Grant roles on the tag-based graph*. On the tag-based graph, grant roles with the appropriate privileges to target users.
 
 These group users operate (including delete/update/insert) on graph `B` as if it is a normal graph. They can ingest new data, as well as operate on those vertices from the base graph that have the tag `T`.

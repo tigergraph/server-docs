@@ -10,8 +10,8 @@ By default, TigerGraph REST{pp} endpoints are public: anyone with access to the 
 
 The REST{pp} server implements OAuth 2.0-style authorization as follows:
 
-. Each user link:../../admin/admin-guide/user-access/managing-credentials.md#create-a-secret[can create one or more *secrets* (unique pseudorandom strings)]. Each secret is associated with a particular user and the user's privileges for a particular graph.
-. Anyone who has this secret can invoke a special REST endpoint to link:built-in-endpoints.md#request-a-token-get[generate authorization *tokens*] _**_(other pseudorandom strings).
+. Each user xref:user-access:managing-credentials.adoc#_create_a_secret[can create one or more *secrets* (unique pseudorandom strings)]. Each secret is associated with a particular user and the user's privileges for a particular graph.
+. Anyone who has this secret can invoke a special REST endpoint to link:built-in-endpoints.adoc#_request_a_token_get[generate authorization *tokens*] (other pseudorandom strings).
 . An authorization token can then be used to perform TigerGraph database operations via other REST endpoints. Each token will expire after a certain period of time. The TigerGraph default lifetime for a token is 1 month.
 
 [discrete]

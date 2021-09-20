@@ -58,14 +58,14 @@ The GSQL server applies the same user authentication procedures to remote GSQL u
 The client addresses the server at server port 14240. You need to make sure your security policy allows the access to this port.
 
 {% hint style="danger" %}
- It is strongly recommended that you enable user authentication. See the document link:../admin/admin-guide/user-access/user-privileges-and-authentication.md#gsql-authentication[_*Managing User Privileges and Authentication v2.1#GSQLAuthentication*_] ___**___for more details.
+ It is strongly recommended that you enable user authentication. See the document xref:user-access:enabling-user-authentication.adoc[] for more details.
 {% endhint %}
 
 === HTTPS Connection
 
-If SSL/TLS is enabled for TigerGraph, to connect a GSQL remote client to the GSQL server, each GSQL command line should provide the certificate chain file via the -cacert option. This certificate file should be exactly the same as the file of entry Nginx.SSL.Cert setting SSL for Nginx. See link:../admin/admin-guide/data-encryption/encrypting-connections.md#step-2-configure-ssl-with-gadmin[Encrypting Connections: Step 2. Configure SSL with Gadmin]. For example:
+If SSL/TLS is enabled for TigerGraph, to connect a GSQL remote client to the GSQL server, each GSQL command line should provide the certificate chain file via the -cacert option. This certificate file should be exactly the same as the file of entry Nginx.SSL.Cert setting SSL for Nginx. See xref:security:encrypting-connections.adoc[Encrypting Connections: Step 2. Configure SSL with gadmin]. For example:
 
-[,text]
+[,bash]
 ----
 gsql -cacert /path/to/certificate -ip hostname:port
 ----
