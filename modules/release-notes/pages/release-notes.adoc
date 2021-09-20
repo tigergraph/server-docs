@@ -33,8 +33,8 @@ Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to
 
 *Query and API compatibility*:
 
-* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.  Please see xref:../admin/admin-guide/system-management/management-with-gadmin.adoc[Managing with gadmin].
-* Some features which were previously deprecated have been dropped. Please see xref:change-log-1/v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
+* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.  Please see xref:gadmin:management-with-gadmin.adoc[Managing with gadmin].
+* Some features which were previously deprecated have been dropped. Please see xref:release-notes:v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
 
 == New Features
 
@@ -42,7 +42,7 @@ Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to
 
 Privileges are introduced as the atomic unit for managing database user access. Database administrators can now define their own roles with customizable collections of privileges.
 
-For details on this feature, see link:../admin/admin-guide/user-access/[User Access Management].
+For details on this feature, see xref:user-access:README.adoc[User Access Management].
 
 === Cross-region replication
 
@@ -55,19 +55,19 @@ For details on this feature, see Disaster Recovery.
 TigerGraph 3.2 allows users to deploy TigerGraph single servers and clusters on Kubernetes. +
 Running applications in containers on Kubernetes provides rapid spin-up and repeatability across environments.
 
-For details on this feature, see link:../admin/admin-guide/kubernetes/[Kubernetes].
+For details on this feature, see xref:kubernetes:README.adoc[Kubernetes].
 
 === Cluster resizing
 
 TigerGraph 3.2 provides built-in cluster management features that allow users to expand, shrink, and repartition their TigerGraph clusters.
 
-For details on this feature, see link:../admin/admin-guide/cluster-resizing/[Cluster resizing].
+For details on this feature, see xref:cluster-resizing:README.adoc[Cluster resizing].
 
 === Workload Management
 
 TigerGraph 3.2 provides the `GSQL-REPILCA` and `GSQL-THREAD-LIMIT` header to specify the replica for a query to run on and a thread limit that a query is allowed to use.
 
-For details on this feature, see link:../dev/restpp-api/built-in-endpoints.md#run-an-installed-query-get[Run a query].
+For details on this feature, see xref:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run a query].
 
 === GraphStudio geospatial layout
 
@@ -75,21 +75,21 @@ Starting with TigerGraph 3.2, if a vertex type has attributes named `latitute` a
 
 === File output policy
 
-Starting in TigerGraph 3.2, GSQL has a xref:../admin/admin-guide/system-management/file-output-policy.adoc[file output policy] that contains a whitelist and a blacklist. GSQL queries will only write to the whitelist and are forbidden from writing to the blacklist.
+Starting in TigerGraph 3.2, GSQL has a xref:security:file-output-policy.adoc[file output policy] that contains a whitelist and a blacklist. GSQL queries will only write to the whitelist and are forbidden from writing to the blacklist.
 
 == General Improvements
 
 === Expanded library of built-in GSQL functions
 
-TigerGraph 3.2 added link:../dev/gsql-ref/querying/func/[over 30 built-in functions] to the GSQL query language.
+TigerGraph 3.2 added xref:3.2@gsql-ref:querying:func/README.adoc[over 30 built-in functions] to the GSQL query language.
 
 === Relaxed variable declaration rules
 
-Starting in TigerGraph 3.2, link:../dev/gsql-ref/querying/declaration-and-assignment-statements.md#variable-scopes[base type variables and accumulators can be declared anywhere in a query] and are block-scoped.
+Starting in TigerGraph 3.2, xref:3.2@gsql-ref:querying:declaration-and-assignment-statements.adoc[base type variables and accumulators can be declared anywhere in a query] and are block-scoped.
 
 === Parameter passing with JSON
 
-Starting in TigerGraph 3.2, link:../dev/gsql-ref/querying/query-operations.md#run-query[users can pass in parameters to a GSQL query with a JSON object].
+Starting in TigerGraph 3.2, xref:3.2@gsql-ref:querying:query-operations.adoc#_run_query[users can pass in parameters to a GSQL query with a JSON object].
 
 === Subquery return anonymous tuples
 
@@ -117,11 +117,11 @@ Starting in TigerGraph 3.2, function overloading is now available. Query UDFs wi
 === Applications
 
 * *GraphStudio*
- ** xref:../ui/graphstudio/known-issues.adoc[Known Issues for GraphStudio]
+ ** xref:gui:graphstudio:known-issues.adoc[Known Issues for GraphStudio]
  ** The No-Code Data Migration feature is in Alpha release. Your feedback would be appreciated.
  ** The No-Code Visual Query Builder is in Beta release. Your feedback would be appreciated.
 * *AdminPortal*
- ** xref:../ui/admin-portal/known-issues.adoc[Known Issues for AdminPortal]
+ ** xref:gui:admin-portal:known-issues.adoc[Known Issues for AdminPortal]
 
 === *GSQL*
 

@@ -112,33 +112,38 @@ gsql -g gsql_demo INSTALL QUERY ALL
 gsql -g gsql_demo 'RUN QUERY topCoLiked("id1", 10)'
 ----
 
-The bash script will not run from a remote GSQL client unless a few changes are made: We need to invoke "java -jar gsql_client.jar" instead of "gsql", and need to specify the server ip address. If we use the gsql_server_ip_config file, this file must be in the same folder as the command file. The GSQL Tutorial has several different folders, one for each example, so that suggests making several config files.  Below is an approach that minimizes the changes required and maximizes standardization.
+The bash script will not run from a remote GSQL client unless a few changes are made:
 
-A. Do initial client setup. This is done only once.
+* We need to invoke "java -jar gsql_client.jar" instead of "gsql", and need to specify the server ip address.
+* If we use the gsql_server_ip_config file, this file must be in the same folder as the command file.
 
-. Store gsql_client.jar in a standard location, say _~/gsql_client/gsql_client.jar_ (e.g,, _/home/tigergraph/gsql_client/ gsql_client.jar_ )
-. Create a file called gsql_server_ip_config containing the GSQL server's IP address, and store it a standard location, say _~/gsql_client/gsql_server_ip_config_ .
+The GSQL Tutorial has several different folders, one for each example, so that suggests making several config files.
 
-{% code title="Sample config file: /home/tigergraph/gsql_client/gsql_server_ip_config" %}
+Below is an approach that minimizes the changes required and maximizes standardization.
 
+. Do initial client setup. This is done only once.
+
+.. Store gsql_client.jar in a standard location, say _~/gsql_client/gsql_client.jar_ (e.g,, _/home/tigergraph/gsql_client/ gsql_client.jar_ )
+.. Create a file called gsql_server_ip_config containing the GSQL server's IP address, and store it a standard location, say _~/gsql_client/gsql_server_ip_config_ .
+
++
+.Sample config file:/home/tigergraph/gsql_client/gsql_server_ip_config
 [,gsql]
 ----
 123.45.67.255
 ----
 
-{% endcode %}
-
-. In the .bashrc file in your home directory, add an alias for gsql which points to the standard location:
-
++
+.. In the .bashrc file in your home directory, add an alias for gsql which points to the standard location:
++
 [,gsql]
 ----
 alias gsql='java -jar ~/gsql_client/gsql_client.jar'
 ----
 
-B. Add a standard header to each bash script.
-
-{% code title="standard which makes 'gsql' work on remote clients" %}
-
+. Add a standard header to each bash script.
++
+.Standard which makes 'gsql' work on remote clients
 [,gsql]
 ----
 alias gsql='java -jar gsql_client.jar'
@@ -147,16 +152,16 @@ ln -s ~/gsql_client/gsql_client.jar gsql_client.jar
 ln -s ~/gsql_client/gsql_server_ip_config gsql_server_ip_config
 ----
 
-{% endcode %}
-
++
 This header does the following:
 
-. Repeat the alias definition for the gsql command.  The definition in .bashrc may not be visible here.
-. By default, bash scripts ignore aliases.  Instruct the script to use aliases.
-. Define softlinks from the current folder to the locations of the client jar and config file.
+.. Repeat the alias definition for the gsql command.  The definition in .bashrc may not be visible here.
+.. By default, bash scripts ignore aliases.  Instruct the script to use aliases.
+.. Define softlinks from the current folder to the locations of the client jar and config file.
 
-C. Change any relative paths to absolute paths. This is the only step that must be customized for each script.
+. Change any relative paths to absolute paths. This is the only step that must be customized for each script.
 
++
 Here is the resulting script.  Four standard lines were added to the beginning, and one line was edited in the cf_load.gsql file.
 
 {% code title="RUN_cf_remote.sh: Modified bash script for Collaborative Filtering (cf) example" %}
@@ -184,5 +189,3 @@ gsql -g gsql_demo ../${test}/${test}_query.gsql
 gsql -g gsql_demo INSTALL QUERY ALL
 gsql -g gsql_demo 'RUN QUERY topCoLiked("id1", 10)'
 ----
-
-{% endcode %}
