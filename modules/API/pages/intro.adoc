@@ -65,25 +65,25 @@ Input data for `POST` requests should be in JSON format, unless the endpoint spe
 
 The data should be formatted as a single string without linebreaks. If using curl, use the `-d` __**__option, followed by the JSON string.
 
-{% code title="Syntax for a POST request with Inline Data Payload" %}
+.Syntax for a POST request with Inline Data Payload
 
 [source,bash]
 ----
 curl -X POST -d 'json_string' "http://server_ip:9000/path_to_endpoint?request_parameters"
 ----
 
-{% endcode %}
+
 
 The following example uses the `POST /graph` endpoint to insert one User type vertex whose ID is ``"id6``" into the graph called `"socialNet"`.
 
-{% code title="Example using inline input data" %}
+.Example using inline input data
 
 [source,bash]
 ----
 curl -X POST -d '{"vertices":{"User":{"id6":{"id":{"value":"id6"}}}}}' "http://localhost:9000/graph/socialNet"
 ----
 
-{% endcode %}
+
 
 === *Data File*
 
@@ -91,14 +91,14 @@ Often it will be more convenient for the input data to be in a separate file, es
 
 For curl, use `--data-binary <path_to_file>` __**__as in the example below:
 
-{% code title="Syntax for a POST request with Payload Data File" %}
+.Syntax for a POST request with Payload Data File
 
 [source,bash]
 ----
 curl -X POST --data-binary <path_to_file> "http://server_ip:9000/path_to_endpoint?parameter1=<parameter1>"
 ----
 
-{% endcode %}
+
 
 === Formatting Data in JSON
 
@@ -141,16 +141,13 @@ Data of primitive types, including `INT, UINT, FLOAT, DOUBLE, STRING, BOOL`, and
           written in JSON:+++</p>+++
         +++<p>++++++<code>+++{&quot;keyList: [&quot;name&quot;, &quot;age&quot;], &quot;valueList&quot;: [&quot;Sam&quot;, 24]}+++</code>++++++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
 
-{% tabs %}
-{% tab title="Example: UDT Definition " %}
+.Example: UDT Definition 
 
 [source,gsql]
 ----
 TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> myTuple
 ----
 
-{% endtab %}
-{% endtabs %}
 
 ==== Vertices with Composite Keys
 
@@ -160,7 +157,7 @@ The example below shows the two methods for a  vertex `v` having a composite pri
 
 {% tabs %}
 {% tab title="Option1" %}
-{% code title="Vertex v with composite key as JSON object" %}
+.Vertex v with composite key as JSON object
 
 [source,javascript]
 ----
@@ -176,11 +173,11 @@ The example below shows the two methods for a  vertex `v` having a composite pri
 }
 ----
 
-{% endcode %}
+
 {% endtab %}
 
 {% tab title="Option2" %}
-{% code title="Vertex v with composite key as JSON array" %}
+.Vertex v with composite key as JSON array
 
 [source,javascript]
 ----
@@ -195,7 +192,7 @@ The example below shows the two methods for a  vertex `v` having a composite pri
 }
 ----
 
-{% endcode %}
+
 {% endtab %}
 {% endtabs %}
 

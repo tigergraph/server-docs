@@ -19,8 +19,7 @@ Known Issues (Updated Feb 16th):
 
 The `EXPORT GRAPH` command reads the data and metadata for all graphs in the TigerGraph system and writes the information to a zip file in the designated folder. If no options are specified, then a full backup is performed, including schema, data, template information, and user profiles.
 
-{% tabs %}
-{% tab title="Syntax" %}
+.Syntax
 
 [source,text]
 ----
@@ -36,8 +35,6 @@ exportOptions ::=
     -P, --PASSWORD      Encrypt with password. User will be prompted.
 ----
 
-{% endtab %}
-{% endtabs %}
 
 [CAUTION]
 ====
@@ -93,16 +90,13 @@ If the file is password-protected, it can only be unzipped using GSQL IMPORT. Th
 * Users:
  ** *users.gsql* - DDL to create all exported users and import Secrets and Tokens, and grant permissions.
 
-{% tabs %}
-{% tab title="Example" %}
+.Example
 
 [source,text]
 ----
 EXPORT GRAPH ALL TO "/tmp/export_graphs/"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 === Insufficient Disk Space
 
@@ -128,8 +122,7 @@ set export_timeout = <timeout_in_ms>
 
 The `IMPORT GRAPH` command unzips the `.zip` file `ExportedGraph.zip` located in the designated folder, unzips it, and then runs the GSQL command files within.
 
-{% tabs %}
-{% tab title="Syntax" %}
+.Syntax
 
 [source,text]
 ----
@@ -140,19 +133,14 @@ importOptions ::= [-P | --PASSWORD ] [ (-KU | -- keep-users]
     -KU, --KEEP-USERS   Do not delete user identities before importing
 ----
 
-{% endtab %}
-{% endtabs %}
 
-{% tabs %}
-{% tab title="Example" %}
+.Example
 
 [source,text]
 ----
 IMPORT GRAPH ALL FROM "/tmp/export_graphs/"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 [WARNING]
 ====
@@ -206,8 +194,7 @@ In v3.0, importing and exporting clusters is not fully automated. The database c
 
 Rather than creating a single export zip file, export will create a file for each machine. Before exporting, specific folders must be created on each server using the following commands:
 
-{% tabs %}
-{% tab title="Run on each server before EXPORT" %}
+.Run on each server before EXPORT
 
 [source,text]
 ----
@@ -215,8 +202,6 @@ grun all "mkdir -p /path/to/export_directory/GlobalTypes/"
 grun all "mkdir -p /path/to/export_directory/graph_<graphName>/"
 ----
 
-{% endtab %}
-{% endtabs %}
 
 Then run the export command on one server. The EXPORT command does not bundle all the files to one server, and it does not compress each server's files to one zip. Some files, including the data files, will be exported to each server, to the folders created above. Some files will be only on the local server where EXPORT GRAPH was run.
 

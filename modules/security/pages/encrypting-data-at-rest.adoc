@@ -235,7 +235,7 @@ Make sure you have installed and configured https://aws.amazon.com/cli/[AWS CLI]
 
 === *Create an S3 Bucket*
 
-{% code title="from Amazon Data-at-Rest blog" %}
+.from Amazon Data-at-Rest blog
 
 [source,text]
 ----
@@ -244,11 +244,11 @@ In the Bucket Name box, type your bucket name and then choose Create .
 You should see the details about your new bucket in the right pane.
 ----
 
-{% endcode %}
+
 
 === *Configure IAM roles and permission for the S3 bucket*
 
-{% code title="from Amazon Data-at-Rest blog" %}
+.from Amazon Data-at-Rest blog
 
 [source,javascript]
 ----
@@ -275,7 +275,7 @@ The preceding policy grants read access to the bucket where the encrypted passwo
 6.The newly created IAM role is now ready. You will use it when launching new EC2 instances, which will have the permission to access the encrypted password file in the S3 bucket.
 ----
 
-{% endcode %}
+
 
 === Create a KMS Key (optional)
 
@@ -291,7 +291,7 @@ image::../../../.gitbook/assets/screen-shot-2018-10-01-at-11.20.59-pm.png[Step 2
 
 === Encrypt a secret password with KMS and store it in the S3 bucket
 
-{% code title="from Amazon Data-at-Rest blog" %}
+.from Amazon Data-at-Rest blog
 
 [source,text]
 ----
@@ -306,7 +306,7 @@ aws s3 cp LuksInternalStorageKey s3://<your-bucket-name>/LuksInternalStorageKey
 The preceding commands encrypt the password (Base64 is used to decode the cipher text). The command outputs the results to a file called LuksInternalStorageKey. It also creates a key alias (key name) that makes it easy to identify different keys; the alias is called <your-key-alias> . The file is then copied to the S3 bucket created earlier in this post.
 ----
 
-{% endcode %}
+
 
 === Configure EC2 with role and launch configurations
 
@@ -324,7 +324,7 @@ image::../../../.gitbook/assets/13.2.png[]
  .. In IAM role , choose <your-role-name>
  .. In User Data , paste the following code block after replacing the placeholders with your values and appending TigerGraph installation script
 
-{% code title="Encryption bootstrap script" %}
+.Encryption bootstrap script
 
 [source,bash]
 ----
@@ -379,7 +379,7 @@ chown -R $db_user:$db_user /mnt/secretfs
 # Run the one-command installation script with TigerGraphh root path under /mnt/secretfs
 ----
 
-{% endcode %}
+
 
 It may take a few minutes for the script to complete after system launch.
 

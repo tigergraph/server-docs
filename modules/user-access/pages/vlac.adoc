@@ -71,14 +71,14 @@ A tag is a special attribute of a vertex, which appears as a string for input an
 
 A tag name has to be defined via `ADD TAG` before it can be used. Each base graph defines its own set of tags. However, there is a global maximum number of different tags, currently set at 64.
 
-{% code title="Syntax for ADD TAG" %}
+.Syntax for ADD TAG
 
 [source,gsql]
 ----
 ADD TAG <tag_name> [DESCRIPTION <tag_description>]
 ----
 
-{% endcode %}
+
 
 `ADD TAG` can only be used inside a `SCHEMA_CHANGE JOB`. An example is below:
 
@@ -114,14 +114,14 @@ Tags:
 
 The `DROP TAG` command not only removes the given tag(s) from the catalog of available tags, but also deletes them from each vertex to which it is attached. You can drop multiple tags in one statement.
 
-{% code title="Syntax for DROP TAG" %}
+.Syntax for DROP TAG
 
 [source,gsql]
 ----
 DROP TAG <tag_name> ["," <tag_name>]*
 ----
 
-{% endcode %}
+
 
 Like `ADD TAG`, `DROP TAG` also needs to be inside a `SCHEMA_CHANGE JOB`:
 
@@ -229,7 +229,7 @@ CREATE GRAPH publicNet1 AS socialNet(person:public, post:public, friend, posted,
 
 The formal syntax for both the general form and the simplified form of creating a tag-based graph is shown below:
 
-{% code title="Syntax for CREATE GRAPH for a tag-based graph" %}
+.Syntax for CREATE GRAPH for a tag-based graph
 
 [source,gsql]
 ----
@@ -244,7 +244,7 @@ The formal syntax for both the general form and the simplified form of creating 
 <tag_expr> := <tag> ("&" <tag_expr>)*
 ----
 
-{% endcode %}
+
 
 == How To Tag Vertices
 

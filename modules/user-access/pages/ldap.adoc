@@ -182,7 +182,7 @@ This section explains how to configure a GSQL proxy group in order to allow LDAP
 
 A GSQL proxy group is created by the CREATE GROUP command with a given proxy rule. For example, assume there is an attribute called "role" in the LDAP directory, and "engineering" is one of the "role" attribute values. We can create a proxy group with the proxy rule "role=engineering". Different roles can then be assigned to the proxy group. An example is shown below. When a user logins, the GSQL server searches for the user's entry in the LDAP directory. If the user's LDAP entry matches the proxy rule of an existing proxy group, a proxy user is created to which the user will log in.
 
-{% code title="CREATE GROUP command" %}
+.CREATE GROUP command
 
 [source,text]
 ----
@@ -193,11 +193,11 @@ CREATE GROUP developers PROXY "role=engineering" // Any user in LDAP with role=e
 GRANT ROLE querywriter ON GRAPH computerNet TO developers
 ----
 
-{% endcode %}
+
 
 The SHOW GROUP command will display information about a group. The DROP GROUP command deletes the definition of a group.
 
-{% code title="SHOW GROUP and DROP GROUP commands" %}
+.SHOW GROUP and DROP GROUP commands
 
 [source,text]
 ----
@@ -208,7 +208,7 @@ SHOW GROUP
 DROP GROUP developers
 ----
 
-{% endcode %}
+
 
 ==== *Proxy User*
 

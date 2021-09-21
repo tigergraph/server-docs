@@ -190,7 +190,7 @@ DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
 
 The topic-partition configuration file tells the TigerGraph system exactly which Kafka records to read.  Similar to the data source configuration file described above, the contents are in JSON object format. An example file is shown below:
 
-{% code title="topic_partition_config.json" %}
+.topic_partition_config.json
 
 [source,yaml]
 ----
@@ -213,7 +213,7 @@ The topic-partition configuration file tells the TigerGraph system exactly which
 }
 ----
 
-{% endcode %}
+
 
 The `"topic"` key is required. Optionally,  a `"partition_list"` array can be included to specify which topic partitions to read and what start offsets to use.  If the `"partition_list"` key is missing or empty, all partitions in this topic will be used for loading. The default offset for loading is `"-1"`, which means you will load data from the most recent message in the topic, i.e., the end of the topic. If you want to load from the beginning of a topic, the "``start_offset"`` value should be "-2".
 

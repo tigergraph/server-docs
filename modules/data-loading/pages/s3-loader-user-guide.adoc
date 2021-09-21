@@ -53,7 +53,7 @@ SET data_source_name = "/path/to/s3.config";
 
 This SET command reads, validates, and applies the configuration file, integrating its settings into TigerGraph's dictionary. The data source configuration file's content, structured as a JSON object, describes the S3 credential settings, including the _access key_ and _secret key_. A sample s3.config is shown in the following example:
 
-{% code title="s3.config" %}
+.s3.config
 
 [,typescript]
 ----
@@ -63,7 +63,7 @@ This SET command reads, validates, and applies the configuration file, integrati
 }
 ----
 
-{% endcode %}
+
 
 For simplicity, you can merge the CREATE DATA_SOURCE and SET statements:
 
@@ -190,7 +190,7 @@ DEFINE FILENAME f1 = "$s1:~/files.config";
 
 The S3 file configuration file tells the TigerGraph system exactly which Amazon S3 files to read and how to read them. Similar to the data source configuration file described above, the contents are in JSON object format. An example file is shown below.
 
-{% code title="files.config" %}
+.files.config
 
 [,typescript]
 ----
@@ -199,11 +199,11 @@ The S3 file configuration file tells the TigerGraph system exactly which Amazon 
 }
 ----
 
-{% endcode %}
+
 
 The "file.uris" key is required. It specifies one or more paths on your Amazon S3 bucket. Each path is either to an individual file or to a directory. If it is a directory, then each file directly under that directory is included. You can specify multiple paths by using a comma-separated list. An example with multiple paths is show below:
 
-{% code title="files.config" %}
+.files.config
 
 [,typescript]
 ----
@@ -212,7 +212,7 @@ The "file.uris" key is required. It specifies one or more paths on your Amazon S
 }
 ----
 
-{% endcode %}
+
 
 Instead of specifying the config file path, you can also directly provide the S3 file configuration as a string argument, as shown below:
 
@@ -226,7 +226,7 @@ DEFINE FILENAME f1 = "$s1:{\"file.uris\":\"s3://my-bucket/data.csv\"}";
 
 Besides the required "file.uris" key, you can further configure the S3 loader. A sample full configuration is shown below:
 
-{% code title="files.config" %}
+.files.config
 
 [,typescript]
 ----
@@ -245,7 +245,7 @@ Besides the required "file.uris" key, you can further configure the S3 loader. A
 }
 ----
 
-{% endcode %}
+
 
 Following is a detailed explanation of each option:
 

@@ -1,9 +1,8 @@
 = Release Notes - TigerGraph Server 3.2
 
-Release Date: August 13, 2021
+Release Date: Sep 30th, 2021
 
-[discrete]
-==== Release Notes for Previous Versions:
+==== Release Notes for Previous Versions
 
 * https://docs.tigergraph.com/faqs/release-notes-tigergraph-3.1[Release Notes - TigerGraph 3.1]
 * https://docs.tigergraph.com/v/3.0/faqs/release-notes-tigergraph-3.0[Release Notes - TigerGraph 3.0]
@@ -14,16 +13,19 @@ Release Date: August 13, 2021
 * https://docs.tigergraph.com/v/2.2/release-notes-change-log/release-notes-for-tigergraph-2.2[Release Notes - TigerGraph 2.2]
 * For v2.1 and older, contact TigerGraph Support
 
-*For the running log of bug fixes, see the xref:release-notes:change-log.adoc[].*
+*For the running log of bug fixes, see xref:release-notes:change-log.adoc[].*
 
 == Compatibility with TigerGraph 3.1
 
 The following changes were made to the built-in roles in TigerGraph's Role-based Access Control
 
 * The built-in role `queryreader` can no longer run queries that include updates to the database.
- ** You can link:../admin/admin-guide/user-access/role-management.md#create-a-local-role[create a role] with link:../admin/admin-guide/user-access/roles-and-privileges.md#built-in-roles[all `queryreader` privileges], and also link:../admin/admin-guide/user-access/role-management.md#grant-privileges-to-a-role[grant the `WRITE_DATA` privilege to the new role] to allow users with the role to run queries that update the graph.
+ ** To emulate the old `queryreader` role, create a role with all `queryreader` privileges, and also grant the `WRITE_DATA` privilege to the new role.
 * The built-in role `admin` can no longer create users
- ** You can link:../admin/admin-guide/user-access/role-management.md#create-a-global-role[create a global role] with link:../admin/admin-guide/user-access/roles-and-privileges.md#built-in-roles[all `admin` privileges], and also link:../admin/admin-guide/user-access/role-management.md#grant-privileges-to-a-role[grant the `WRITE_USER` privilege to the new role] to allow users with the role to create users.
+ ** To emulate the old `admin` role, create a global role with all `admin` privileges, and also grant the `WRITE_USER` privilege to the new role.
+* To learn more about role management and the privileges of built-in roles, see:
+** xref:user-access:role-management.adoc[]
+** xref:reference:list-of-privileges.adoc[]
 
 == Compatibility with TigerGraph 2
 

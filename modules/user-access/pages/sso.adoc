@@ -157,7 +157,7 @@ There are multiple ways to create a self-signed certificate. One example is show
 
 First, use the following command to generate a private key in PKCS#1 format and a X.509 certificate file. In the example below, the Common Name value should be your server hostname (IP or domain name).
 
-{% code title="Self-Signed Certificate generation example using openssl" %}
+.Self-Signed Certificate generation example using openssl
 
 [source,bash]
 ----
@@ -184,7 +184,7 @@ Common Name (e.g. server FQDN or YOUR name) []: tigergraph-machine-hostname
 Email Address []:support@tigergraph.com
 ----
 
-{% endcode %}
+
 
 Second, convert your private key from PKCS#1 format to PKCS#8 format:
 
@@ -204,7 +204,7 @@ Answering the questions is straightforward; an example is shown below.
 Since v2.3, the requirements for the Security.SSO.SAML.SP.Hostname parameter changed. The url must be a full url, starting with protocol (such as http) and ending with port number.
 ====
 
-{% code title="configure sso.saml example" %}
+.configure sso.saml example
 
 [source,text]
 ----
@@ -253,7 +253,7 @@ Security.SSO.SAML.IDP.X509Cert [  ]: Identity Provider's x509 Certificate filepa
 New: /home/tigergraph/idp.cert
 ----
 
-{% endcode %}
+
 
 The reason we change Security.SSO.SAML.ResponseSigned to false is because some identity providers (e.g., Auth0) don't support signed assertion and response at the same time. If your identity provider supports signing both, we strongly suggest you leave it as true.
 

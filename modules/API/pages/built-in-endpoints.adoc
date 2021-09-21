@@ -11,7 +11,7 @@ These endpoints are simple diagnostic utilities, which respond with the followin
 
 ==== Sample request:
 
-{% code title="GET echo/ Request and Response" %}
+.GET echo/ Request and Response
 
 [source,bash]
 ----
@@ -22,7 +22,7 @@ curl -X GET "http://localhost:9000/echo"
 }
 ----
 
-{% endcode %}
+
 
 `POST /echo` has the same response as `GET /echo`.
 
@@ -73,20 +73,20 @@ This endpoint returns a list of the installed endpoints and their parameters. Th
 
 To include one or more of the endpoint types in the output, include the endpoint type in the parameter query string and set its value to `true`. If no type parameters are provided, all endpoints are returned.
 
-{% code title="Example: Report on all built-in endpoints" %}
+.Example: Report on all built-in endpoints
 
 [source,bash]
 ----
 curl -X GET "http://localhost:9000/endpoints?builtin=true" | jq .
 ----
 
-{% endcode %}
+
 
 ==== Response
 
 There are over a dozen built-in endpoints, and some have several parameters, so the formatted JSON output of all built-in endpoints is over 300 lines long. It is listed in full in Appendix A. Below is a small excerpt of the output:
 
-{% code title="Subset of GET /endpoints output" %}
+.Subset of GET /endpoints output
 
 [source,bash]
 ----
@@ -114,7 +114,7 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
     }
 ----
 
-{% endcode %}
+
 
 ==== Parameters
 
@@ -744,7 +744,7 @@ This endpoint takes a token and its associated secret, and deletes the token.
 
 `+POST /ddl/{graph_name}+`
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:3.2@gsql-ref:ddl-and-loading:README.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:3.2@gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
 If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename varibale at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.  To provide data for a filename variable, put the data in the request body and use the `filename` parameter (explained in the parameter table below) to match the variable name defined in the loading job.
 
@@ -1223,7 +1223,7 @@ The response is the number of vertices and edges that were accepted. The API use
 
 The payload data should be in JSON according to the schema shown below:
 
-{% code title="Request bodyd schema" %}
+.Request bodyd schema
 
 [source,bash]
 ----
@@ -1255,13 +1255,13 @@ The payload data should be in JSON according to the schema shown below:
 }
 ----
 
-{% endcode %}
+
 
 The fields in angle brackets (`<>`) are placeholder names or values, to be replaced with actual values. The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a list of items. The keys which are not in angle brackets are exact texts that must be used as they are. The nested hierarchy means that vertices are grouped by type.  Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
 
 The first example below shows two `User` vertices having an attribute called `age`:
 
-{% code title="Upsert Example Data 1: Two User vertices" %}
+.Upsert Example Data 1: Two User vertices
 
 [source,bash]
 ----
@@ -1282,11 +1282,11 @@ The first example below shows two `User` vertices having an attribute called `ag
 }
 ----
 
-{% endcode %}
+
 
 The second example starts with one `User` vertex. If `id6` already exists, it is not changed. If it doesn't yet exist, it is created with default attribute values. Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Liked_By` edge from `id6` to `id1`.
 
-{% code title="Upsert Example Data 2:add_id6.json" %}
+.Upsert Example Data 2:add_id6.json
 
 [source,bash]
 ----
@@ -1326,7 +1326,7 @@ The second example starts with one `User` vertex. If `id6` already exists, it is
 }
 ----
 
-{% endcode %}
+
 
 Follow the instructions in the Introduction section to link:intro.adoc#_formatting_data_in_json[format advanced data types]. For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
 
@@ -2170,7 +2170,7 @@ For example, if you have a cluster of three nodes, each with 8 vCPUs, then a que
 
 To run query `hello` on a graph named `social`, and the query parameter is of type `VERTEX<person>` whose ID is `"Tom"`
 
-{% code title="Running a query via HTTP request" %}
+.Running a query via HTTP request
 
 [source,bash]
 ----
@@ -2186,7 +2186,7 @@ curl -X GET -H "GSQL-REPLICA: 2" "http://localhost:9000/query/social/hello?p=Tom
 curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom"
 ----
 
-{% endcode %}
+
 
 === Run an installed query (`POST`)
 
