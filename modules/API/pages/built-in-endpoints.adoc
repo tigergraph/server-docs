@@ -861,7 +861,7 @@ curl -X POST --data-binary @./work_at.csv \
 
 If there are special characters in your parameter values, the special characters should use https://www.w3schools.com/tags/ref_urlencode.asp[URL encoding]. To avoid confusion about whether you should you one or two backslashes, we do not support backslash escapes for the `eol` or `sep` parameter.
 
-The maximum size of data you can upload via this endpoint is controlled by the link:intro.adoc#_request_body_size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
+The maximum size of data you can upload via this endpoint is controlled by the xref:API:intro.adoc#_request_body_size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
 
 == Graphs
 
@@ -1217,7 +1217,7 @@ request will always insert new edges, and create the necessary vertices
 with default values for their attributes.
 |===
 
-The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted. The JSON code can be stored in a text file or specified directly in a command line. There is a maximum size for a `POST` data payload (see the link:intro.adoc#_size_and_time_limits[*Size Limits*] section). The JSON format for describing a vertex set or edge set is summarized below.
+The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted. The JSON code can be stored in a text file or specified directly in a command line. There is a maximum size for a `POST` data payload (see the xref:API:intro.adoc#_size_and_time_limits[*Size Limits*] section). The JSON format for describing a vertex set or edge set is summarized below.
 
 ==== Request body:
 
@@ -1328,7 +1328,7 @@ The second example starts with one `User` vertex. If `id6` already exists, it is
 
 
 
-Follow the instructions in the Introduction section to link:intro.adoc#_formatting_data_in_json[format advanced data types]. For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
+Follow the instructions in the Introduction section to xref:API:intro.adoc#_formatting_data_in_json[format advanced data types]. For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
 
 [source,bash]
 ----
@@ -1444,7 +1444,7 @@ To support multiple graphs within one system, the graph data REST endpoint URLs 
 
 === Insert vertices
 
-To insert vertices or edges, use the link:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
+To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
 
 === List vertices
 
@@ -1682,7 +1682,7 @@ curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User/id1"
 
 === Insert edges
 
-To insert vertices or edges, use the link:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
+To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
 
 === List edges of a vertex
 
@@ -2131,7 +2131,7 @@ Each time a new TigerGraph query is installed, a dynamic endpoint is generated. 
 
 ==== Query parameter passing
 
-When using a `GET` request to run an installed query, the query parameters are link:intro.adoc#_query_string_parameters[passed in through the query string of the URL].
+When using a `GET` request to run an installed query, the query parameters are xref:API:intro.adoc#_query_string_parameters[passed in through the query string of the URL].
 [width="100%",cols="28%,36%,36%",options="header",]
 |===
 |Parameter type |Query string format |Example
@@ -2206,7 +2206,7 @@ Users can also run queries through a `POST` request, which allows them to pass q
 
 ==== Query parameter Passing
 
-When using a `POST` request to run an installed query, the query parameters are passed in through the request body and link:intro.adoc#_formatting_data_in_json[encoded in JSON format]. The formatting rules for the JSON payload is the same as xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
+When using a `POST` request to run an installed query, the query parameters are passed in through the request body and xref:API:intro.adoc#_formatting_data_in_json[encoded in JSON format]. The formatting rules for the JSON payload is the same as xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
 
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
@@ -2266,7 +2266,7 @@ curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' \
 
 [NOTE]
 ====
-Installed queries can run in link:../gsql-ref/querying/query-operations.md#detached-mode-async-option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The link:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
+Installed queries can run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The link:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
 ====
 
 === Run an interpreted query
