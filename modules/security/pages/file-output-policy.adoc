@@ -7,13 +7,11 @@ GSQL restricts where a query can produce output to files through a file output p
 
 By default, the file output policy allows outputs to all files.
 
-[discrete]
-=== `GSQL.FileOutputPolicy`
+== `GSQL.FileOutputPolicy`
 
 The file output policy is implemented through the system configuration parameter``GSQL.FileOutputPolicy``, which is a JSON array of strings that represents a list of paths. If there is an exclamation mark (`!`) preceding a path, the path is on the blacklist. If there is no exclamation mark preceding a path, the path is on the whitelist.
 
-[discrete]
-==== Example
+=== Example
 
 For example, if the value for `GSQL.FileOutputPolicy` is `["/home/tigergraph",  "!/home/tigergraph/documents", "!/home/tigergraph/desktop"]`, then below are the paths on the white list and on the black list:
 
@@ -22,8 +20,7 @@ For example, if the value for `GSQL.FileOutputPolicy` is `["/home/tigergraph",  
 
 Since the blacklist takes precedence, GSQL will allow queries to write to all files and directories under `/home/tigergraph` except the `documents` and `destktop` folders.
 
-[discrete]
-=== Edit the file output policy
+== Edit the file output policy
 
 . To edit the file policy, ensure that you are logged in as the TigerGraph Linux user, and run the following command:
 +

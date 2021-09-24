@@ -3,8 +3,7 @@
 
 TigerGraph's RESTful APIs communicate with either the REST{pp} server on port 9000 or the GSQL server on port 14240. Each server uses different methods of authentication.
 
-[discrete]
-=== REST{pp} Server Requests
+== REST{pp} Server Requests
 
 By default, TigerGraph REST{pp} endpoints are public: anyone with access to the HTTP ports of the TigerGraph server can run your endpoints. When REST{pp} authentication is enabled, then a valid authorization token must be included in the header.
 
@@ -14,8 +13,7 @@ The REST{pp} server implements OAuth 2.0-style authorization as follows:
 . Anyone who has this secret can invoke a special REST endpoint to xref:API:built-in-endpoints.adoc#_request_a_token_get[generate authorization *tokens*] (other pseudorandom strings).
 . An authorization token can then be used to perform TigerGraph database operations via other REST endpoints. Each token will expire after a certain period of time. The TigerGraph default lifetime for a token is 1 month.
 
-[discrete]
-==== *Using Tokens*
+=== *Using Tokens*
 
 Once REST{pp} authentication is enabled, a valid token should always be included in the HTTP header. If you are using curl to format and submit your REST{pp} requests, then use the following syntax:
 
@@ -35,8 +33,7 @@ Here is a sample request:
 curl -X GET -H "Authorization: Bearer 01234567abcdefgh01234567abcdefgh" "http://localhost:9000/graph/socialNet/vertices/User?limit=3"
 ----
 
-[discrete]
-=== GSQL Server Requests
+== GSQL Server Requests
 
 All requests made to the GSQL Server must be accompanied by your user credentials. You can use the `curl -u` option to pass in the username and password of the TigerGraph user:
 
