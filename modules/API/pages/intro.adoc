@@ -20,42 +20,52 @@ In a test or development environment, the requester may be on the same server as
 
 == Query String Parameters
 
-TigerGraph's API endpoints accept parameters in URL encoding, which is straightforward in the case of string, number, and boolean values. However, some parameters are more complex and require specific formatting. The list below describes how to format the complex type parameter values when executing a query.+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Parameter type+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>+++
-      +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++SET+++</code>+++ or +++<code>+++BAG+++</code>+++ of primitives+++</td>+++
-      +++<td style="text-align:left">+++Assign multiple values to the same parameter name.+++</td>+++
-      +++<td style="text-align:left">++++++<p>++++++</p>+++
-        +++<p>+++A +++<code>+++SET<INT> +++</code>+++parameter named +++<code>+++p1 +++</code>+++is assigned
-          3 integers:
-          +++<br>++++++</br>++++++<b>++++++<code>+++p1=1&p1=5&p1=10+++</code>++++++</b>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX+++</code>+++ with a defined type+++</td>+++
-      +++<td style="text-align:left">+++Use the primary key of the vertex.+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++<b></b>+++</p>+++
-        +++<p>+++A +++<code>+++VERTEX<person>+++</code>+++ parameter named+++<code>+++vp+++</code>+++ is assigned
-          a vertex whose ID is +++<code>+++&quot;person2&quot;+++</code>+++:
-          +++<br>++++++</br>++++++<b>++++++<code>+++vp=person2+++</code>++++++</b>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX+++</code>+++ without a defined type+++</td>+++
-      +++<td style="text-align:left">+++Use +++<code>+++<parameter_name>.<parameter_type> +++</code>+++to specify
-        the type of the parameter, and also provide the primary key of the vertex.+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++<b></b>+++</p>+++
-        +++<p>+++A +++<code>+++VERTEX+++</code>+++ parameter named +++<code>+++va+++</code>+++ is assigned a +++<code>+++person+++</code>+++ type
-          vertex whose ID is+++<code>+++&quot;person1&quot;+++</code>+++
-          +++<br>++++++</br>++++++<b>++++++<code>+++va=person1&va.type=person+++</code>++++++</b>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++SET+++</code>+++ or +++<code>+++BAG+++</code>+++ of vertices with a defined type+++</td>+++
-      +++<td style="text-align:left">+++Same as a +++<code>+++SET+++</code>+++ or +++<code>+++BAG+++</code>+++ of primitives, where the value
-        for each element is the primary key of the vertex.+++</td>+++
-        +++<td style="text-align:left">+++A +++<code>+++SET<VERTEX<person>>+++</code>+++ parameter named +++<code>+++vp+++</code>+++ is
-          assigned two vertices with IDs +++<code>+++person3+++</code>+++ and +++<code>+++person4+++</code>+++:
-          +++<br>++++++</br>++++++<b>++++++<code>+++vp=person3&vp=person4+++</code>++++++</b>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++SET+++</code>+++ or +++<code>+++BAG+++</code>+++ of vertices without a defined type+++</td>+++
-      +++<td style="text-align:left">+++The +++<code>+++SET+++</code>+++ or +++<code>+++BAG+++</code>+++ must be treated as an array, specifying
-        the order of the elements with indices +++<code>+++[0]+++</code>+++,+++<code>+++[1]+++</code>+++,
-        etc.+++</td>+++
-        +++<td style="text-align:left">++++++<p>+++A +++<code>+++SET<VERTEX>+++</code>+++ parameter named +++<code>+++vp+++</code>+++is assigned
-            a +++<code>+++person+++</code>+++ type vertex with an ID of +++<code>+++person1+++</code>+++ and a +++<code>+++post+++</code>+++ type
-            vertex with an ID of +++<code>+++11+++</code>+++ :+++</p>+++
-          +++<p>++++++<b>++++++<code>+++vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post+++</code>++++++</b>++++++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+TigerGraph's API endpoints accept parameters in URL encoding, which is straightforward in the case of string, number, and boolean values. However, some parameters are more complex and require specific formatting. The list below describes how to format the complex type parameter values when executing a query.
+
+[width="100%",cols="<34%,<33%,<33%",options="header",]
+|===
+|Parameter type |Description |Example
+|`+SET+` or `+BAG+` of primitives |Assign multiple values to the same
+parameter name. |A `+SET<INT> +`parameter named `+p1 +`is assigned 3
+integers: +
+ +
+*`+p1=1&p1=5&p1=10+`*
+
+|`+VERTEX+` with a defined type |Use the primary key of the vertex. a|
+<b></b>
+
+A `+VERTEX<person>+` parameter named`+vp+` is assigned a vertex whose ID
+is `+"person2"+`: +
++
+*`+vp=person2+`*
+
+|`+VERTEX+` without a defined type |Use
+`+<parameter_name>.<parameter_type> +`to specify the type of the
+parameter, and also provide the primary key of the vertex. a|
+<b></b>
+
+A `+VERTEX+` parameter named `+va+` is assigned a `+person+` type vertex
+whose ID is`+"person1"+` +
++
+*`+va=person1&va.type=person+`*
+
+|`+SET+` or `+BAG+` of vertices with a defined type |Same as a `+SET+`
+or `+BAG+` of primitives, where the value for each element is the
+primary key of the vertex. |A `+SET<VERTEX<person>>+` parameter named
+`+vp+` is assigned two vertices with IDs `+person3+` and `+person4+`: +
++
+*`+vp=person3&vp=person4+`*
+
+|`+SET+` or `+BAG+` of vertices without a defined type |The `+SET+` or
+`+BAG+` must be treated as an array, specifying the order of the
+elements with indices `++`,`++`, etc. a|
+A `+SET<VERTEX>+` parameter named `+vp+`is assigned a `+person+` type
+vertex with an ID of `+person1+` and a `+post+` type vertex with an ID
+of `+11+` :
+
+*`+vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post+`*
+
+|===
 
 == Input Data for `POST` requests
 
@@ -102,44 +112,57 @@ curl -X POST --data-binary <path_to_file> "http://server_ip:9000/path_to_endpoin
 
 === Formatting Data in JSON
 
-Data of primitive types, including `INT, UINT, FLOAT, DOUBLE, STRING, BOOL`, and `DATETIME`, as well as arrays and objects, follow the standard https://www.json.org/json-en.html[JSON Data Interchange Syntax]. This subsection describes how to format complex data types.+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Data type+++</th>+++
-      +++<th style="text-align:left">+++Description+++</th>+++
-      +++<th style="text-align:left">+++Example+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<code>+++SET+++</code>+++, +++<code>+++LIST+++</code>+++ or +++<code>+++BAG+++</code>+++ of primitives+++</td>+++
-      +++<td style="text-align:left">+++Use a JSON array of primitive values.+++</td>+++
-        +++<td style="text-align:left">++++++<p>+++A set of primitive values:+++</p>+++
-          +++<p>++++++<code>+++[0.5, 0,6, 0.7]+++</code>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++VERTEX+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a JSON object that has an+++<code>+++id+++</code>+++ field
-        +++<br>++++++</br>+++whose value is the primary key of the
-        +++<br>++++++</br>+++vertex and a+++<code>+++&quot;type&quot;+++</code>+++field whose value
-        +++<br>++++++</br>+++is the type of the vertex.+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++A +++<code>+++person+++</code>+++ vertex with an ID of +++<code>+++&quot;Tom&quot;+++</code>+++:+++</p>+++
-        +++<p>++++++<code>+++{&quot;id&quot;: &quot;Tom&quot;, &quot;type&quot;: &quot;person&quot;}+++</code>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<code>+++MAP+++</code>++++++</td>+++
-      +++<td style="text-align:left">+++Use a JSON object that has two JSON
-        +++<br>++++++</br>+++arrays with keys +++<code>+++keyList+++</code>+++ and
-        +++<br>++++++</br>++++++<code>+++valueList+++</code>+++, each containing the
-        +++<br>++++++</br>+++keys and the values of the map respectively.
-        +++<br>++++++</br>+++
-        +++<br>++++++</br>+++The order of items in the valueList should correspond to the order of
-        items in the keyList.+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++A map of nations and their capitals:+++</p>+++
-        +++<p>++++++<code>+++{+++<br>++++++</br>+++&quot;keyList&quot;: [&quot;England&quot;, &quot;Germany&quot;],+++</code>++++++</p>+++
-        +++<p>++++++<code>+++&quot;valueList&quot;: [&quot;London&quot;, &quot;Berlin&quot;]+++<br>++++++</br>+++}+++</code>++++++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++User-Defined Type (UDT)+++</td>+++
-      +++<td style="text-align:left">+++Use a JSON object that has two JSON
-        +++<br>++++++</br>+++arrays with keys +++<code>+++keyList+++</code>+++ and
-        +++<br>++++++</br>++++++<code>+++valueList+++</code>+++. The +++<code>+++keyList+++</code>+++ array contains the field
-        names of the tuple, and the +++<code>+++valueList+++</code>+++ array contains the values
-        of the fields.
-        +++<br>++++++</br>+++
-        +++<br>++++++</br>+++The order of items in the valueList should correspond to the order of
-        items in the keyList.+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Tuple schema definition:+++</p>+++
-        +++<p>++++++<code>+++TYPEDEF TUPLE <name STRING, age INT> person+++</code>+++A +++<code>+++person+++</code>+++ tuple
-          written in JSON:+++</p>+++
-        +++<p>++++++<code>+++{&quot;keyList: [&quot;name&quot;, &quot;age&quot;], &quot;valueList&quot;: [&quot;Sam&quot;, 24]}+++</code>++++++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+Data of primitive types, including `INT, UINT, FLOAT, DOUBLE, STRING, BOOL`, and `DATETIME`, as well as arrays and objects, follow the standard https://www.json.org/json-en.html[JSON Data Interchange Syntax]. This subsection describes how to format complex data types.
+
+[width="100%",cols="<34%,<33%,<33%",options="header",]
+|===
+|Data type |Description |Example
+|`+SET+`, `+LIST+` or `+BAG+` of primitives |Use a JSON array of
+primitive values. a|
+A set of primitive values: `[1, 2, 3]`
+
+|`+VERTEX+` |Use a JSON object that has an`+id+` field +
++
+whose value is the primary key of the +
++
+vertex and a`+"type"+`field whose value +
++
+is the type of the vertex. a|
+A `+person+` vertex with an ID of `+"Tom"+`:
+
+`+{"id": "Tom", "type": "person"}+`
+
+|`+MAP+` |Use a JSON object that has two JSON
+arrays with keys `+keyList+` and
+`+valueList+`, each containing the keys and the values of the map respectively. +
+
+The order of items in the valueList should correspond to the order of
+items in the keyList. a|
+A map of nations and their capitals:
+
+`+{"keyList": ["England", "Germany"],+`
+
+`+"valueList": }+`
+
+|User-Defined Type (UDT) |Use a JSON object that has two JSON +
++
+arrays with keys `+keyList+` and +
++
+`+valueList+`. The `+keyList+` array contains the field names of the
+tuple, and the `+valueList+` array contains the values of the fields. +
++
++
++
+The order of items in the valueList should correspond to the order of
+items in the keyList. a|
+Tuple schema definition:
+
+`+TYPEDEF TUPLE <name STRING, age INT> person+`A `+person+` tuple
+written in JSON:
+
+`+{"keyList: ["name", "age"], "valueList": ["Sam", 24]}+`
+
+|===
 
 .Example: UDT Definition 
 
