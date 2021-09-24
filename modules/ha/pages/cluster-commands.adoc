@@ -49,8 +49,11 @@ You can specify the nodes where you want the copy operation to occur in the foll
 
 ==== Example
 
-{% tabs %}
-{% tab title="Single source" %}
+[tabs]
+====
+Single source::
++
+--
 
 [source,cpp]
 ----
@@ -81,9 +84,11 @@ $ gscp gpe /tmp/gscp_test1 /tmp/gscp_test_folder
 $ gscp m1,m2 /tmp/gscp_test3 /tmp/gscp_test_folder
 ----
 
-{% endtab %}
+--
 
-{% tab title="Multiple sources" %}
+Multiple sources::
++
+--
 
 [source,cpp]
 ----
@@ -108,8 +113,8 @@ gscp_test1 gscp_test2
 gscp_test1 gscp_test2
 ----
 
-{% endtab %}
-{% endtabs %}
+--
+====
 
 === Download file from another node
 
@@ -157,8 +162,11 @@ You can specify which nodes to run commands on in the following ways:
 
 ==== Example
 
-{% tabs %}
-{% tab title="All nodes" %}
+[tabs]
+====
+All nodes::
++
+--
 
 [source,bash]
 ----
@@ -174,9 +182,11 @@ hello world
 hello world
 ----
 
-{% endtab %}
+--
 
-{% tab title="By component name" %}
+By component name::
++
+--
 
 [source,bash]
 ----
@@ -193,9 +203,11 @@ hello world
 hello world
 ----
 
-{% endtab %}
+--
 
-{% tab title="By node list" %}
+By node list::
++
+--
 
 [source,bash]
 ----
@@ -208,8 +220,8 @@ hello world
 hello world
 ----
 
-{% endtab %}
-{% endtabs %}
+--
+====
 
 === Run commands in parallel
 
@@ -224,8 +236,11 @@ This command allows you to run commands on a specified list of nodes in your clu
 * `grun_p <component_name> '<command>'` will execute the command on nodes where the component you specified is running
 * `grun_p <node_list> '<command>'` will execute the commands on the nodes you specify in the node list. The list of nodes should be separated by a comma, e.g.: `m1,m2`
 
-{% tabs %}
-{% tab title="All nodes " %}
+[tabs]
+====
+All nodes ::
++
+--
 
 [source,aspnet]
 ----
@@ -247,9 +262,11 @@ hello world
 hello world
 ----
 
-{% endtab %}
+--
 
-{% tab title="By component" %}
+By component::
++
+--
 
 [source,console]
 ----
@@ -271,9 +288,11 @@ hello world
 hello world
 ----
 
-{% endtab %}
+--
 
-{% tab title="By node list" %}
+By node list::
++
+--
 
 [source,console]
 ----
@@ -290,8 +309,8 @@ hello world
 hello world
 ----
 
-{% endtab %}
-{% endtabs %}
+--
+====
 
 == Display cluster information
 
