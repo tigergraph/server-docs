@@ -46,7 +46,7 @@ Extra disk space is required during cluster expansion. If more space is not avai
 $ gadmin cluster expand m3:192.168.1.3,m4:192.168.1.4 --stagingPath /tmp/
 ----
 
-If you choose to supply a staging location, make sure that the TigerGraph Linux user has write permission to the path you provide. The overall amount of space required for expansion on each node is `(1 + Math.ceil(oldPartition/newPartition) ) * dataRootSize`. `oldPartion` and `newPartition` each stand for the partitioning factor of the cluster before and after expansion; `dataRootSize` stands for the size of the data root folder on the node.
+If you choose to supply a staging location, make sure that the TigerGraph Linux user has write permission to the path you provide. The overall amount of space required for expansion on each node is `(1 + Math.ceil(oldPartition/newPartition) ) * dataRootSize`. `oldPartition` and `newPartition` each stand for the partitioning factor of the cluster before and after expansion; `dataRootSize` stands for the size of the data root folder on the node.
 
 For example, if you are expanding from a 6 node cluster with a replication factor of 2 and a partitioning factor of 3, to a 10-node cluster with a replication factor of 2 and a partitioning factor of 5, and the size of the data root folder on a node is 50GB. Then you would need more than `(1 + Math.ceil(3/5)) * 50) = 100 GB` of free space on the staging path.
 

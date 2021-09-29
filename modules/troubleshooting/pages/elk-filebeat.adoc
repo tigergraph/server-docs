@@ -1,0 +1,108 @@
+= Set up Log Viewing with Elasticsearch, Kibana and Filebeat
+:sectnums:
+
+The TigerGraph system produces extensive and detailed logs about each of
+its components. Starting with TigerGraph 3.2, TigerGraph provides a
+`+gadmin+` utility that allows users to easily view log files through an
+Elasticsearch, Kibana, and Filebeat setup. This page offers a
+step-by-step guide to set up log viewing for all components in a
+TigerGraph cluster with Elastic search, Kibana, and Filebeat.
+
+== Before you begin
+
+* https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html[Install
+Elasticsearch] on a machine that is running TigerGraph.
+** If you have a TigerGraph cluster, you only need to install
+Elasticsearch on one node.
+* https://www.elastic.co/guide/en/kibana/current/install.html[Install
+Kibana] on the same machine where you installed Elasticsearch.
+* https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-installation-configuration.html[Install
+Filebeat].
+** If you have a TigerGraph cluster, you need to install Filebeat on all
+nodes in the cluster.
+
+== Procedure
+
+[[configure-elasticsearch-for-remote-access]]
+=== Configure Elasticsearch for remote access
+
+The default Elasticsearch settings only allow the Elasticsearch service
+to be accessed from the same machine it starts from. In order to allow
+Elasticsearch to receive log files from other servers in the cluster, we
+have to make the following edits to the file at
+`+/etc/elasticsearch/elasticsearch.yml+`
+
+....
+network.host: "<server_private_ip>"
+discovery.seed_hosts: ["<server_private_ip>"]
+# server_private_ip refers to the private ip address of the machine where
+# elasticsearch is installed
+cluster.initial_master_nodes: [ "node-1" ]
+# "node-1" is the default name of the Elasticsearch node. If you changed
+# the default name, you would use the name you chose instead
+....
+
+After editing the configurations, restart the Elasticsearch service.
+
+Elasticsearch is a memory-intensive service. For more information on
+memory management for Elasticsearch,
+see https://www.elastic.co/blog/managing-and-troubleshooting-elasticsearch-memory[
+Managing and Troubleshooting Elasticsearch Memory].
+
+[[configure-kibana-with-elasticsearch-and-enable-remote-access]]
+=== Configure Kibana with Elasticsearch and enable remote access
+
+You need to make the following changes to the file at
+`+/etc/kibana/kibana.yml:+`
+
+* To allow remote access, change the value of `+server.host+` to the IP
+address or DNS name of the Kibana server. Since the Kibana server is on
+the same machine as Elasticsearch, this value should be the same private
+IP that you specified as Elasticsearch's `+network.host+`.
+* Additionally, you need to provide the address of the Elasticsearch
+server in the `+elasticsearch.hosts+` setting. By default, Elasticsearch
+is on port 9200, so the value for this setting should be
+`+["server_private_ip:9200"]+`
+
+After editing the configurations, restart the Kibana service.
+
+[[configure-filebeat]]
+== Configure Filebeat
+
+Finally, we need to configure Filebeat to have each component on each
+node send its logs to the Elasticsearch server. To do so, run the
+following gadmin command:
+
+....
+gadmin log build filebeat <--host={ip_address_1}[,{ip_address_n}]*>
+....
+
+The command outputs a Filebeat configuration file `+filebeat.yml+` . The
+following options are available:
+
+[cols=",",options="header",]
+|===
+|Option |Description
+|`+--host=<ip_list>+` |Required. The list of IP addresses of the nodes
+whose logs you want to send to the Elasticsearch server. Example:
+`+ --host=10.128.0.97,10.128.0.99,10.128.0.100+`
+
+|`+--from-beginning+` |Optional. If this flag is provided, Filebeat will
+harvest all log files including the oldest. If not included, Filebeat
+will only harvest the logs since the most recent time each service
+started.
+
+|`+--path=<path_to_file>+` |Optional. The path to output the
+configuration file. By default, the command outputs the configuration
+file `+filebeat.yml+` to the current directory.
+
+|`+--service=<service_list>+` |Optional. The services you want Filebeat
+to monitor. By default, all services are included. Example: --service=
+|===
+
+After generating the `+filebeat.yml+` file, copy it to the directory
+`+/etc/filebeat+` on every node, and restart the Filebeat service on
+each node.
+
+After the service restarts, you should be able to view the logs through
+Kibana's user interface in your browser at `+server_ip:5601+`.

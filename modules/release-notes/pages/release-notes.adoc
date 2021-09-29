@@ -79,6 +79,11 @@ Starting with TigerGraph 3.2, if a vertex type has attributes named `latitute` a
 
 Starting in TigerGraph 3.2, GSQL has a xref:security:file-output-policy.adoc[file output policy] that contains a whitelist and a blacklist. GSQL queries will only write to the whitelist and are forbidden from writing to the blacklist.
 
+=== Log viewing with Elasticsearch, Kibana, and Filebeat
+Starting with TigerGraph 3.2, TigerGraph provides a gadmin command that can generate Filebeat configuration files for a TigerGraph cluster.
+Read our xref:troubleshooting:elk-filebeat.adoc[step-by-step guide] to set up Elasticsearch, Kibana, and Filebeat to view TigerGraph logs.
+
+
 == General Improvements
 
 === Expanded library of built-in GSQL functions
@@ -109,6 +114,18 @@ TigerGraph 3.2 implemented the following improvements for query installation:
 === *WCAG-compliant accessibility features*
 
 The user interfaces of GraphStudio and Admin Portal - TigerGraph's GUI are improved to meet WCAG accessibility criteria. More users across a wider range of physical abilities will now be able to work effectively with GraphStudio and the visual Admin Portal.
+
+=== Edit mode for graph exploration in GraphStudio
+Starting with TigerGraph 3.2, users need to enter Edit Mode in the Graph Exploration Panel in order to write to the graph.
+
+=== Enhanced cluster service status for AdminPortal
+Cluster service status is moved from the footer of the Admin Portal page to the bottom of the navigation menu.
+
+=== Improved GSQL auto-complete and syntax highlighting in GraphStudio
+We made improvements to GraphStudio's auto-complete and syntax highlighting features so users have a better experience writing and editing queries in GraphStudio.
+
+=== Substring search within graph exploration result in GraphStudio
+Starting with TigerGraph 3.2, users can search substring to locate the vertices in addition to using exact match.
 
 === Function overloading
 
