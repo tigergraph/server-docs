@@ -2266,7 +2266,7 @@ curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' \
 
 [NOTE]
 ====
-Installed queries can run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The link:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
+Installed queries can run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The xref:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
 ====
 
 === Run an interpreted query
@@ -2283,7 +2283,7 @@ The request body for this endpoint should be the entire `INTERPRET QUERY` statem
 
 ==== Parameter passing:
 
-When running an interpreted query through this endpoint, the query parameters should be link:intro.adoc#_query_string_parameters[passed in through the URL query string].
+When running an interpreted query through this endpoint, the query parameters should be xref:intro.adoc#_query_string_parameters[passed in through the URL query string].
 
 ==== Sample request:
 
@@ -2437,7 +2437,7 @@ $ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&reques
 | The query ID associated with the given query status JSON object.
 
 | `expirationTime`
-| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the link:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
+| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the xref:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
 
 | `elapsedTime`
 | Elapsed real time of the given query measured in milliseconds. For completed queries, the value shows the total runtime of the request. For ongoing queries, it shows the amount of time taken so far.

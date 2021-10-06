@@ -64,6 +64,8 @@ For more info, please check log at node 'm2': /home/tigergraph/tigergraph/log/gs
 Failed to create queries: [fileOutput].
 ----
 
+NOTE: If a `FILE` object is defined with an empty string, GSQL regards it as a null file. The file output policy will not block the definition of the `FILE` object, but writing to a null file would cause a runtime error.
+
 Additionally, queries that write to paths on the whitelist, but also on the blacklist are also forbidden:
 
 [source,text]

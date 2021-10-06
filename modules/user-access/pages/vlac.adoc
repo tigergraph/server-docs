@@ -558,9 +558,9 @@ A user with `admin` role on a graph wants to grant a group of users access to a 
 The base graph admin can do the following security setup.
 
 . *Define a tag*. In a schema change job, <<_define_a_tag>> `T` for this application.
-. *Mark vertex types as taggable*. Identify the vertex types you want to give selective access for, and link:vlac.adoc#_mark_vertex_types_as_taggable[mark those vertex types as taggable] in a schema change job.
-. *Define a tag-based graph*. link:vlac.adoc#_create_a_tag_based_graph[Define a tag-based graph] `B` with the taggable vertex types, with `T` as their tag expression.
-. *Tag vertices*. Write a DML query on the base graph and use the tag functions in the query to link:vlac.adoc#_add_tags_on_existing_data[tag the vertices] you want to include in the tag-based graph, and run the query.
+. *Mark vertex types as taggable*. Identify the vertex types you want to give selective access for, and xref:vlac.adoc#_mark_vertex_types_as_taggable[mark those vertex types as taggable] in a schema change job.
+. *Define a tag-based graph*. xref:vlac.adoc#_create_a_tag_based_graph[Define a tag-based graph] `B` with the taggable vertex types, with `T` as their tag expression.
+. *Tag vertices*. Write a DML query on the base graph and use the tag functions in the query to xref:vlac.adoc#_add_tags_on_existing_data[tag the vertices] you want to include in the tag-based graph, and run the query.
 . *Grant users permission to the tag-based graph*. On the tag-based graph B, grant roles that have the appropriate privileges for graph `B` to the target users.
 
 [discrete]
@@ -574,10 +574,10 @@ You have a source file containing class annotations (tags) on vertex data. You w
 
 The base graph `admin` user can do the following setup.
 
-. *Define tags*. link:vlac.adoc#_define_a_tag[Declare tags] `T1, T2, … Tn` for all the classes in your source file in a schema change job.
+. *Define tags*. xref:vlac.adoc#_define_a_tag[Declare tags] `T1, T2, … Tn` for all the classes in your source file in a schema change job.
 . *Mark vertex types as taggable*. Identify the vertex types of the vertices in your source file that have class annotations, and link:#_mark_vertex_types_as_taggable[mark those vertex types as taggable] in a schema change job.
-. *Define a tag-based graph*. link:vlac.adoc#_create_a_tag_based_graph[Define a tag-based graph] `B` with `T1` as the tag expression.
-. *Explicitly tag vertices during data loading*. Write a base graph loading job, and in the loading job, use a `TAGS() BY` clause to link:vlac.adoc#_set_tags_explicitly_with_tags_clause[explicitly add tags] to the ingested vertices.
+. *Define a tag-based graph*. xref:vlac.adoc#_create_a_tag_based_graph[Define a tag-based graph] `B` with `T1` as the tag expression.
+. *Explicitly tag vertices during data loading*. Write a base graph loading job, and in the loading job, use a `TAGS() BY` clause to xref:vlac.adoc#_set_tags_explicitly_with_tags_clause[explicitly add tags] to the ingested vertices.
 . *Grant roles on the tag-based graph*. On the tag-based graph `B`, grant roles that have the appropriate privileges for the graph `B` to target users.
 
 [discrete]
@@ -591,8 +591,8 @@ An `admin` user on a graph wants to give a group of users read/write access for 
 
 The base graph admin can do the following setup.
 
-* *Define a tag*. link:vlac.adoc#_define_a_tag[Declare a tag] `T` for this application in a schema change job.
-* *Mark vertex types as taggable*. Identify the vertex types to give selective access to, and link:vlac.adoc#_mark_vertex_types_as_taggable[mark the relevant vertex types as taggable] in a schema change job.
+* *Define a tag*. xref:vlac.adoc#_define_a_tag[Declare a tag] `T` for this application in a schema change job.
+* *Mark vertex types as taggable*. Identify the vertex types to give selective access to, and xref:vlac.adoc#_mark_vertex_types_as_taggable[mark the relevant vertex types as taggable] in a schema change job.
 * *Define a tag-based graph*. link:#_create_a_tag_based_graph[Define a tag-based graph] `B` with `T` as the tag expression.
 * *Grant roles on the tag-based graph*. On the tag-based graph, grant roles with the appropriate privileges to target users.
 
