@@ -15,46 +15,86 @@ Known Issues (Updated Feb 16th):
 * If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be reimported.
 ====
 
-== EXPORT GRAPH
+== EXPORT GRAPH ALL
 
-The `EXPORT GRAPH` command reads the data and metadata for all graphs in the TigerGraph system and writes the information to a zip file in the designated folder. If no options are specified, then a full backup is performed, including schema, data, template information, and user profiles.
+The `+EXPORT GRAPH ALL+` command reads the data and metadata for all
+graphs in the TigerGraph system and writes the information to a zip file
+in the designated folder. If no options are specified, then a full
+backup is performed, including schema, data, template information, and
+user profiles.
 
-.Syntax
+=== Required privilege
 
-[source,text]
-----
-EXPORT GRAPH ALL [exportOptions] TO "/path/to/a/folder"
+....
+EXPORT_GRAPH
+....
+
+=== Synopsis
+
+....
+EXPORT GRAPH ALL [<export_options>] TO "<directory_name>"
+
 
 exportOptions ::=
 (-S | --SCHEMA | -T | --TEMPLATE | -D | --DATA | -U | --USERS | -P | --PASSWORD pwd)
+
 
     -S, --SCHEMA        Only Schema will be exported
     -T, --TEMPLATE      Only Schema, Queries, Loading Jobs, UDFs
     -D, --DATA          Only Data Sources will be exported
     -U, --USERS         Includes Permissions, Secrets, and Tokens
-    -P, --PASSWORD      Encrypt with password. User will be prompted.
-----
+    -P, --PASSWORD      Encrypt with password. User will be prompted
+....
 
+CAUTION: The export directory should be empty before running the command because all contents are zipped and compressed.
 
-[CAUTION]
-====
-The export directory should be empty before running `EXPORT GRAPH` because all contents are zipped and compressed.
-====
+=== Parameters
 
-`EXPORT_GRAPH`
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|`+directory_name+` |The path of the directory to output export files
+to. Must be an absolute path.
+|===
+
+=== Options
+
+[cols=",",options="header",]
+|===
+|Option |Description
+|`+-S or --SCHEMA+` |Only export graph schema.
+
+|`+-T+` or `+--TEMPLATE+` |Only export graph schema, queries, loading
+jobs and UDFs.
+
+|`+-D+` or `+--DATA+` |Must be used with either `+-S+` or `+-T+`. Export
+data in CSV in addition to graph schema or template.
+
+|`+-U+` or `+--Users+` |Must be used with either `+-S+` or `+-T+`.
+Export users, role assginments, secrets, and tokens.
+
+|`+-P+` or -`+-Password+` |Encrypt the exported file with a password.
+Users will be prompted to enter a password when using this option.
+|===
 
 === Output
 
-The `EXPORT GRAPH` command exports all graphs in the database.
+The `+EXPORT GRAPH+` command exports all graphs in the database.
 
 The export contains four categories of files:
 
-. Data files in CSV format, one file for each type of vertex and each type of edge.
-. GSQL DDL command files created by the export command. The import command uses these files to recreate the graph schema(s) and reload the data.
-. Copies of the database's queries, loading jobs, and user-defined functions.
-. GSQL command files used to recreate the users and their privileges.
+* Data files in CSV format, one file for each type of vertex and each
+type of edge.
+* GSQL DDL command files created by the export command. The import
+command uses these files to recreate the graph schema(s) and reload the
+data.
+* Copies of the database's queries, loading jobs, and user-defined
+functions.
+* GSQL command files used to recreate the users and their privileges.
 
-The following files are created in the specified directory when exporting and are then zipped into a single file called ExportedGraphs.zip.
+The following files are created in the specified directory when
+exporting and are then zipped into a single file called
+ExportedGraphs.zip.
 
 [CAUTION]
 ====
@@ -92,7 +132,7 @@ If the file is password-protected, it can only be unzipped using GSQL IMPORT. Th
 
 .Example
 
-[source,text]
+[source,gsql]
 ----
 EXPORT GRAPH ALL TO "/tmp/export_graphs/"
 ----
@@ -113,25 +153,49 @@ If the timeout limit is reached during export, the system returns an error messa
 
 The timeout limit is controlled by the session parameter *export_timeout*.  The default timeout is ~138 hours. To change the timeout limit, use the command:
 
-[source,text]
+[source,GSQL]
 ----
-set export_timeout = <timeout_in_ms>
+SET EXPORT_TIMEOUT = <timeout_in_ms>
 ----
 
-== IMPORT GRAPH
+== IMPORT GRAPH ALL
 
 The `IMPORT GRAPH` command unzips the `.zip` file `ExportedGraph.zip` located in the designated folder, unzips it, and then runs the GSQL command files within.
 
-.Syntax
+=== Required privilege
+`WRITE_SCHEMA`, `WRITE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USERS`
+
+=== Synopsis
 
 [source,text]
 ----
-IMPORT GRAPH ALL [importOptions] FROM "/path/from/a/folder"
+IMPORT GRAPH ALL [import_options] FROM "<filename>"
 
 importOptions ::= [-P | --PASSWORD ] [ (-KU | -- keep-users]
     -P,  --PASSWORD     Decrypt with password. User will be prompted.
     -KU, --KEEP-USERS   Do not delete user identities before importing
 ----
+
+=== Parameters
+[cols=",",options="header",]
+|===
+|Parameter |Description
+|`+filename+` |The path to the zip file produced by the
+`+EXPORT GRAPH ALL+` command. Must be an absolute path.
+|===
+
+=== Options
+[cols=",",options="header",]
+|===
+|Option |Description
+|`+-P+` or `+--PASSWORD+` |Decrypt with password. You will be prompted
+to enter a password when using this option.
+
+|`+-KU+` or `+--KEEP-USERS+` |Keep the current users for during the
+import operation. New users from the imported graph will still be added
+|===
+
+=== Example
 
 
 .Example
@@ -151,10 +215,6 @@ IMPORT GRAPH ALL FROM "/tmp/export_graphs/"
 ====
 `IMPORT GRAPH` erases the current database (equivalent to running DROP ALL). The current version does not support incremental or supplemental changes to an existing database (except for the --keep-users option)
 ====
-
-=== Required privilege
-
-`WRITE_SCHEMA`, `WRITE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USERS`
 
 === Loading Jobs
 
@@ -186,9 +246,9 @@ The database's schema change jobs are not executed during the import process. Th
 * *Global_Schema_Change_Jobs.gsql* contains all global schema change jobs
 * *<graphName>_Schema_Change_Jobs.gsql* contains schema change jobs for each graph <graphName>.
 
-== Cluster Mode
+== Cluster import/export
 
-In v3.0, importing and exporting clusters is not fully automated. The database can be exported and imported by following some additional steps.
+Importing and exporting clusters is not fully automated in the current version. The database can be exported and imported by following some additional steps.
 
 === Export from a Cluster
 
