@@ -34,23 +34,23 @@ After you finish configuring your identity provider, you will get the following:
 
 After logging into Okta as the admin user, click Admin button at the top-right corner.
 
-image::../../../.gitbook/assets/11.1.png[]
+image::11.1.png[]
 
 Click Add Applications in the right menu.
 
-image::../../../.gitbook/assets/11.2.png[]
+image::11.2.png[]
 
 Click Create New App button in the left toolbar.
 
-image::../../../.gitbook/assets/11.3.png[]
+image::11.3.png[]
 
 In the pop up window, choose SAML 2.0 and click Create .
 
-image::../../../.gitbook/assets/11.4.png[]
+image::11.4.png[]
 
 Input TigerGraph (or whatever application name you want to use) in App Name , and click Next . Upload a logo if you like.
 
-image::../../../.gitbook/assets/11.5.png[]
+image::11.5.png[]
 
 Enter the Assertion Consumer Service URL / Single sign on URL , and SP Entity ID .
 
@@ -70,57 +70,57 @@ The SP entity id URL is:
 http://tigergraph-machine-hostname:14240/gsqlserver/gsql/saml/meta
 ====
 
-image::../../../.gitbook/assets/11.6%20%281%29%20%281%29%20%281%29.png[]
+image::11.6%20%281%29%20%281%29%20%281%29.png[]
 
 Scroll to the bottom for Group Attribute Statements. Usually you want to grant roles to users based on their user group. You can give a name to your attribute statement; here we use group . For filter, we want to return all group attribute values of all users, so we use Regex .* as the filter. Click Next after you set up everything.
 
-image::../../../.gitbook/assets/11.7.png[]
+image::11.7.png[]
 
 In the final step, choose whether you want to integrate your app with Okta or not. Then click Finish .
 
-image::../../../.gitbook/assets/11.8.png[]
+image::11.8.png[]
 
 Now your Okta identity provider settings are finished. Click View Setup Instructions button to gather information you will need to setup TigerGraph Single Sign-On.
 
-image::../../../.gitbook/assets/11.9.png[]
+image::11.9.png[]
 
 Here you want to save Identity Provider Single Sign-On URL and Identity Provider Issuer (usually known as Identity Provider Entity Id ). Download the certificate file as okta.cert, rename it as idp.cert , and put it somewhere on the TigerGraph machine. Let's assume you put it under your home folder: /home/tigergraph/idp.cert. If you installed TigerGraph in a cluster, you should put it on the machine where the GSQL server is installed (usually it's the machine whose alias is m1).
 
-image::../../../.gitbook/assets/11.10.png[]
+image::11.10.png[]
 
 Finally, return to previous page, go to the Assignments tab, click the Assign button, and assign people or groups in your organization to access this application.
 
-image::../../../.gitbook/assets/11.12.png[]
+image::11.12.png[]
 
 === Auth0
 
 After logging into Auth0, click Clients in the left navigation bar, and then click CREATE CLIENT button.
 
-image::../../../.gitbook/assets/11.13.png[]
+image::11.13.png[]
 
 In the pop-up window, enter TigerGraph (or whatever application name you want to use) in the Name input box. Choose Single Page Web Application , and then click the CREATE button.
 
-image::../../../.gitbook/assets/11.14.png[]
+image::11.14.png[]
 
 Click Clients again. In the Shown Clients list, click the settings icon of your newly created TigerGraph client.
 
-image::../../../.gitbook/assets/11.15.png[]
+image::11.15.png[]
 
 Scroll down to the bottom of the settings section, and click Show Advanced Settings .
 
-image::../../../.gitbook/assets/11.16.png[]
+image::11.16.png[]
 
 Click the Certificates tab and then click DOWNLOAD CERTIFICATE. In the chooser list, choose CER. Rename the downloaded file as idp.cert , and put it somewhere on the TigerGraph machine. Let's assume you put it under your home folder: /home/tigergraph/idp.cert. If you installed TigerGraph in a cluster, you should put it on the machine where the GSQL server is installed ( usually it's the machine whose alias is m1 ).
 
-image::../../../.gitbook/assets/11.17.png[]
+image::11.17.png[]
 
 Click the Endpoints tab, and copy the text in the SAML Protocol URL text box.  This is the Identity Provider Single Sign-On URL that will be used to configure TigerGraph in an upcoming step.
 
-image::../../../.gitbook/assets/11.18.png[]
+image::11.18.png[]
 
 Scroll up to the top of the page, click the Addons tab, and switch on the toggle at the right side of the SAML2 card.
 
-image::../../../.gitbook/assets/11.19.png[]
+image::11.19.png[]
 
 In the pop-up window, enter the Assertion Consumer Service URL in the Application Callback URL input box:
 
@@ -129,23 +129,23 @@ In the pop-up window, enter the Assertion Consumer Service URL in the Applicatio
 http://tigergraph-machine-hostname:14240/api/auth/saml/acs
 ====
 
-image::../../../.gitbook/assets/11.20.png[]
+image::11.20.png[]
 
 Scroll down to the end of the settings JSON code, click the DEBUG button, and log in as any existing user in your organization in the pop-up login page.
 
-image::../../../.gitbook/assets/11.21.png[]
+image::11.21.png[]
 
 If login in successfully, the SAML response will be shown in decoded XML format. Scroll down to the attributes section. Here you will see some attribute names, which you will use to set proxy rules when creating groups in an upcoming configuration step.
 
-image::../../../.gitbook/assets/11.22.png[]
+image::11.22.png[]
 
 Return to the previous pop-up window and click the Usage tab. Copy the Issuer value. This is the Identity Provider Entity Id that will be used to configure TigerGraph in an upcoming step.
 
-image::../../../.gitbook/assets/11.23.png[]
+image::11.23.png[]
 
 Click __**__the Settings tab, scroll to the bottom of the pop-up window, and click the SAVE button. Close the pop-up window.
 
-image::../../../.gitbook/assets/11.24.png[]
+image::11.24.png[]
 
 == *Enable Single Sign-On in TigerGraph*
 
@@ -322,19 +322,19 @@ Now you have finished all configurations for Single Sign-On. Let's test it.
 
 Visit the GraphStudio UI in your browser. You should see a Login with SSO button appear on top of the login panel:
 
-image::../../../.gitbook/assets/11.25.png[]
+image::11.25.png[]
 
-Clicking the button will navigate to your identity provider's login portal. If you have already logged in there, you will be redirected back to GraphStudio immediately. After about 10 seconds, the verification should finish, and you are authorized to use GraphStudio. If you haven't login at your identity provider yet, you will need to log in there. After logging in successfully, you will see your Single Sign-On username when you click the User icon image:../../../.gitbook/assets/11.1%20%281%29.png[] at the upper right of the GraphStudio UI.
+Clicking the button will navigate to your identity provider's login portal. If you have already logged in there, you will be redirected back to GraphStudio immediately. After about 10 seconds, the verification should finish, and you are authorized to use GraphStudio. If you haven't login at your identity provider yet, you will need to log in there. After logging in successfully, you will see your Single Sign-On username when you click the User icon  image:11.1%20%281%29.png[]  at the upper right of the GraphStudio UI.
 
-image::../../../.gitbook/assets/11.26.png[]
+image::11.26.png[]
 
 If after redirecting back to GraphStudio, you return to the login page with the error message shown below, that means the Single Sign-On user doesn't have access to any graph. Please double check your user group proxy rules, and roles you have granted to the groups.
 
-image::../../../.gitbook/assets/11.27.png[]
+image::11.27.png[]
 
 If your Single Sign-On fails with error message show below, that means either some configuration is inconsistent between TigerGraph and your identity provider, or something unexpected happened.
 
-image::../../../.gitbook/assets/11.28.png[]
+image::11.28.png[]
 
 You can check your GSQL log to investigate. First, find your GSQL log file with the following:
 

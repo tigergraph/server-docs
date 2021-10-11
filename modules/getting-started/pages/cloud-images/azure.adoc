@@ -7,11 +7,11 @@ This tutorial will show you how to start TigerGraph Enterprise Edition from an i
 . Go to link:%20https://portal.azure.com/#blade/Microsoft_Azure_Marketplace/MarketplaceOffersBlade/selectedMenuItemId/home[Microsoft Azure Marketplace] and search for "TigerGraph".
 . Select your software plan and Click "Create". Select the latest plan (with the highest version number) to access the latest features.
 
-image::../../../.gitbook/assets/create-page%20%281%29.png[Create Page]
+image::create-page%20%281%29.png[Create Page]
 
 . Fill out the "Resource group", "Virtual machine name", "Username" and "SSH Public key" fields. The default values should work for the rest of the fields. Then click "*Next: Disks >*".
 
-image::../../../.gitbook/assets/basic-settings-page%20%281%29.png[Basic Settings Page]
+image::basic-settings-page%20%281%29.png[Basic Settings Page]
 
 . Keep the default values for all other settings and click "Next" until you see the "Review + Create" page below. Check all your settings and click "Create" when you are satisfied.
 
@@ -24,11 +24,11 @@ The "NIC network security group" must allow inbound TCP traffic to port 9000 if 
 
 For more about the TigerGraph Platform, see the xref:intro:introduction.adoc[TigerGraph Platform Overview].
 
-image::../../../.gitbook/assets/review-page%20%281%29.png[Review Page]
+image::review-page%20%281%29.png[Review Page]
 
 . That's it!  The TigerGraph instance has been successfully deployed on Microsoft Azure.
 
-image::../../../.gitbook/assets/deployment-successful-page%20%281%29.png[Deploying Page]
+image::deployment-successful-page%20%281%29.png[Deploying Page]
 
 == *Starting TigerGraph on Your Instance*
 
@@ -39,7 +39,7 @@ image::../../../.gitbook/assets/deployment-successful-page%20%281%29.png[Deployi
 sudo su - tigergraph
 ----
 
-image::../../../.gitbook/assets/login-to-tigergraph%20%287%29.png[TigerGraph Login]
+image::login-to-tigergraph%20%287%29.png[TigerGraph Login]
 
 . Run the following command to check the current status of TigerGraph. The services *"ADMIN", "CTRL", "ETCD", "IFM", "KAFKA", and "ZK" are started automatically* and should be up at this point. If any of them are not or you get the following error message, *please wait for 30 to 60 seconds and check the status again* before reporting it to TigerGraph support.
 
@@ -48,9 +48,9 @@ image::../../../.gitbook/assets/login-to-tigergraph%20%287%29.png[TigerGraph Log
 gadmin status
 ----
 
-image::../../../.gitbook/assets/gadmin-status%20%281%29.png[Output of gadmin status]
+image::gadmin-status%20%281%29.png[Output of gadmin status]
 
-image::../../../.gitbook/assets/gadmin-status-error-message%20%281%29.png[Gadmin status error message]
+image::gadmin-status-error-message%20%281%29.png[Gadmin status error message]
 
 . Run the following command to start TigerGraph:
 
@@ -59,7 +59,7 @@ image::../../../.gitbook/assets/gadmin-status-error-message%20%281%29.png[Gadmin
 gadmin start
 ----
 
-image::../../../.gitbook/assets/gadmin-start%20%289%29.png[Output of gadmin status]
+image::gadmin-start%20%289%29.png[Output of gadmin status]
 
 . Check the status again. All services should be up at this point:
 
@@ -68,7 +68,7 @@ image::../../../.gitbook/assets/gadmin-start%20%289%29.png[Output of gadmin stat
 gadmin status
 ----
 
-image::../../../.gitbook/assets/gadmin-status-after-start%20%281%29.png[Gadmin status after running gadmin start]
+image::gadmin-status-after-start%20%281%29.png[Gadmin status after running gadmin start]
 
 . TigerGraph has been successfully started on your cloud instance.
 
@@ -81,4 +81,4 @@ The TigerGraph Enterprise edition image comes with *a perpetual license* that wi
 gadmin license status
 ----
 
-image::../../../.gitbook/assets/gadmin-license-status%20%282%29.png[Gadmin license status output]
+image::gadmin-license-status%20%282%29.png[Gadmin license status output]
