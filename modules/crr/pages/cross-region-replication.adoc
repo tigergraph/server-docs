@@ -49,6 +49,10 @@ See <<Sync an outdated DR cluster>> on how to bring an outdated DR cluster back 
 
 * Install TigerGraph 3.2 or higher on both the primary cluster and the DR cluster *in the same version*.
 * Make sure that your DR cluster has the same number of partitions as the primary cluster.
+* If you choose to enable CRR and your DR cluster is in a different VPC than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
+** If you xref:installation:install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
+** If you xref:installation:install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
+* Make sure TigerGraph is not installed with a local loopback IP such as 127.0.0.1
 
 == *Setup*
 

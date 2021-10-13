@@ -18,6 +18,22 @@ Logs in TigerGraph are stored at `<tigergraph_root_dir>/log/`. TigerGraph's logs
 
 Knowing where certain activities are recorded allows one to use tools such as the Linux `grep` command to easily obtain critical information from your database.
 
+== Log locations on a cluster
+
+In a TigerGraph cluster, each node will only keep logs of activities that took place on the node itself. For example, the GSQL logs on the m1 node will only record events for m1 and are not replicated across the cluster.
+
+For GSQL specifically, the cluster will elect a leader to which all GSQL requests will be forwarded. To check which node is the leader, start by checking the GSQL logs of the m1 node. Check the most recent lines of log.INFO and look for lines containing information about leader switch. For example, the logs below recorded a GSQL leader switch from m2 to m1:
+
+[,text]
+----
+I@20210709 13:56:52.214  (GsqlHAHandler.java:231) GSQL leader switches from 'm2' to 'm1' ...
+E@20210709 13:56:52.215  (GsqlHAHandler.java:246) GSQL HA leader switches to 'm1', abort and clear all sessions now.
+If you want to lower the chance of leader switch by increasing timeout, please use 'gadmin config' to increase 'Controller.LeaderElectionHeartBeatMaxMiss' and/or 'Controller.LeaderElectionHeartBeatIntervalMS'.
+I@20210709 13:56:52.219  (SessionManager.java:197) Abort and clear all sessions...
+I@20210709 13:56:52.220  (SessionManager.java:204) All sessions aborted.
+I@20210709 13:56:52.224  (GsqlHAHandler.java:283) switched to new leader m1
+----
+
 == Monitor request history
 
 All requests made to TigerGraph's REST endpoints are recorded by the RESTPP logs and Nginx logs. Information available in the logs includes:
@@ -28,6 +44,7 @@ All requests made to TigerGraph's REST endpoints are recorded by the RESTPP logs
 * User information (when RESTPP authentication is turned on)
 
 RESTPP is responsible for many tasks in the TigerGraph internal architecture and records many internal API calls, which can be hard to distinguish from manual requests. When xref:user-access:enabling-user-authentication.adoc#_enable_restpp_authentication[RESTPP authentication is on], the RESTPP log will record the user information and mark a call if it is made by an internal API. Therefore, you can use the command below to filter for manual requests:
+
 
 [source,bash]
 ----
@@ -41,7 +58,7 @@ I0315 21:41:36.462616 14541 handler.cpp:351] RequestInfo|,196622.RESTPP_1_1.1615
 
 `RequestInfo` contains the ID of the request, which you can use to look up more information on the request :
 
-image::image%20%2875%29.png[Request ID]
+image::image (75).png[Request ID]
 
 Here is an example of using a request ID to look up a request in the restpp log:
 

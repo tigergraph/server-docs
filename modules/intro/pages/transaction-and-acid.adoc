@@ -59,18 +59,18 @@ Let us examine a few transaction processing scenarios.
 
 A read-only transaction R1 is running. Before R1 finishes, an update transaction W2 comes in.  W2 might finish before R1 is finished.  But R1 will not see the changes made by W2 before W2 is committed (no dirty reads).  Even if W2 is committed before R1 is finished, if R1 reads the same part of the graph multiple times, it will not see the changes made by W2 (repeatable reads).  There are no phantom reads either. This is because the graph version R1 is working on cannot be changed by any of the W2 transaction aforementioned. Bottom line: If W2 starts when R1 is not yet committed, R1 will see results as though W2 did not exist.
 
-image::1%20%282%29.png[]
+image::1 (2).png[]
 
 [discrete]
 ==== Scenario 2  Write - Read
 
 An update transaction W1 is running. Before W1 is committed, a read-only transaction R2 comes in.  R2 will not wait for W1 to finish and will be executed as if there is no W1. Later. even if W1 finishes and commits before R2 is finished, R2 will not see any changes made by W1.  This is because the graph version R2 works on is 'fixed' at the time when R2 is submitted and will not include the changes to be made by W1. Bottom line: If R2 starts when W1 is not yet committed, R2 will see results as though W1 did not exist.
 
-image::2%20%281%29.png[]
+image::2 (1).png[]
 
 [discrete]
 ==== Scenario 3  Write - Write +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario3Write-Write">++++++</a>+++
 
 An update transaction W1 is running. Before W1 finishes, a new update request W2 comes in.  W2 will wait for W1 to finish before it is executed. When multiple update transactions come in, they will be executed sequentially by the system according to the time they are received by the system.
 
-image::3%20%281%29%20%281%29.png[]
+image::3 (1) (1).png[]
