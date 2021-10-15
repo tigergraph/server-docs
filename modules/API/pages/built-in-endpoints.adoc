@@ -1217,55 +1217,64 @@ request will always insert new edges, and create the necessary vertices
 with default values for their attributes.
 |===
 
-The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted. The JSON code can be stored in a text file or specified directly in a command line. There is a maximum size for a `POST` data payload (see the xref:API:intro.adoc#_size_and_time_limits[*Size Limits*] section). The JSON format for describing a vertex set or edge set is summarized below.
+The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted.
+The JSON code can be stored in a text file or specified directly in a command line.
+There is a maximum size for a `POST` data payload (see the xref:API:intro.adoc#_size_and_time_limits[*Size Limits*] section).
+The JSON format for describing a vertex set or edge set is summarized below.
 
-==== Request body:
+==== Request body
 
 The payload data should be in JSON according to the schema shown below:
 
-.Request bodyd schema
-
+.Request body schema
+====
 [source,bash]
 ----
-"vertices": {
-   "<vertex_type>": {
-      "<vertex_id>": {
-         "<attribute>": {
-            "value": <value>,
-            "op": <opcode>
-         }
-      }
-   }
-},
-"edges": {
-   "<source_vertex_type>": {
-      "<source_vertex_id>": {
-         "<edge_type>": {
-            "<target_vertex_type>": {
-               "<target_vertex_id>": {
-                  "<attribute>": {
-                     "value": <value>,
-                     "op": <opcode>
-                  }
-               }
-            }
-         }
-      }
-   }
+{
+    "vertices": {
+       "<vertex_type>": {
+          "<vertex_id>": {
+             "<attribute>": {
+                "value": <value>,
+                "op": <opcode>
+             }
+          }
+       }
+    },
+    "edges": {
+       "<source_vertex_type>": {
+          "<source_vertex_id>": {
+             "<edge_type>": {
+                "<target_vertex_type>": {
+                   "<target_vertex_id>": {
+                      "<attribute>": {
+                         "value": <value>,
+                         "op": <opcode>
+                      }
+                   }
+                }
+             }
+          }
+       }
+    }
 }
 ----
-
-
-
-The fields in angle brackets (`<>`) are placeholder names or values, to be replaced with actual values. The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a list of items. The keys which are not in angle brackets are exact texts that must be used as they are. The nested hierarchy means that vertices are grouped by type.  Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
+The fields in angle brackets (`<>`) are placeholder names or values, to be replaced with actual values.
+The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a list of items.
+The keys which are not in angle brackets are exact texts that must be used as they are.
+The nested hierarchy means that vertices are grouped by type.
+Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
+====
 
 The first example below shows two `User` vertices having an attribute called `age`:
 
+[upsert-example-1]
+====
 .Upsert Example Data 1: Two User vertices
-
-[source,bash]
+[source,json]
 ----
- "vertices": {
+{
+  "vertices": {
     "User": {
       "id6": {
         "age": {
@@ -1281,14 +1290,15 @@ The first example below shows two `User` vertices having an attribute called `ag
   }
 }
 ----
+====
 
-
-
-The second example starts with one `User` vertex. If `id6` already exists, it is not changed. If it doesn't yet exist, it is created with default attribute values. Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Liked_By` edge from `id6` to `id1`.
+The second example starts with one `User` vertex.
+Since `id6` contains no attributes, it will remain the same it if already exists.
+If it doesn't yet exist, the request will create a vertex with ID `id6` with default attribute values.
+Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Liked_By` edge from `id6` to `id1`.
 
 .Upsert Example Data 2:add_id6.json
-
-[source,bash]
+[source,json]
 ----
 {
  "vertices": {
@@ -1326,9 +1336,9 @@ The second example starts with one `User` vertex. If `id6` already exists, it is
 }
 ----
 
+Follow the instructions in the Introduction section to xref:API:intro.adoc#_formatting_data_in_json[format advanced data types].
 
-
-Follow the instructions in the Introduction section to xref:API:intro.adoc#_formatting_data_in_json[format advanced data types]. For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
+For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
 
 [source,bash]
 ----
@@ -1425,14 +1435,49 @@ If `vertex_must_exist` is true, the response will include two more fields:
 
 The example file `add_id6.json` (shown in the *Request Body* section) upserts one `User` __vertex with `id = "id6"`, one `Liked` __edge, and one `Liked_By` __edge. The `Liked` __edge is from `"id1` " to `"id6"`; the `Liked_By` __edge is from `"id6"` to _``"id1"``_.
 
+==== Example
+
 The following example submits an upsert request by using the payload data stored in `add_id6.json`.
 
-[source,java]
+[source,bash]
 ----
 $ curl -X POST --data-binary @add_id6.json \
 "http://localhost:9000/graph"
 
 {"accepted_vertices":1,"accepted_edges":2}
+----
+
+If we set the value of `vertex_must_exist` parameter to `true`, the endpoint will only insert edges whose endpoint vertices both exist. This includes the vertices being inserted in the same request.
+Therefore, inserting the content of `add_id6.json` to an empty graph would cause the edges to be rejected:
+
+[source,bash]
+----
+$ curl -X POST --data-binary @add_id6.json \
+"http://localhost:9000/graph?vertex_must_exist=true"
+
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "accepted_vertices": 1,
+      "accepted_edges": 0,
+      "skipped_edges": 2,
+      "edge_vertices_not_exist": [
+        {
+          "v_type": "User",
+          "v_id": "id1"
+        }
+      ]
+    }
+  ],
+  "code": "REST-0003"
+}
 ----
 
 == Vertices
