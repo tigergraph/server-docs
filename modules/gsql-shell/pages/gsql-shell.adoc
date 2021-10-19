@@ -37,9 +37,8 @@ For more information, see Roles and Privileges.
 == Multi-line commands
 By default, GSQL treats each line as one command; the GSQL interpreter will activate as soon as the end-df-line character is entered.
 
-.Default single line behavior
-====
-[,gsql]
+
+[source,gsql]
 ----
 GSQL > ls <1>
 ---- Global vertices, edges, and all graphs
@@ -64,7 +63,7 @@ Was expecting:
 ----
 <1> A single line command is executed by GSQL immediately after entering the end-of-line character.
 <2> Trying to enter a multi-line command in the default single-line mode will cause an error.
-====
+
 
 Multi-line mode allows the user to enter several lines of text without triggering immediate execution.
 This is useful when a statement is very long and the user would like to split it into multiple lines.
