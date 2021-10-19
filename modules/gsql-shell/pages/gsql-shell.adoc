@@ -11,18 +11,10 @@ As the TigerGraph Linux user, type `gsql` into the bash terminal to start a GSQL
 $ gsql
 ----
 
-If authentication is enabled, you will need to provide credentials in order to launch the shell. 
-
-== Run a GSQL script
-You don't always need to enter the interactive shell in order to run a GSQL command. To run a GSQL command non-interactively, run the command `gsql` followed by the GSQL commands you want to run in quotes:
-
-[source,bash]
-----
-$ gsql 'ls'
-----
+If authentication is enabled, you will need to provide credentials in order to launch the shell.
 
 == Change scope
-In the GSQL shell, you can run commands on a global scope or on a local scope. 
+In the GSQL shell, you can run commands on a global scope or on a local scope.
 When you start a GSQL session, you are in the global scope.
 To change to the local scope of a graph, run the `USE GRAPH` command.
 
@@ -32,12 +24,92 @@ GSQL > USE GRAPH social
 Using graph 'social'
 ----
 
-To switch back to the global scope, run `USE GLOBAL`. 
+To switch back to the global scope, run `USE GLOBAL`.
 
 [source,GSQL]
 ----
 GSQL > USE GLOBAL
 ----
 
-Operating on different scopes will require different privileges. 
-For more information, see Roles and Privileges. 
+Operating on different scopes will require different privileges.
+For more information, see Roles and Privileges.
+
+== Multi-line commands
+By default, GSQL treats each line as one command; the GSQL interpreter will activate as soon as the end-df-line character is entered.
+
+.Default single line behavior
+====
+[,gsql]
+----
+GSQL > ls <1>
+---- Global vertices, edges, and all graphs
+Vertex Types:
+  - VERTEX Person(PRIMARY_ID id STRING, name STRING, score FLOAT, tag STRING, flag BOOL) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+Edge Types:
+  - DIRECTED EDGE Friend(FROM Person, TO Person, weight FLOAT, tag STRING, flag BOOL) WITH REVERSE_EDGE="Also_Friend"
+  - DIRECTED EDGE Also_Friend(FROM Person, TO Person, weight FLOAT, tag STRING, flag BOOL) WITH REVERSE_EDGE="Friend"
+  - UNDIRECTED EDGE Coworker(FROM Person, TO Person, weight FLOAT, tag STRING, flag BOOL)
+
+Graphs:
+  - Graph social(Person:v, Friend:e, Also_Friend:e, Coworker:e)
+Jobs:
+
+
+JSON API version: v2
+Syntax version: v1
+GSQL > CREATE QUERY example () { <2>
+Encountered "<EOF>" at line 1, column 25.
+Was expecting:
+    "}" ...
+----
+<1> A single line command is executed by GSQL immediately after entering the end-of-line character.
+<2> Trying to enter a multi-line command in the default single-line mode will cause an error.
+====
+
+Multi-line mode allows the user to enter several lines of text without triggering immediate execution.
+This is useful when a statement is very long and the user would like to split it into multiple lines.
+It is also useful when defining a job or query, because they typically contain multiple statements.
+
+To enter multi-line mode, use the command `BEGIN`.
+The end-of-line character is now disabled from triggering execution.
+The shell remains in multi-line mode until the command `END` or `ABORT` is entered.
+The `END` command triggers the execution of the multi-line block. Alternately, the `ABORT` command exits multi-line mode and discards the multi-line block.
+
+=== Example
+In the example below, `BEGIN` and `END` are used to allow the SELECT statement to be split into several lines:
+
+[source,gsql]
+----
+GSQL > BEGIN
+GSQL > CREATE QUERY example () {
+GSQL > PRINT "Hello world";
+GSQL > }
+GSQL > END
+Successfully created queries: [example].
+----
+
+== Run GSQL scripts and in-line commands
+You don't always need to enter the interactive shell in order to run a GSQL command.
+You can also run command in-line or through a GSQL script.
+
+To run a GSQL command non-interactively, run the bash command `gsql` followed by the GSQL commands you want to run in quotes:
+
+[source,bash]
+----
+$ gsql 'ls'
+----
+
+To run a GSQL script, put all your GSQL commands in a file (conventionally ending with the extension .gsql), and run:
+
+[source,bash]
+----
+$ gsql <filename>
+----
+Replace `<filename>` with the name of the script file.
+
+You can also run a GSQL script from the GSQL shell. To do so, type in the file name prefixed with the `@` character:
+[source,gsql]
+----
+GSQL > @<filename>
+----
+Replace `<filename>` with the name of the script file.
