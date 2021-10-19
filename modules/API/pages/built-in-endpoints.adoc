@@ -1204,17 +1204,22 @@ curl --data-binary @vertices.json http://localhost:9000/graph/social?automic_pos
 `"none"`. `"all"`: request will return after all GPE instances have
 acknowledged the POST `"none"`: request will return immediately after
 RESTPP processed the POST.
+Default value is false.
 
-|`new_vertex_only` |No |Boolean value that indicates whether or not to
-update existing vertices. If the value is true, it will only insert new
+|`new_vertex_only` |No |If `new_vertex_only` is set to true, the request will only insert new
 vertices and not update existing ones.
+Default value is false.
 
-|`vertex_must_exist` |No |Boolean value that indicates whether or not to
-insert new edges when the `FROM` or `TO` vertices don’t exist. If the
-value is true, the request will only insert edge if both the `FROM` and
-`TO` vertices of the edge already exist. If the value is false, the
-request will always insert new edges, and create the necessary vertices
-with default values for their attributes.
+|`vertex_must_exist` |No |If `vertex_must_exist` true, the request will only insert an *edge* if both the `FROM` and
+`TO` vertices of the edge already exist.
+If the value is false, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
+Note that this parameter does not affect vertices.
+Default value is false.
+
+|`update_vertex_only`|No |If `update_vertex_only` is set to true, the request will only update existing vertices and not insert new vertices.
+
+|`atomic_post`|No |If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
+Default value is false.|
 |===
 
 The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted.
