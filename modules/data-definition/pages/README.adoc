@@ -1,5 +1,4 @@
 = Database Definition
-:sectnums:
 
 Before you can load data into a graph and write queries on TigerGraph, you must first define a graph schema.
 A graph schema in TigerGraph is made up of different vertex types and edge types.
@@ -7,14 +6,14 @@ Each vertex and edge type have their own attributes.
 
 Database definition operations happen in two stages:
 
-==  Define a schema
+== Define a schema
 A graph schema is a "dictionary" that defines the types of entities, vertices and edges, in the graph and how those types of entities are related to one another.
 Each vertex or edge type has a name and a set of attributes (properties) associated with it.
 For example, a `Book` vertex could have title, author, publication year, genre, and language attributes.
 
 To learn about the GSQL commands used to define a schema, see xref:3.2@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc[GSQL language reference: Defining a Graph Schema.]
 
-==  Modify a schema
+== Modify a schema
 After you define a graph schema, you can still modify it. This includes but is not limited to:
 
 * Adding and dropping vertex or edge types to the graph schema.
@@ -27,3 +26,18 @@ For example, if you had 100 Book vertices and then added an attribute to the Boo
 If you dropped a Book attribute, you still would have all your books, but the one attribute would be gone.
 
 To learn about the GSQL commands used in modifying a schema, see xref:3.2@gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc[GSQL language reference: Modifying a Graph Schema.]
+
+== Reset all
+You can clear the entire graph data store and erase all related definitions, including graph schema, loading jobs, queries as well as users and roles.
+The data deletion cannot be undone; use with extreme caution. The REST++, GPE, and GSE components will be turned off.
+
+[source, bash]
+----
+$ gsql --reset
+
+Resetting the catalog.
+
+Shutdown restpp gse gpe ...
+Graph store /home/tigergraph/tigergraph/gstore/0/ has been cleared!
+The catalog was reset and the graph store was cleared.
+----

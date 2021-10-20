@@ -44,7 +44,6 @@ GSQL > ls <1>
 ---- Global vertices, edges, and all graphs
 Vertex Types:
   - VERTEX Person(PRIMARY_ID id STRING, name STRING, score FLOAT, tag STRING, flag BOOL) WITH STATS="OUTDEGREE_BY_EDGETYPE"
-Edge Types:
   - DIRECTED EDGE Friend(FROM Person, TO Person, weight FLOAT, tag STRING, flag BOOL) WITH REVERSE_EDGE="Also_Friend"
   - DIRECTED EDGE Also_Friend(FROM Person, TO Person, weight FLOAT, tag STRING, flag BOOL) WITH REVERSE_EDGE="Friend"
   - UNDIRECTED EDGE Coworker(FROM Person, TO Person, weight FLOAT, tag STRING, flag BOOL)
@@ -61,7 +60,7 @@ Encountered "<EOF>" at line 1, column 25.
 Was expecting:
     "}" ...
 ----
-<1> A single line command is executed by GSQL immediately after entering the end-of-line character.
+<1> GSQL executes a single-line command immediately after encountering the end-of-line character.
 <2> Trying to enter a multi-line command in the default single-line mode will cause an error.
 
 
