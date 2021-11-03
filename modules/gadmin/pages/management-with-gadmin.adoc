@@ -377,6 +377,22 @@ Global Flags:
       --file string   specify config file path
 ----
 
+==== gadmin config reset
+Reset one or more configuration parameters to their default setting. View the full list of configuration parameters and their default values at xref:reference:configuration-parameters.adoc[].
+
+[source,bash]
+----
+Usage:
+gadmin config reset [EntryName...] [flags]
+
+Flags:
+-h, --help   help for reset
+
+Global Flags:
+--debug         enable debug log output to stdout
+--file string   specify config file path
+----
+
 === gadmin init
 
 [source,text]
@@ -647,6 +663,7 @@ Description:
   infrastructure. Use 'gadmin start all' to start all services.
 
 Flags:
+      --auto-restart         auto restart the service on crash
       --dry-run              dry run and output command to start the service
   -h, --help                 help for start
       --no-dep               start service without dependency

@@ -1,10 +1,87 @@
 = Change Log
 :description: This page will document all the changes to TigerGraph product including New Features and Bug Fixes.
 
-[NOTE]
-====
-Distributed Graph support and certain other enterprise-level features are available in the Enterprise Edition only.  They do not pertain to the Developer Edition.
-====
+
+== TigerGraph 3.3
+
+=== Features
+See xref:release-notes.adoc[]
+
+=== Changes
+
+#### Database server
+
+* Added the `gadmin config reset` command to reset a configuration parameter
+* Added the `--auto-restart` option to `gadmin start` to automatically restart a service if it goes down
+
+#### GraphStudio
+
+* Added the ability to save a query as another query
+* Added support for [single-value attachment](broken-reference) in Visual Query Builder
+* Added the ability to export selected vertices and edges in `.csv` format
+* Added the ability to view query results in tabular format
+* Added the Within widget in Visual Query Builder(VQB)
+* Added the ability to save a graph pattern in VQB as another pattern
+* Added support for nested expressions for aggregation functions
+
+#### Admin portal
+
+* Added support for managing user-defined roles
+* Added the ability to preview and download GSQL output files&#x20;
+* Added the ability to change GSQL configurations&#x20;
+
+=== Enhancements
+
+### Database server
+
+* Added parameter `update_vertex_only` to `POST /graph/{graph_name}` enable update-only requests&#x20;
+* Improved query performance by updating SmartContainer
+* Improved the performance of accumulators
+* Added support for function `setAttr` in Interpret Mode
+
+#### GraphStudio
+
+* Improved query editor UI
+* Improved edge visualization in geospatial layout
+* Improved vertex visualization in geospatial layout
+* Increased limit on number of columns when loading data
+* Improved the accuracy of error messages
+
+#### Admin Portal
+
+* Improved cluster service monitor UI
+
+### Fixed
+
+#### Database server
+
+* Increased size limit for graph catalog
+* Improved log messages when RESTPP requests time out
+* Fixed an issue that causes Kafka loading to fail
+* Fixed an issue during upgrade related to initiating Kafka
+* Fixed an issue that slowed queries that write to files in 3.2
+* Fixed an issue that in rare cases caused errors when running `grun` commands
+* Fixed an issue that caused errors in queries and loading jobs when filename is too long
+* Fixed an issue that in rare cases caused incorrect output when query uses a kleene star
+* Fixed an issue that in rare cases caused local variables to be overridden
+* Fixed an issue that in rare cases caused errors when running queries with default values
+* Fixed an issue that in rare cases caused errors when a query calls a subquery
+* Fixed an issue that in rare cases caused cluster outage if user terminates process during cluster shrinking&#x20;
+* Fixed an issue that caused GSQL leader to switch unexpectedly when GSQL restarts
+
+#### GraphStudio
+
+* Fixed an issue that caused the semantic checker to miss a specific semantic error
+* Fixed an issue that in rare cases caused a query draft to become uneditable
+* Fixed an issue that caused data mapping to take long than expected when user uploads 0-byte files
+* Fixed an issue that caused errors when writing query on an empty graph
+* Fixed an issue that caused errors when saving a VQB pattern as a query
+* Fixed an issue that caused updating run query configurations in GraphStudio to fail
+
+#### Admin Portal
+
+* Added support to manage user-defined roles
+
 
 == *TigerGraph 3.2*
 

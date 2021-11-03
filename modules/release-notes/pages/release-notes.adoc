@@ -1,8 +1,10 @@
-= Release Notes - TigerGraph Server 3.2
+= Release Notes - TigerGraph Server 3.3
 
-Release Date: Sep 30th, 2021
+Release Date: Nov 1st, 2021
 
 == Release Notes for Previous Versions
+
+* xref:3.2@tigergraph-server:release-notes:release-notes.adoc[]
 
 * https://docs.tigergraph.com/faqs/release-notes-tigergraph-3.1[Release Notes - TigerGraph 3.1]
 * https://docs.tigergraph.com/v/3.0/faqs/release-notes-tigergraph-3.0[Release Notes - TigerGraph 3.0]
@@ -40,96 +42,32 @@ Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to
 
 == New Features
 
-=== User-defined Roles
+Below is a list of new features in TigerGraph 3.3:
 
-Privileges are introduced as the atomic unit for managing database user access. Database administrators can now define their own roles with customizable collections of privileges.
+=== Manageability
+* Added xref:gadmin:management-with-gadmin.adoc#_gadmin_config_reset[gadmin config reset] command to reset a configuration parameter to its default value.
+* Added the `--auto-restart` option to xref:gadmin:management-with-gadmin.adoc#_gadmin_start[gadmin start] that automatically restarts any service that goes down
 
-For details on this feature, see xref:user-access:README.adoc[User Access Management].
+=== Observability
+* Improve loader/license violation error messaging
 
-=== Cross-region replication
+=== Data loading
+* Added new parameter `update_vertex_only` to `POST /graph/{graph_name}` to allow update-only requests.
 
-TigerGraph 3.2 provides complete native support for all data and metadata cross-region replication including automated schema changes, user and query management.
+=== Developer efficiency - GraphStudio
+* Aggregation in Visual Query Builder is renamed to Attachment
+* Added the ability to xref:gui:graphstudio:explore-graph/graph-exploration-panel.adoc#_export_result[export a graph exploration] as a .png file or as .csv files.
+* Added the ability to xref:gui:graphstudio:write-queries.adoc#_view_table_result[view the results of GSQL queries in a tabular format].
+* Added a new widget xref:gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_within["Within"] in Visual Query Builder to replicate a vertex pattern to be used in another pattern.
+* Added support for nested expressions for aggregation functions in Visual Query Builder.
+* Added support for xref:gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_attachment[single-value attachment] in Visual Query Builder.
+* Added the ability to xref:gui:graphstudio:write-queries.adoc#_save_as[save a query draft] under a different name than the name used to create the query.
+* Added the ability to xref:gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_save_as[save a visual pattern under a different name] than the name used to create the pattern in Visual Query Builder.
 
-For details on this feature, see Disaster Recovery.
-
-=== Containerization of services
-
-TigerGraph 3.2 allows users to deploy TigerGraph single servers and clusters on Kubernetes. +
-Running applications in containers on Kubernetes provides rapid spin-up and repeatability across environments.
-
-For details on this feature, see xref:kubernetes:README.adoc[Kubernetes].
-
-=== Cluster resizing
-
-TigerGraph 3.2 provides built-in cluster management features that allow users to expand, shrink, and repartition their TigerGraph clusters.
-
-For details on this feature, see xref:cluster-resizing:README.adoc[Cluster resizing].
-
-=== Workload Management
-
-TigerGraph 3.2 provides the `GSQL-REPLICA` and `GSQL-THREAD-LIMIT` header to specify the replica for a query to run on and a thread limit that a query is allowed to use.
-
-For details on this feature, see xref:API:built-in-endpoints.adoc#_run_an_installed_query_get[Run a query].
-
-=== GraphStudio geospatial layout
-
-Starting with TigerGraph 3.2, if a vertex type has attributes named `latitude` and `longitude` , each with valid latitude and longitude values, users can choose the geospatial layout option in GraphStudio and display the vertices on the world map.
-
-=== File output policy
-
-Starting in TigerGraph 3.2, GSQL has a xref:security:file-output-policy.adoc[file output policy] that contains a whitelist and a blacklist. GSQL queries will only write to the whitelist and are forbidden from writing to the blacklist.
-
-=== Log viewing with Elasticsearch, Kibana, and Filebeat
-Starting with TigerGraph 3.2, TigerGraph provides a gadmin command that can generate Filebeat configuration files for a TigerGraph cluster.
-Read our xref:troubleshooting:elk-filebeat.adoc[step-by-step guide] to set up Elasticsearch, Kibana, and Filebeat to view TigerGraph logs.
-
-
-== General Improvements
-
-=== Expanded library of built-in GSQL functions
-
-TigerGraph 3.2 added xref:3.2@gsql-ref:querying:func/README.adoc[over 30 built-in functions] to the GSQL query language.
-
-=== Relaxed variable declaration rules
-
-Starting in TigerGraph 3.2, xref:3.2@gsql-ref:querying:declaration-and-assignment-statements.adoc[base type variables and accumulators can be declared anywhere in a query] and are block-scoped.
-
-=== Parameter passing with JSON
-
-Starting in TigerGraph 3.2, xref:3.2@gsql-ref:querying:query-operations.adoc#_run_query[users can pass in parameters to a GSQL query with a JSON object].
-
-=== Subquery return anonymous tuples
-
-Starting in TigerGraph 3.2, subqueries in GSQL can return an anonymous tuple or a collection of anonymous tuples.
-
-=== Query installation improvements
-
-TigerGraph 3.2 implemented the following improvements for query installation:
-
-* Updating a subquery will no longer require reinstalling all dependent queries
-* Schema change will no longer trigger reinstalling all queries of the graph
-* Concurrent query installation between graphs is now supported
-* When installing queries on a cluster, TigerGraph will now utilize the computing power of multiple nodes to compile the queries, greatly improving installation performance
-
-=== *WCAG-compliant accessibility features*
-
-The user interfaces of GraphStudio and Admin Portal - TigerGraph's GUI are improved to meet WCAG accessibility criteria. More users across a wider range of physical abilities will now be able to work effectively with GraphStudio and the visual Admin Portal.
-
-=== Edit mode for graph exploration in GraphStudio
-Starting with TigerGraph 3.2, users need to enter Edit Mode in the Graph Exploration Panel in order to write to the graph.
-
-=== Enhanced cluster service status for AdminPortal
-Cluster service status is moved from the footer of the Admin Portal page to the bottom of the navigation menu.
-
-=== Improved GSQL auto-complete and syntax highlighting in GraphStudio
-We made improvements to GraphStudio's auto-complete and syntax highlighting features so users have a better experience writing and editing queries in GraphStudio.
-
-=== Substring search within graph exploration result in GraphStudio
-Starting with TigerGraph 3.2, users can search substring to locate the vertices in addition to using exact match.
-
-=== Function overloading
-
-Starting in TigerGraph 3.2, function overloading is now available. Query UDFs with the same name but different signatures can be defined in the UDF library.
+=== Admin Portal System Management
+* Added the ability to xref:gui:admin-portal:management/user-management.adoc#_create_a_global_role[define and assign user-defined roles] to users in Admin Portal.
+* Added xref:gui:admin-portal:components/gsql.adoc[the ability to update certain GSQL configuration parameters] from Admin Portal.
+* Added xref:gui:admin-portal:gsql-output-file.adoc[the ability to download GSQL output files].
 
 == Known Issues
 
