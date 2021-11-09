@@ -15,7 +15,7 @@ The Troubleshooting Guide teaches you how to monitor the status of your TigerGra
 
 Before any deeper investigation, always run these general system checks :
 
-[source,text]
+[source,console]
 ----
 $ gadmin status        (Make sure all TigerGraph services are UP.)
 
@@ -35,12 +35,13 @@ $ grun all "date"      (Make sure the time across all nodes are synchronized
 
 The following command reveals the location of the log files :
 
-[source,text]
+[source,console]
 ----
 gadmin log
 ----
 
-You will be presented with a list of log files. The left side of the resulting file paths is the component for which the respective log file is logging information. The majority of the time, these files will contain what you are looking for. You may notice that there are multiple files for each TigerGraph component.
+You will be presented with a list of log files. The left side of the resulting file paths is the component for which the respective log file is logging information.
+The majority of the time, these files will contain what you are looking for. You may notice that there are multiple files for each TigerGraph component.
 
 [NOTE]
 ====
@@ -54,7 +55,7 @@ image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0
 
 Other log files that are not listed by the *`gadmin log`* command are those for Zookeeper and Kafka, which can be found here:
 
-[source,text]
+[source,console]
 ----
 zookeeper : ~/tigergraph/zk/zookeeper.out.*
 kafka     : ~/tigergraph/kafka/kafka.out
@@ -89,7 +90,7 @@ If you are using a cloud instance, you will need to configure the firewall rules
 e.g. Amazon AWS or Microsoft Azure +
 If you are managing a local machine, you can manage your open ports using the `iptables` command. Please refer to the example below to help with your firewall configuration.
 
-[source,text]
+[source,console]
 ----
 # iptables help page
 $ sudo iptables -h
@@ -115,7 +116,7 @@ From calling a query to returning the result, here is how the information flows:
 
 . Nginx receives the request.
 
-[source,text]
+[source,console]
 ----
 grep <QUERY_NAME> /home/tigergraph/tigergraph/logs/nginx/ngingx_1.access.log
 ----
@@ -129,7 +130,7 @@ image::https://lh5.googleusercontent.com/n2ehgN21jrvzuXUj2JJmg-xxqwj4o7Dlc_f1oPA
 
 . Nginx sends the request to Restpp.
 
-[source,text]
+[source,console]
 ----
 grep <QUERY_NAME> /home/tigergraph/tigergraph/logs/RESTPP_1_1/log.INFO
 ----
@@ -140,14 +141,14 @@ image::screen-shot-2020-03-24-at-5.14.06-pm.png[]
 . GSE sends the translated ID to GPE, and the GPE starts to process the query.
 . GPE sends the query result to Restpp, and sends a translation task to GSE, which then sends the translation result to Restpp.
 
-[source,text]
+[source,console]
 ----
 grep <REQUEST_ID> /home/tigergraph/tigergraph/logs/GPE_1_1/log.INFO
 ----
 
 image::screen-shot-2020-03-27-at-2.06.51-pm.png[]
 
-[source,text]
+[source,console]
 ----
 grep <REQUEST_ID> /home/tigergraph/tigergraph/logs/GSE_1_1/log.INFO
 ----
@@ -156,7 +157,7 @@ image::screen-shot-2020-03-24-at-5.22.23-pm.png[]
 
 . Restpp sends the result back to Nginx.
 
-[source,text]
+[source,console]
 ----
 grep <REQUEST_ID> /home/tigergraph/tigergraph/logs/RESTPP_1_1/log.INFO
 ----
@@ -165,7 +166,7 @@ image::https://lh6.googleusercontent.com/idUWKQ_1kIkOjwGmjSM7VzbkJGGJaWYrLtExpkT
 
 . Nginx sends the response.
 
-[source,text]
+[source,console]
 ----
 grep <QUERY_NAME> /home/tigergraph/tigergraph/logs/nginx/nginx_1.access.log
 ----
@@ -174,7 +175,7 @@ image::screen-shot-2020-03-24-at-5.26.46-pm.png[]
 
 === Other Useful Commands for Query Debugging
 
-[source,text]
+[source,console]
 ----
 Check recently executed query:
 $ grep UDF:: /home/tigergraph/tigergraph/logs/GPE_1_1/log.INFO | tail -n 50
@@ -228,7 +229,7 @@ To confirm the reasoning within the log file, use GraphStudio to pick a few vert
 
 Query Installation may fail for a handful of reasons. If a query fails to install, please check the GSQL log file. The default location for the GSQL log is here :
 
-[source,text]
+[source,console]
 ----
 /home/tigergraph/tigergraph/logs/gsql_server_log/GSQL_LOG
 ----
@@ -246,7 +247,7 @@ If you have a c{pp} user-defined function error, your query will fail to install
 
 GPE records memory usage by query at different stages of the query and saves it to `$(gadmin config get System.LogRoot)/gpe/log.INFO`. You can monitor how much memory a query is using by searching the log file for the request ID and filter for lines that contain `"QueryMem"`:
 
-[source,text]
+[source,console]
 ----
 grep -i <request_id> $(gadmin config get System.LogRoot)/gpe/log.INFO |
     grep -i "querymem"
@@ -254,7 +255,7 @@ grep -i <request_id> $(gadmin config get System.LogRoot)/gpe/log.INFO |
 
 You can also run a query first, and then run the following command immediately after to retrieve the most recent query logs and filter for `"QueryMem"`:
 
-[source,text]
+[source,console]
 ----
 tail -n 50 $(gadmin config get System.LogRoot)/gpe/log.INFO |
     grep -i "querymem"
@@ -262,7 +263,7 @@ tail -n 50 $(gadmin config get System.LogRoot)/gpe/log.INFO |
 
 You will get results that look like the following, which shows memory usage by the query at different stages of its execution. The number at the end of each line indicates the number of bytes of memory utilized by the query:
 
-[source,text]
+[source,console]
 ----
 0415 01:33:40.885433  6553 gpr.cpp:195] Engine_MemoryStats|     \
 ldbc_snb::,196612.RESTPP_1_1.1618450420870.N,NNN,15,0,0|        \
@@ -277,14 +278,14 @@ MONITORING Step(1) AfterRun[GPR][QueryMem]: 117000
 
 You can check how much free memory your system has as a percentage of its total memory by running the following command:
 
-[source,text]
+[source,console]
 ----
 tail -n 50 $(gadmin config get System.LogRoot)/gpe/log.INFO | grep -i 'freepct'
 ----
 
 The number following `"FreePct"` indicates the percentage of the system free memory. The following example shows the system free memory is 69%:
 
-[source,text]
+[source,console]
 ----
 I0520 23:40:09.845811  7828 gsystem.cpp:622]
 System_GSystem|GSystemWatcher|Health|ProcMaxGB|0|ProcAlertGB|0|
@@ -295,7 +296,7 @@ When free memory drops below 10 percent (`SysMinFreePct`), all queries are abort
 
 ==== *How to retrieve information on queries aborted due to memory usage*
 
-[source,text]
+[source,console]
 ----
  log:W0312 02:10:57.839139 15171 scheduler.cpp:116] System Memory in Critical state. Aborted.. Aborting.
 ----
@@ -315,7 +316,7 @@ image::screen-shot-2020-03-25-at-3.50.12-pm.png[]
 
 If you see there are a number of issues from the GraphStudio Load Data page, you can dive deeper to find the cause of the issue by examining the log files. Check the loading log located here:
 
-[source,text]
+[source,console]
 ----
 /home/tigergraph/tigergraph/logs/restpp/restpp_loader_logs/<GRAPH_NAME>/
 ----
@@ -345,7 +346,7 @@ To combat the issue of slow loading, there are also multiple methods:
 
 * If the computer has many cores, consider increasing the number of Restpp load handlers.
 
-[source,text]
+[source,console]
 ----
 $ gadmin --config handler
 increase the number of handlers
@@ -446,7 +447,7 @@ The service log is each of the services respectively. `gadmin log <service_name>
 
 ==== Example of a successful schema change job. (admin_server log)
 
-[source,text]
+[source,console]
 ----
 $ grep DSC ~/tigergraph/logs/admin_server/INFO.20181011-101419.98774
 
@@ -461,7 +462,7 @@ I1015 12:04:21.692147 116664 gsql_service.cpp:534] Notify GSE DSCApply successfu
 
 ==== Example of DSC fail
 
-[source,text]
+[source,console]
 ----
 E1107 14:13:03.625350 98794 gsql_service.cpp:529] Failed to notify RESTPP with command: DSCDrain. rc: kTimeout. Now trying to send Resume command to recover.
 E1107 14:13:03.625562 98794 gsql_service.cpp:344] DSC failed at Drain stage, rc: kTimeout
@@ -474,7 +475,7 @@ In this case, we see that RESTPP failed at the DRAIN stage. We need to first loo
 
 To check the status of GSE, and all other processes, run `gadmin status` to show the status of key TigerGraph processes. As with all other processes, you are able to find the log file locations for GSE by the `gadmin log` command. Refer to the link:[Location of Log Files] for more information about which files to check.
 
-[source,text]
+[source,console]
 ----
 $ gadmin log gse
 [Warning] License will expire in 5 days
@@ -547,7 +548,7 @@ $ gadmin config apply
 
 To find the location of GraphStudio log files, use this command : `gadmin log gui`
 
-[source,text]
+[source,console]
 ----
 $ gadmin log vis
 [Warning] License will expire in 5 days
