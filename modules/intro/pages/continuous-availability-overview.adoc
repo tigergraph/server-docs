@@ -41,7 +41,7 @@ There are two key concepts in the cluster design:
 - *Replication Factor*: Replication factor is a characteristic of the cluster design that will determine the number of copies of data that will be stored in the cluster. This is configurable and customers can choose at the time of installation.
 - *Partitioning Factor*: Partitioning factor is an internal TigerGraph characteristic of a TigerGraph cluster that determines how the data in the database will be distributed. Based on the nodes of the cluster size, TigerGraph will automatically pick a partitioning factor taking into account the replication factor.
 
-image::https://lh4.googleusercontent.com/_P7MFFMvDh_nwPTS2nS9HRG3anegB9KVvELE2ilxLFiPbQCPeFOUGamzAa0SW4_3Obzn_3yU4PC6H7tDtFAkU6VRwHS0kjQNyoNhTM4enwoptSui8ym1hybp5OEsNnW6dEnIS2-3[TigerGraph Cluster Dimensions = P X R]
+image::cluster_arch.png[TigerGraph Cluster Dimensions = P X R]
 
 In short, TigerGraph cluster can be seen as a combination of data spread across P partitions with multiple copies equal to the number of R Replicas.
 
@@ -55,19 +55,18 @@ Some Key Cluster Design Considerations:
 
 === Continuous Availability - Data Operations
 
-image::https://lh4.googleusercontent.com/aMAYBqoxtTFLGJU8aoHkqw-ONHDlAnD2AkORJtwoGNJ3UmB_5Xkr3jmSJPahhFkHTR0ENxrwt04SHUEAlFjjFAsKrA-Qp3NXOTNeFgqk6p0EpRBJUghMT0eejqeXb8jegbrwzWMq[]
+TigerGraph services are based on distributed masterless architecture - all replicas are equal and can service both read and write requests.
+This is a key differentiation that ensures that no single node can be Single Point of Failure.
 
-TigerGraph services are based on distributed masterless architecture. By design, the underlying assumption is that all replicas are equal and can service both read and write requests. This is a key differentiation that ensures that no single node can be Single Point of Failure.
+* Write Operations: In order to keep all replicas in sync for full consistency of all data sets, all write operations are sent to all replicas synchronously by default. A write operation is considered complete only if all the replicas acknowledge that the writes are successful.
 
-Write Operations: In order to keep all replicas in sync for full consistency of all data sets, all write operations are sent to all replicas synchronously by default. A write operation is considered complete only if all the replicas acknowledge that the writes are successful.
-
-Read Operations: As all replicas are guaranteed to be in sync for all write operations, Read requests can be sent to any replica with no need to verify the data consistency with other replica copies. This optimizes the read performance for read-heavy analytical queries.
+* Read Operations: As all replicas are guaranteed to be in sync for all write operations, Read requests can be sent to any replica with no need to verify the data consistency with other replica copies. This optimizes the read performance for read-heavy analytical queries.
 
 *Example*:
 
 In the following example, the data sets in the cluster are spread across 5 partitions with 2 replicas of data sets i.e. Partitioning Factor of 5 and Replication Factor of 2.
 
-image::https://lh6.googleusercontent.com/ILA6h1vUyamWlPR4oyWGTUt2mPIkzhJWwEYsM6DZoLHA4GKmPe_uz7wi_7UG_YqPaquocOjFAdCeqDaMOlC9k2yyyK87I-2zo85xYfRV19Yo3MsMukRF4M7HS85mGkeMsO19CnFR[]
+image::replication-partitioning-factor.png[Replication factor and partitioning factor diagram]
 
 * All writes go to all replicas (e.g. both 1A and 1B).
 * Reads can be from any one replica (e.g. either 1A or 1B).
@@ -79,7 +78,7 @@ TigerGraph design ensures Automatic Failover for Continuous Availability. If a s
 The requests are automatically routed around the unavailable server.
 The TigerGraph Database scheduler tracks in real time the availability of servers and routes the request to the right servers.
 
-image::https://lh4.googleusercontent.com/XBYH_RR7lba-AsUriJLE1tmTvUbEAdy6uS-vByF_NFpSQNdPFmXk0Xu662-Wf6BBnTn513y5CmycdGGLX85WuXKKebG5PLUHFf6gR2-HUImKOwR2osARD47_Jgx8BjQ5BMyA2UNV[]
+image::ha-failover.png[Failover example diagram]
 
 *Example*:
 
