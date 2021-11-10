@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [ main, '3.3' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, '3.3' ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -30,7 +30,7 @@ jobs:
         run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Make curl call to build hook
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo Makein curl call to Netlify build hook
+          curl -X POST -d '{}' "::add-mask::${{ secrets.BUILD_HOOK }}"
