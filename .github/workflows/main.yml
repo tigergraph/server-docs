@@ -33,4 +33,5 @@ jobs:
       - name: Make curl call to build hook
         run: |
           echo Making curl call to Netlify build hook
-          curl -X POST -d '{}' ${{ secrets.BUILD_HOOK }}
+          echo ${ secrets.BUILD_HOOK }
+      # curl -X POST -d '{}' ${{ secrets.BUILD_HOOK }}
