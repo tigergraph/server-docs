@@ -15,7 +15,7 @@ The current version of GBAR is intended for restoring the same machine that was 
 
 .Synopsis
 
-[source,text]
+[source,gsql]
 ----
 Usage: gbar backup [options] -t <backup_tag>
 		      gbar restore [options] <backup_tag>
@@ -80,7 +80,7 @@ New:
 
 . After entering the configuration values, run the following command to apply the new configurations
 +
-[source,text]
+[source,console]
 ----
 gadmin config apply -y
 ----
@@ -97,7 +97,7 @@ gadmin config apply -y
 
 To perform a backup, run the following command as the TigerGraph Linux user:
 
-[source,text]
+[source,console]
 ----
 gbar backup -t <backup_tag>
 ----
@@ -122,7 +122,7 @@ Backup does not save input message queues for REST{pp} or Kafka.
 
 == List Backup Files
 
-[source,text]
+[source,console]
 ----
 gbar list
 ----
@@ -135,7 +135,7 @@ Before restoring a backup, you should ensure that the backup you are restoring f
 
 To restore a backup, run the following command:
 
-[source,text]
+[source,console]
 ----
 gbar restore <archive_name>
 ----
@@ -160,7 +160,7 @@ Restore needs enough free space to accommodate both the old gstore and the gstor
 
 To remove a backup, run the `gbar remove` command:
 
-[source,text]
+[source,console]
 ----
 $ gbar remove <backup_tag>
 ----
@@ -171,7 +171,7 @@ The command removes a backup from the backup storage path. To retrieve the tag o
 
 Run `gbar cleanup` to delete the temporary files created during backup or restore operations:
 
-[source,text]
+[source,console]
 ----
 $ gbar cleanup
 ----
@@ -188,7 +188,7 @@ Naturally, backup and restore time will vary depending on the hardware used.
 
 To run a daily backup, we tell GBAR to backup with the tag name _daily_.
 
-[source,text]
+[source,console]
 ----
 $ gbar backup -t daily
 [23:21:46] Retrieve TigerGraph system configuration
@@ -209,7 +209,7 @@ The total backup process took about 31 minutes, and the generated archive is abo
 
 To restore from a backup archive, a full archive name needs to be provided, such as _daily-20180607232159_. By default, restore will ask the user to approve to continue. If you want to pre-approve these actions, use the "-y" option. GBAR will make the default choice for you.
 
-[source,text]
+[source,console]
 ----
 $ gbar restore daily-20180607232159
 [23:57:06] Retrieve TigerGraph system configuration
