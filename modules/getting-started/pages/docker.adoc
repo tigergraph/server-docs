@@ -40,10 +40,10 @@ Follow the steps below to install Docker Desktop on your machine and configure i
 
 Open a shell on your host machine and create or select a directory for sharing data between your host machine and docker container. Grant read+write+execute permission to the folder. For example, to create a folder called data in Linux:
 
-[,text]
+[,console]
 ----
-    $ mkdir data
-    $ chmod 777 data
+$ mkdir data
+$ chmod 777 data
 ----
 
 You can mount (map) the data folder to a folder under the docker container, which allows you to share files between your host OS and Docker OS.
@@ -54,7 +54,7 @@ For example, if you mount the host OS folder `~/data` to the docker folder `/hom
 
 Run the following command to pull the TigerGraph docker image, bind ports, map a shared data folder, and start a container from the image. Note: this command is very long; please make sure you copy the whole command by dragging the scroll bar to the end:
 
-[,text]
+[,console]
 ----
 $ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -v ~/data:/home/tigergraph/mydata -t docker.tigergraph.com/tigergraph:latest
 ----
@@ -81,7 +81,7 @@ To use the legacy developer editions, use:
 
 If you use Windows and have disk drive permission issues with the above command,  try the following command instead (this command does not map the shared folder on your host machine to your container) :
 
-[,text]
+[,console]
 ----
 $ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t docker.tigergraph.com/tigergraph:latest
 ----
@@ -92,14 +92,14 @@ After launching the container, you can use SSH to connect to your container:
 
 . Verify that the container is running. You should see a row that describes the running container after running the command below:
 +
-[,text]
+[,console]
 ----
 $ docker ps | grep tigergraph
 ----
 
 . Use ssh to open a shell to the container. At the prompt, enter `tigergraph`  as the password. Note that we have mapped the host 14022 port to the container's 22 port (the ssh default port), so on the host we use ssh to connect to port 14022.
 +
-[,text]
+[,console]
 ----
 $ ssh -p 14022 tigergraph@localhost
 ----
@@ -108,14 +108,14 @@ $ ssh -p 14022 tigergraph@localhost
 
 . After connecting to the container via ssh, inside the container, start all TigerGraph services with the following command (which may take up to one minute):
 +
-[,text]
+[,console]
 ----
 $ gadmin start all
 ----
 
 . Run the `gsql` command as shown below to start the GSQL shell. If you are new to TigerGraph, you can run the xref:gsql-ref:tutorials:gsql-101/README.adoc[GSQL 101] tutorial now.
 +
-[,text]
+[,console]
 ----
 $ gsql
 GSQL >
@@ -129,7 +129,7 @@ in a browser on your laptop (host OS).
 
 * After you start Docker Desktop, use the commands below to stop and restart the container:
 +
-[,text]
+[,console]
 ----
   $ docker container stop tigergraph
   $ docker container start tigergraph
@@ -137,7 +137,7 @@ in a browser on your laptop (host OS).
 
 * Start the TigerGraph service within the container:
 +
-[,text]
+[,console]
 ----
   $ gadmin start all
   $ gadmin stop  all
@@ -145,7 +145,7 @@ in a browser on your laptop (host OS).
 
 * ssh to the container. Note: if localhost is not recognized, remove the localhost entry from ~/.ssh/known_hosts
 +
-[,text]
+[,console]
 ----
   $ sed -i.bak '/localhost/d' ~/.ssh/known_hosts
   $ ssh -p 14022 tigergraph@localhost
@@ -155,7 +155,7 @@ ____
 Linux users can access the container through its ip address directly:
 ____
 +
-[,text]
+[,console]
 ----
   $ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' tigergraph
   $vssh tigergraph@<container_ip_address>
@@ -172,7 +172,7 @@ ____
 
 * Check the version of GSQL:
 +
-[,text]
+[,console]
 ----
 $ gsql version
 ----

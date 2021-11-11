@@ -6,7 +6,7 @@ This page explains the procedures for various user management tasks under TigerG
 
 === *Syntax*
 
-[source,text]
+[source,gsql]
 ----
 CREATE USER
 ----
@@ -42,7 +42,7 @@ The user "frank" is created.
 
 === *Syntax*
 
-[source,text]
+[source,gsql]
 ----
 SHOW USER
 ----
@@ -55,7 +55,7 @@ SHOW USER
 
 . From the GSQL shell, run the `SHOW USER` command:
 +
-[source,text]
+[source,gsql]
 ----
 GSQL > SHOW USER
 ----
@@ -79,7 +79,7 @@ SHOW PRIVILEGE ON USER <username> (, <username>)*
 
 . From the GSQL shell, run the `SHOW PRIVILEGE ON USER` command :
 +
-[source,text]
+[source,gsql]
 ----
 GSQL > SHOW PRIVILEGE ON USER tigergraph
 ----
@@ -133,7 +133,7 @@ GRANT ROLE <role_name1> (, role_name2)* [ON GRAPH <graph_name>]
 
 . Start the GSQL shell and make sure you are using the correct graph
 +
-[source,text]
+[source,console]
 ----
 $ gsql
 GSQL > USE GRAPH example_graph
@@ -141,7 +141,7 @@ GSQL > USE GRAPH example_graph
 
 . From the GSQL shell, run the `GRANT ROLE` command. You can grant multiple roles to multiple users:
 +
-[source,text]
+[source,gsql]
 ----
 GSQL > GRANT ROLE role1 , role2 ON GRAPH example_graph
         TO user1, use2
@@ -167,7 +167,7 @@ REVOKE ROLE <roleName1> (, <roleName2)* [ON GRAPH <graphName>]
 
 . Start the GSQL shell and make sure you are using the correct graph
 +
-[source,text]
+[source,console]
 ----
 $ gsql
 GSQL > USE GRAPH example_graph
@@ -175,7 +175,7 @@ GSQL > USE GRAPH example_graph
 
 . From the GSQL shell, run the `REVOKE_ROLE` command. You can revoke multiple roles from multiple users at the same time:
 +
-[source,text]
+[source,gsql]
 ----
 GSQL > REVOKE ROLE role1, role2 ON GRAPH example_graph
         FROM user1, user2
@@ -200,7 +200,7 @@ ALTER PASSWORD <username>
 
 . From the GSQL shell, run the following command. Replace `username` with the user whose password you want to change
 +
-[source,text]
+[source,gsql]
 ----
 GSQL > ALTER PASSWORD username
 ----
@@ -224,7 +224,7 @@ DROP USER <user1> (,<user2>)*
 
 . From the GSQL shell, run the `DROP USER` command. You can drop multiple users in the same command.
 +
-[source,text]
+[source,gsql]
 ----
 GSQL > DROP USER user1, user2
 ----
