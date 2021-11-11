@@ -64,7 +64,7 @@ Successfully created global roles: [role1].
 
 === *Syntax*
 
-[source,text]
+[source,gsql]
 ----
 SHOW PRIVILEGE ON ROLE <role_name> (, <role_name2>)*
 ----
@@ -77,7 +77,7 @@ SHOW PRIVILEGE ON ROLE <role_name> (, <role_name2>)*
 
 . To view the privileges of a role, run the `SHOW PRIVILEGE ON ROLE` command, and replace `role1, role2` with the names of the roles whose privileges you want to view:
 
-[source,text]
+[source,gsql]
 ----
 GSQL > SHOW PRIVILEGE ON ROLE role1 , role2
 ----
@@ -98,7 +98,7 @@ This role has no privilege.
 
 === *Syntax*
 
-[source,text]
+[source,gsql]
 ----
 SHOW ROLE
 ----
@@ -112,7 +112,7 @@ SHOW ROLE
 . To list all existing roles, first ensure that you are in the correct scope. Run `USE <graph_name>` or `USE GLOBAL` to switch to your desired scope.
 . Run the `SHOW ROLE` command:
 +
-[source,text]
+[source,gsql]
 ----
 GSQL > SHOW ROLE
 ----
