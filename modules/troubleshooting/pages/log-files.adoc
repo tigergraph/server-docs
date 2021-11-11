@@ -24,7 +24,7 @@ In a TigerGraph cluster, each node will only keep logs of activities that took p
 
 For GSQL specifically, the cluster will elect a leader to which all GSQL requests will be forwarded. To check which node is the leader, start by checking the GSQL logs of the m1 node. Check the most recent lines of log.INFO and look for lines containing information about leader switch. For example, the logs below recorded a GSQL leader switch from m2 to m1:
 
-[,text]
+[,console]
 ----
 I@20210709 13:56:52.214  (GsqlHAHandler.java:231) GSQL leader switches from 'm2' to 'm1' ...
 E@20210709 13:56:52.215  (GsqlHAHandler.java:246) GSQL HA leader switches to 'm1', abort and clear all sessions now.

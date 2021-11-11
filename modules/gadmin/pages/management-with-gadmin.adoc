@@ -7,7 +7,7 @@ TigerGraph Graph Administrator (gadmin) is a tool for managing TigerGraph server
 
 To see a listing of all the options or commands available for gadmin, run any of the following commands:
 
-[source,text]
+[source,console]
 ----
 $ gadmin -h
 $ gadmin --help
@@ -31,7 +31,7 @@ has changed to +
 `gadmin <config | license> set`
 ====
 
-[source,text]
+[source,gsql]
 ----
 GADMIN(1)                         User Commands                                GADMIN(1)
 
@@ -72,7 +72,7 @@ GADMIN(1)
 
 Gadmin autocomplete is more of a feature than a command. It is an auto-complete feature that allows you to see all possible entries of a specific configuration. You can press tab when typing a command to either print out all possible entries, or auto-complete the entry you are currently typing.
 
-[source,text]
+[source,console]
 ----
 $ gadmin autocomplete -h
 
@@ -94,7 +94,7 @@ Global Flags:
 
 The example below shows an example of the autocomplete for the command `gadmin status`.
 
-[source,text]
+[source,console]
 ----
 tigergraph@ubuntu:~$ gadmin status
 admin         exe           ifm           nginx
@@ -110,7 +110,7 @@ etcd          gui           kafkastrm-ll  zk
 
 `gadmin config` has many sub-entries as well, they will be listed below.
 
-[source,text]
+[source,console]
 ----
 $ gadmin config -h
 
@@ -149,14 +149,14 @@ Use "gadmin config [command] --help" for more information about a command.
 
 Example: Change the retention size of the kafka queue to 10GB:
 
-[source,text]
+[source,console]
 ----
 $ gadmin config set Kafka.RetentionSizeGB 10
 ----
 
 ==== gadmin config apply
 
-[source,text]
+[source,console]
 ----
 $ gadmin config apply -h
 Apply the config changes in staging state
@@ -180,7 +180,7 @@ Global Flags:
 
 Show what configuration changes were made.
 
-[source,text]
+[source,console]
 ----
 $ gadmin config diff -h
 Show the differences between staging and applied configs
@@ -200,7 +200,7 @@ Global Flags:
 
 Discard the configuration changes without applying them.
 
-[source,text]
+[source,console]
 ----
 $ gadmin config discard -h
 Discard the staging config changes
@@ -220,7 +220,7 @@ Global Flags:
 
 Display all configuration entries.
 
-[source,text]
+[source,console]
 ----
 $ gadmin config dump -h
 Dump the staging system config in json format
@@ -240,7 +240,7 @@ Global Flags:
 
 Change a configuration entry.
 
-[source,text]
+[source,console]
 ----
 $ gadmin config entry -h
 Configure the entries with given substring patterns interactively
@@ -265,7 +265,7 @@ Global Flags:
 
 Get the value of a specific configuration entry.
 
-[source,text]
+[source,console]
 ----
 $ gadmin config get -h
 Get the config value of given entry name non-interactivly
@@ -286,7 +286,7 @@ Global Flags:
 Configure entries for a specific service group. +
 e.g. KAFKA, GPE, ZK
 
-[source,text]
+[source,console]
 ----
 $ gadmin config group -h
 Configure the entries of given groups interactively
@@ -309,7 +309,7 @@ Global Flags:
 
 Initialize your configuration.
 
-[source,text]
+[source,console]
 ----
 $ gadmin config init -h
 Initialize configuration
@@ -334,7 +334,7 @@ Global Flags:
 
 List all configurable entries or entry groups.
 
-[source,text]
+[source,console]
 ----
 $ gadmin config list -h
 List the available config entries or groups
@@ -357,7 +357,7 @@ Global Flags:
 
 ==== gadmin config set
 
-[source,text]
+[source,console]
 ----
 $ gadmin config set -h
 Configure the entry of given config entry name in a non-interactive manner
@@ -395,7 +395,7 @@ Global Flags:
 
 === gadmin init
 
-[source,text]
+[source,console]
 ----
 $ gadmin init -h
 
@@ -426,7 +426,7 @@ Use "gadmin init [command] --help" for more information about a command.
 
 Options for configuring your license.
 
-[source,text]
+[source,console]
 ----
 $ gadmin license -h
 
@@ -471,7 +471,7 @@ If you are generating the seed from your own machine, choose either `node-id` or
 
 Example flow for applying a new license (which may be replacing an existing license key):
 
-[source,text]
+[source,console]
 ----
 $ gadmin license set <new_license_key>
 [   Info] Configuration has been changed.
@@ -489,7 +489,7 @@ $ gadmin restart
 
 Once the license has been set and config has been applied, you can run `gadmin license status` to view the details of your license, including the expiration date and time.
 
-[source,text]
+[source,console]
 ----
 $ gadmin license status
 [Warning] License will expire in 6 days
@@ -519,7 +519,7 @@ RuntimeMemory:
 
 The `gadmin log` command will reveal the location of all commonly checked log files for the TigerGraph system.
 
-[source,text]
+[source,console]
 ----
 $ gadmin log -h
 
@@ -539,7 +539,7 @@ Global Flags:
       --debug   enable debug log output to stdout
 ----
 
-[source,text]
+[source,console]
 ----
 $ gadmin log
 ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN#1.out
@@ -583,7 +583,7 @@ ZK     : /home/tigergraph/tigergraph/log/zk/zookeeper.log
 
 === gadmin reset
 
-[source,text]
+[source,console]
 ----
 $ gadmin reset -h
 
@@ -608,7 +608,7 @@ Global Flags:
 
 The `gadmin restart` command is used to restart one, many, or all TigerGraph services. You will need to confirm the restarting of services by either entering y (yes) or n (no). To bypass this prompt, you can use the -y flag to force confirmation.
 
-[source,text]
+[source,console]
 ----
 $ gadmin restart -h
 
@@ -631,7 +631,7 @@ Global Flags:
       --debug   enable debug log output to stdout
 ----
 
-[source,text]
+[source,console]
 ----
 $ gadmin restart all -y
 [   Info] Stopping ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 IFM GUI
@@ -646,7 +646,7 @@ $ gadmin restart all -y
 
 The `gadmin start` command can be used to start one, many, or all services.
 
-[source,text]
+[source,console]
 ----
 $ gadmin start -h
 
@@ -674,7 +674,7 @@ Global Flags:
       --debug   enable debug log output to stdout
 ----
 
-[source,text]
+[source,console]
 ----
 $ gadmin start all
 [   Info] Starting EXE
@@ -686,7 +686,7 @@ $ gadmin start all
 
 Check the status of TigerGraph component servers:
 
-[source,text]
+[source,console]
 ----
 $ gadmin status -h
 
@@ -711,7 +711,7 @@ Global Flags:
 
 Use *`gadmin status`* to report whether each of the main component servers is running (up) or stopped (off).  The example below shows the normal status when the graph store is empty and a graph schema has not been defined:
 
-[source,text]
+[source,console]
 ----
 $ gadmin status
 
@@ -740,7 +740,7 @@ $ gadmin status
 
 You  can also check the status of each instance using the verbose flag : `gadmin status -v`  or `gadmin status --verbose`. This will show each machine's status. See example below
 
-[source,text]
+[source,console]
 ----
 $ gadmin status -v GPE
 
@@ -775,7 +775,7 @@ Here are the most common service and process status states you might see from ru
 
 The gadmin stop command can be used to stop one, many, or all TigerGraph services. You will need to confirm the restarting of services by either entering y (yes) or n (no). To bypass this prompt, you can use the -y flag to force confirmation.
 
-[source,text]
+[source,console]
 ----
 $ gadmin stop -h
 
@@ -800,7 +800,7 @@ Global Flags:
       --debug   enable debug log output to stdout
 ----
 
-[source,text]
+[source,console]
 ----
 $ gadmin stop gsql
 [   Note] Stop the service(s)? (y/N)y
@@ -809,7 +809,7 @@ $ gadmin stop gsql
 
 === gadmin version
 
-[source,text]
+[source,console]
 ----
 $ gadmin version -h
 
@@ -843,7 +843,7 @@ TigerGraph offers two levels of memory thresholds using the following configurat
 
 By default, SysMinFreePct is set at 10%, at which point Queries will be aborted.​
 
-[source,text]
+[source,console]
 ----
 $ gadmin config entry GPE.BasicConfig.Env
 
