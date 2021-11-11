@@ -23,14 +23,14 @@ Before running any commands to expand a cluster, make sure you have a clear idea
 
 To expand the cluster, run the `gadmin cluster expand` command like below. If the expansion involves changing the replication factor, use the `--ha` option to indicate the new replication factor:
 
-[source,bash]
+[source,console]
 ----
 $ gadmin cluster expand node_ip_list [--ha <replication_factor>]
 ----
 
 `node_ip_list` is the machine aliases of the nodes you are adding to the cluster mapped to their IP addresses with a colon(`:`), and separated by a comma. Below is an example:
 
-[source,bash]
+[source,console]
 ----
 $ gadmin cluster expand m3:10.128.0.81,m4:10.128.0.82 --ha 1
 ----
@@ -41,7 +41,7 @@ We suggest naming the new nodes following the convention of `m<serial>`, such as
 
 Extra disk space is required during cluster expansion. If more space is not available on the same disk, you can supply a staging location on a different disk to hold temporary data:
 
-[source,bash]
+[source,console]
 ----
 $ gadmin cluster expand m3:192.168.1.3,m4:192.168.1.4 --stagingPath /tmp/
 ----

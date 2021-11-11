@@ -22,14 +22,14 @@ This section describes the steps to deploy, verify, and remove a single-server d
 
 Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment. A `deployment` directory will be created automatically and you should find the manifest named `tigergraph-gke.yaml` in the directory.
 
-[source,bash]
+[source,console]
 ----
 $ ./tg gke kustomize -s 1
 ----
 
 *Step 2: Deploy manifest*. Run `kubectl apply` to create the deployment using the manifest you generated in Step1.
 
-[source,bash]
+[source,console]
 ----
 $ kubectl apply -f deployment/tigergraph-gke.yaml
 ----
@@ -38,7 +38,7 @@ $ kubectl apply -f deployment/tigergraph-gke.yaml
 
 Run `kubectl get pods` to confirm that the pods were created successfully:
 
-[source,bash]
+[source,console]
 ----
 $ kubectl get pods
 NAME              READY   STATUS    RESTARTS   AGE
@@ -48,7 +48,7 @@ tigergraph-0      1/1     Running   0          4m10s
 
 Run `kubectl describe service/tg-external-service` to find the IP address of the load balancer. You can then make curl calls to port 9000 to make sure that RESTPP is running:
 
-[source,bash]
+[source,console]
 ----
 $ curl <load_balancer_ip>:9000/echo | jq .
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
