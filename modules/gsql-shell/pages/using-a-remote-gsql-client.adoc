@@ -66,7 +66,7 @@ It is strongly recommended that you enable user authentication. See the document
 
 If SSL/TLS is enabled for TigerGraph, to connect a GSQL remote client to the GSQL server, each GSQL command line should provide the certificate chain file via the -cacert option. This certificate file should be exactly the same as the file of entry Nginx.SSL.Cert setting SSL for Nginx. See xref:security:encrypting-connections.adoc[Encrypting Connections: Step 2. Configure SSL with gadmin]. For example:
 
-[,bash]
+[,console]
 ----
 gsql -cacert /path/to/certificate -ip hostname:port
 ----
@@ -94,7 +94,7 @@ java -jar gsql_client.jar 'RUN JOB load_cf USING FILENAME="/home/tigergraph/exam
 The GSQL Tutorials employ both GSQL and bash scripts to run the examples.  Typically, each example case contains 3 GSQL command files (for schema creation, data loading, and querying) and one bash script to run all the parts together and to display status information.  Below is a simplified version of the Collaborative Filtering (cf) bash script:
 
 .Bash script for Collaborative Filtering (cf) example
-[source,bash]
+[source,console]
 ----
 #!/bin/bash
 test='cf'

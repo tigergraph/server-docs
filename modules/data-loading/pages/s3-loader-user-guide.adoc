@@ -37,7 +37,7 @@ The GSQL syntax for the S3 Loader is designed to be consistent with the existing
 
 Before starting a S3 data loading job, you need to define the credentials to connect to Amazons  S3. The CREATE DATA_SOURCE statement defines a data_source type variable, with a sub type S3:
 
-[,ruby]
+[,gsql]
 ----
 CREATE DATA_SOURCE S3 data_source_name
 ----
@@ -46,7 +46,7 @@ CREATE DATA_SOURCE S3 data_source_name
 
 After the data source is created, use the SET command to specify the path to a configuration file for that data source.
 
-[,ruby]
+[,gsql]
 ----
 SET data_source_name = "/path/to/s3.config";
 ----
@@ -67,7 +67,7 @@ This SET command reads, validates, and applies the configuration file, integrati
 
 For simplicity, you can merge the CREATE DATA_SOURCE and SET statements:
 
-[,ruby]
+[,gsql]
 ----
 CREATE DATA_SOURCE S3 data_source_name = "/path/to/s3.config"
 ----
@@ -81,7 +81,7 @@ CREATE DATA_SOURCE S3 data_source_name = "/path/to/s3.config"
 
 To further simplify, instead of specifying the S3 data source config file path, you can also directly provide the S3 data source configuration as a string argument, as shown below:
 
-[,ruby]
+[,gsql]
 ----
 CREATE DATA_SOURCE S3 data_source_name = "{\"file.reader.settings.fs.s3a.access.key\":\"AKIAJ****4YGHQ\",\"file.reader.settings.fs.s3a.secret.key\":\"R8bli****p+dT4\"}"
 ----
@@ -102,7 +102,7 @@ The following are examples of permitted DATA_SOURCE operations.
 
 . A *superuser* may create a global level data source without assigning it to a particular graph:
 
-[,ruby]
+[,gsql]
 ----
 CREATE DATA_SOURCE S3 s1 = "/path/to/config"
 ----
@@ -110,7 +110,7 @@ CREATE DATA_SOURCE S3 s1 = "/path/to/config"
 ....
 2. A **superuser** may grant/revoke a data source to/from one or more graphs:
 ....
-[,ruby]
+[,gsql]
 ----
 GRANT DATA_SOURCE s1 TO GRAPH graph1, graph2
 REVOKE DATA_SOURCE s1 FROM GRAPH graph1, graph2
@@ -119,7 +119,7 @@ REVOKE DATA_SOURCE s1 FROM GRAPH graph1, graph2
 ....
 3. An **admin** user may create a local data source for a specified graph which the admin user administers:
 ....
-[,ruby]
+[,gsql]
 ----
 CREATE DATA_SOURCE S3 s1 = "/path/to/config" FOR GRAPH test_graph
 ----
@@ -133,14 +133,14 @@ In the above statement, the local data_source s1 is only accessible to graph tes
 
 A data_source variable can be dropped by a user who has the privilege. A global data source can only be dropped by a superuser. A local data_source can only be dropped by an admin for the relevant graph or by a superuser. The syntax for the DROP command is as follows:
 
-[,ruby]
+[,ebnf]
 ----
 DROP DATA_SOURCE <source1>[<source2>...] | * | ALL
 ----
 
 Below is an example with a few legal s3 data_source create and drop commands.
 
-[,coffeescript]
+[,gsql]
 ----
 CREATE DATA_SOURCE S3 s1 = "/home/tigergraph/s3.config"
 CREATE DATA_SOURCE S3 s2 = "/home/tigergraph/s3_2.config"
@@ -154,7 +154,7 @@ DROP DATA_SOURCE ALL
 
 The SHOW DATA_SOURCE command will display a summary of all existing data_sources for which the user has privilege:
 
-[,bash]
+[,console]
 ----
 $ GSQL SHOW DATA_SOURCE *
 
@@ -173,7 +173,7 @@ In addition, the filename can be specified in the RUN LOADING JOB statement with
 
 Below is the syntax for DEFINE FILENAME when using the S3 Loader. In the syntax, $DATA_SOURCE_NAME is the S3 data source name, and the path points to a configuration file _which provides information about how to read an Amazon S3 file_. The S3 file configuration file must be in JSON format.
 
-[,ruby]
+[,ebnf]
 ----
 DEFINE FILENAME filevar "=" [filepath_string | data_source_string];
 data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
@@ -181,7 +181,7 @@ data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
 
 _*Example:*_ Load a S3 Data Source _*s*_*1*, ___**___where the path to the file configuration file is "~/files.conf":
 
-[,ruby]
+[,gsql]
 ----
 DEFINE FILENAME f1 = "$s1:~/files.config";
 ----
@@ -216,7 +216,7 @@ The "file.uris" key is required. It specifies one or more paths on your Amazon S
 
 Instead of specifying the config file path, you can also directly provide the S3 file configuration as a string argument, as shown below:
 
-[,ruby]
+[,gsql]
 ----
 DEFINE FILENAME f1 = "$s1:~/files.config";
 DEFINE FILENAME f1 = "$s1:{\"file.uris\":\"s3://my-bucket/data.csv\"}";
@@ -276,7 +276,7 @@ The archive type is applied to all files in "file.uris" when loading. If you hav
 
 The S3 Loader uses the same https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-job#run-loading-job[RUN LOADING JOB] statement that is used for GSQL loading from files. Each filename variable can be assigned a string "DATA_SOURCE Var:file configure", which will override the value defined in the loading job. In the example below, the config files for f2 and f3 are being set by the RUN command, whereas f1 is using the config which was specified in the CREATE LOADING JOB statement.
 
-[,ruby]
+[,gsql]
 ----
 RUN LOADING JOB job1 USING f1, f2="$s1:~/files1.config", f3="$s2:~/files2.config", EOF="true";
 ----
@@ -292,7 +292,7 @@ There are two modes for the S3 Loader: *streaming* mode and *EOF* mode. The defa
 
 To set *EOF* mode, an optional parameter is added to the RUN LOADING JOB syntax:
 
-[,ruby]
+[,ebnf]
 ----
 RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
    [ USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
@@ -309,7 +309,7 @@ S3 Loader loading jobs are managed the same way as native loader jobs. The three
 
 For example, the syntax for the SHOW LOADING STATUS command is as follows:
 
-[,ruby]
+[,gsql]
 ----
 SHOW LOADING STATUS job_id|ALL
 ----
@@ -327,7 +327,7 @@ See https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-j
 
 Here is an example code for loading data through the S3 Loader:
 
-[,ruby]
+[,gsql]
 ----
 USE GRAPH test_graph
 DROP JOB load_person

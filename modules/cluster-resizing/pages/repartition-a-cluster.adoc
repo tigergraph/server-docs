@@ -19,7 +19,7 @@ To repartition a cluster, calculate the new replication factor for your cluster.
 
 To repartition a cluster, use the `gadmin cluster expand` command like below. Use the `--ha` option to indicate the new replication factor of the cluster. For example, the command below will change the replication factor to 2:
 
-[source,bash]
+[source,console]
 ----
 $ gadmin cluster expand --ha 2
 ----
@@ -32,7 +32,7 @@ If the total number of nodes cannot be fully divided by the replication factor, 
 
 Extra disk space is required during cluster repartition. If more space is not available on the same disk, you can supply a staging location on a different disk to hold temporary data:
 
-[source,bash]
+[source,console]
 ----
 $ gadmin cluster expand --stagingPath /tmp/
 ----

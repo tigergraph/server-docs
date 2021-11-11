@@ -35,7 +35,7 @@ The GSQL syntax for the Kafka Loader is designed to be consistent with the exist
 
 Before starting a Kafka data loading job, you need to define the Kafka server as a data source. The `CREATE DATA_SOURCE` statement defines a data_source variable with a subtype of KAFKA:
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name
 ----
@@ -44,7 +44,7 @@ GSQL > CREATE DATA_SOURCE KAFKA data_source_name
 
 After the data source is created, then use the `SET` command to specify the path to a configuration file for that data source.
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > SET data_source_name = "/path/to/kafka.config"
 ----
@@ -70,7 +70,7 @@ The "broker" key is required, and its value is composite of a fully qualified do
 
 For simplicity, you can merge the `CREATE DATA_SOURCE` and `SET` statements:
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "/path/to/kafka.config"
 ----
@@ -84,7 +84,7 @@ GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "/path/to/kafka.config"
 
 To further simplify, instead of specifying the Kafka data source config file path, you can also directly provide the Kafka data source configuration as a string argument, as shown below:
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "{\"broker\":\"broker.full.domain.name:9092\"}"
 ----
@@ -105,14 +105,14 @@ The following are examples of permitted `DATA_SOURCE` operations.
 
 * Users with the `WRITE_DATASOURCE` privilege on the global scope may create a global level data source without assigning it to a particular graph:
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA k1 = "/path/to/config"
 ----
 
 * Users with the `WRITE_DATASOURCE` privilege on the global scope may grant/revoke a data source to/from one or more graphs:
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > GRANT DATA_SOURCE k1 TO GRAPH graph1, graph2
 GSQL > REVOKE DATA_SOURCE k1 FROM GRAPH graph1, graph2
@@ -120,7 +120,7 @@ GSQL > REVOKE DATA_SOURCE k1 FROM GRAPH graph1, graph2
 
 * Users with the `WRITE_DATASOURCE` privilege for a particular graph user may create a local data source for that graph:
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA k1 = "/path/to/config" FOR GRAPH test_graph
 ----
@@ -134,14 +134,14 @@ In the above statement, the local data_source k1 is only accessible to graph tes
 
 A data source variable can be dropped by a user who has privilege. A global data source can only be dropped by a users with global `WRITE_DATASOURCE` privilege. Users with `WRITE_DATASOURCE` privilege for one graph can drop data sources on that graph. The syntax for the `DROP DATA_SOURCE` command is as follows:
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > DROP DATA_SOURCE <source1>[<source2>...] | * | ALL
 ----
 
 Below are several examples of Kafka data source `CREATE` and `DROP` commands.
 
-[source,ruby]
+[source,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA k1 = "/home/tigergraph/kafka.conf"
 GSQL > CREATE DATA_SOURCE KAFKA k2 = "/home/tigergraph/kafka2.conf"
@@ -173,7 +173,7 @@ In addition, the filename can be specified in the `RUN LOADING JOB` statement wi
 
 Below is the syntax for `DEFINE FILENAME` for use with the Kakfa Loader. In the syntax, `$DATA_SOURCE_NAME` is the Kafka data source name, and the path points to a configuration file with topic and partition information of the Kafka server. The Kafka configuration file must be in JSON format.
 
-[source,ruby]
+[source,ebnf]
 ----
 DEFINE FILENAME filevar "=" [filepath_string | data_source_string];
 data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
@@ -181,7 +181,7 @@ data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
 
 *Example:* _****_Load a Kafka Data Source _****_**k1**, _****_where the path to the topic-partition configuration file is `"~/topic_partition1_conf.json"`:
 
-[source,ruby]
+[source,gsql]
 ----
 DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
 ----
@@ -251,7 +251,7 @@ DEFINE FILENAME f1 = "$k1:{\"topic\":\"zzz\",\"default_start_offset\":2,\"partit
 
 The Kafka Loader uses the same https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-job#run-loading-job[RUN LOADING JOB] statement that is used for GSQL loading from files. Each filename variable can be assigned a string "DATA_SOURCE Var:topic_partition configure", which will override the value defined in the loading job. In the example below, the config files for f3 and f4 are being set by the RUN command, whereas f1 is using the config which was specified in the CREATE LOADING JOB statement.
 
-[source,ruby]
+[source,gsql]
 ----
 RUN LOADING JOB job1 USING f1, f3="$k1:~/topic_part3_config.json", f4="$k1:~/topic_part4_config.json", EOF="true";
 ----
@@ -267,7 +267,7 @@ There are two modes for the Kafka Loader: streaming mode and EOF mode. The defau
 
 To set EOF mode, an optional parameter is added to the `RUN LOADING JOB` syntax:
 
-[source,ruby]
+[source,ebnf]
 ----
 RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
    [ USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
@@ -286,7 +286,7 @@ Kafka Loader loading jobs are managed the same way as regular loading jobs. The 
 
 For example, the syntax for the `SHOW LOADING STATUS` command is as follows:
 
-[source,ruby]
+[source,gsql]
 ----
 SHOW LOADING STATUS job_id|ALL
 ----
@@ -304,7 +304,7 @@ See https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-j
 
 Here is an example code for loading data through Kafka Loader:
 
-[source,ruby]
+[source,gsql]
 ----
 USE GRAPH test_graph
 DROP JOB load_person
