@@ -44,7 +44,7 @@ To enable and configure LDAP, run three commands.
 
 . Configure LDAP:
 
-[source,text]
+[source,console]
 ----
 gadmin config entry ldap
 ----
@@ -54,7 +54,7 @@ The gadmin program will then prompt the user for the settings for several LDAP c
 ....
  2. Apply the configuration:
 ....
-[source,text]
+[source,console]
 ----
 gadmin config apply -y
 ----
@@ -62,14 +62,14 @@ gadmin config apply -y
 ....
  3. Restart the gsql server:
 ....
-[source,text]
+[source,console]
 ----
 gadmin restart gsql -y
 ----
 
 An example configuration is shown below.
 
-[source,text]
+[source,console]
 ----
 Example of gadmin config entry ldap
 
@@ -184,7 +184,7 @@ A GSQL proxy group is created by the CREATE GROUP command with a given proxy rul
 
 .CREATE GROUP command
 
-[source,text]
+[source,gsql]
 ----
 # create a proxy group
 CREATE GROUP developers PROXY "role=engineering" // Any user in LDAP with role=engineer is proxied to the group 'developers'
@@ -199,7 +199,7 @@ The SHOW GROUP command will display information about a group. The DROP GROUP co
 
 .SHOW GROUP and DROP GROUP commands
 
-[source,text]
+[source,gsql]
 ----
 # show the current groups
 SHOW GROUP
