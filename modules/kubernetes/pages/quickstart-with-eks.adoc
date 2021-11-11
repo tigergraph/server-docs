@@ -21,14 +21,14 @@ This section describes the steps to deploy, verify, and remove a single-server d
 
 Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment. A `deploy` directory will be created automatically and you should find the manifest named `tigergraph-eks.yaml` in the directory.
 
-[source,text]
+[source,console]
 ----
 ./tg eks kustomize -s 1
 ----
 
 *Step 2: Deploy manifest*. Run `kubectl apply` to create the deployment using the manifest you generated in step1.
 
-[source,text]
+[source,console]
 ----
 kubectl apply -f deploy/tigergraph-eks.yaml
 ----
@@ -37,7 +37,7 @@ kubectl apply -f deploy/tigergraph-eks.yaml
 
 After you create the deployment, run `kubectl get pods` to verify that the pods were created successfully.
 
-[source,text]
+[source,console]
 ----
 $ kubectl get pods
 NAME              READY   STATUS    RESTARTS   AGE
@@ -47,7 +47,7 @@ tigergraph-0      1/1     Running   0          4m10s
 
 Run `kubectl describe service/tg-external-service` to find the IP address of the load balancer. You can then make curl calls to port 9000 to make sure that RESTPP is running:
 
-[source,text]
+[source,console]
 ----
 $ curl <load_balancer_ip>:9000/echo | jq .
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -65,7 +65,7 @@ You can also copy the IP address into your browser and visit port 14240 to make 
 
 You can use `kubectl` to get a shell to the container or log in via `ssh`
 
-[source,text]
+[source,console]
 ----
 # Via kubectl
 kubectl exec -it tigergraph-0 -- /bin/bash
@@ -79,7 +79,7 @@ ssh tigergraph@ip_m1
 
 Run the command below to delete all cluster resources:
 
-[source,text]
+[source,console]
 ----
 $ kubectl delete -f deploy/tigergraph-eks.yaml && kubectl delete pvc -l app=tigergraph
 ----
@@ -94,7 +94,7 @@ This section describes the steps to deploy, verify, and remove a TigerGraph clus
 
 Clone the TigerGraph ecosystem repository and change into the `k8s` directory:
 
-[source,text]
+[source,console]
 ----
 $ git clone https://github.com/tigergraph/ecosys.git
 $ cd ecosys/k8s
@@ -106,7 +106,7 @@ Use the `tg` script at in the `k8s` directory of the repo to create a Kubernetes
 
 For example, the following command will create a manifest that will deploy a 3*2 cluster with a replication factor of 2 and a partitioning factor of 3.
 
-[source,text]
+[source,console]
 ----
 $ ./tg eks kustomize -s 6 --ha 2
 ----
@@ -117,7 +117,7 @@ The command will create a directory named `deploy` with the manifest inside.
 
 Run `kubectl apply` to create the deployment
 
-[source,text]
+[source,console]
 ----
 $ kubectl apply -f ./deploy/tigergraph-eks.yaml
 ----
@@ -126,7 +126,7 @@ $ kubectl apply -f ./deploy/tigergraph-eks.yaml
 
 Run `kubectl get pods` to verify the pods were created successfully:
 
-[source,text]
+[source,console]
 ----
 $ kubectl get pods
 NAME              READY   STATUS    RESTARTS   AGE
@@ -137,7 +137,7 @@ tigergraph-1      1/1     Running   0          75s
 
 Run `kubectl describe service/tg-external-service` to find the IP address of the load balancer for your EKS cluster. You can make a curl call to port 9000 to make sure that RESTPP is working:
 
-[source,text]
+[source,console]
 ----
 $ curl <load_balancer_ip>:9000/echo | jq .
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -155,7 +155,7 @@ You can also copy the IP address into your browser and visit port 14240 to make 
 
 You can use `kubectl` to get a shell to the container or log in via `ssh`
 
-[source,text]
+[source,console]
 ----
 # Via kubectl
 kubectl exec -it tigergraph-0 -- /bin/bash
@@ -169,7 +169,7 @@ ssh tigergraph@ip_m1
 
 Run the command below to delete all cluster resources:
 
-[source,text]
+[source,console]
 ----
 $ kubectl delete -f deploy/tigergraph-eks.yaml && kubectl delete pvc -l app=tigergraph
 ----

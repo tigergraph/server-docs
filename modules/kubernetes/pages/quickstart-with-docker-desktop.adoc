@@ -19,7 +19,7 @@ Download https://raw.githubusercontent.com/tigergraph/ecosys/053b9abe8610e9a63d6
 
 Make sure that you have configured `kubectl` to use the correct context. In this case, the name of the context should be `docker-desktop`. Then run `kubectl apply`  to create the deployment. Replace `<path_to_tigergraph.yaml>` with the path to the `tigergraph-docker.yaml` file you downloaded in the step before.
 
-[source,text]
+[source,console]
 ----
 $ kubectl apply -f <path_to_tigergraph.yaml>
 ----
@@ -28,7 +28,7 @@ $ kubectl apply -f <path_to_tigergraph.yaml>
 
 Verify that the pods were created successfully:
 
-[source,text]
+[source,console]
 ----
 $ kubectl get pods -l app=tigergraph -w
 ----
@@ -49,7 +49,7 @@ Port 14240 of the pod is mapped to port 30240 of `localhost`. Visit `+http://loc
 
 Run the following command to delete all cluster resources:
 
-[source,text]
+[source,console]
 ----
 $ kubectl delete -f <path_to_tigergraph.yaml> &&  kubectl delete pvc -l app=tigergraph
 ----
