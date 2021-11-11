@@ -44,7 +44,7 @@ In the example below, the Common Name value should be your server hostname, sinc
 
 .Self-Signed Certificate generation example using openssl
 
-[source,bash]
+[source,console]
 ----
 $ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/nginx-selfsigned.key -out ~/nginx-selfsigned.crt
 
@@ -89,7 +89,7 @@ With the self-signed certificate successfully generated, you can configure it wi
 TigerGraph's SSL only accepts PEM-encoded certificates. If you have a certificate encoded in other formats (e.g. DER), you need to https://www.sslshopper.com/ssl-converter.html[convert it to a PEM-encoded certificate] first.
 ====
 
-[source,bash]
+[source,console]
 ----
 $ gadmin config entry ssl
 
@@ -159,7 +159,7 @@ You may use the -k option to turn off the verification, but it is unsafe and not
 
 To successfully make requests with curl, you will need to specify the certificate by using the `--cacert` parameter:
 
-[source,bash]
+[source,console]
 ----
 $ curl --cacert /home/tigergraph/nginx-selfsigned.crt https://localhost:14240
 

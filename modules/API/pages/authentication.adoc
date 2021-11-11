@@ -19,7 +19,7 @@ Once REST{pp} authentication is enabled, a valid token should always be included
 
 .curl GSQL request, with authorization token in header
 
-[source,bash]
+[source,console]
 ----
 curl -X GET -H "Authorization: Bearer <token>" '<request_URL>'
 ----
@@ -28,7 +28,7 @@ curl -X GET -H "Authorization: Bearer <token>" '<request_URL>'
 
 Here is a sample request:
 
-[source,bash]
+[source,console]
 ----
 curl -X GET -H "Authorization: Bearer 01234567abcdefgh01234567abcdefgh" "http://localhost:9000/graph/socialNet/vertices/User?limit=3"
 ----
@@ -37,7 +37,7 @@ curl -X GET -H "Authorization: Bearer 01234567abcdefgh01234567abcdefgh" "http://
 
 All requests made to the GSQL Server must be accompanied by your user credentials. You can use the `curl -u` option to pass in the username and password of the TigerGraph user:
 
-[source,bash]
+[source,console]
 ----
 curl -X GET -u <username>:<password> "http://localhost:14240/<path_to_endpoint>
 ----

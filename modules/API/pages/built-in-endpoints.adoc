@@ -13,7 +13,7 @@ These endpoints are simple diagnostic utilities, which respond with the followin
 
 .GET echo/ Request and Response
 
-[source,bash]
+[source,console]
 ----
 curl -X GET "http://localhost:9000/echo"
 {
@@ -75,7 +75,7 @@ To include one or more of the endpoint types in the output, include the endpoint
 
 .Example: Report on all built-in endpoints
 
-[source,bash]
+[source,console]
 ----
 curl -X GET "http://localhost:9000/endpoints?builtin=true" | jq .
 ----
@@ -88,7 +88,7 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
 
 .Subset of GET /endpoints output
 
-[source,bash]
+[source,console]
 ----
     "GET /endpoints": {
         "parameters": {
@@ -142,7 +142,7 @@ This endpoint returns the GIT versions of all components of the system.
 
 ==== Sample request:
 
-[source,bash]
+[source,console]
 ----
 curl -X GET "http://localhost:9000/version"
 {"error":"false", "message":"TigerGraph RESTPP:
@@ -218,7 +218,7 @@ endpoint
 
 In the sample request below, the filters in the query string include a timeframe starting at `1618957536` and ending at `1619023346`, and specifying that the response should only include CPU information:
 
-[source,bash]
+[source,console]
 ----
 $ curl -X GET
 "https://crunch.i.tgcloud.io:14240/ts3/api/datapoints?from=1618957536&to=1619023346&what=cpu"
@@ -251,7 +251,7 @@ $ curl -X GET
 
 In the below example, the request asks for the 10 latest data points regarding memory usage:
 
-[source,bash]
+[source,console]
 ----
 $ curl -X GET
 "https://crunch.i.tgcloud.io:14240/ts3/api/datapoints?what=mem&latest=10"
@@ -340,7 +340,7 @@ This endpoint returns real-time query performance statistics over the given time
 
 The return object is a hash of the endpoints and their performance data:
 
-[source,bash]
+[source,console]
 ----
 # The example shows two endpoints (/graph/vertex and
 # /statistics) called during the past 60 seconds.
@@ -449,7 +449,7 @@ segments will not be skipped.
 
 ==== Example
 
-[source,bash]
+[source,console]
 ----
 $ curl -X GET 'http://localhost:9000/rebuildnow/social'
 
