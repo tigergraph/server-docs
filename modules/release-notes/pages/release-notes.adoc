@@ -1,19 +1,7 @@
-= Release Notes - TigerGraph Server 3.3
+= Release Notes
 
-Release Date: Nov 1st, 2021
+Release Date: Dec 1st, 2021
 
-== Release Notes for Previous Versions
-
-* xref:3.2@tigergraph-server:release-notes:release-notes.adoc[]
-
-* https://docs.tigergraph.com/faqs/release-notes-tigergraph-3.1[Release Notes - TigerGraph 3.1]
-* https://docs.tigergraph.com/v/3.0/faqs/release-notes-tigergraph-3.0[Release Notes - TigerGraph 3.0]
-* https://docs.tigergraph.com/v/2.6/release-notes-change-log/release-notes-tigergraph-2.6[Release Notes - TigerGraph 2.6]
-* https://docs.tigergraph.com/v/2.5/release-notes-change-log/release-notes-tigergraph-2.5[Release Notes - TigerGraph 2.5]
-* https://docs.tigergraph.com/v/2.4/release-notes-change-log/release-notes-tigergraph-2.4[Release Notes - TigerGraph 2.4]
-* https://docs.tigergraph.com/v/2.3/release-notes-change-log/release-notes-tigergraph-2.3[Release Notes - TigerGraph 2.3]
-* https://docs.tigergraph.com/v/2.2/release-notes-change-log/release-notes-for-tigergraph-2.2[Release Notes - TigerGraph 2.2]
-* For v2.1 and older, contact TigerGraph Support
 
 *For the running log of bug fixes, see xref:release-notes:change-log.adoc[].*
 
@@ -42,32 +30,27 @@ Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to
 
 == New Features
 
-Below is a list of new features in TigerGraph 3.3:
+Below is a list of new features in TigerGraph 3.4:
 
 === Manageability
-* Added xref:gadmin:management-with-gadmin.adoc#_gadmin_config_reset[gadmin config reset] command to reset a configuration parameter to its default value.
-* Added the `--auto-restart` option to xref:gadmin:management-with-gadmin.adoc#_gadmin_start[gadmin start] that automatically restarts any service that goes down
 
 === Observability
 * Improve loader/license violation error messaging
 
-=== Data loading
-* Added new parameter `update_vertex_only` to `POST /graph/{graph_name}` to allow update-only requests.
+=== Developer efficiency
+* Added support for new variable types in the GSQL Query Language
+** `BAG`
+** `LIST`
+** `SET`
+* Relaxed GSQL local variable declaration rules.
+Local base type variables can now be declared at a lower level to override the value of a variable with the same name.
+* Removed the limitations on the following functions in Distributed Query Mode:
+** edgeAttribute()
+** neighborAttribute()
+** neighbor()
+** size()
+* Added the `remove()` method to `ListAccum` and `MapAccum`
 
-=== Developer efficiency - GraphStudio
-* Aggregation in Visual Query Builder is renamed to Attachment
-* Added the ability to xref:gui:graphstudio:explore-graph/graph-exploration-panel.adoc#_export_result[export a graph exploration] as a .png file or as .csv files.
-* Added the ability to xref:gui:graphstudio:write-queries.adoc#_view_table_result[view the results of GSQL queries in a tabular format].
-* Added a new widget xref:gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_within["Within"] in Visual Query Builder to replicate a vertex pattern to be used in another pattern.
-* Added support for nested expressions for aggregation functions in Visual Query Builder.
-* Added support for xref:gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_attachment[single-value attachment] in Visual Query Builder.
-* Added the ability to xref:gui:graphstudio:write-queries.adoc#_save_as[save a query draft] under a different name than the name used to create the query.
-* Added the ability to xref:gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_save_as[save a visual pattern under a different name] than the name used to create the pattern in Visual Query Builder.
-
-=== Admin Portal System Management
-* Added the ability to xref:gui:admin-portal:management/user-management.adoc#_create_a_global_role[define and assign user-defined roles] to users in Admin Portal.
-* Added xref:gui:admin-portal:components/gsql.adoc[the ability to update certain GSQL configuration parameters] from Admin Portal.
-* Added xref:gui:admin-portal:gsql-output-file.adoc[the ability to download GSQL output files].
 
 == Known Issues
 
