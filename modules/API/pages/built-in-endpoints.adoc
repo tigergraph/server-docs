@@ -1153,9 +1153,10 @@ This endpoint upserts vertices and/or edges into a graph. To upsert means that i
 
 ==== Atomic upsert transaction
 
-By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If something goes wrong during the process of the request,  the request data can be partially consumed by the database.
+By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If something goes wrong during the process of the request, the request data can be partially consumed by the database.
 
-You can append a query string parameter `atomic_post` to the URL of the request and set its value to true to make the request an atomic transaction, which means that updates to the database contained in the request are all-or-nothing. Either all changes are successful, or none is successful.
+You can append a request header `gsql-atomic-level` to the request and set its value to `atomic` to make the request an atomic transaction.
+An atomic transaction means that updates to the database contained in the request are all-or-nothing: either all changes are successful, or none is successful.
 
 For example, suppose we have the following request to upsert two vertices:
 
@@ -1188,12 +1189,12 @@ And the content of `vertices.json` is:
 
 With the request above, if the vertex `Kelly` fails to be upserted due to a machine failure, it is still possible that the vertex `Velma` is upserted to the database.
 
-If you add the `atomic_post` parameter to the request URL and set its value to true, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
+If you add the `gsql-atomic-level` header to the request URL and set its value to `atomic`, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
 
 [source,bash]
 ----
 # This is an atomic request
-curl --data-binary @vertices.json http://localhost:9000/graph/social?automic_post=true
+curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social?automic_post=true
 ----
 
 ==== Parameters
@@ -1218,7 +1219,9 @@ Default value is false.
 
 |`update_vertex_only`|No |If `update_vertex_only` is set to true, the request will only update existing vertices and not insert new vertices.
 
-|`atomic_post`|No |If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
+|`atomic_post`|No a|NOTE: This parameter is deprecated. Please use the `gsql-atomic-level` header instead.
+
+If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
 Default value is false.|
 |===
 
