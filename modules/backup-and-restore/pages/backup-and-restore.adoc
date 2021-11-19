@@ -14,8 +14,7 @@ The current version of GBAR is intended for restoring the same machine that was 
 ====
 
 .Synopsis
-
-[source,gsql]
+[source,text]
 ----
 Usage: gbar backup [options] -t <backup_tag>
 		      gbar restore [options] <backup_tag>
@@ -49,7 +48,7 @@ Before using the backup or the restore feature, GBAR must be configured.
 
 . Run `gadmin config entry system.backup`. At each prompt, enter the appropriate values for each config parameter.
 +
-[source,bash]
+[source,console]
 ----
 $ gadmin config entry system.backup
 
@@ -85,13 +84,13 @@ New:
 gadmin config apply -y
 ----
 
-*Note*:
-
-* For S3 configuration, the AWS access key and secret are not provided, then GBAR will use the attached IAM role.
+[NOTE]
+====
 * You can specify the number of parallel processes for backup and restore.
-* You must provide username and password using GSQL_USERNAME and GSQL_PASSWORD environment variables.
+* You must provide username and password using `GSQL_USERNAME` and `GSQL_PASSWORD` environment variables.
 
  $ GSQL_USERNAME=tigergraph GSQL_PASSWORD=tigergraph gbar backup -t daily
+====
 
 == Perform a backup
 
@@ -107,7 +106,7 @@ Depending on your configuration settings, your backup archive will be output to 
 A backup archive is stored as several files in a folder, rather than as a single file. The backup tag acts like a filename prefix for the archive filename. The full name of the backup archive will be `<backup_tag>-<timestamp>`, which is a subfolder of the backup repository.
 
 * If `System.Backup.Local.Enable` is set to `true`, the folder is a local folder on every node in a cluster, to avoid massive data moving across nodes in a cluster.
-* If `System.Backup.S3.Enable` is set to `true`, every node will upload data located on the node to the s3 repository. Therefore, every node in a cluster needs access to Amazon S3. If IAM policy is used for authentication, every node in the cluster needs to be given access under the IAM policy.
+* If `System.Backup.S3.Enable` is set to `true`, every node will upload data located on the node to the s3 repository. Therefore, every node in a cluster needs access to Amazon S3.
 
 GBAR Backup performs a live backup, meaning that normal operations may continue while the backup is in progress. When GBAR backup starts, GBAR will check if there are running loading jobs. If there are, it will pause loading for 1 minute to generate a snapshot and then continue the backup process. You can specify the loading pausing interval by the environment variable `PAUSE_LOADING`.
 
