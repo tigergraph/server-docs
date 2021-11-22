@@ -19,7 +19,9 @@ The latest TigerGraph docker image includes the following content:
  ** GSQL 102
 * The latest GSQL open-source graph algorithm library
 
-This follow-along video shows the whole setup process: https://www.youtube.com/watch?v=V5VvgJyjLxA
+This follow-along video shows the whole setup process:
+
+video::https://www.youtube.com/watch?v=V5VvgJyjLxA[]
 
 == 1. Install Docker Desktop
 
@@ -150,15 +152,13 @@ in a browser on your laptop (host OS).
   $ sed -i.bak '/localhost/d' ~/.ssh/known_hosts
   $ ssh -p 14022 tigergraph@localhost
 ----
-+
-____
-Linux users can access the container through its ip address directly:
-____
+
+* Linux users can access the container through its ip address directly:
 +
 [source,console]
 ----
   $ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' tigergraph
-  $vssh tigergraph@<container_ip_address>
+  $ vssh tigergraph@<container_ip_address>
 ----
 
 * Default user: `tigergraph`

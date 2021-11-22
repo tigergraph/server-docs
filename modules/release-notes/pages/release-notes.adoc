@@ -1,32 +1,7 @@
 = Release Notes
+:description: Release notes for TigerGraph 3.4.
 
-Release Date: Dec 1st, 2021
-
-
-*For the running log of bug fixes, see xref:release-notes:change-log.adoc[].*
-
-== Compatibility with TigerGraph 3.1
-
-The following changes were made to the built-in roles in TigerGraph's Role-based Access Control
-
-* The built-in role `queryreader` can no longer run queries that include updates to the database.
- ** To emulate the old `queryreader` role, create a role with all `queryreader` privileges, and also grant the `WRITE_DATA` privilege to the new role.
-* The built-in role `admin` can no longer create users
- ** To emulate the old `admin` role, create a global role with all `admin` privileges, and also grant the `WRITE_USER` privilege to the new role.
-* To learn more about role management and the privileges of built-in roles, see:
-** xref:user-access:role-management.adoc[]
-** xref:reference:list-of-privileges.adoc[]
-
-== Compatibility with TigerGraph 2
-
-Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to deliver significant improvements. While we make every effort to maintain backward compatibility, in selected cases APIs have changed or deprecated features have been dropped, in order to advance the overall product.
-
-*Data migration*: A tool is available to migrate the data in TigerGraph 2.6 to TigerGraph 3.0. Please contact TigerGraph Support for assistance.
-
-*Query and API compatibility*:
-
-* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.  Please see xref:gadmin:management-with-gadmin.adoc[Managing with gadmin].
-* Some features which were previously deprecated have been dropped. Please see xref:release-notes:v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
+TigerGraph Server 3.4 was released on Dec 1st, 2021.
 
 == New Features
 
@@ -55,6 +30,9 @@ Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-
 ** `MapAccum`
 *** `.removeKey()`
 
+== Fixed issues
+
+
 == Known Issues
 
 === Applications
@@ -76,3 +54,28 @@ Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-
  ** Users who are upgrading from 3.0.X need to manually start GSQL HA service. Please reach out to support for help with the process documented in: https://tigergraph.freshdesk.com/a/solutions/articles/5000865072
 * *Stale data visible after Deletes using index*
  ** Queries that use secondary index may still see the vertices being deleted until after the snapshots are fully rebuilt.
+
+== Compatibility with TigerGraph 3.1
+
+The following changes were made to the built-in roles in TigerGraph's Role-based Access Control
+
+* The built-in role `queryreader` can no longer run queries that include updates to the database.
+** To emulate the old `queryreader` role, create a role with all `queryreader` privileges, and also grant the `WRITE_DATA` privilege to the new role.
+* The built-in role `admin` can no longer create users
+** To emulate the old `admin` role, create a global role with all `admin` privileges, and also grant the `WRITE_USER` privilege to the new role.
+* To learn more about role management and the privileges of built-in roles, see:
+** xref:user-access:role-management.adoc[]
+** xref:reference:list-of-privileges.adoc[]
+
+== Compatibility with TigerGraph 2
+
+Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to deliver significant improvements. While we make every effort to maintain backward compatibility, in selected cases APIs have changed or deprecated features have been dropped, in order to advance the overall product.
+
+*Data migration*: A tool is available to migrate the data in TigerGraph 2.6 to TigerGraph 3.0. Please contact TigerGraph Support for assistance.
+
+*Query and API compatibility*:
+
+* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.  Please see xref:gadmin:management-with-gadmin.adoc[Managing with gadmin].
+* Some features which were previously deprecated have been dropped. Please see xref:release-notes:v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
+
+include::v3.0-removal-of-previously-deprecated-features.adoc[]
