@@ -505,7 +505,9 @@ The most important information is in the `ServiceStatus` and `ProcessState` fiel
 ----
 <1> The service descriptor for the status being returned.
 <2> The last recorded status of the service.
-<3> The last recorded state of the service process.
+<3> The last recorded state of Linux process behind the service.
+It's possible for a process to be running, but is not being served, and the service cannot respond to requests.
+For example, when TigerGraph is starting up, GPE is in the "Warmup" state and cannot respond to requests, but the process is still running.
 
 
 ==== Example
