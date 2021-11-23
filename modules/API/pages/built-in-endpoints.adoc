@@ -416,6 +416,146 @@ If there is no query sent in the past given seconds, an empty json will be retur
 | Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into. The value for this endpoint must be between 1 and 100 and has a default value of 10.
 |===
 
+=== Show service status
+`POST :14240/current-service-status`
+
+This endpoint returns the status of the TigerGraph services specified in the request.
+
+==== Parameters
+No URL parameters.
+
+==== Request body
+The endpoint requires a request body in the following format:
+
+[source,javascript]
+----
+{
+    "ServiceDescriptors": [ <1>
+        {
+            "ServiceName": <service_name>, <2>
+            "Partition": <partition_number>, <3>
+            "Replica": <replica_number> <4>
+        }
+        ... <5>
+    ]
+}
+----
+<1> `ServiceDescriptors` is a required field.
+It is a list of objects with keys `ServiceName`, and optionally `Partition` and `Replica`.
+<2> Required field.
+The name of the service to return status on.
+Below are the accepted values for the field and their corresponding services
+* `"GPE"`:     GPE
+* `"GSE"`:     GSE
+* `"RESTPP"`:  RESTPP
+* `"GSQL"`:    GSQL
+* `"IFM"`:     INFORMANT
+* `"GUI"`:     GUI
+* `"CTRL"`:    CONTROLLER
+* `"KAFKA"`:   KAFKA
+* `"ETCD"`:    ETCD
+* `"ZK"`:      ZOOKEEPER
+* `"NGINX"`:   NGINX
+* `"TS3"`:     TS3
+* `"TS3SERV"`: TS3SERV
+* `"DICT"`:    DICT
+* `"ADMIN"`:   ADMIN
+<3> Optional.
+Number of the partition to request service status on.
+If not provided, the response will contain service status on all partitions.
+<4> Optional.
+Number of the replica to request service status on.
+If not provided, the response will contain service status on all replicas.
+<5> You can supply more than one service descriptor.
+The response from the endpoint will contain all service status requested.
+
+==== Return value
+The return value contains the status for every service descriptor in the request.
+The most important information is in the `ServiceStatus` and `ProcessState` fields:
+[source,javascript]
+----
+{
+  "ServiceStatusEvents": [
+    {
+      "EventMeta": {
+        "Targets": [
+          {
+            "ServiceName": "IFM"
+          }
+        ],
+        "EventId": "154e8f53716b403eb02af19d863745c6",
+        "SpanId": "ServiceStatusSelfReport",
+        "TimestampNS": "1635841759229416893",
+        "Source": {
+          "ServiceName": "GPE",
+          "Replica": 1,
+          "Partition": 2
+        }
+      },
+      "ServiceDescriptor": { <1>
+        "ServiceName": "GPE",
+        "Replica": 1,
+        "Partition": 2
+      },
+      "ServiceStatus": "Online", <2>
+      "ProcessState": "Running" <3>
+    }
+  ]
+}
+----
+<1> The service descriptor for the status being returned.
+<2> The last recorded status of the service.
+<3> The last recorded state of the service process.
+
+
+==== Example
+[tabs]
+====
+Request::
++
+--
+[source.wrap,console]
+----
+$ curl -X POST http://localhost:14240/informant/current-service-status -d '{ "ServiceDescriptors":  [{ "ServiceName": "gpe","Partition": 2, "Replica": 1}]}' | jq
+----
+--
+Response::
++
+--
+[source,json]
+----
+{
+  "ServiceStatusEvents": [
+    {
+      "EventMeta": {
+        "Targets": [
+          {
+            "ServiceName": "IFM"
+          }
+        ],
+        "EventId": "154e8f53716b403eb02af19d863745c6",
+        "SpanId": "ServiceStatusSelfReport",
+        "TimestampNS": "1635841759229416893",
+        "Source": {
+          "ServiceName": "GPE",
+          "Replica": 1,
+          "Partition": 2
+        }
+      },
+      "ServiceDescriptor": {
+        "ServiceName": "GPE",
+        "Replica": 1,
+        "Partition": 2
+      },
+      "ServiceStatus": "Online",
+      "ProcessState": "Running"
+    }
+  ]
+}
+----
+--
+====
+
 === Rebuild graph engine
 
 `+GET /rebuildnow/{graph_name}+` or `+POST /rebuildnow/{graph_name}+`
