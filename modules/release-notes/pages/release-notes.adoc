@@ -10,6 +10,8 @@ Below is a list of new features and improvements in TigerGraph 3.4:
 === Manageability
 * Added the xref:ha:cluster-commands.adoc#_show_current_gsql_leader[`-leader` option] to `gsql` to display the current cluster leader.
 * Added Oracle Linux 8 (OEL 8) to the xref:{page-component-version}@installation:hw-and-sw-requirements.adoc#_certified_operating_systems[list of certified operating systems].
+* Improved query installation process.
+Faliure in installing a subset of the queries in a single `INSTALL QUERY` command will no longer cause all installations to abort.
 
 === Observability
 * Added xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_show_service_status[endpoint `POST /current-service-status`] to report TigerGraph service status through HTTP requests.
@@ -22,8 +24,8 @@ Below is a list of new features and improvements in TigerGraph 3.4:
 * Added support for xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_container_variable[local container variables] in the GSQL Query Language.
 * Relaxed GSQL local variable declaration rules.
 Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_base_type_variables[declared at a lower level] to override the value of a variable with the same name.
-* Added support for declaring a `HeapAccum` without specifying size.
-* Removed the requirement of `LIMIT` clauses when using `ORDER BY` in SQL-like `SELECT` statements.
+* Added support for declaring a xref:3.4@gsql-ref:querying:accumulators.adoc#_heapaccum[`HeapAccum`] without specifying size.
+* Removed the requirement of `LIMIT` clauses when using `ORDER BY` in xref:3.4@gsql-ref:querying:select-statement/sql-like-select-statement.adoc[SQL-like `SELECT` statements].
 * Removed the limitations on the following functions in Distributed Query Mode:
 ** `edgeAttribute()`
 ** `neighborAttribute()`
@@ -40,9 +42,9 @@ Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-
 === Usability - GraphStudio
 * Added support for _xref:{page-component-version}@gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_add_a_pattern_view[Pattern View]_ in Visual Query Builder (VQB) that allows outputting a specified subset of a visual pattern's match results.
 * Added support for using a vertex or edge's primary ID in expressions if primary ID is marked as an attribute.
-* GraphStudio support formatting number attributes.
-* Support search for GSQL query list.
-* Support search for visual pattern list.
+* Added support for formatting number attributes.
+* Added support for search in GSQL query list.
+* Added support for search in visual pattern list.
 
 == Fixed issues
 
