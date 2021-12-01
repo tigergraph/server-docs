@@ -334,7 +334,7 @@ $ curl -X GET
 
 `+GET /statistics/{graph_name}+`
 
-This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` __**__parameter. The `seconds` parameter must be a positive integer less than or equal to 60.
+This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` __**__parameter.The `seconds` parameter must be a positive integer less than or equal to 60.
 
 ==== Sample request:
 
@@ -413,9 +413,10 @@ If there is no query sent in the past given seconds, an empty json will be retur
 
 | `segments`
 | No
-| Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into. The value for this endpoint must be between 1 and 100 and has a default value of 10.
+| Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into.The value for this endpoint must be between 1 and 100 and has a default value of 10.
 |===
 
+[#_show_service_status]
 === Show service status
 `POST :14240/current-service-status`
 
