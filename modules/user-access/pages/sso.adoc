@@ -81,44 +81,25 @@ Refer to your identity provider's documentation to determine which options to us
 
 == *Create user groups with proxy rules to authorize Single Sign-On users*
 
-In order to authorize Single Sign-On users, you need create user groups in GSQL with proxy rules and grant roles on graphs for the user groups.
+In order to authorize Single Sign-On users, you need create user groups with proxy rules and grant roles on graphs for the user groups.
+Proxy rules assign users who log in through SSO into proxy groups based on the attributes of the user from the identity provider's response.
 
-In TigerGraph Single Sign-On, we support two types of proxy rules:
-
-* nameid equations
-* attribute equations
-
-Attribute equations are more commonly used because usually user group information is transferred as attributes to your identity provider SAML assertions.
-
-By granting roles to a user group, all users matching the proxy rule will be granted all the privileges of that role.
-In some cases if you want to grant one specific Single Sign-On user privilege, you can use a nameid equation to do so.
-
-==== Required privilege
+=== Required privilege
 
 * `WRITE_PROXYGROUP` for creating proxy groups.
 * `WRITE_ROLE` for granting roles to users
 
-=== Single User Proxy
+You can create proxy groups in Admin Portal:
 
-For example, if you want to create a user group SuperUserGroup that contains the user with nameid admin@your.company.com only, and grant superuser role to that user, you can do so with the following command:
+. From Admin Portal, navigate to menu:Management[Users > Proxy Group].
+. Click btn:[Add Group], and give the group a name.
+. Provide the attribute equation for the proxy group.
+If a user's specified attribute matches the value in the equation, they will be assigned to this proxy group.
 
-[source,text]
-----
-GSQL > CREATE GROUP SuperUserGroup PROXY "nameid=admin@your.company.com"
-GSQL > GRANT ROLE superuser TO SuperUserGroup
-Role "superuser" is successfully granted to user(s): SuperUserGroup
-----
 
-=== User Group Proxy
-
-Suppose you want to create a user group HrDepartment which corresponds to the identity provider Single Sign-On users having the group attribute value "hr-department", and want to grant the queryreader role to that group on the graph HrGraph:
-
-[source,text]
-----
-GSQL > CREATE GROUP HrDepartment PROXY "group=hr-department"
-GSQL > GRANT ROLE queryreader ON GRAPH HrGraph TO HrDepartment
-Role "queryreader" is successfully granted to user(s): HrDepartment
-----
+After creating the proxy group, you can start granting roles to the proxy group.
+All users matching the proxy rule will be granted all the privileges of that role.
+In some cases if you want to grant one specific Single Sign-On user privilege, you can use a nameid equation to do so.
 
 == *Change Password Of Default User*
 
