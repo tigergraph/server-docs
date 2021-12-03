@@ -1,5 +1,6 @@
 = Single Sign-On
 :experimental:
+:sectnums:
 
 The Single Sign-On (SSO) feature in TigerGraph enables you to use your organization's identity provider (IDP) to authenticate users to access TigerGraph GraphStudio and Admin Portal UI.
 
@@ -22,6 +23,7 @@ We assume you already have TigerGraph up and running , and you can access GraphS
 If you enabled SSL connection, change `http` to `https`. If you changed the Nginx port of the TigerGraph system, replace 14240 with the port you have set.
 
 == *Configure Identity Provider*
+:sectnums!:
 
 Below are detailed instructions for identity providers that we have verified.
 Please consult your IT or security department for how to configure the identity provider for your organization if it is not listed here.
@@ -41,7 +43,6 @@ Below are the Assertion Consumer Service URL / Single sign on URL , and SP Entit
 * SP Entity ID URL: `http://<tigergraph-machine-hostname>:14240/gsqlserver/gsql/saml/meta`
 
 
-
 === Auth0
 
 . Follow the Auth0 documentation to https://auth0.com/docs/get-started/create-apps/single-page-web-apps[register TigerGraph as a Single-Page web application].
@@ -51,8 +52,9 @@ You will need to enter the following information when following Auth0's guide:
 . Go to menu:Admin Portal[Security > SSO], and follow Auth0's documentation on https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider#configure-saml-sso-on-the-service-provider[configuring SAML SSO on the service provider] to find the values for the following fields on the SSO page:
 * Identity provider's SSO URL (Login URL).
 * Identity provider certificate.
+* Identity provider entity ID (Issuer).
 
-
+:sectnums:
 == *Enable Single Sign-On in TigerGraph*
 
 Having configured the identity provider and obtained the identity provider's SSO URL, entity ID and certificate, the next step is to provide the information to TigerGraph to enable single sign-on.
@@ -73,11 +75,16 @@ At the bottom of the SSO page are a list of security options you can configure f
 * Require Identity Provider to sign link:https://en.wikipedia.org/wiki/SAML_2.0#SAML_2.0_assertions[assertions]
 * Require Identity Provider to sign link:https://en.wikipedia.org/wiki/SAML_metadata[metadata]
 * link:https://en.wikipedia.org/wiki/Digital_Signature_Algorithm[Signature algorithm]
-* link:http://saml.xml.org/tags/authentication-context[Authentication context]
+* link:http://docs.oasis-open.org/security/saml/v2.0/saml-authn-context-2.0-os.pdf[Authentication context]
+** An attribute that defines how a user should log in.
+** Example value: `urn:oasis:names:tc:SAML:2.0:ac:classes:Password`
 
 It is recommended that you enable as many of the options as possible for maximum security.
 However, some identity providers do not support enabling certain options at the same time.
-Refer to your identity provider's documentation to determine which options to use.
+Refer to your identity provider's documentation to determine which options to use:
+
+* link:https://auth0.com/docs/configure/saml-configuration/customize-saml-assertions#saml-assertion-attributes[Auth0]
+* link:https://developer.okta.com/docs/reference/api/apps/#settings-9[Okta]
 
 == *Create user groups with proxy rules to authorize Single Sign-On users*
 
@@ -99,12 +106,12 @@ If a user's specified attribute matches the value in the equation, they will be 
 
 After creating the proxy group, you can start granting roles to the proxy group.
 All users matching the proxy rule will be granted all the privileges of that role.
-In some cases if you want to grant one specific Single Sign-On user privilege, you can use a nameid equation to do so.
+To learn how to grant roles, see xref:role-management.adoc[].
 
 == *Change Password Of Default User*
 
-Don't forget to enable User Authorization in TigerGraph by changing the password of the default superuser tigergraph to other than its default value.
-If you do not change the password, then every time you visit the GraphStudio UI, you will automatically log in as the superuser tigergraph.
+In order to enable single sign-on, you need to xref:enabling-user-authentication.adoc[enable GSQL user authentication] by changing the default password of the default user `tigergraph`.
+Otherwise, authentication is not enabled and any user will be logged in automatically as user `tigergraph`:
 
 [source,text]
 ----
@@ -115,7 +122,7 @@ Password has been changed.
 GSQL > exit
 ----
 
-== Testing Single Sign-On
+== Test Single Sign-On
 
 To test if single sign-on is working, visit the GraphStudio UI in your browser.
 You should see a btn:[Login with SSO] button:
@@ -128,10 +135,12 @@ Click the button to navigate to your identity provider's login portal:
 After about 10 seconds, the verification should finish, and you are authorized to use GraphStudio.
 * If you aren't logged in at your identity provider, you will need to log in.
 
-After logging in successfully, you will see your Single Sign-On username when you click the User icon  image:11.1 (1).png[,40]  at the upper right of the GraphStudio UI.
+After logging in successfully, you will see your Single Sign-On username when you click the User icon  image:11.1 (1).png[,35]  at the upper right of the GraphStudio UI.
 
-
+:sectnums!:
 == Common errors
+
+Below are a few common SSO errors and how to resolve them.
 
 === User has no access to any graph
 * If you return to the login page and see the error message saying you do not have access to any graph, check your user group proxy rules, and roles you have granted to the groups.
