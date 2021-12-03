@@ -49,17 +49,19 @@ Below are the Assertion Consumer Service URL / Single sign on URL , and SP Entit
 . Follow the Auth0 documentation to https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider#configure-saml-sso-in-auth0[configure Auth0 as SAML Identity provider].
 You will need to enter the following information when following Auth0's guide:
 * Application Callback URL: `http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
-. Go to menu:Admin Portal[Security > SSO], and follow Auth0's documentation on https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider#configure-saml-sso-on-the-service-provider[configuring SAML SSO on the service provider] to find the values for the following fields on the SSO page:
-* Identity provider's SSO URL (Login URL).
-* Identity provider certificate.
-* Identity provider entity ID (Issuer).
+* When downloading the certificate from Auth0, choose *`.cer`* format instead of `.pem` format.
 
 :sectnums:
 == *Enable Single Sign-On in TigerGraph*
 
 Having configured the identity provider and obtained the identity provider's SSO URL, entity ID and certificate, the next step is to provide the information to TigerGraph to enable single sign-on.
 
+=== Provide IDP certificate, entity ID, and URLs
+Upload the certificate you downloaded from the identity provider in the previous step, and provide the identity provider's entity ID and single sign-on URL in the corresponding fields.
+
 === Prepare certificate and private key on TigerGraph machine
+Under SAML, the service provider (in this case - TigerGraph) can optionally sign the SAML requests made to the identity provider.
+This step configures the certificate and private key used for the signature.
 
 According to the SAML standard trust model, a self-signed certificate is acceptable.
 This is different from configuring an SSL connection, where a CA-authorized certificate is considered mandatory if the system goes to production.
