@@ -16,11 +16,14 @@ In order to use Single Sign-On , you need to perform four steps :
 . Configure your identity provider to create a TigerGraph application.
 . Provide information from your identity provider to enable TigerGraph Single Sign-On.
 . Create user groups with proxy rules to authorize Single Sign-On users.
-. Change the password of the tigergraph user to be other than the default, if you haven't done so already.
 
-We assume you already have TigerGraph up and running , and you can access GraphStudio UI through a web browser using the URL: http://tigergraph-machine-honestname:14240
+== Before you begin
+* Ensure that you can access GraphStudio UI through a web browser using the URL: http://tigergraph-machine-honestname:14240
+** If you enabled SSL connection, change `http` to `https`.
+If you changed the Nginx port of the TigerGraph system, replace 14240 with the port you have set.
+* Ensure that you have xref:enabling-user-authentication.adoc[enabled GSQL authentication].
+If you don't enable authentication, SSO configuration will not work and any user will be logged in automatically.
 
-If you enabled SSL connection, change `http` to `https`. If you changed the Nginx port of the TigerGraph system, replace 14240 with the port you have set.
 
 == *Configure Identity Provider*
 :sectnums!:
@@ -56,11 +59,14 @@ You will need to enter the following information when following Auth0's guide:
 
 Having configured the identity provider and obtained the identity provider's SSO URL, entity ID and certificate, the next step is to provide the information to TigerGraph to enable single sign-on.
 
+=== Update service provider URL
+The service provider (in this case - TigerGraph) URL is the same URL that you use to access GraphStudio.
+
 === Provide IDP certificate, entity ID, and URLs
 Upload the certificate you downloaded from the identity provider in the previous step, and provide the identity provider's entity ID and single sign-on URL in the corresponding fields.
 
 === Prepare certificate and private key on TigerGraph machine
-Under SAML, the service provider (in this case - TigerGraph) can optionally sign the SAML requests made to the identity provider.
+Under SAML, the service provider can optionally sign the SAML requests made to the identity provider.
 This step configures the certificate and private key used for the signature.
 
 According to the SAML standard trust model, a self-signed certificate is acceptable.
@@ -109,20 +115,6 @@ If a user's specified attribute matches the value in the equation, they will be 
 After creating the proxy group, you can start granting roles to the proxy group.
 All users matching the proxy rule will be granted all the privileges of that role.
 To learn how to grant roles, see xref:role-management.adoc[].
-
-== *Change Password Of Default User*
-
-In order to enable single sign-on, you need to xref:enabling-user-authentication.adoc[enable GSQL user authentication] by changing the default password of the default user `tigergraph`.
-Otherwise, authentication is not enabled and any user will be logged in automatically as user `tigergraph`:
-
-[source,text]
-----
-GSQL > change password
-New Password : ********
-Re-enter Password : ********
-Password has been changed.
-GSQL > exit
-----
 
 == Test Single Sign-On
 
