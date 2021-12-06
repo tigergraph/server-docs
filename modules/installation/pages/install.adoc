@@ -46,15 +46,11 @@ $ tar -xzf tigergraph-<version>.tar.gz
 
 Navigate to the `tigergraph-<version>-offline` folder and run script `install.sh`  with the following commands:
 
-.Run the installation script
 [source,bash]
 ----
 $ cd tigergraph-<version>-offline
 
-# to install enterprise license
 $ sudo ./install.sh
-
-# For non-interactive installations, please see the non-interactive mode section.
 ----
 
 
@@ -80,13 +76,13 @@ WARNING: Since license keys are long (over 100 characters), if you copy-and-past
 
 TigerGraph cluster configuration enables the graph database to be partitioned and distributed across multiple server nodes in a local network. After you have answered the questions described in the previous step, the installation script will ask for the following to complete cluster configuration:
 
-* The number of nodes in your cluster. Each node  will be given an alias following the input (`m1`, `m2`, `m3`, etc.)
- ** If this is a single-node installation, enter `1`
-* The IP address of each node
-* Username and credentials information of the sudo user
+* The number of nodes in your cluster. Each node  will be given an alias following the input (`m1`, `m2`, `m3`, etc.).
+ ** If this is a single-node installation, enter `1`.
+* The IP address of each node.
+* Username and credentials information of the sudo user.
  ** Every machine in the cluster must have a sudo user with the same username and password or SSH key.
-* Permission to set NTP time synchronization
-* Permission to set firewall rules among the cluster nodes
+* Permission to set NTP time synchronization.
+* Permission to set firewall rules among the cluster nodes.
 
 
 NOTE: In TigerGraph 3.x, the installation machine can be within or outside the cluster. If outside the cluster, the installation machine still needs to be a Linux machine.
@@ -107,7 +103,7 @@ $ su <username>  # default username: tigergraph
 
 At the prompt, enter the password that was set in Step 2.
 
-After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin:adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE and GPE will show `"Warmup"`.
+After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin:adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE and GPE will show `Warmup`.
 
 image::image (77).png[Status of all components upon successful installation]
 
@@ -119,8 +115,6 @@ The following describes the procedure to install TigerGraph on Linux non-interac
 
 Extract the package by running the following command. A folder named `tigergraph-<version>-offline` will be created.
 
-
-.Extract for version X.Y.Z
 [source,bash]
 ----
 $ tar -xzf tigergraph-<version>.tar.gz
@@ -129,7 +123,7 @@ $ tar -xzf tigergraph-<version>.tar.gz
 
 ==== Step 2: Configure installation settings
 
-Navigate to the `tigergraph-<version>-offline` folder. Inside the folder, there is a file named `install_conf.json`. For non-interactive mode installation, the user must review and modify all the settings in the file _**_`install_conf.json` before running the installer.
+Navigate to the `tigergraph-<version>-offline` folder. Inside the folder, there is a file named `install_conf.json`. For non-interactive mode installation, the user must review and modify all the settings in the file `install_conf.json` before running the installer.
 
 Below is an example of the `install_conf.json` file:
 
