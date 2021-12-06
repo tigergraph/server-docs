@@ -36,35 +36,18 @@ The following describes the procedure to install TigerGraph on Linux interactive
 
 ==== *Step 1*: Extract the package
 
-Extract the package by running the following command. A folder named `tigergraph-<version>-offline` __**__will be created.
-
-
-[tabs]
-====
-Title A::
-+
---
-[,console]
+Extract the package by running the following command. A folder named `tigergraph-<version>-offline` will be created.
+[source,shell]
 ----
 $ tar -xzf tigergraph-<version>.tar.gz
 ----
---
-Title B::
-+
---
-[,console]
-----
-$ gadmin status
-----
---
-====
 
 ==== *Step 2*:  Run installation script
 
 Navigate to the `tigergraph-<version>-offline` folder and run script `install.sh`  with the following commands:
 
 .Run the installation script
-[source,console]
+[source,shell]
 ----
 $ cd tigergraph-<version>-offline
 
@@ -90,7 +73,7 @@ The installer will ask for the following information, for which you may choose t
 
 To see what the default settings are, read the <<_installation_options>> section below.
 
-WARNING: Since license keys are long -- over 100 characters long. If you copy-and-paste the license key, be careful not to accidentally include an end-of-line character.
+WARNING: Since license keys are long (over 100 characters), if you copy-and-paste the license key, be careful not to accidentally include an end-of-line character.
 
 
 ==== *Step 3*: Configure cluster settings
@@ -117,14 +100,14 @@ image::image (76).png[]
 
 After installation is complete, you can switch to the Linux user who owns the platform (created in link:install.adoc#_step_2_run_installation_script[Step 2]) with the following command :
 
-[,console]
+[source,shell]
 ----
 $ su <username>  # default username: tigergraph
 ----
 
 At the prompt, enter the password that was set in Step 2.
 
-After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin:adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE __**__and GPE will show `"Warmup"`.
+After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin:adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE and GPE will show `"Warmup"`.
 
 image::image (77).png[Status of all components upon successful installation]
 
@@ -138,7 +121,7 @@ Extract the package by running the following command. A folder named `tigergraph
 
 
 .Extract for version X.Y.Z
-[,console]
+[source,shell]
 ----
 $ tar -xzf tigergraph-<version>.tar.gz
 ----
@@ -217,7 +200,7 @@ Here is a description of all the fields in the config file:
 
 Start the non-interactive installation process by running the `install.sh` script with the `-n` option:
 
-[,bash]
+[source,shell]
 ----
 $ sudo ./install.sh -n
 ----
@@ -229,13 +212,13 @@ The following default settings will be applied if no parameters are specified:
 * The installer will create a Linux user with username `tigergraph` and with password `tigergraph`. This user will be the only user authorized to run `gadmin` commands to manage the TigerGraph platform and services.
  ** If there is already a user named `tigergraph`, this user will be designated as the platform owner and no other user will be created.
 * The default root directory for the installation would be `/home/tigergraph/tigergraph` ****with the App/Data/Log/Temp files within it : App Path : `/home/tigergraph/tigergraph/app` ****Data Path :``/home/tigergraph/tigergraph/data`` ****Log Path :``/home/tigergraph/tigergraph/log`` ****Temp Path :``/home/tigergraph/tigergraph/tmp``
-* The root directory for the installation (referred to as `<tigerGraph_root_dir>`) is a folder called `tigergraph` __**__located in the tigergraph user's home directory, i.e., `/home/tigergraph/tigergraph`.
+* The root directory for the installation (referred to as `<tigerGraph_root_dir>`) is a folder called `tigergraph` located in the tigergraph user's home directory, i.e., `/home/tigergraph/tigergraph`.
 
 The installation can be customized by running command-line options with the `install.sh` script:
 
 ==== Command-line options
 
-[,bash]
+[source,shell]
 ----
 # Command-line options for install.sh
 Usage:
