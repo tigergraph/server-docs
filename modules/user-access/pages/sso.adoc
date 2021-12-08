@@ -17,6 +17,7 @@ In order to use Single Sign-On , you need to perform three steps :
 . Provide information from your identity provider to enable TigerGraph Single Sign-On.
 . Create user groups with proxy rules to authorize Single Sign-On users.
 
+:sectnums!:
 == Before you begin
 * Ensure that you can access GraphStudio UI through a web browser using the URL: http://tigergraph-machine-honestname:14240
 ** If you enabled SSL connection, change `http` to `https`.
@@ -24,8 +25,8 @@ If you changed the Nginx port of the TigerGraph system, replace 14240 with the p
 * Ensure that you have xref:enabling-user-authentication.adoc#_enable_gsql_authentication[enabled GSQL authentication by changing the password of the default user].
 If you don't enable GSQL authentication, SSO configuration will not work and any user will be logged in automatically.
 
-
-== *Configure Identity Provider*
+:sectnums:
+== Configure Identity Provider
 :sectnums!:
 
 Below are detailed instructions for identity providers that we have verified.
@@ -42,8 +43,12 @@ After you finish configuring your identity provider, you will get the following:
 Follow https://developer.okta.com/docs/guides/build-sso-integration/saml2/create-your-app/[Okta's documentation to create an Application Integration] for your TigerGraph application.
 Below are the Assertion Consumer Service URL / Single sign on URL , and SP Entity ID required for this process:
 
-* Assertion Consumer Service URL/Single sign on URL: `http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
-* SP Entity ID URL: `http://<tigergraph-machine-hostname>:14240/gsqlserver/gsql/saml/meta`
+* Assertion Consumer Service URL/Single sign on URL:
+[literal]
+http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs
+* SP Entity ID URL:
+[literal]
+http://<tigergraph-machine-hostname>:14240/gsqlserver/gsql/saml/meta
 
 
 === Auth0
@@ -51,11 +56,13 @@ Below are the Assertion Consumer Service URL / Single sign on URL , and SP Entit
 . Follow the Auth0 documentation to https://auth0.com/docs/get-started/create-apps/single-page-web-apps[register TigerGraph as a Single-Page web application].
 . Follow the Auth0 documentation to https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider#configure-saml-sso-in-auth0[configure Auth0 as SAML Identity provider].
 You will need to enter the following information when following Auth0's guide:
-* Application Callback URL: `http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
+* Application Callback URL:
+[literal]
+http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
 * When downloading the certificate from Auth0, choose *`.cer`* format instead of `.pem` format.
 
 :sectnums:
-== *Enable Single Sign-On in TigerGraph*
+== Enable Single Sign-On in TigerGraph
 
 Having configured the identity provider and obtained the identity provider's SSO URL, entity ID and certificate, the next step is to provide the information to TigerGraph to enable single sign-on.
 
