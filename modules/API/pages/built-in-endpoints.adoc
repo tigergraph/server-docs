@@ -2080,7 +2080,7 @@ $ curl -X DELETE "https://crunch.i.tgcloud.io:9000/graph/CrunchBasePre_2013/edge
 
 `GET /gsqlserver/gsql/queryinfo`
 
-Returns metadata details about a query. In particular, it lists the input parameters and output `PRINT` statement syntax. *This endpoint exists on port 14240 and requests are sent to the GSQL server.* Therefore, you should provide authentication credentials in the request.
+Returns metadata details about a query. In particular, it lists the input parameters (in the form of a JSON array of JSON objects) and output `PRINT` statement syntax. *This endpoint exists on port 14240 and requests are sent to the GSQL server.* Therefore, you should provide authentication credentials in the request.
 
 ==== Sample request:
 
@@ -2125,11 +2125,17 @@ $ curl -u tigergraph:tigergraph -X GET \
       "SDIFF.size()": "int"
     }
   ],
-  "input": {
-    "uid": "string",
-    "uids": "set<string>",
-    "vtype": "string"
-  },
+  "input": [
+    {
+      "uid": "string"
+    },
+    {
+      "uids": "set<string>"
+    },
+    {
+      "vtype": "string"
+    }
+  ]
   "queryname": "to_vertex_setTest",
   "error": false,
   "message": "",
