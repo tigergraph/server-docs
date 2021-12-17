@@ -26,6 +26,9 @@ Failure in installing a subset of the queries in a single `INSTALL QUERY` comman
 === Reliability
 * Added Kafka protection to GSE to prevent message loss during high-volume data loading.
 
+=== Security
+* Masked AWS S3 secret from GSQL logs
+
 
 === Usability - GSQL
 * Added support for xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_container_variable[local container variables] in the GSQL Query Language.
@@ -62,6 +65,11 @@ Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-
 * Reduced system minimum free memory requirement for transactions
 * Increased the timeout limit for downloading, updating, and deleting the graph catalog
 * Fixed a bug that allowed non-privileged users being able to access GSQL output files through the Admin Portal
+* Increased timeout limit for file operations
+* Fixed an issue that led to cluster shrinking failure when instance as over 1000 queries
+* Disabled proxy buffering for /gsqlserver endpoints
+* Fixed an issue that led to backup and restore failures on Kubernetes deployments
+
 
 
 
