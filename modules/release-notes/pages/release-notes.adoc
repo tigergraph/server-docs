@@ -70,6 +70,16 @@ Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-
 * Fixed an issue that led to cluster shrinking failure when instance as over 1000 queries
 * Disabled proxy buffering for /gsqlserver endpoints
 * Fixed an issue that led to backup and restore failures on Kubernetes deployments
+* Fixed an issue with query-request memory tracking that in rare cases led to GPE segmentation fault
+* Fixed an issue that caused unexpected early query return when `getAttr()` has an invalid attribute
+* Fixed an issue that caused local base type variable to lose type inference after being overridden
+* Fixed an issue that caused `PER` clause to return unexpected results
+* Fixed an issue that produced unexpected output when a `WHERE` clause uses parentheses
+* Fixed an issue that caused `v.outdegree()` to return unexpected results
+* Fixed an issue that cause errors in accumulator conjunctive functions calls
+* Fixed an issue in GraphStudio that led to browser crash when dealing with huge map data columns
+* Fixed an issue where services don't automatically restart after updating license
+* Fixed an issue with GSQL syntax checker that threw an unexpected error when a SQL-like query uses built-in functions with multiple arguments
 
 
 
