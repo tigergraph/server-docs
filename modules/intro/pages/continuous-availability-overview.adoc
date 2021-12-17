@@ -31,6 +31,7 @@ TigerGraph Continuous Availability design provides the following
 * If a server goes offline for planned or unplanned reasons, TigerGraph's HA design with Automatic Failover will reroute work to the replica nodes of that server, maintaining continuous operation.
 * Higher levels of replication provide more throughput and resilience.
 
+[#_continuous_availability__definitions]
 === Continuous Availability - Definitions
 
 TigerGraph is based on an MPP architecture.
@@ -38,8 +39,8 @@ All services are distributed uniformly across the cluster.
 This requires data to be distributed across the cluster.
 There are two key concepts in the cluster design:
 
-- *Replication Factor*: Replication factor is a characteristic of the cluster design that will determine the number of copies of data that will be stored in the cluster. This is configurable and customers can choose at the time of installation.
-- *Partitioning Factor*: Partitioning factor is an internal TigerGraph characteristic of a TigerGraph cluster that determines how the data in the database will be distributed. Based on the nodes of the cluster size, TigerGraph will automatically pick a partitioning factor taking into account the replication factor.
+- *Replication Factor*: Replication factor is a characteristic of the cluster design that will determine the number of copies of data that will be stored in the cluster.This is configurable and customers can choose at the time of installation.
+- *Partitioning Factor*: Partitioning factor is an internal TigerGraph characteristic of a TigerGraph cluster that determines how the data in the database will be distributed.Based on the nodes of the cluster size, TigerGraph will automatically pick a partitioning factor taking into account the replication factor.
 
 image::cluster_arch.png[TigerGraph Cluster Dimensions = P X R]
 
