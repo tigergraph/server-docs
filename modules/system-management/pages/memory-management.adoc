@@ -1,9 +1,11 @@
 = Memory Management
 :description: How to management memory usage in TigerGraph.
 
-This page describes how to:
+This page explains the key factors that affect memory usage in TigerGraph, as well as how to:
 
-* Configure
+* Monitor memory usage
+* Manage query workload distribution
+* Configure memory thresholds
 
 == Memory usage key factors
 Below are the major factors that impact memory usage in TigerGraph:
@@ -16,9 +18,6 @@ Most database operations require more memory the more data you have.
 ** In a distributed cluster, a non-distributed query can be memory-intensive for the node where the query is run.
 See xref:gsql-ref:querying:distributed-query-mode.adoc[].
 ** Collection accumulators tend to use more memory than other variables.
-
-
-=== Queries
 
 == Monitor memory usage
 You can monitor memory usage by query and by machine.
@@ -51,8 +50,6 @@ I0415 01:33:42.716199  6553 gpr.cpp:241] Engine_MemoryStats|ldbc_snb::,196612.RE
 ----
 
 === Monitor system free memory percentage
-
-=== Monitor memory usage by node
 
 ==== Through Admin Portal
 If you have access to Admin Portal, you can monitor memory usage by node through the cluster monitoring tool in xref:gui:admin-portal:dashboard.adoc[Dashboard].
