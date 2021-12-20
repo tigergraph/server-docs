@@ -1,0 +1,104 @@
+= Memory Management
+:description: How to management memory usage in TigerGraph.
+
+This page describes how to:
+
+* Configure
+
+== Memory usage key factors
+Below are the major factors that impact memory usage in TigerGraph:
+
+* Data volume
+** The biggest factor that affects memory usage in TigerGraph is the amount of data you have.
+Most database operations require more memory the more data you have.
+* Queries
+** Queries that read or write a lot of data use more memory
+** In a distributed cluster, a non-distributed query can be memory-intensive for the node where the query is run.
+See xref:gsql-ref:querying:distributed-query-mode.adoc[].
+** Collection accumulators tend to use more memory than other variables.
+
+
+=== Queries
+
+== Monitor memory usage
+You can monitor memory usage by query and by machine.
+
+=== Monitor query memory usage
+GPE records memory usage by query at different stages of the query and saves it to `$(gadmin config get System.LogRoot)/gpe/log.INFO`.
+You can monitor how much memory a query is using by searching the log file for the request ID and filter for lines that contain `"QueryMem"`:
+
+[source,console]
+----
+$ grep -i <request_id> $(gadmin config get System.LogRoot)/gpe/log.INFO | grep -i "querymem"
+----
+
+You can also run a query first, and then run the following command immediately after to retrieve the most recent query logs and filter for `"QueryMem"`:
+
+[source,console]
+----
+$ tail -n 50 $(gadmin config get System.LogRoot)/gpe/log.INFO |
+    grep -i "querymem"
+----
+
+The logs show memory usage by the query at different stages of its execution.
+The number at the end of each line indicates the number of bytes of memory utilized by the query:
+
+[source.wrap,console]
+----
+0415 01:33:40.885433  6553 gpr.cpp:195] Engine_MemoryStats|ldbc_snb::,196612.RESTPP_1_1.1618450420870.N,NNN,15,0,0|MONITORING Step(1) BeforeRun[GPR][QueryMem]: 116656
+
+I0415 01:33:42.716199  6553 gpr.cpp:241] Engine_MemoryStats|ldbc_snb::,196612.RESTPP_1_1.1618450420870.N,NNN,15,0,0|MONITORING Step(1) AfterRun[GPR][QueryMem]: 117000
+----
+
+=== Monitor system free memory percentage
+
+=== Monitor memory usage by node
+
+==== Through Admin Portal
+If you have access to Admin Portal, you can monitor memory usage by node through the cluster monitoring tool in xref:gui:admin-portal:dashboard.adoc[Dashboard].
+
+==== Through Linux commands
+The following is a list of Linux commands to measure system memory and check for out-of-memory errors:
+
+* link:https://man7.org/linux/man-pages/man1/free.1.html[`free -h`] - check available memory on the node
+** Use with xref:ha:cluster-commands.adoc#_run_commands_on_multiple_nodes[`grun`] to check available memory on every node.
+* link:https://man7.org/linux/man-pages/man1/top.1.html[`top`] - interactively view CPU and memory details
+* link:https://man7.org/linux/man-pages/man1/dmesg.1.html[`dmesg -T] | grep -i “oom”` - check for out-of-memory errors
++
+[,console]
+----
+[Thu Feb  4 00:41:08 2021] google_osconfig invoked oom-killer: gfp_mask=0x201da, order=0, oom_score_adj=0 <1>
+[Thu Feb  4 00:41:08 2021]  [<ffffffffafdc208d>] oom_kill_process+0x2cd/0x490
+[Thu Feb  4 00:41:08 2021] [ pid ]   uid  tigergraph total_vm      rss nr_ptes swapents oom_score_adj name
+[Thu Feb  4 00:41:09 2021] [20183]  1004 20183 20200397   377046    5701        0             0 tg_dbs_restd
+[Thu Feb  4 00:41:09 2021] Out of memory: Kill process 20183 (tg_dbs_restd) score 239 or sacrifice child
+[Thu Feb  4 00:41:09 2021] Killed process 20183 (tg_dbs_restd), UID 1004, total-vm:80801588kB, anon-rss:1508400kB, file-rss:0kB, shmem-rss:0kB
+----
+<1> If you see a line that says something invoked oom-killer, it means the node ran out of memory.
+
+== Set global memory thresholds
+TigerGraph's Graph Processing Engine (GPE) has memory protection to prevent out-of-memory issues.
+There are three memory states:
+
+Healthy:: There is a healthy amount of free memory.
+All system operations run normally for best performance.
+Alert:: There is a shortage of free memory.
+TigerGraph's Graph Processing Engine (GPE) starts to slow down processing new requests to allow long-running queries to finish and release memory.
+Critical:: There is a critical shortage of free memory.
+TigerGraph's GPE starts to abort queries to ensure system stability.
+
+TigerGraph implements memory protection thresholds through the following environment variables.
+By default, the thresholds are only effective when a machine has more than 30 GB of total memory:
+
+`SysAlertFreePct`::
+The free memory threshold that causes TigerGraph to enter the Alert state.
+Default value is 30%.
+`SysMinFreePct`::
+The free memory threshold that causes TigerGraph to enter Critical state.
+Default value is 10%.
+
+WARNING: Before modifying the values for the thresholds, please consult mailto:support@tigergraph.com[TigerGraph Support].
+
+
+== Manage query workload
+On a distributed cluster, you can specify on which nodes you want a query to be run through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
