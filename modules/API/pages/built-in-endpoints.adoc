@@ -177,7 +177,16 @@ This endpoint does not take any parameters.
 
 `POST /ts3/api/datapoints`
 
-TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events. Many TigerGraph components will report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals. You can use this endpoint to read from TS3,  filtering for the data points you need by time (`when`, `from`, and `to`), component(`who`), metric(`what`) and location(`where`). Visualization of such metrics are available in Admin Portal - Dashboard - xref:3.2@gui:admin-portal:dashboard.adoc[Cluster Monitoring].
+TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events.
+Many TigerGraph components will report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals.
+You can use this endpoint to read from TS3. You can filter for the data points you need as follows:
+
+* time: `when`, `from`, and `to`
+* component: `who`
+* metric: `what`
+* location: `where`
+
+Visualization of such metrics are available in Admin Portal - Dashboard - xref:gui:admin-portal:dashboard.adoc[Cluster Monitoring].
 
 On a TigerGraph cluster, this endpoint is only present on the `m1` node.
 
@@ -208,7 +217,8 @@ directory
 started
 * `+qps+`: Number of requests per second by
 endpoint
-* `+servicestate+`: Whether or not the service is online. A value of `+0+` indicates that the service is offline while a value of `+1+` means the service is online`+connection+`: Number of open TCP connections.
+* `+servicestate+`: The state of the service, either online `+1+` or offline `+0+`
+* `+connection+`: Number of open TCP connections
 
 |`+who+` |No |Name of the component that reported the datapoint
 
@@ -217,7 +227,11 @@ endpoint
 
 ==== Sample requests
 
-In the sample request below, the filters in the query string include a timeframe starting at `1618957536` and ending at `1619023346`, and specifying that the response should only include CPU information:
+In the sample request below, three filters are used: `from`, `to` and `what`.
+
+The timeframe specified by `from` and `to` indicate start and end times of `1618957536` to `1619023346`.
+
+The `what` filter specifies that the response should only include `CPU` information:
 
 [source,console]
 ----
@@ -250,7 +264,7 @@ $ curl -X GET
 ]
 ----
 
-In the below example, the request asks for the 10 latest data points regarding memory usage:
+In the below example, `what` and `latest` are used. The request asks for the `10` latest data points regarding ``mem``ory usage:
 
 [source,console]
 ----
@@ -335,7 +349,7 @@ $ curl -X GET
 
 `+GET /statistics/{graph_name}+`
 
-This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` __**__parameter.The `seconds` parameter must be a positive integer less than or equal to 60.
+This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` parameter. Seconds are measured up to 60, so the `seconds` parameter must be a positive integer less than or equal to 60.
 
 ==== Sample request:
 
@@ -399,7 +413,7 @@ Each endpoint has the following attributes:
 * `AverageLatency` - the average latency of completed requests.
 * `MaxLatency` - the maximum latency of completed requests.
 * `MinLatency` - the minimum latency of completed requests.
-* `LatencyPercentile` - The latency distribution. The number of elements in this array depends on the `segments` ****parameter of this endpoint whose default value is 10, meaning the percentile range 0-100% will be divided into ten equal segments: 0%-10%, 11%-20%, etc.`Segments` ****must be [1, 100].
+* `LatencyPercentile` - The latency distribution. The number of elements in this array depends on the `segments` parameter of this endpoint whose default value is 10, meaning the percentile range 0-100% will be divided into ten equal segments: 0%-10%, 11%-20%, etc. `Segments` must be between 1 and 100.
 
 If there is no query sent in the past given seconds, an empty json will be returned.
 
@@ -414,7 +428,7 @@ If there is no query sent in the past given seconds, an empty json will be retur
 
 | `segments`
 | No
-| Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into.The value for this endpoint must be between 1 and 100 and has a default value of 10.
+| Integer that indicates the number of segments that the `LatencyPercentile` array in the response will be split into. The value for this endpoint must be between 1 and 100. The default value is 10.
 |===
 
 [#_show_service_status]
@@ -446,7 +460,7 @@ The endpoint requires a request body in the following format:
 It is a list of objects with keys `ServiceName`, and optionally `Partition` and `Replica`.
 <2> Required field.
 The name of the service to return status on.
-Below are the accepted values for the field and their corresponding services
+Below are the accepted values for the field and their corresponding services:
 * `"GPE"`:     GPE
 * `"GSE"`:     GSE
 * `"RESTPP"`:  RESTPP
@@ -508,7 +522,7 @@ The most important information is in the `ServiceStatus` and `ProcessState` fiel
 <1> The service descriptor for the status being returned.
 <2> The last recorded status of the service.
 <3> The last recorded state of Linux process behind the service.
-It's possible for a process to be running, but is not being served, and the service cannot respond to requests.
+It's possible for a process to be running, without being served or able to respond to requests.
 For example, when TigerGraph is starting up, GPE is in the "Warmup" state and cannot respond to requests, but the process is still running.
 
 
@@ -572,13 +586,12 @@ In TigerGraph, when new data is being loaded into the graph (such as new vertice
 |===
 |Name |Required |Description
 |`+threadnum+` |No |Number of threads used to execute the rebuild. If
-not specified, the number specified in line 185 of the `+.tg.cfg+` file
+not specified, the number specified in the `+.tg.cfg+` file
 (`+"RebuildThreadNumber"+`) in the home directory of the server on which
 TigerGraph is running will be used; it is set to 3 by default. The
 maximum value for this parameter is the number of vCPUs per node in your
 distributed system. If you are running a single-node server, the maximum
-is the number of vCPUs on that node. You can run `+lscpu+` in the
-command line of your Linux server and look in the `+CPU(s)+` column to
+is the number of vCPUs on that node. You can run `+lscpu+` in your Linux server command line and look in the `+CPU(s)+` column to
 view the number of vCPUs.
 
 |`+vertextype+` |No |Vertex type to perform the rebuild for. If not provided, the rebuild will be run for all the vertex types.
@@ -621,7 +634,7 @@ $ cat finished.summary.txt
 
 [.line-through]#`GET /deleted_vertex_check`#
 
-In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Storage Engine (GSE) might be out of sync on vertex deletion information. When this happens, some vertices might exist on one of the components, but not the other. Even though these errors are exceedingly rare, TigerGraph provides an endpoint that allows you to check the deleted vertices on GSE and GPE and see if they out of sync.
+In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Storage Engine (GSE) might be out of sync on vertex deletion information. When this happens, some vertices might exist on one of the components, but not the other. Even though these errors are exceedingly rare, TigerGraph provides an endpoint that allows you to check the deleted vertices on GSE and GPE to see if they are out of sync.
 
 The check passes if there are no discrepancies between the GSE and GPE in terms of deleted vertices. If there is a discrepancy, the check fails and the return result will contain the IDs of the deleted vertices that are not synced properly. If you are running TigerGraph on a distributed cluster, the check will be performed on each node of the cluster, and the endpoint will return a list containing the results of the check for every node.
 
@@ -631,7 +644,7 @@ The check passes if there are no discrepancies between the GSE and GPE in terms 
 |Name |Required |Description
 |`threadnum` |No |Integer that indicates the number of threads used to
 execute the deleted vertex check jobs. This parameter is optional and
-the default value is 6 if none is provided
+the default value is `6` if none is provided
 
 |`segid` |No |IDs of segments to perform the deleted vertex check for.
 If none is provided, the check will be performed on all segments.
@@ -641,18 +654,31 @@ If none is provided, the check will be performed on all vertex types.
 
 |`verbose` |No |Integer that indicates the level of detail in the return
 results. Here is a list of accepted values and their corresponding level
-of detail:`0` (default) : Only return whether the check passed and the
-list of unsynced vertex IDs`1`: In addition to the previous level, also
-return vertex count information `2`: In addition to the previous level,
-return vertex count information for every segment`4`: In addition to the
-previous level, also return the IDs of deleted vertices for every
+of detail:
+
+`0` (default) : Only return whether the check passed and the
+list of unsynced vertex IDs
+
+`1`: In addition to the previous level, also
+return vertex count information
+
+`2`: In addition to the previous level,
+return vertex count information for every segment
+
+`4`: In addition to the previous level, also return the IDs of deleted vertices for every
 segment
 
 |`log` |No |Integer that indicates the log level of the deleted vertex
 check. This log is not returned in the endpoint’s HTTP response, but is
 printed to the logs of the GPE component at
-`/tigergraph/log/gpe/log.INFO`:`0` (default): Report brief log for the
-check as a whole`1`: Report logs for each segment`2`: Report additional
+`/tigergraph/log/gpe/log.INFO`
+
+`0` (default): Report brief log for the
+check as a whole
+
+`1`: Report logs for each segment
+
+`2`: Report additional
 logs on the obtained deleted ID list
 |===
 
@@ -784,7 +810,7 @@ curl --user example_username:example_password -X GET "localhost:9000/requesttoke
 | Name of the graph that the token will be valid for.
 |===
 
-Users can use either `secret` or their username and password to generate a token. If the user does not supply a secret and chooses to use their username and password instead, then the parameter `graph` becomes required.
+Users can use either `secret` or their username and password to generate a token. If no secret is supplied and the user chooses to use their username and password instead, then the parameter `graph` becomes required.
 
 === Request a token (`POST`)
 
@@ -890,7 +916,9 @@ This endpoint takes a token and its associated secret, and deletes the token.
 
 This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:3.2@gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
-If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename varibale at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.  To provide data for a filename variable, put the data in the request body and use the `filename` parameter (explained in the parameter table below) to match the variable name defined in the loading job.
+If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename variable at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.
+
+To provide data for a filename variable, put the data in the request body and use the `filename` parameter (explained in the parameter table below) to match the variable name defined in the loading job.
 
 ==== Request body:
 
@@ -1024,25 +1052,25 @@ Here is a list of functions supported by this endpoint and their corresponding d
 * `stat_vertex_attr`
  ** Returns the minimum, maximum, and average values of the given vertex type's `int`, `uint`, `float` and `double` attributes, and the count of `true` and `false` of a boolean attribute.
  ** Data payload fields:
-  *** `"function": "stat_vertex_attr"`: This specifies that the function to run is``stat_vertex_attr``.
-  *** `"type"`: The vertex type whose attribute values to report on. Required field. It also accepts the value `*` (wild card), in which case, all vertex types are included.
+  *** `"function": "stat_vertex_attr"`: This specifies that the function to run is `stat_vertex_attr`.
+  *** `"type"`: The vertex type whose attribute values to report on. Required field. It also accepts the wildcard value `*`, in which case, all vertex types are included.
 * `stat_edge_attr`
  ** Returns the minimum, maximum, and average values of the given edge type's `int`, `uint`, `float` and `double` attributes, and the count of `true` and `false` of a boolean attribute.
  ** Data payload fields:
   *** `"function": stat_edge_attr`
-  *** `"type"`: The edge type whose attribute values to report on. Required field. It also accepts the value `*` , in which case all edge types are included.
+  *** `"type"`: The edge type whose attribute values to report on. Required field. It also accepts the wildcard value `*` , in which case all edge types are included.
   *** `"from_type"`: Optional. The source vertex type of the edges to report on.
   *** `"to_type"`: Optional. The target vertex type of the edges to report on.
 * `stat_vertex_number`
  ** Returns the number of vertices of the given vertex type.
  ** Data payload fields:
   *** `"function"`:  `"stat_vertex_number"`
-  *** `"type"`: Required field. The vertex type of the vertices to count. It also accepts the value `*` (wild card), in which case, all vertex types are included.
+  *** `"type"`: Required field. The vertex type of the vertices to count. It also accepts the wildcard value `*`, in which case, all vertex types are included.
 * `stat_edge_number`
  ** Returns the number of edges of the given edge type
  ** Data payload fields:
   *** `"function": "stat_edge_number"`
-  *** `"type"`: Required field. The edge type of the edges to count. It also accepts the value `*` , in which case all edge types are included.
+  *** `"type"`: Required field. The edge type of the edges to count. It also accepts the wildcard value `*`.
   *** `"from_type"`: Optional. The source vertex type of the edges to report on.
   *** `"to_type"`: Optional. The target vertex type of the edges to report on.
 
