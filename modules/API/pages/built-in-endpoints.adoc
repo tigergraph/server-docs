@@ -1194,7 +1194,8 @@ No parameters.
 
 `GET /gsqlserver/gsql/schema`
 
-Returns schema details about a vertex type, an edge type, or the entire graph schema. This is a GSQL Server request sent to port 14240, and authentication credentials need to be provided.
+Returns schema details about a vertex type, an edge type, or the entire graph schema. This is a GSQL Server request sent to port 14240.
+Authentication credentials need to be provided.
 
 ==== Sample request:
 
@@ -1248,14 +1249,14 @@ $ curl -u tigergraph:tigergraph \
 }
 ----
 
-_*Vertex schema object*_ *fields:*
+*Vertex schema object fields:*
 
 * *`Name`*: the vertex type name, same as the input parameter "type"
 * *`PrimaryId`*: details about the primary id
 * *`Attributes`*: details about each attribute, listed in order
 * *`Config`*: details about global properties of the vertex type
 
-_*Edge schema object*_ *fields:*
+*Edge schema object fields:*
 
 * *`Name`*: the edge type name, same as the input parameter "type"
 * *`FromVertexTypeName`*: source vertex type name
@@ -1264,7 +1265,7 @@ _*Edge schema object*_ *fields:*
 * *`IsDirected`*: whether the edge is directed
 * *`Config`*: additional details about global properties of the edge type
 
-_*Graph schema object*_ *fields:*
+*Graph schema object fields:*
 
 * *`GraphName`*: the graph name, same as the input parameter "graph"
 * *`VertexTypes`*: an array of _vertex schema objects_. Each vertex schema object is exactly the JSON output if that specific vertex type had been specified.
@@ -1310,7 +1311,7 @@ _*Graph schema object*_ *fields:*
 
 | `graph`
 | Yes
-| The name of the graph whose schema to retrieve.
+| The name of the graph from which the schema will be retrieved.
 
 | `type`
 | No
@@ -1325,9 +1326,9 @@ This endpoint upserts vertices and/or edges into a graph. To upsert means that i
 
 ==== Atomic upsert transaction
 
-By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If something goes wrong during the process of the request,  the request data can be partially consumed by the database.
+By default, the `+POST /graph/{graph_name}+` endpoint is not atomic, meaning it is not all-or-nothing. If something goes wrong while the request is being made,  the request data can be partially received by the database.
 
-You can append a query string parameter `atomic_post` to the URL of the request and set its value to true to make the request an atomic transaction, which means that updates to the database contained in the request are all-or-nothing. Either all changes are successful, or none is successful.
+You can append a query string parameter `atomic_post` to the URL of the request and set its value to true to make the request an atomic transaction, which means that updates to the database contained in the request are all-or-nothing. Either all changes are successful, or none are successful.
 
 For example, suppose we have the following request to upsert two vertices:
 
@@ -1378,11 +1379,10 @@ acknowledged the POST `"none"`: request will return immediately after
 RESTPP processed the POST.
 Default value is false.
 
-|`new_vertex_only` |No |If `new_vertex_only` is set to true, the request will only insert new
-vertices and not update existing ones.
+|`new_vertex_only` |No |If `new_vertex_only` is set to true, the request will only insert new vertices and not update existing ones.
 Default value is false.
 
-|`vertex_must_exist` |No |If `vertex_must_exist` true, the request will only insert an *edge* if both the `FROM` and
+|`vertex_must_exist` |No |If `vertex_must_exist` is true, the request will only insert an *edge* if both the `FROM` and
 `TO` vertices of the edge already exist.
 If the value is false, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
 Note that this parameter does not affect vertices.
@@ -1624,11 +1624,22 @@ $ curl -X POST --data-binary @add_id6.json \
 If we set the value of `vertex_must_exist` parameter to `true`, the endpoint will only insert edges whose endpoint vertices both exist. This includes the vertices being inserted in the same request.
 Therefore, inserting the content of `add_id6.json` to an empty graph would cause the edges to be rejected:
 
-[source,bash]
+==== Example:
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
 ----
-$ curl -X POST --data-binary @add_id6.json \
-"http://localhost:9000/graph?vertex_must_exist=true"
-
+$ curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph?vertex_must_exist=true"
+----
+--
+Response::
++
+--
+[source,json]
+----
 {
   "version": {
     "edition": "enterprise",
@@ -1653,7 +1664,7 @@ $ curl -X POST --data-binary @add_id6.json \
   "code": "REST-0003"
 }
 ----
-
+====
 == Vertices
 
 [NOTE]
@@ -1669,14 +1680,25 @@ To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_da
 
 `+GET /graph/{graph_name}/vertices/{vertex_type}+`
 
-This endpoint returns all vertices having the type _`vertex_type`_ in a graph. __
+This endpoint returns all vertices having the type _`vertex_type`_ in a graph.
 
 ==== Sample request:
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
 
-[source,javascript]
 ----
 curl -X GET "http://localhost:9000/graph/socialNet/vertices/User"
-
+----
+--
+Response::
++
+--
+[source,javascript]
+----
 {
   "version": {
     "api": "v2",
@@ -1699,7 +1721,7 @@ curl -X GET "http://localhost:9000/graph/socialNet/vertices/User"
   ]
 }
 ----
-
+====
 ==== Parameters
 
 |===
@@ -1734,13 +1756,24 @@ curl -X GET "http://localhost:9000/graph/socialNet/vertices/User"
 
 `+GET /graph/{graph_name}/vertices/{vertex_type}/{vertex_id}+`
 
-This endpoint will return a single vertice by its vertex ID.
+This endpoint will return a single vertex by its vertex ID.
 
 ==== Sample request:
-
-[source,javascript]
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:9000/graph/socialNet/vertices/User/id1"
+----
+--
+Response::
++
+--
+[source,javascript]
+----
 
 {
   "version": {
@@ -1758,7 +1791,7 @@ curl -X GET "http://localhost:9000/graph/socialNet/vertices/User/id1"
   ]
 }
 ----
-
+====
 ==== Parameters:
 
 |===
@@ -1780,13 +1813,18 @@ curl -X GET "http://localhost:9000/graph/socialNet/vertices/User/id1"
 This endpoint deletes vertices by their vertex type. The delete operation is a cascading deletion. If a vertex is deleted, then all of the edges connected to it are automatically deleted as well.
 
 ==== Sample request:
-
-The response object will contain a `"deleted_vertices"` field that indicates the number of vertices that were deleted
-
-[source,bash]
+====
+The response object will contain a `"deleted_vertices"` field that indicates the number of vertices that were deleted.
+[tabs]
+--
+Request::
+[source.wrap,bash]
 ----
 curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User"
-
+----
+--
+Reponse::
+[source.wrap,javascript]
 {
   "version": {
     "edition": "enterprise",
@@ -1801,7 +1839,7 @@ curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User"
   }
 }
 ----
-
+====
 ==== Parameters
 [width="100%",cols="15%,10%,75%",options="header",]
 |===
@@ -1830,7 +1868,7 @@ list in order. Add `"-"` in front of the attribute to sort by that
 attribute in descending order.
 
 |`timeout` |No |Integer that specifies the number of seconds after which
-the query will time out. If the parameter is set to 0 or isn’t provided,
+the query will time out. If the parameter is set to `0` or isn’t provided,
 the system-wide endpoint timeout setting is applied.
 |===
 
@@ -1867,11 +1905,21 @@ curl -X DELETE "http://localhost:9000/graph/poc_graph/delete_by_type/vertices/pe
 `+DELETE /graph/{graph_name}/vertices/{vertex_type}/{vertex_id}+`
 
 ==== Sample request:
-
-[source,bash]
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
 ----
 curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User/id1"
-
+----
+--
+Response::
++
+--
+[source, javascript]
+----
 {
   "version": {
     "edition": "enterprise",
@@ -1886,7 +1934,7 @@ curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User/id1"
   }
 }
 ----
-
+====
 ==== Parameters:
 
 |===
@@ -2074,11 +2122,16 @@ Use `"_"` for `edge_type` in the URL to permit any edge type.
 ====
 
 ==== Sample request:
-
-[source,php]
+[tabs]
+====
+Request::
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Video?limit=2
-
+----
+Response::
+[source,json]
+----
 {
   "version": {
     "api": "v2",
@@ -2114,7 +2167,7 @@ curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Vi
   ]
 }
 ----
-
+====
 ==== Parameters:
 
 |===
@@ -2126,7 +2179,7 @@ curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Vi
 
 | `not_wildcard`
 | No
-| Boolean value that indicates whether or not `"_"` supplied in the endpoint URL is a wildcard. If the parameter is true, `"_"` is interpreted literally to select only edges with edge type name equal to underscore.
+| Boolean value that indicates whether or not `"\_"` supplied in the endpoint URL is a wildcard. If the parameter is true, `"_"` is interpreted literally to select only edges with edge type name equal to underscore.
 
 | `select`
 | No
@@ -2159,11 +2212,15 @@ GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type
 This endpoint returns the edge of a specified type between a source vertex and a target vertex.
 
 ==== Sample request:
-
+[tabs]
+====
+Request::
 [source,bash]
 ----
 curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Video/2"
-
+----
+Response::
+[source, json]
 {
   "version": {
     "api": "v2",
@@ -2186,7 +2243,7 @@ curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Vi
     }
    ]
  }
-----
+====
 
 ==== Parameters:
 
@@ -2212,12 +2269,15 @@ DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_t
 Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
 
 ==== Sample request
-
-[source,bash]
+[tabs]
+====
+Request::
+[source.wrap,bash]
 ----
 $ curl -X DELETE "https://crunch.i.tgcloud.io:9000/graph/CrunchBasePre_2013/edges/person/p:23601/work_for_company/company/c:14478"
-
-# Response
+----
+Response::
+[source, json]
 {
   "version": {
     "edition": "enterprise",
@@ -2233,7 +2293,7 @@ $ curl -X DELETE "https://crunch.i.tgcloud.io:9000/graph/CrunchBasePre_2013/edge
     }
   ]
 }
-----
+====
 
 ==== Parameters:
 
@@ -2254,12 +2314,15 @@ $ curl -X DELETE "https://crunch.i.tgcloud.io:9000/graph/CrunchBasePre_2013/edge
 Returns metadata details about a query. In particular, it lists the input parameters and output `PRINT` statement syntax. *This endpoint exists on port 14240 and requests are sent to the GSQL server.* Therefore, you should provide authentication credentials in the request.
 
 ==== Sample request:
-
-[source,gsql]
+[tabs]
+====
+Request::
+[source.wrap,bash]
 ----
-$ curl -u tigergraph:tigergraph -X GET \
-"http://localhost:14240/gsqlserver/gsql/queryinfo?graph=workNet&query=to_vertex_setTest"
-
+$ curl -u tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/queryinfo?graph=workNet&query=to_vertex_setTest"
+----
+Response::
+[source,json]
 {
   "output": [
     {
@@ -2310,7 +2373,7 @@ $ curl -u tigergraph:tigergraph -X GET \
     "api": "V2"
   }
 }
-----
+====
 
 The JSON response object contains three fields:
 
@@ -2357,11 +2420,11 @@ When using a `GET` request to run an installed query, the query parameters are x
 |Set or bag of primitives |Assign multiple values to the same parameter
 name. |A set `p1` of integers: `**p1=1&p1=5&p1=10**`
 
-|`VERTEX<type>` |Use the ID of the vertex:`parameterName=vertex_id` |A
+|`VERTEX<type>` |Use the ID of the vertex: `parameterName=vertex_id` |A
 vertex with parameter name `vp` and an ID of person2: `**vp=person2**`
 
-|`VERTEX`(type not pre-specified) |Use two query string
-parameters**:**`parameterName=vertex_id\'\'parameterName.type=vertex_type`
+|`VERTEX` (type not pre-specified) |Use two query string
+parameters**:** `parameterName=vertex_id\'\'parameterName.type=vertex_type`
 |A vertex with parameter name `va` , type `person` and and ID
 `person1`:`va=person1&va.type=person`
 
@@ -2369,7 +2432,7 @@ parameters**:**`parameterName=vertex_id\'\'parameterName.type=vertex_type`
 `SET` or `BAG` parameter name. |A set parameter named `vp` of vertices
 of type person:`vp=person3&vp=person4`
 
-|Set or bag of `VERTEX`(type not pre-specified) |The `SET` or `BAG` must
+|Set or bag of `VERTEX` (type not pre-specified) |The `SET` or `BAG` must
 be treated as an array. A vertex ID and type must be provided for the
 vertex element at each index. |A set parameter named `vp` of
 vertices:`vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
@@ -2377,7 +2440,7 @@ vertices:`vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
 
 ==== Specify replica
 
-If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range one to the replication factor of the cluster. If you supply a invalid value for the header, the request will return an error.
+If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range `[1 - (cluster replication factor)]`. If you supply a invalid value for the header, the request will return an error.
 
 ==== Specify thread limit
 
@@ -2411,7 +2474,7 @@ curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom
 
 `+POST /query/{graph_name}/{query_name}+`
 
-Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON. This is especially helpful when the query takes complex parameters.
+Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON format. This is especially helpful when the query takes complex parameters.
 
 ==== Parameters
 
@@ -2465,9 +2528,9 @@ For example, if you have a cluster of three nodes, each with 8 vCPUs, then a que
 
 The query in this sample request takes a parameter of type `VERTEX<person>`:
 
-[source,bash]
+[source.wrap,bash]
 ----
-curl -X POST -d '{"p":{"id":"Tom","type":"person"}}' \
+curl -X POST -d '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
 
 # Specify that the query run on the first replica
@@ -2475,12 +2538,11 @@ curl -X POST -d -H "GSQL-REPLICA: 2" '{"p":{"id":"Tom","type":"person"}}' \
 "http://localhost:9000/query/social/hello"
 
 # Specify that the query run on the primary cluster
-curl -X POST -d -H "GSQL-REPLICA: 1" '{"p":{"id":"Tom","type":"person"}}' \
+curl -X POST -d -H "GSQL-REPLICA: 1" '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
 
-# Specify that the query run on
-curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' \
-"http://localhost:9000/query/social/hello"
+# Specify that the query run with a limit of 4 threads
+curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
 ----
 
 [NOTE]
@@ -2506,11 +2568,9 @@ When running an interpreted query through this endpoint, the query parameters sh
 
 ==== Sample request:
 
-[source,javascript]
+[source.wrap,bash]
 ----
-curl --fail -u <my_username>:<my_password> -X POST \
-"http://localhost:14240/gsqlserver/interpreted_query?a=10" \
--d 'INTERPRET QUERY (INT a) FOR GRAPH gsql_demo {
+curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsqlserver/interpreted_query?a=10" -d 'INTERPRET QUERY (INT a) FOR GRAPH gsql_demo {
     PRINT a;
  }'
 ----
@@ -2522,11 +2582,16 @@ curl --fail -u <my_username>:<my_password> -X POST \
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 
 ==== Sample request:
-
-[source,bash]
+[tabs]
+====
+Request::
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:9000/showprocesslist/poc_graph" | jq .
-
+----
+Response::
+[source,json]
+----
 {
   "version": {
     "edition": "enterprise",
@@ -2552,7 +2617,7 @@ curl -X GET "http://localhost:9000/showprocesslist/poc_graph" | jq .
   "code": "REST-0000"
 }
 ----
-
+====
 ==== Parameters:
 
 No Parameters.
@@ -2564,11 +2629,16 @@ No Parameters.
 This endpoint safely aborts a selected query by ID or all queries of an endpoint by endpoint URL of a graph.
 
 ==== Sample request:
-
-[source,graphql]
+[tabs]
+====
+Request::
+[source,bash]
 ----
 curl -X GET "localhost:9000/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1561401340785.N&requestid=16973833.RESTPP_1_1.1561401288421.N"
-
+----
+Response::
+[source,json]
+----
 {
   "version": {
     "edition": "enterprise",
@@ -2594,7 +2664,7 @@ curl -X GET "localhost:9000/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1
   "code": "REST-0000"
 }
 ----
-
+====
 ==== Parameters:
 
 |===
@@ -2606,7 +2676,7 @@ curl -X GET "localhost:9000/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1
 
 | `url`
 | No
-| The endpoint whose running queries to abort. You must specify the base of the endpoint's URL, but then use a wildcard to allow for different parameters. For example, to abort all running queries for the endpoint `/sleepgpe`, use `url=/sleepgpe.*`
+| The endpoint on which to abort running queries. You must specify the base of the endpoint's URL, but then use a wildcard to allow for different parameters. For example, to abort all running queries for the endpoint `/sleepgpe`, use `url=/sleepgpe.*`
 |===
 
 === Check query status (Detached Mode)
@@ -2616,11 +2686,16 @@ curl -X GET "localhost:9000/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1
 This endpoint allows you to check the status of a query run in xref:3.2@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
 ==== Sample request:
-
-[source,bash]
+[tabs]
+====
+Request::
+[source.wrap,bash]
 ----
 $ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&requestid=4.RESTPP_1_1.1599672031541.N"
-
+----
+Response::
+[source,json]
+----
 {
   "version": {
     "edition": "enterprise",
@@ -2639,7 +2714,7 @@ $ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&reques
   }]
 }
 ----
-
+====
 |===
 | *Field* | *Description*
 
@@ -2656,7 +2731,7 @@ $ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&reques
 | The query ID associated with the given query status JSON object.
 
 | `expirationTime`
-| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the xref:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
+| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the xref:intro.adoc#_gsql_query_timeout[GSQL-TIMEOUT] header.
 
 | `elapsedTime`
 | Elapsed real time of the given query measured in milliseconds. For completed queries, the value shows the total runtime of the request. For ongoing queries, it shows the amount of time taken so far.
@@ -2680,7 +2755,7 @@ object.
 
 |`expirationTime` |The timestamp for when the given query times out. The
 default timeout limit is 16 seconds and can be set using
-thehttps://docs.tigergraph.com/v/3.2/dev/restpp-api/intro#gsql-query-timeout[`GSQL-TIMEOUT`]
+the xref:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`]
 header.
 
 |`elapsedTime` |Elapsed real time of the given query measured in
@@ -2696,11 +2771,16 @@ so far.
 This endpoint allows you to check the results of queries run in Detached Mode if they have finished running. If the query is still running, the endpoint will respond with an error and a message saying `"Unable to retrieve result for query <requestid>"`.  Ensure that the query is finished before checking its result.
 
 ==== Sample request:
-
-[source,gsql]
+[tabs]
+====
+Request::
+[source.wrap,bash]
 ----
 $ curl -s -X GET curl -s -X GET "http://localhost:9000/query_result?requestid=196611.RESTPP_1_1.1630601692834.N"
-
+----
+Response::
+[source,json]
+----
 {
   "error": false,
   "message": "",
@@ -2716,7 +2796,7 @@ $ curl -s -X GET curl -s -X GET "http://localhost:9000/query_result?requestid=19
   }]}]
 }
 ----
-
+====
 ==== Parameters:
 
 |===
@@ -2737,10 +2817,16 @@ Each REST endpoint reads a JSON-formatted payload that describes the input param
 
 ==== Source and target vertices
 
-Each endpoint must have either a *source* or *sources* key and either a *target* or *targets* parameter. The source and target parameters describe a single vertex. The format for a vertex object is as follows: `{"type" : "<vertex_type_name>", "id" : "<vertex_id>"}.`  The sources and targets parameters are JSON arrays containing a list of vertex objects.
+Each endpoint must have either a *source* or *sources* key and either a *target* or *targets* parameter. The source and target parameters describe a single vertex. The format for a vertex object is as follows:
+
+`{"type" : "<vertex_type_name>", "id" : "<vertex_id>"}.`
+
+The sources and targets parameters are JSON arrays containing a list of vertex objects.
 
 *Filters* +
-The payload may also have an array of filter conditions, to restrict the vertices or edges in the paths. Each individual filter is a JSON object which describes a condition on one vertex type or edge type.  A filter object has one or two key-value pairs: `{"type": "<vertex_or_edge_type>", "condition": "<attribute_condition>"}`
+The payload may also have an array of filter conditions, to restrict the vertices or edges in the paths. Each individual filter is a JSON object which describes a condition on one vertex type or edge type.  A filter object has one or two key-value pairs:
+
+`{"type": "<vertex_or_edge_type>", "condition": "<attribute_condition>"}`
 
 * `"type":` the vertex type or edge type to be filtered
 * `"condition"` (optional): a boolean expression on one attribute of the given vertex type or edge type. "AND" and "OR" may be used to make compound expressions.
@@ -2757,13 +2843,13 @@ Note that all filtering conditions in *`vertexFilters`* and *`edgeFilters`* are 
 
 ==== Output
 
-The JSON output is a list of vertices and a list of edges. Each vertex and each edge is listed in full, with all attributes.  The collections of vertices and edges are not in path order.
+The JSON output is a list of vertices and a list of edges. Each vertex and each edge is listed in full with all attributes.  The collections of vertices and edges are not in path order.
 
 === Find shortest path
 
 `+POST /shortestpath/{graph_name}+`
 
-This endpoint takes a source vertex or a set of source vertices, a target vertex or a set of target vertices, and returns the shortest path between the source and the target. If the source is a set of vertices, the resulting path will begin with one of the vertices in the set. If the target is a set of vertices, the resulting path will end with one of the vertices in the set.
+This endpoint takes a source vertex or a set of source vertices and a target vertex or a set of target vertices. It returns the shortest path between the source and the target. If the source is a set of vertices, the resulting path will begin with one of the vertices in the set. If the target is a set of vertices, the resulting path will end with one of the vertices in the set.
 
 ==== Request body:
 
@@ -2798,8 +2884,12 @@ This endpoint expects a request body that describes the source and target vertex
 |===
 
 ==== Sample request:
-
-[source,bash]
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
 ----
 curl -s -X POST "http://localhost:9000/shortestpath/movieNet" \
 -d '{
@@ -2808,9 +2898,14 @@ curl -s -X POST "http://localhost:9000/shortestpath/movieNet" \
   "edgeFilters":[{"type":"User_Video","condition":"rating > 5 and date_time > 1000"}],
   "maxLength":4
 }'
-
-# Result is an array of vertex json objects and edge json objects,
-# describing the subgraph for all found vertices and edges.
+----
+--
+Response::
+Result is an array of vertex json objects and edge json objects describing the subgraph for all found vertices and edges.
++
+--
+[source, json]
+----
 {
   "version": { "edition": "developer", "api": "v2", "schema": 0 },
   "error": false,
@@ -2838,7 +2933,7 @@ curl -s -X POST "http://localhost:9000/shortestpath/movieNet" \
   ]
 }
 ----
-
+====
 ==== Parameters:
 
 |===
@@ -2908,23 +3003,31 @@ The current implementation of this endpoint will include paths with loops. Since
 
 ==== Sample request:
 
-The example below requests all paths between the source vertex set {Video 0} and the target vertex set {AttributeTag "action"}, up to maximum length 3. The path may only contain Video vertices where `year >= 1984`. The result includes 3 paths: +
+The example below requests all paths between the source vertex set `{Video 0}` and the target vertex set `{AttributeTag "action"}`, up to maximum length `3`. The path may only contain Video vertices where `year >= 1984`. The result includes 3 paths: +
 AttrributeTag "action"  --  Video 0 +
 AttrributeTag "action"  --  Video 3 -- VidUser 4 -- Video 0 +
 AttrributeTag "action"  --  Video 2 -- VidUser 0 -- Video 0
-
-[source,bash]
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
 ----
-curl -s -X POST "http://localhost:9000/allpaths/movieNet" \
--d '{
+curl -s -X POST "http://localhost:9000/allpaths/movieNet" -d '{
   "sources":[{"type":"Video","id":"0"}],
   "targets":[{"type": "AttributeTag", "id":"action"}],
   "vertexFilters":[{"type":"Video", "condition":"year >= 1984"}],
   "maxLength": 3
 }'
-
-# Result is an array of vertex json objects and edge json objects,
-# indicating the subgraph for all found vertices and edges.
+----
+--
+Response::
+The result is an array of vertex json objects and edge json objects indicating the subgraph for all found vertices and edges.
++
+--
+[source, json]
+----
 {
   "version": { "edition": "developer", "api": "v2", "schema": 0 },
   "error": false,
@@ -2980,5 +3083,6 @@ curl -s -X POST "http://localhost:9000/allpaths/movieNet" \
   ]
 }
 ----
+====
 
 Other versions of pathfinding algorithms are available in the xref:graph-ml:intro:overview.adoc[GSQL Graph Algorithm Library].
