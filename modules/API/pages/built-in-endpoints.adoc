@@ -531,15 +531,12 @@ For example, when TigerGraph is starting up, GPE is in the "Warmup" state and ca
 ====
 Request::
 +
---
 [source.wrap,console]
 ----
 $ curl -X POST http://localhost:14240/informant/current-service-status -d '{ "ServiceDescriptors":  [{ "ServiceName": "gpe","Partition": 2, "Replica": 1}]}' | jq
 ----
---
 Response::
 +
---
 [source,json]
 ----
 {
@@ -571,7 +568,6 @@ Response::
   ]
 }
 ----
---
 ====
 
 === Rebuild graph engine
@@ -1629,15 +1625,13 @@ Therefore, inserting the content of `add_id6.json` to an empty graph would cause
 ====
 Request::
 +
---
+
 [source.wrap,bash]
 ----
 $ curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph?vertex_must_exist=true"
 ----
---
 Response::
 +
---
 [source,json]
 ----
 {
@@ -1687,16 +1681,13 @@ This endpoint returns all vertices having the type _`vertex_type`_ in a graph.
 ====
 Request::
 +
---
 [source.wrap,bash]
 
 ----
 curl -X GET "http://localhost:9000/graph/socialNet/vertices/User"
 ----
---
 Response::
 +
---
 [source,javascript]
 ----
 {
@@ -1763,15 +1754,12 @@ This endpoint will return a single vertex by its vertex ID.
 ====
 Request::
 +
---
 [source.wrap,bash]
 ----
 curl -X GET "http://localhost:9000/graph/socialNet/vertices/User/id1"
 ----
---
 Response::
 +
---
 [source,javascript]
 ----
 
@@ -1816,13 +1804,11 @@ This endpoint deletes vertices by their vertex type. The delete operation is a c
 ====
 The response object will contain a `"deleted_vertices"` field that indicates the number of vertices that were deleted.
 [tabs]
---
 Request::
 [source.wrap,bash]
 ----
 curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User"
 ----
---
 Reponse::
 [source.wrap,javascript]
 {
@@ -1838,7 +1824,6 @@ Reponse::
     "deleted_vertices": 3
   }
 }
-----
 ====
 ==== Parameters
 [width="100%",cols="15%,10%,75%",options="header",]
@@ -1909,15 +1894,12 @@ curl -X DELETE "http://localhost:9000/graph/poc_graph/delete_by_type/vertices/pe
 ====
 Request::
 +
---
 [source.wrap,bash]
 ----
 curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User/id1"
 ----
---
 Response::
 +
---
 [source, javascript]
 ----
 {
@@ -2889,7 +2871,6 @@ This endpoint expects a request body that describes the source and target vertex
 ====
 Request::
 +
---
 [source.wrap,bash]
 ----
 curl -s -X POST "http://localhost:9000/shortestpath/movieNet" \
@@ -2900,11 +2881,9 @@ curl -s -X POST "http://localhost:9000/shortestpath/movieNet" \
   "maxLength":4
 }'
 ----
---
 Response::
 Result is an array of vertex json objects and edge json objects describing the subgraph for all found vertices and edges.
 +
---
 [source, json]
 ----
 {
@@ -3012,7 +2991,6 @@ AttrributeTag "action"  --  Video 2 -- VidUser 0 -- Video 0
 ====
 Request::
 +
---
 [source.wrap,bash]
 ----
 curl -s -X POST "http://localhost:9000/allpaths/movieNet" -d '{
@@ -3022,11 +3000,9 @@ curl -s -X POST "http://localhost:9000/allpaths/movieNet" -d '{
   "maxLength": 3
 }'
 ----
---
 Response::
 The result is an array of vertex json objects and edge json objects indicating the subgraph for all found vertices and edges.
 +
---
 [source, json]
 ----
 {
