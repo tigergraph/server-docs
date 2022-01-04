@@ -25,45 +25,44 @@ TigerGraph's API endpoints accept parameters in URL encoding, which is straightf
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
 |Parameter type |Description |Example
-|`+SET+` or `+BAG+` of primitives |Assign multiple values to the same
-parameter name. |A `+SET<INT> +`parameter named `+p1 +`is assigned 3
-integers: +
- +
-*`+p1=1&p1=5&p1=10+`*
 
-|`+VERTEX+` with a defined type |Use the primary key of the vertex. a|
-<b></b>
+|`SET` or `BAG` of primitives
+|Assign multiple values to the same parameter name.
+|A `SET<INT>` parameter named `p1` is assigned three integers:
 
-A `+VERTEX<person>+` parameter named`+vp+` is assigned a vertex whose ID
-is `+"person2"+`: +
-+
-*`+vp=person2+`*
+*`p1=1&p1=5&p1=10`*
 
-|`+VERTEX+` without a defined type |Use
-`+<parameter_name>.<parameter_type> +`to specify the type of the
-parameter, and also provide the primary key of the vertex. a|
-<b></b>
+|`VERTEX` with a defined type
+|Use the primary key of the vertex.
+|A `VERTEX<person>` parameter named `vp` is assigned a vertex
+whose ID is `"person1"`: +
 
-A `+VERTEX+` parameter named `+va+` is assigned a `+person+` type vertex
-whose ID is`+"person1"+` +
-+
-*`+va=person1&va.type=person+`*
+*`vp=person1`*
 
-|`+SET+` or `+BAG+` of vertices with a defined type |Same as a `+SET+`
-or `+BAG+` of primitives, where the value for each element is the
-primary key of the vertex. |A `+SET<VERTEX<person>>+` parameter named
-`+vp+` is assigned two vertices with IDs `+person3+` and `+person4+`: +
-+
-*`+vp=person3&vp=person4+`*
+|`VERTEX` without a defined type
+|Use `<parameter_name>.<parameter_type>` to specify the type
+of the parameter, and also provide the primary key of the vertex.
+|A `VERTEX` parameter named `va` is assigned a `person` type vertex
+whose ID is `"person2"` +
 
-|`+SET+` or `+BAG+` of vertices without a defined type |The `+SET+` or
-`+BAG+` must be treated as an array, specifying the order of the
-elements with indices `++`,`++`, etc. a|
-A `+SET<VERTEX>+` parameter named `+vp+`is assigned a `+person+` type
-vertex with an ID of `+person1+` and a `+post+` type vertex with an ID
-of `+11+` :
+*`va=person2&va.type=person`*
 
-*`+vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post+`*
+|`SET` or `BAG` of vertices with a defined type
+|Same as a `SET` or `BAG` of primitives, where the value for each
+element is the primary key of the vertex.
+|A `SET<VERTEX<person>>` parameter named `vp` is assigned two
+vertices with IDs `"person3"` and `"person4"`: +
+
+*`vp=person3&vp=person4`*
+
+|`SET` or `BAG` of vertices without a defined type
+|The `SET` or `BAG` must be treated as an array, specifying the
+order of the elements with indices `[0]`, `[1]`, etc.
+|A `SET<VERTEX>` parameter named `vp` is assigned a `person` type
+vertex with an ID of `"person5"` and a `post` type vertex with an ID
+of `11` :
+
+*`vp[0]=person5&vp[0].type=person&vp[1]=11&vp[1].type=post`*
 
 |===
 
@@ -117,50 +116,48 @@ Data of primitive types, including `INT, UINT, FLOAT, DOUBLE, STRING, BOOL`, and
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
 |Data type |Description |Example
-|`+SET+`, `+LIST+` or `+BAG+` of primitives |Use a JSON array of
-primitive values. a|
-A set of primitive values: `[1, 2, 3]`
 
-|`+VERTEX+` |Use a JSON object that has an`+id+` field +
-+
-whose value is the primary key of the +
-+
-vertex and a`+"type"+`field whose value +
-+
-is the type of the vertex. a|
-A `+person+` vertex with an ID of `+"Tom"+`:
+|`SET`, `LIST` or `BAG` of primitives
+|Use a JSON array of primitive values.
+|A set of primitive values: `[1, 2, 3]`
 
-`+{"id": "Tom", "type": "person"}+`
+|`VERTEX`
+|Use a JSON object that has an `id` field whose value is the
+primary key of the vertex and a `type` field whose value
+is the type of the vertex.
+|A `person` vertex with an ID of `"Tom"`:
 
-|`+MAP+` |Use a JSON object that has two JSON
-arrays with keys `+keyList+` and
-`+valueList+`, each containing the keys and the values of the map respectively. +
+`{"id": "Tom", "type": "person"}`
 
-The order of items in the valueList should correspond to the order of
-items in the keyList. a|
-A map of nations and their capitals:
+|`MAP`
+|Use a JSON object that has two JSON arrays with keys `keyList`
+and `valueList`, each containing the keys and the values of the
+map respectively.
 
-`+{"keyList": ["England", "Germany"],+`
+The order of items in the valueList should correspond to the
+order of items in the keyList.
+|A map of nations and their capitals:
 
-`+"valueList": }+`
+`{"keyList": ["England", "Germany"],` +
+`"valueList": ["London", "Berlin"]}`
 
-|User-Defined Type (UDT) |Use a JSON object that has two JSON +
-+
-arrays with keys `+keyList+` and +
-+
-`+valueList+`. The `+keyList+` array contains the field names of the
-tuple, and the `+valueList+` array contains the values of the fields. +
-+
-+
-+
-The order of items in the valueList should correspond to the order of
-items in the keyList. a|
-Tuple schema definition:
+|User-Defined Type (UDT)
+|Use a JSON object that has two JSON
+arrays with keys `keyList` and `valueList`.
+The `keyList` array contains the field names of the
+tuple, and the `valueList` array contains the values of the fields.
 
-`+TYPEDEF TUPLE <name STRING, age INT> person+`A `+person+` tuple
-written in JSON:
+The order of items in the `keyList` should correspond to the order
+of the fields as specified in the definition of the tuple/UDT, and
+the order of values in the `valueList` should correspond to the order of
+items in the keyList.
+|Tuple schema definition:
 
-`+{"keyList: ["name", "age"], "valueList": ["Sam", 24]}+`
+`TYPEDEF TUPLE <name STRING, age INT> person`
+
+A `person` tuple written in JSON:
+
+`{"keyList: ["name", "age"], "valueList": ["Sam", 24]}`
 
 |===
 
@@ -257,6 +254,7 @@ To make the JSON output more human-readable in the terminal, use the https://ste
 [source,bash]
 ----
 curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | jq .
+
 curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | python -m json.tool
 ----
 
