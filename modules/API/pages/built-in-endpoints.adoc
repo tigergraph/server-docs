@@ -741,9 +741,15 @@ $ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0
 
 The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server. *These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
 
-=== Request a token (`GET`)
+[CAUTION]
+====
+Please be aware to pass parameters in the json payload for `/requesttoken` api from 3.5. If the old API version is used, it could cause information leakage.
+====
 
-`GET /requesttoken`
+
+=== Request a token (`POST`)
+
+`POST /requesttoken`
 
 If authentication is enabled on RESTPP endpoints, a token needs to be included in the request header for all requests sent to the RESTPP server. A user can generate a token using either
 
@@ -754,17 +760,25 @@ If authentication is enabled on RESTPP endpoints, a token needs to be included i
 
 [source,bash]
 ----
-curl -X GET "http://localhost:9000/requesttoken?secret=jiokmfqqfu2f95qs6ug85o89rpkneib3&lifetime=1000000"
+curl -X POST http://localhost:9000/requesttoken \
+     -d '{"secret": "your_secret_value", "lifetime": "100000"}' 
+
+curl --user example_username:example_password \
+     -X GET http://localhost:9000/requesttoken \
+     -d '{"graph": "example_graph"}'
+
 {
   "code": "REST-0000",
   "expiration": 1616042814,
   "error": false,
-  "message": "Generate new token successfully.",
+  "message": "Generate new token successfully.\nWarning: Tigergraph Support cannot restore access to secrets/tokens for security reasons. Please save your secret/token and keep it safe and accessible.",
   "token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq"
 }
-
-curl --user example_username:example_password -X GET "localhost:9000/requesttoken?graph=example_graph"
 ----
+[WARNING]
+====
+Treat your tokens like passwords and keep them secret. Tigergraph Support cannot restore access to tokens for security reasons. Please save your token and keep it safe and accessible.
+====
 
 ==== Parameters:
 
@@ -775,57 +789,53 @@ curl --user example_username:example_password -X GET "localhost:9000/requesttoke
 | Yes if `graph` is not supplied
 | User's secret to generate the token.
 
-| `lifetime`
-| No
-| Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
-
 | `graph`
 | Yes if `secret` is not supplied
 | Name of the graph that the token will be valid for.
+
+
+| `lifetime`
+| No
+| Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 |===
 
 Users can use either `secret` or their username and password to generate a token. If the user does not supply a secret and chooses to use their username and password instead, then the parameter `graph` becomes required.
 
-=== Request a token (`POST`)
 
-`POST /requesttoken`
-
-You may also use a `POST` request to generate your token. This allows you to avoid exposing your secret in the query string.
-
-==== Sample request:
-
-[source,bash]
-----
-curl -d <path_to_secret> -X POST \
-"http://localhost:9000/requesttoken?lifetime=1000000"
-{
-  "code": "REST-0000",
-  "expiration": 0,
-  "error": false,
-  "message": "Refresh token successfully.",
-  "token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq"
-}
-----
-
-Replace `path_to_secret` with the path to the file containing your secret. The file should only include a single line, which is your secret.
-
-==== Parameters:
-
-|===
-| Name | Required | Description
-
-| `lifetime`
-| No
-| Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
-|===
 
 === Refresh a token
 
 `PUT /requesttoken`
 
-This endpoint takes a token and its associated secret and refreshes the lifetime of the token. The token itself remains unchanged.
+A user can refresh a token using either
 
-*Parameters:*
+* A secret, which is associated with the token to be refreshed
+* Their username and password in their request header
+
+This endpoint takes a token and refreshes the lifetime of the token. The token itself remains unchanged.
+
+==== Sample request
+
+[source,bash]
+----
+curl -X PUT http://localhost:9000/requesttoken \
+     -d '{"secret": "your_secret_value", "token": "your_token_value", "lifetime": "15000"}' 
+
+curl --user example_username:example_password \
+     -X PUT http://localhost:9000/requesttoken \
+     -d '{"token": "your_token_value", "lifetime": "15000"}'
+
+{
+  "code": "REST-0000",
+  "expiration": 1641554169,
+  "error": false,
+  "message": "Refresh token successfully.",
+  "token": "0mq98l9pderkaivndf820gudg923p3l0"
+}
+----
+
+
+==== Parameters
 
 |===
 | *Name* | Required | Description
@@ -835,38 +845,43 @@ This endpoint takes a token and its associated secret and refreshes the lifetime
 | Token to refresh.
 
 | `secret`
-| Yes
+| Yes if username and userpassword are not suplied
 | User's secret used to generate the token.
 
 | `lifetime`
-| Yes
+| No
 | Period of time for which the token is valid measured in seconds.
 |===
 
-==== Sample request
-
-[source,bash]
-----
-curl -X PUT "http://localhost:9000/requesttoken?lifetime=15&secret=ksdoilrvpl0r0tef3d4abbpgu0t2u5la&token=0mq98l9pderkaivndf820gudg923p3l0"|jq .
-{
-  "code": "REST-0000",
-  "expiration": 15,
-  "error": false,
-  "message": "Refresh token successfully.",
-  "token": "0mq98l9pderkaivndf820gudg923p3l0"
-}
-----
-
-[CAUTION]
-====
-*Known bug*: The output shows the lifetime instead of the expiration time.
-====
 
 === Delete a token
 
 `DELETE /requesttoken`
 
-This endpoint takes a token and its associated secret, and deletes the token.
+A user can delete a token using either
+
+* A secret, which is associated with the token to be deleted
+* Their username and password in their request header
+
+==== Sample request
+
+[source,bash]
+----
+curl -X DELETE http://localhost:9000/requesttoken \
+     -d '{"secret": "your_secret_value", "token": "your_token_value"}' 
+
+curl --user example_username:example_password \
+     -X DELETE http://localhost:9000/requesttoken \
+     -d '{"token": "your_token_value"}'
+
+{
+  "code": "REST-0000",
+  "expiration": -1,
+  "error": false,
+  "message": "Drop token successfully.",
+  "token": "0mq98l9pderkaivndf820gudg923p3l0"
+}
+----
 
 ==== Parameters:
 
@@ -878,7 +893,7 @@ This endpoint takes a token and its associated secret, and deletes the token.
 | Token to delete.
 
 | `secret`
-| Yes
+| Yes if username and userpassword are not supplied
 | User's secret used to generate the token.
 |===
 
