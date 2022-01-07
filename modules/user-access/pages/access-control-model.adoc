@@ -1,12 +1,17 @@
-= Roles and Privileges
-:description: A brief overview of roles and privileges in TigerGraph.
+= Access Control Model in TigerGraph
+:description: A brief explanation of TigerGraph's access control model.
 :page-aliases: roles-and-privileges.adoc
 
+TigerGraph supports both Role-based access control(RBAC) and Access Control Lists (ACL).
+RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
+ACLs let you grant fine-grained access to a specific query.
+
+== Role-based access control
 TigerGraph uses Role-based Access Control (RBAC) to manage authorization.
 On every graph, privileges to perform actions are assigned to roles, and roles are granted to users.
 Outside the permissions granted by their roles, a user has no access to the system.
 
-== Privileges
+=== Privileges
 
 Privilege is permission to perform an action in a given scope. When a privilege is assigned to a role, it allows users with the role to perform the specified action in the specified scope. For example, the privilege `READ_SCHEMA` on graph `social` gives a user read permission to the schema of the graph `social`. This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph.
 
@@ -24,7 +29,7 @@ Local roles can only be granted local privileges, while global roles can be gran
 
 Some privileges can only be global by nature. For example, since users are global objects, any user-related privileges are global only. To see which privileges are global-only, see xref:reference:list-of-privileges.adoc[List of Privileges].
 
-== Roles
+=== Roles
 
 A role is a collection of privileges you can assign to users to grant them permission to perform actions on specific resources.
 
@@ -81,3 +86,46 @@ GSQL offers 5 built-in local roles and 2 built-in global roles. The built-in rol
 === User-defined roles
 
 Users can define roles with their own list of privileges they want to grant to the role. To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
+
+
+== Access control lists
+ACLs give you the ability to apply finer-grain level of access to GSQL queries.
+ACLs are bound to queries, and specify who can read or execute the query.
+
+An ACL contains entries for two types of privileges: `READ` and `EXECUTE`.
+Both privilege have a permission list that allow those on the list to either read or execute (run) the query.
+
+=== ACL entry status
+In the ACL of a query, each type of privilege's entry (`READ`/`EXECUTE`) has three statuses:
+
+Unspecified:: Default status.
+When an ACL privilege is unspecified, RBAC governs the access for that privilege
+
+Specified Roles:: Only the users with specified roles have the ACL privilege.
+Any roles (local/global, built-in/user-defined) can be a grantee of an ACL privilege.
+
+Nobody:: No one, not even the owner, can access the query, even with corresponding RBAC privileges.
+
+=== Query owner
+Every query has one and only one owner.
+The owner of a query can run ACL management commands to modify the ACL of query.
+When a query is created, the creator of the query is assigned to be the owner automatically.
+
+When a user is the owner of a query, the user cannot be dropped unless the query is dropped or if the owner of the query is changed.
+
+NOTE: When you upgrade from a version prior to 3.4, the old queries have no owner.
+Users with `WRITE_ROLE` privilege on the graph or on the global scope can assign an owner to a query without owners.
+
+=== ACL password
+
+== How permissions are evaluated
+All operations that don't involve queries are only governed by RBAC.
+ACLs only apply to queries.
+
+When it comes to evaluating permissions for operations on queries, ACLs are evaluated first:
+
+* When the ACL entry is _unspecified_, RBAC governs the access control of the resource.
+By default, both ACL entries (`READ` and `EXECUTE`) for a query are _unspecified_.
+* If the ACL entry is specified, ACL replaces RBAC to govern access for the query.
+** Even if a user does not have the `READ_QUERY` permission on a graph, they can read a query if they are on the `READ` ACL entry permission list of the query.
+** Even if a user has the `READ_QUERY` permission on a graph, they cannot read a query if the `READ` ACL entry for the query is specified and the user is not on the list.

@@ -1,0 +1,248 @@
+= ACL Management
+:description: This page talks about the operations related to managing Access Control Lists(ACL) on queries.
+
+Access Control Lists (ACL) allow you finer-grain control over access to queries.
+Using GSQL commands, you can change the owner of a query, grant ACL privileges on a query to a role, and view the ACL privileges on a user, a role, or a query.
+
+== Set ACL password
+By default, users don't have ACL passwords.
+They can choose to set an ACL password.
+Once a user's ACL password is set, changing the ACL of queries owned by the user requires entering the user's ACL password.
+
+=== Syntax
+[,gsql]
+----
+ALTER [USER <username>] ACL PASSWORD SET <new_acl_password>
+----
+
+=== Required privilege
+* None if a user is setting their own ACL password
+* `WRITE_USER` if a user is setting the ACL password of another user
+
+=== Procedure
+[tabs]
+====
+Change password of current user::
++
+--
+To change the password of the current user, run the following command:
+
+[,gsql]
+----
+GSQL > ALTER ACL PASSWORD SET "example_Password" <1>
+----
+<1> Putting the password in double quotes allow you to use special characters.
+You can enter a password without the double quotes, in which case you are only able to use alphanumerical characters.
+--
+Change password of another user::
++
+--
+To change the ACL password of another user, run the following command and replace `user1` with the user whose ACL password you want to change:
+[,gsql]
+----
+GSQL > ALTER USER user1 PASSWORD SET examplePassword <1>
+----
+<1> Since the password isn't enclosed in double quotes, only alphanumerical characters are allowed.
+--
+====
+
+== Change ACL password
+To change the ACL password of a user whose password has already been set, you need to enter their current ACL password.
+
+=== Syntax
+[.wrap,gsql]
+----
+ALTER [USER <username>] ACL PASSWORD SET <new_acl_password> REPLACE <current_acl_password>
+----
+
+=== Required privilege
+* None if a user is changing their own ACL password.
+* `WRITE_USER` for changing the ACL password of another user.
+
+In both scenarios, changing ACL password requires the current password.
+
+=== Procedure
+[tabs]
+====
+Changing password of current user::
++
+--
+To change the password of the current user, run the following command and replace `"current_password"` with the current password of the user:
+
+[.wrap,gsql]
+----
+GSQL > ALTER ACL PASSWORD SET "new_password" REPLACE "current_password" <1>
+----
+<1> Putting the password in double quotes allow you to use special characters.
+You can enter a password without the double quotes, in which case you are only able to use alphanumerical characters.
+--
+Changing password of another user::
++
+--
+To change the password of another user, run the following command and replace `"current_password"` with the current password of the user:
+
+[.wrap,gsql]
+----
+GSQL > ALTER USER user1 SET newPassword REPLACE currentPassword <1>
+----
+<1> Since the password isn't enclosed in double quotes, only alphanumerical characters are allowed.
+--
+====
+
+== Delete ACL password
+Users can delete their own ACL password or another user's ACL password if they have the sufficient privilege and the current ACL password.
+
+=== Syntax
+[.wrap,gsql]
+----
+ALTER [USER <username>] ACL PASSWORD CLEAR REPLACE <current_acl_password>
+----
+
+=== Required privilege
+* None if a user is deleting their own ACL password.
+* `WRITE_USER` for deleting the ACL password of another user.
+
+In both scenarios, deleting ACL password requires the current password.
+
+=== Procedure
+[tabs]
+====
+Deleting password of current user::
++
+--
+To delete the ACL password of the current user, run the following command and replace `"current_password"` with the current password of the user:
+
+[,gsql]
+----
+GSQL > ALTER ACL PASSWORD CLEAR REPLACE "current_password"
+----
+--
+Deleting password of another user::
++
+--
+To delete the ACL password of another user, run the following command and replace `"current_password"` with the current password of the user:
+
+[,gsql]
+----
+GSQL > ALTER USER user1 ACL PASSWORD CLEAR REPLACE "current_password"
+----
+--
+====
+
+== Change query owner
+With the ACL password of the current query owner, the owner themself or users with the `WRITE ROLE` privilege can change the owner of a query.
+If the current owner of the query doesn't have an ACL password, then changing the owner does not require a password.
+
+If a query does not have a current owner due to upgrades from an older version of TigerGraph, then
+
+=== Syntax
+[,gsql]
+----
+CHANGE OWNER OF QUERY <query_name> TO <username> [SECURED BY <acl_password>]
+----
+
+=== Required privilege
+* None if the query is owned by the current user
+* `WRITE_ROLE` if the query is owned by another user
+
+=== Procedure
+To change the owner of a query, run the following command and replace `owner_password` with the ACL password of the query owner.
+[.wrap,gsql]
+----
+GSQL > CHANGE OWNER of QUERY my_query TO user1 SECURED BY "owner_acl_password"
+----
+
+== Grant ACL privilege to a role
+The owner and *only* the owner of a query can grant ACL privileges on the query to specified roles.
+To grant an ACL privilege, the query owner must have the corresponding RBAC privilege.
+
+=== Syntax
+[,gsql]
+----
+GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY TO ROLE (<role1>, <role2> ...) [SECURED BY <owner_acl_password>]
+----
+
+=== Required privilege
+* `READ_QUERY` for granting `READ` privilege on the query.
+* `READ_DATA` for granting `EXECUTE` privilege on queries that do not update the graph.
+* `READ_DATA` and `WRITE_DATA` for granting `EXECUTE` privilege on queries that update the graph.
+
+=== Procedure
+[tabs]
+====
+Grant `READ` privilege::
++
+--
+To grant `READ` privilege for a query `example_query` to a role `example_role`, run the following command:
+
+[,gsql]
+----
+GSQL > GRANT ACL PRIVILEGE READ ON example_query TO ROLE example_role
+----
+--
+Grant `EXECUTE` privilege::
++
+--
+To grant `EXECUTE` privilege for a query `example_query` to a role `example_role`, run the following command:
+
+[,gsql]
+----
+GSQL > GRANT ACL PRIVILEGE EXECUTE ON example_query TO ROLE example_role
+----
+--
+====
+
+== Revoke ACL privilege from a role
+The owner of a query can revoke ACL privileges on the query from a role.
+If you revoke an ACL privilege on the query from all roles, then the ACL entry status for that privilege becomes unspecified.
+When the ACL entry status for a privilege is unspecified, RBAC governs access for the corresponding operation.
+
+=== Syntax
+[.wrap,gsql]
+----
+REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM ( <role1>, <role2>, ... ) | ALL ) [SECURED BY <owner_acl_password>]
+----
+
+=== Required privilege
+None. Only query owner can run the command.
+
+=== Procedure
+
+== Set ACL privilege entry to unspecified
+When the ACL entry for a privilege on a query is specified, the query owner can set it to unspecified.
+When the ACL entry for a privilege is unspecified, RBAC governs access to the query.
+
+=== Syntax
+[,gsql]
+----
+GSQL > REVOKE
+----
+
+=== Required privilege
+
+== Disallow access for all
+
+== View ACL entries on a query
+
+=== Syntax
+
+=== Required privilege
+
+=== Procedure
+
+== View ACL privileges of a user
+
+=== Syntax
+
+=== Required privilege
+
+=== Procedure
+
+== View ACL privileges on a role
+
+=== Syntax
+
+=== Required privilege
+
+=== Procedure
+
