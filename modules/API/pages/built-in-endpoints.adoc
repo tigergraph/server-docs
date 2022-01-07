@@ -739,32 +739,45 @@ $ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0
 
 == Authentication
 
-The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server. *These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
-
-[CAUTION]
-====
-Please be aware to pass parameters in the json payload for `/requesttoken` api from 3.5. If the old API version is used, it could cause information leakage.
-====
+The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server.
+*These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
 
 
-=== Request a token (`POST`)
+=== Request a token
 
 `POST /requesttoken`
 
 If authentication is enabled on RESTPP endpoints, a token needs to be included in the request header for all requests sent to the RESTPP server. A user can generate a token using either
 
 * A secret, which is a random string generated in GSQL (see xref:user-access:managing-credentials.adoc[Managing User Privileges and Authentication])
-* Their username and password in their request header as well as specifying the graph
+* Their username and password in their request header as well as specifying the graph.
 
-==== Sample request:
+==== Request body
+The endpoint expects a JSON request body in the following format:
+
+[,javascript]
+----
+{
+    "secret": <secret_value>, <1>
+    "graph": <graph_name>, <2>
+    "lifetime": <token_lifetime> <3>
+}
+----
+<1> User's secret to generate the token.
+Required if the request body does not supply `graph`.
+<2> Name of the graph that the token is valid for.
+Required if the request body does not supply `secret`.
+<3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
+
+==== Sample request
 
 [source,bash]
 ----
 curl -X POST http://localhost:9000/requesttoken \
-     -d '{"secret": "your_secret_value", "lifetime": "100000"}' 
+     -d '{"secret": "jiokmfqqfu2f95qs6ug85o89rpkneib3", "lifetime": "100000"}'
 
 curl --user example_username:example_password \
-     -X GET http://localhost:9000/requesttoken \
+     -X POST http://localhost:9000/requesttoken \
      -d '{"graph": "example_graph"}'
 
 {
@@ -777,30 +790,12 @@ curl --user example_username:example_password \
 ----
 [WARNING]
 ====
-Treat your tokens like passwords and keep them secret. Tigergraph Support cannot restore access to tokens for security reasons. Please save your token and keep it safe and accessible.
+Keep your tokens accessible in a secure location.
+For security reasons, TigerGraph Support cannot restore access to tokens.
 ====
 
-==== Parameters:
-
-|===
-| Name | Required | Description
-
-| `secret`
-| Yes if `graph` is not supplied
-| User's secret to generate the token.
-
-| `graph`
-| Yes if `secret` is not supplied
-| Name of the graph that the token will be valid for.
-
-
-| `lifetime`
-| No
-| Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
-|===
-
-Users can use either `secret` or their username and password to generate a token. If the user does not supply a secret and chooses to use their username and password instead, then the parameter `graph` becomes required.
-
+==== Parameters
+None.
 
 
 === Refresh a token
@@ -812,18 +807,36 @@ A user can refresh a token using either
 * A secret, which is associated with the token to be refreshed
 * Their username and password in their request header
 
-This endpoint takes a token and refreshes the lifetime of the token. The token itself remains unchanged.
+This endpoint takes a token and refreshes the lifetime of the token.
+The token itself remains unchanged.
+
+==== Request body
+The endpoint expects a JSON request body in the following format:
+
+[,javascript]
+----
+{
+    "secret": <secret_value>, <1>
+    "graph": <graph_name>, <2>
+    "lifetime": <token_lifetime> <3>
+}
+----
+<1> User's secret to generate the token.
+Required if the request body does not supply `graph`.
+<2> Name of the graph that the token is valid for.
+Required if the request body does not supply `secret`.
+<3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 
 ==== Sample request
 
 [source,bash]
 ----
 curl -X PUT http://localhost:9000/requesttoken \
-     -d '{"secret": "your_secret_value", "token": "your_token_value", "lifetime": "15000"}' 
+     -d '{"secret": "jiokmfqqfu2f95qs6ug85o89rpkneib3", "token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq", "lifetime": "15000"}'
 
 curl --user example_username:example_password \
      -X PUT http://localhost:9000/requesttoken \
-     -d '{"token": "your_token_value", "lifetime": "15000"}'
+     -d '{"token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq", "lifetime": "15000"}'
 
 {
   "code": "REST-0000",
@@ -837,21 +850,7 @@ curl --user example_username:example_password \
 
 ==== Parameters
 
-|===
-| *Name* | Required | Description
-
-| `token`
-| Yes
-| Token to refresh.
-
-| `secret`
-| Yes if username and userpassword are not suplied
-| User's secret used to generate the token.
-
-| `lifetime`
-| No
-| Period of time for which the token is valid measured in seconds.
-|===
+None.
 
 
 === Delete a token
@@ -863,16 +862,31 @@ A user can delete a token using either
 * A secret, which is associated with the token to be deleted
 * Their username and password in their request header
 
+==== Request body
+The endpoint expects a JSON request body in the following format:
+
+[,javascript]
+----
+{
+    "secret": <secret_value>, <1>
+    "graph": <graph_name>, <2>
+}
+----
+<1> User's secret to generate the token.
+Required if the request body does not supply `graph`.
+<2> Name of the graph that the token is valid for.
+Required if the request body does not supply `secret`.
+
 ==== Sample request
 
 [source,bash]
 ----
 curl -X DELETE http://localhost:9000/requesttoken \
-     -d '{"secret": "your_secret_value", "token": "your_token_value"}' 
+     -d '{"secret": "jiokmfqqfu2f95qs6ug85o89rpkneib3", "token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq"}'
 
 curl --user example_username:example_password \
      -X DELETE http://localhost:9000/requesttoken \
-     -d '{"token": "your_token_value"}'
+     -d '{"token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq"}'
 
 {
   "code": "REST-0000",
@@ -885,17 +899,7 @@ curl --user example_username:example_password \
 
 ==== Parameters:
 
-|===
-| Name | Required | Description
-
-| `token`
-| Yes
-| Token to delete.
-
-| `secret`
-| Yes if username and userpassword are not supplied
-| User's secret used to generate the token.
-|===
+None.
 
 == Loading jobs
 
