@@ -85,9 +85,10 @@ GSQL offers 5 built-in local roles and 2 built-in global roles. The built-in rol
 
 === User-defined roles
 
-Users can define roles with their own list of privileges they want to grant to the role. To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
+Users can define roles with their own list of privileges they want to grant to the role.To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
 
 
+[#_access_control_lists]
 == Access control lists
 ACLs give you the ability to apply finer-grain level of access to GSQL queries.
 ACLs are bound to queries, and specify who can read or execute the query.
@@ -116,7 +117,14 @@ When a user is the owner of a query, the user cannot be dropped unless the query
 NOTE: When you upgrade from a version prior to 3.4, the old queries have no owner.
 Users with `WRITE_ROLE` privilege on the graph or on the global scope can assign an owner to a query without owners.
 
+[#_acl_password]
 === ACL password
+Users have the option of xref:acl-management.adoc#_set_acl_password[setting an ACL password].
+When a user has an ACL password, operations that modify ACL privileges of queries owned by the user requires the ACL password.
+These operations include:
+
+* Changing the owner of a query
+* Modifying the ACL privileges on a query
 
 == How permissions are evaluated
 All operations that don't involve queries are only governed by RBAC.
