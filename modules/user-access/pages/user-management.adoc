@@ -1,5 +1,5 @@
 = User Management
-:description: This page explains the procedures for various user management tasks under TigerGraph's authorization model.
+:description: This page explains the procedures for various user management tasks under TigerGraph's RBAC authorization model.
 
 This page explains the procedures for various user management tasks under TigerGraph's role-based access control(RBAC) model.
 
@@ -7,18 +7,18 @@ To see user management tasks under the xref:access-control-model.adoc#_access_co
 
 == Create a user
 
-=== *Syntax*
+=== Syntax
 
 [source,gsql]
 ----
 CREATE USER
 ----
 
-=== *Required privilege*
+=== Required privilege
 
 `WRITE_USER`
 
-=== *Procedure*
+=== Procedure
 
 . From the GSQL shell, run the `CREATE USER` command:
 +
@@ -43,18 +43,18 @@ The user "frank" is created.
 
 == View roles of a user
 
-=== *Syntax*
+=== Syntax
 
 [source,gsql]
 ----
 SHOW USER
 ----
 
-=== *Required privilege*
+=== Required privilege
 
 `READ_USER` for displaying roles of other users
 
-=== *Procedure*
+=== Procedure
 
 . From the GSQL shell, run the `SHOW USER` command:
 +
@@ -67,18 +67,20 @@ If the user running the command has the `READ_USER` privilege, role information 
 
 == View privileges of a user
 
-=== *Syntax*
+Users with the `READ_USER` privilege in a scope can view the RBAC privileges of the users in that scope.
+
+=== Syntax
 
 [source,gsql]
 ----
 SHOW PRIVILEGE ON USER <username> (, <username>)*
 ----
 
-=== *Required privilege*
+=== Required privilege
 
 `READ_USER`
 
-=== *Procedure*
+=== Procedure
 
 . From the GSQL shell, run the `SHOW PRIVILEGE ON USER` command :
 +
@@ -118,9 +120,11 @@ User: "tigergraph"
     ACCESS_TAG
 ----
 
+To view xref:access-control-model.adoc#_access_control_lists[ACL privileges] of a user, see xref:acl-management.adoc#_view_acl_privileges_of_a_user_[View ACL privileges of a user].
+
 == Grant a role to a user
 
-=== *Syntax*
+=== Syntax
 
 [source,gsql]
 ----
@@ -128,11 +132,11 @@ GRANT ROLE <role_name1> (, role_name2)* [ON GRAPH <graph_name>]
         TO <username1> (, <username2>)*
 ----
 
-=== *Required privilege*
+=== Required privilege
 
 `WRITE_ROLE`
 
-=== *Procedure*
+=== Procedure
 
 . Start the GSQL shell and make sure you are using the correct graph
 +
@@ -154,7 +158,7 @@ The above command will grant roles `role1` and `role2` on graph `example_graph` 
 
 == Revoke a role from a user
 
-=== *Syntax*
+=== Syntax
 
 [source,gsql]
 ----
@@ -162,11 +166,11 @@ REVOKE ROLE <roleName1> (, <roleName2)* [ON GRAPH <graphName>]
         FROM <userName1> (, <userName2>)*
 ----
 
-=== *Required privilege*
+=== Required privilege
 
 `WRITE_ROLE`
 
-=== *Procedure*
+=== Procedure
 
 . Start the GSQL shell and make sure you are using the correct graph
 +
@@ -188,18 +192,21 @@ The above command will revoke roles `role1` and `role2` on graph `example_graph`
 
 == Change a user's password
 
-=== *Syntax*
+Users can change their own passwords used for login without needing any privilege.
+Users with the `WRITE_USER` privilege can change the passwords of other users.
+
+=== Syntax
 
 [source,gsql]
 ----
 ALTER PASSWORD <username>
 ----
 
-=== *Required privilege*
+=== Required privilege
 
 `WRITE_USER` for changing the password of a user other than the current user
 
-=== *Procedure*
+=== Procedure
 
 . From the GSQL shell, run the following command. Replace `username` with the user whose password you want to change
 +
@@ -214,18 +221,18 @@ NOTE: To see how to change a user's xref:access-control-model.adoc#_acl_password
 
 == Drop a user
 
-=== *Syntax*
+=== Syntax
 
 [source,gsql]
 ----
 DROP USER <user1> (,<user2>)*
 ----
 
-=== *Required privilege*
+=== Required privilege
 
 `WRITE_USER`
 
-=== *Procedure*
+=== Procedure
 
 . From the GSQL shell, run the `DROP USER` command. You can drop multiple users in the same command.
 +

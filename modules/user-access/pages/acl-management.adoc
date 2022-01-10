@@ -158,6 +158,7 @@ To change the owner of a query, run the following command and replace `owner_pas
 GSQL > CHANGE OWNER of QUERY my_query TO user1 SECURED BY "owner_acl_password"
 ----
 
+[#_grant_acl_privilege_to_a_role]
 === Grant ACL privilege to a role
 The owner and *only* the owner of a query can grant ACL privileges on the query to specified roles.
 To grant an ACL privilege, the query owner must have the corresponding RBAC privilege.
@@ -278,6 +279,7 @@ To view the access control list of `query1` and `query2`, run the following comm
 GSQL > SHOW ACL PRIVILEGE ON QUERY query1, query2
 ----
 
+[#_view_acl_privileges_of_a_user_]
 === View ACL privileges of a user
 You can view the ACL privileges of a user.
 This allows you to see the queries owned by the user, as well as the queries that the user has read and execute access to on all graphs where you have the `READ_USER` privilege.

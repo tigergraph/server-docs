@@ -137,3 +137,6 @@ By default, both ACL entries (`READ` and `EXECUTE`) for a query are _unspecified
 * If the ACL entry is specified, ACL replaces RBAC to govern access for the query.
 ** Even if a user does not have the `READ_QUERY` permission on a graph, they can read a query if they are on the `READ` ACL entry permission list of the query.
 ** Even if a user has the `READ_QUERY` permission on a graph, they cannot read a query if the `READ` ACL entry for the query is specified and the user is not on the list.
+
+.How permission is evaluated for a query operation
+image::acl-query-flow.png[]
