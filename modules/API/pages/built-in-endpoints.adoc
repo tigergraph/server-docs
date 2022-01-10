@@ -1,5 +1,6 @@
 = Built-in Endpoints
 :pp: {plus}{plus}
+:description: All built-in REST API endpoints in TigerGraph server.
 
 == System Utilities
 
@@ -334,7 +335,7 @@ $ curl -X GET
 
 `+GET /statistics/{graph_name}+`
 
-This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` __**__parameter. The `seconds` parameter must be a positive integer less than or equal to 60.
+This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` __**__parameter.The `seconds` parameter must be a positive integer less than or equal to 60.
 
 ==== Sample request:
 
@@ -413,8 +414,151 @@ If there is no query sent in the past given seconds, an empty json will be retur
 
 | `segments`
 | No
-| Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into. The value for this endpoint must be between 1 and 100 and has a default value of 10.
+| Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into.The value for this endpoint must be between 1 and 100 and has a default value of 10.
 |===
+
+[#_show_service_status]
+=== Show service status
+`POST :14240/current-service-status`
+
+This endpoint returns the status of the TigerGraph services specified in the request.
+
+==== Parameters
+No URL parameters.
+
+==== Request body
+The endpoint requires a request body in the following format:
+
+[source,javascript]
+----
+{
+    "ServiceDescriptors": [ <1>
+        {
+            "ServiceName": <service_name>, <2>
+            "Partition": <partition_number>, <3>
+            "Replica": <replica_number> <4>
+        }
+        ... <5>
+    ]
+}
+----
+<1> `ServiceDescriptors` is a required field.
+It is a list of objects with keys `ServiceName`, and optionally `Partition` and `Replica`.
+<2> Required field.
+The name of the service to return status on.
+Below are the accepted values for the field and their corresponding services
+* `"GPE"`:     GPE
+* `"GSE"`:     GSE
+* `"RESTPP"`:  RESTPP
+* `"GSQL"`:    GSQL
+* `"IFM"`:     INFORMANT
+* `"GUI"`:     GUI
+* `"CTRL"`:    CONTROLLER
+* `"KAFKA"`:   KAFKA
+* `"ETCD"`:    ETCD
+* `"ZK"`:      ZOOKEEPER
+* `"NGINX"`:   NGINX
+* `"TS3"`:     TS3
+* `"TS3SERV"`: TS3SERV
+* `"DICT"`:    DICT
+* `"ADMIN"`:   ADMIN
+<3> Optional.
+Number of the partition to request service status on.
+If not provided, the response will contain service status on all partitions.
+<4> Optional.
+Number of the replica to request service status on.
+If not provided, the response will contain service status on all replicas.
+<5> You can supply more than one service descriptor.
+The response from the endpoint will contain all service status requested.
+
+==== Return value
+The return value contains the status for every service descriptor in the request.
+The most important information is in the `ServiceStatus` and `ProcessState` fields:
+[source,javascript]
+----
+{
+  "ServiceStatusEvents": [
+    {
+      "EventMeta": {
+        "Targets": [
+          {
+            "ServiceName": "IFM"
+          }
+        ],
+        "EventId": "154e8f53716b403eb02af19d863745c6",
+        "SpanId": "ServiceStatusSelfReport",
+        "TimestampNS": "1635841759229416893",
+        "Source": {
+          "ServiceName": "GPE",
+          "Replica": 1,
+          "Partition": 2
+        }
+      },
+      "ServiceDescriptor": { <1>
+        "ServiceName": "GPE",
+        "Replica": 1,
+        "Partition": 2
+      },
+      "ServiceStatus": "Online", <2>
+      "ProcessState": "Running" <3>
+    }
+  ]
+}
+----
+<1> The service descriptor for the status being returned.
+<2> The last recorded status of the service.
+<3> The last recorded state of Linux process behind the service.
+It's possible for a process to be running, but is not being served, and the service cannot respond to requests.
+For example, when TigerGraph is starting up, GPE is in the "Warmup" state and cannot respond to requests, but the process is still running.
+
+
+==== Example
+[tabs]
+====
+Request::
++
+--
+[source.wrap,console]
+----
+$ curl -X POST http://localhost:14240/informant/current-service-status -d '{ "ServiceDescriptors":  [{ "ServiceName": "gpe","Partition": 2, "Replica": 1}]}' | jq
+----
+--
+Response::
++
+--
+[source,json]
+----
+{
+  "ServiceStatusEvents": [
+    {
+      "EventMeta": {
+        "Targets": [
+          {
+            "ServiceName": "IFM"
+          }
+        ],
+        "EventId": "154e8f53716b403eb02af19d863745c6",
+        "SpanId": "ServiceStatusSelfReport",
+        "TimestampNS": "1635841759229416893",
+        "Source": {
+          "ServiceName": "GPE",
+          "Replica": 1,
+          "Partition": 2
+        }
+      },
+      "ServiceDescriptor": {
+        "ServiceName": "GPE",
+        "Replica": 1,
+        "Partition": 2
+      },
+      "ServiceStatus": "Online",
+      "ProcessState": "Running"
+    }
+  ]
+}
+----
+--
+====
 
 === Rebuild graph engine
 
@@ -1194,7 +1338,7 @@ If you add the `gsql-atomic-level` header to the request URL and set its value t
 [source,bash]
 ----
 # This is an atomic request
-curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social?automic_post=true
+curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
 ----
 
 ==== Parameters
@@ -2238,11 +2382,12 @@ curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom
 
 
 
+[#_run_an_installed_query_post]
 === Run an installed query (`POST`)
 
 `+POST /query/{graph_name}/{query_name}+`
 
-Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON. This is especially helpful when the query takes complex parameters.
+Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON.This is especially helpful when the query takes complex parameters.
 
 ==== Parameters
 

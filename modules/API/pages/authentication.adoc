@@ -1,11 +1,14 @@
 = Authentication
 :pp: {plus}{plus}
+:description: How authentication works in TigerGraph REST API.
 
-TigerGraph's RESTful APIs communicate with either the REST{pp} server on port 9000 or the GSQL server on port 14240. Each server uses different methods of authentication.
+TigerGraph's RESTful APIs communicate with either the REST{pp} server on port 9000 or the GSQL server on port 14240.
+Each server uses different methods of authentication.
 
 == REST{pp} Server Requests
 
-By default, TigerGraph REST{pp} endpoints are public: anyone with access to the HTTP ports of the TigerGraph server can run your endpoints. When REST{pp} authentication is enabled, then a valid authorization token must be included in the header.
+TigerGraph REST{pp} endpoints are public by default: anyone with access to the HTTP ports of the TigerGraph server can run your endpoints.
+When xref:user-access:enabling-user-authentication.adoc[REST{pp} authentication is enabled], then a valid authorization token must be included in the header.
 
 The REST{pp} server implements OAuth 2.0-style authorization as follows:
 
@@ -43,5 +46,3 @@ curl -X GET -u <username>:<password> "http://localhost:14240/<path_to_endpoint>
 ----
 
 To keep your credentials more secure, one way to avoid having the user name and password on the command line is to instead use a https://everything.curl.dev/usingcurl/netrc[.netrc file] or a https://everything.curl.dev/cmdline/configfile[config file]. If you are in interactive mode, you can also use the `-u` option without specifying the password, and then curl will prompt for the password.
-
-##

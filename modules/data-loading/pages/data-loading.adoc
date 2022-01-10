@@ -1,18 +1,22 @@
 = Data Loading
+:description: Introduction to data loading and data loaders in TigerGraph.
+:page-aliases: README.adoc
+
 If you have defined a graph schema, you can load data into the graph store. Loading data is a two-step process:
 
 1. Define a loading job, in which you use data loading statements to specify how values in the data source are extracted, transformed, and loaded their destinations. 
 2. Run the loading job. If you have parameterized certain values when defining the loading job, you can supply the parameters when you run the loading job. 
 
-To learn about the GSQL statements used in defining a loading job, see xref:3.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[GSQL language reference: Creating a loading job.]
+To learn about the GSQL statements used in defining a loading job, see xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[GSQL language reference: Creating a loading job.]
 
 == Data loaders
 Data loaders are interfaces built in to the TigerGraph system that enable users to use the same high-level GSQL protocol for high-speed parallel data loading, whether the data reside directly on the network file system, or come from one of several other supported data sources. 
 
-When the data are coming from another data source, some  initial configuration is needed. Then you can use the same type of loading jobs described in the xref:3.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[GSQL language reference: Creating a loading job].
+When the data are coming from another data source, some  initial configuration is needed.
+Then you can use the same type of loading jobs described in the xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[GSQL language reference: Creating a loading job].
 
 To configure a data source, see the appropriate data loader user guide:
 
-* xref:s3-loader-user-guide.adoc[*AWS S3* Loader User Guide]
-* xref:kafka-loader-user-guide.adoc[*Kafka* Loader User Guide]
-* xref:spark-connection-via-jdbc-driver.adoc[*Spark* Connection Via JDBC Driver]
+* xref:s3-loader-user-guide.adoc[AWS S3 Loader User Guide]
+* xref:kafka-loader-user-guide.adoc[Kafka Loader User Guide]
+* xref:spark-connection-via-jdbc-driver.adoc[Spark Connection Via JDBC Driver]
