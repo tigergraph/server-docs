@@ -16,17 +16,17 @@ video::sfe3Q37oWJQ[youtube,800,600]
 
 Before you can install the TigerGraph system, you need the following:
 
-* One or more machines that meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_]. If your machine doesn't have the software packages necessary, the downloadable TigerGraph package has a setup script.
-* A sudo user with the same username and login credential on every machine.
+* One or more machines that meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_]. If your machine doesn't have the software packages necessary, the downloadable TigerGraph package includes a setup script called `install_tools.sh`.
+* A sudo user with the same username and login credential on every machine
  ** If sudo privilege is not available, please contact TigerGraph support for workarounds.
 * A license key provided by TigerGraph (not applicable to Enterprise Free)
 * A TigerGraph system package
- ** If you do not yet have a TigerGraph system package, you can request one at the following address: https://www.tigergraph.com/get-tigergraph/
+ ** If you do not yet have a TigerGraph system package, you can request one here: https://www.tigergraph.com/get-tigergraph/
 * If you are installing a cluster, ensure that every machine has the same SSH port and the port stays open during installation
 
 == *Installation*
 
-TigerGraph's installation script support both single-node and cluster installation, and the user can choose to install either interactively and non-interactively.
+TigerGraph's installation script supports both single-node and cluster installation, and the user can choose to install either interactively or non-interactively.
 
 === Interactive installation
 
@@ -46,7 +46,7 @@ $ tar -xzf tigergraph-<version>.tar.gz
 [#_step_2_run_installation_script]
 ==== *Step 2*:  Run installation script
 
-Navigate to the `tigergraph-<version>-offline` folder and run `install.sh`  with the following commands:
+Navigate to the `tigergraph-<version>-offline` folder. If you are certain that you already meet the software requirements, run `install.sh`, or run `install_tools.sh` to check for and install all required packages first.
 
 .Run the installation script
 [source,console]
@@ -55,8 +55,6 @@ $ cd tigergraph-<version>-offline
 
 # to install enterprise license
 $ sudo ./install.sh
-
-# For non-interactive installations, please see the non-interactive mode section.
 ----
 
 
@@ -134,7 +132,7 @@ $ tar -xzf tigergraph-<version>.tar.gz
 
 ==== Step 2: Configure installation settings
 
-The `tigergraph-<version>-offline` folder contains a file named `install_conf.json`. For non-interactive mode installation, the user must review and modify all the settings in the file `install_conf.json` before running the installer.
+The `tigergraph-<version>-offline` folder contains a file named `install_conf.json`. For non-interactive (custom) installation, the user must review and modify all the settings in the file `install_conf.json` before running the installer.
 
 Below is an example of the `install_conf.json` file:
 
