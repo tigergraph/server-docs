@@ -175,29 +175,14 @@ GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY TO ROLE (<role1>, <role2> ...) [
 * `READ_DATA` and `WRITE_DATA` for granting `EXECUTE` privilege on queries that update the graph.
 
 ==== Procedure
-[tabs]
-====
-Grant `READ` privilege::
-+
---
-To grant `READ` privilege for a query `example_query` to a role `example_role`, run the following command:
+To grant `READ` privilege for a query `example_query` to a role `example_role`, run the following command.
+To grant `EXECUTE` privilege instead, replace `READ` with `EXECUTE`:
 
 [,gsql]
 ----
 GSQL > GRANT ACL PRIVILEGE READ ON example_query TO ROLE example_role
 ----
---
-Grant `EXECUTE` privilege::
-+
---
-To grant `EXECUTE` privilege for a query `example_query` to a role `example_role`, run the following command:
 
-[,gsql]
-----
-GSQL > GRANT ACL PRIVILEGE EXECUTE ON example_query TO ROLE example_role
-----
---
-====
 
 === Revoke ACL privilege from a role
 The owner of a query can revoke ACL privileges on the query from a role.
@@ -234,7 +219,7 @@ In this scenario, as long as `role1` has the `READ_QUERY` privilege, users with 
 ====
 
 === Disallow access for all
-If the query owner grants ACL privilege on a query to `NOBODY`, no one will be able to access the query, including the query owner.
+If the query owner grants a type of ACL privilege on a query to `NOBODY`, no one will be able to access the query, including the query owner.
 
 ==== Syntax
 [,gsql]
