@@ -13,13 +13,11 @@ partitioning factor:: Number of machines across which one copy of the data is di
 In practice, the partitioning factor of a cluster is decided by dividing the total number of machines in the cluster by the replication factor.
 cluster size:: Total number of machines in the cluster.
 
-If an HA cluster has a replication factor of 2, the cluster maintains two instances of the data, stored on separate machines.
-If an HA cluster has a partitioning factor of 2, each instance of the data is distributed across two machines.
+If a HA cluster has a replication factor of 2, the cluster maintains two instances of the data, stored on separate machines.
 
-If an HA cluster has a replication factor of 2 and a partitioning factor of two, the cluster has a total of 4 machines.
-With the 4 machines, the cluster maintains two instances of the data, each distributed across two machines.
+If a HA cluster has a partitioning factor of 2, each instance of the data is distributed across two machines.
 
-Replication and distribution both increase query throughput and improve system resiliency.
+Replication and distribution both increase query throughput and greater system resiliency.
 There is no upper limit for either partitioning factor or replication factor.
 
 For example, the following cluster has a replication factor of 2 and a cluster size of 10, which produces a partitioning factor of stem:[10 / 2 = 5].
