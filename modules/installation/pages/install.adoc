@@ -16,21 +16,21 @@ video::sfe3Q37oWJQ[youtube,800,600]
 
 Before you can install the TigerGraph system, you need the following:
 
-* One or more machines that meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_].
-* A sudo user with the same username and login credential on every machine.
+* One or more machines that meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_]. If your machine doesn't have the software packages necessary, the downloadable TigerGraph package includes a setup script called `install_tools.sh`.
+* A sudo user with the same username and login credential on every machine
  ** If sudo privilege is not available, please contact TigerGraph support for workarounds.
 * A license key provided by TigerGraph (not applicable to Enterprise Free)
 * A TigerGraph system package
- ** If you do not yet have a TigerGraph system package, you can request one at the following address: https://www.tigergraph.com/get-tigergraph/
+ ** If you do not yet have a TigerGraph system package, you can request one here: https://www.tigergraph.com/get-tigergraph/
 * If you are installing a cluster, ensure that every machine has the same SSH port and the port stays open during installation
 
 == *Installation*
 
-TigerGraph's installation script support both single-node and cluster installation, and the user can choose to install either interactively and non-interactively.
+TigerGraph's installation script supports both single-node and cluster installation, and the user can choose to install either interactively or non-interactively.
 
 === Interactive installation
 
-The following describes the procedure to install TigerGraph on Linux interactively. The filename of your package may vary, depending on the product edition and version. For the examples here, we use the filename `tigergraph-<version>.tar.gz`, which should be replaced by the actual filename of your package.
+The following describes the procedure to install TigerGraph on Linux interactively, that is, with custom settings for the installation username, IP address, file paths, and so on. The filename of your package may vary depending on the product edition and version. For the examples here, we use the filename `tigergraph-<version>.tar.gz`, which should be replaced by the actual filename of your package.
 
 ==== *Step 1*: Extract the package
 
@@ -46,7 +46,7 @@ $ tar -xzf tigergraph-<version>.tar.gz
 [#_step_2_run_installation_script]
 ==== *Step 2*:  Run installation script
 
-Navigate to the `tigergraph-<version>-offline` folder and run script `install.sh`  with the following commands:
+Navigate to the `tigergraph-<version>-offline` folder. If you are certain that you already meet the software requirements, run `install.sh`, or run `install_tools.sh` to check for and install all required packages first.
 
 .Run the installation script
 [source,console]
@@ -55,8 +55,6 @@ $ cd tigergraph-<version>-offline
 
 # to install enterprise license
 $ sudo ./install.sh
-
-# For non-interactive installations, please see the non-interactive mode section.
 ----
 
 
@@ -65,18 +63,19 @@ The installer will ask for the following information, for which you may choose t
 * Your agreement to the License Terms and Conditions
 * Your license key (not applicable for Enterprise Free)
 * Username for the Linux user who will own and manage the TigerGraph platform
- ** The installer creates a Linux user who is the only authorized user that can run `gadmin` commands to manage the TigerGraph Platform, and for whom this username is for
+ ** The installer creates a new Linux user (with a username of your choice) who is the only user with permission to run `gadmin` commands to manage the TigerGraph Platform.
 * Password for the Linux user who will own and manage the TigerGraph platform
-* Path to where the installation folder will be
-* Path to where the data folder will be
-* Path to where the log folder will be
-* Path to where the temp folder will be
+* Path to the installation folder
+* Path to the data folder
+* Path to the log folder
+* Path to the temp folder
 * The SSH port for your machine
 
 To see what the default settings are, read the <<_installation_options>> section below.
 
 WARNING: Since license keys are long -- over 100 characters long. If you copy-and-paste the license key, be careful not to accidentally include an end-of-line character.
 
+After configuring the SSH port, the installation continues directly to cluster settings.
 
 ==== *Step 3*: Configure cluster settings
 
@@ -107,6 +106,8 @@ After installation is complete, you can switch to the Linux user who owns the pl
 $ su <username>  # default username: tigergraph
 ----
 
+Without switching to this user, you will not have permission to run `gadmin` commands.
+
 At the prompt, enter the password that was set in Step 2.
 
 After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin.adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE and GPE will show `"Warmup"`.
@@ -131,7 +132,7 @@ $ tar -xzf tigergraph-<version>.tar.gz
 
 ==== Step 2: Configure installation settings
 
-Navigate to the `tigergraph-<version>-offline` folder. Inside the folder, there is a file named `install_conf.json`. For non-interactive mode installation, the user must review and modify all the settings in the file _**_`install_conf.json` before running the installer.
+The `tigergraph-<version>-offline` folder contains a file named `install_conf.json`. For non-interactive (custom) installation, the user must review and modify all the settings in the file `install_conf.json` before running the installer.
 
 Below is an example of the `install_conf.json` file:
 
@@ -212,10 +213,14 @@ $ sudo ./install.sh -n
 
 The following default settings will be applied if no parameters are specified:
 
-* The installer will create a Linux user with username `tigergraph` and with password `tigergraph`.This user will be the only user authorized to run `gadmin` commands to manage the TigerGraph platform and services.
+* The installer will create a Linux user with username `tigergraph` and with password `tigergraph`. This user will be the only user authorized to run `gadmin` commands to manage the TigerGraph platform and services.
 ** If there is already a user named `tigergraph`, this user will be designated as the platform owner and no other user will be created.
-* The default root directory for the installation would be `/home/tigergraph/tigergraph` with the App/Data/Log/Temp files within it : App Path : `/home/tigergraph/tigergraph/app` ****Data Path :``/home/tigergraph/tigergraph/data`` ****Log Path :``/home/tigergraph/tigergraph/log`` ****Temp Path :``/home/tigergraph/tigergraph/tmp``
-* The root directory for the installation (referred to as `<tigerGraph_root_dir>`) is a folder called `tigergraph` located in the tigergraph user's home directory, i.e., `/home/tigergraph/tigergraph`.
+* The default root directory for the installation would be `/home/tigergraph/tigergraph` with the App/Data/Log/Temp files within it.
+** App Path: `/home/tigergraph/tigergraph/app`
+** Data Path: ``/home/tigergraph/tigergraph/data``
+** Log Path: ``/home/tigergraph/tigergraph/log``
+** Temp Path: ``/home/tigergraph/tigergraph/tmp``
+* The root directory for the installation (referred to as `<tigerGraph_root_dir>`) is a folder called `tigergraph` located in the tigergraph user's home directory `/home/tigergraph/tigergraph`.
 
 The installation can be customized by running command-line options with the `install.sh` script:
 
