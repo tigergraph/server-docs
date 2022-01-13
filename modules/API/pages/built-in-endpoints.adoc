@@ -1147,27 +1147,40 @@ _*Graph schema object*_ *fields:*
 
 === Upsert data to graph
 
-`+POST /graph/{graph_name}+`
+`POST /graph/{graph_name}`
 
-This endpoint upserts vertices and/or edges into a graph. To upsert means that if a vertex or edge does not exist, it is inserted, and if it does exist, it is updated.
+This endpoint upserts vertices and/or edges into a graph.
+To upsert means that if a vertex or edge does not exist, it is inserted, and if it does exist, it is updated.
 
 ==== Atomic upsert transaction
 
-By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If something goes wrong during the process of the request, the request data can be partially consumed by the database.
+By default, the `POST /graph/{graph_name}` endpoint is not atomic. If something goes wrong during the process of the request, the request data can be partially consumed by the database.
 
-You can append a request header `gsql-atomic-level` to the request and set its value to `atomic` to make the request an atomic transaction.
+You can append a request header `gsql-atomic-level` to the request to set the request's atomicity level.
+The header parameter accepts the following values:
+
+* `atomic`: The request is an atomic transaction.
 An atomic transaction means that updates to the database contained in the request are all-or-nothing: either all changes are successful, or none is successful.
+* `nonatomic`: The request is not atomic.
+This is the default behavior of the endpoint.
 
 For example, suppose we have the following request to upsert two vertices:
 
-[source,text]
+[tabs]
+====
+Request::
++
+--
+[source,console]
 ----
-curl --data-binary @vertices.json http://localhost:9000/graph/social
+$ curl --data-binary @vertices.json http://localhost:9000/graph/social
 ----
-
-And the content of `vertices.json` is:
-
-[source,text]
+--
+Request body::
++
+--
+Content of `vertices.json` is:
+[source,json]
 ----
 {
  "vertices": {
@@ -1186,15 +1199,17 @@ And the content of `vertices.json` is:
   }
 }
 ----
+--
+====
 
 With the request above, if the vertex `Kelly` fails to be upserted due to a machine failure, it is still possible that the vertex `Velma` is upserted to the database.
 
 If you add the `gsql-atomic-level` header to the request URL and set its value to `atomic`, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
 
-[source,bash]
+[source,console]
 ----
 # This is an atomic request
-curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social?automic_post=true
+$ curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social?automic_post=true
 ----
 
 ==== Parameters
@@ -1235,7 +1250,6 @@ The JSON format for describing a vertex set or edge set is summarized below.
 The payload data should be in JSON according to the schema shown below:
 
 .Request body schema
-====
 [source,bash]
 ----
 {
@@ -1272,7 +1286,7 @@ The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a l
 The keys which are not in angle brackets are exact texts that must be used as they are.
 The nested hierarchy means that vertices are grouped by type.
 Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
-====
+
 
 The first example below shows two `User` vertices having an attribute called `age`:
 
@@ -1411,7 +1425,7 @@ Each attribute value may be accompanied by an operation (op) code, which provide
 
 If an attribute is not given in the payload, the attribute stays unchanged if the vertex/edge already exists, or if the vertex/edge does not exist, a new vertex/edge is created and assigned the default value for that data type. The default value is 0 for `int/uint`, 0.0 for `float/double`, and `""`(empty string) for string.
 
-==== Invalid data types cause the request to be rejected
+==== Valid data types
 
 The RESTPP server validates the request before updating the values. The following schema violations will cause the entire request to fail and no change will be made to a graph:
 
