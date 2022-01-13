@@ -1,34 +1,119 @@
 = HA Cluster Configuration
+:description: An overview of HA concepts in TigerGraph and how to configure an HA cluster.
+:stem: latexmath
 
-A TigerGraph system with High Availability (HA) is a cluster of server machines which uses replication to provide continuous service when one or more servers are not available or when some service components fail. TigerGraph HA service provides load balancing when all components are operational, as well as automatic failover in the event of a service disruption. The *replication factor* is the number of copies of data. In contrast, the *partitioning factor* is the number of machines across which one copy of the database is distribution.
+A TigerGraph system with High Availability (HA) is a cluster of server machines which uses replication to provide continuous service when one or more servers are not available or when some service components fail.
 
+TigerGraph HA service provides load balancing when all components are operational, as well as automatic failover in the event of a service disruption.
+
+The following terms describe the size and dimension of a HA cluster:
+
+replication factor:: Total number of instances of your data.
+partitioning factor:: Number of machines across which one copy of the data is distributed.
+In practice, the partitioning factor of a cluster is decided by dividing the total number of machines in the cluster by the replication factor.
+cluster size:: Total number of machines in the cluster.
+
+If an HA cluster has a replication factor of 2, the cluster maintains two instances of the data, stored on separate machines.
+If an HA cluster has a partitioning factor of 2, each instance of the data is distributed across two machines.
+
+If an HA cluster has a replication factor of 2 and a partitioning factor of two, the cluster has a total of 4 machines.
+With the 4 machines, the cluster maintains two instances of the data, each distributed across two machines.
+
+Replication and distribution both increase query throughput and improve system resiliency.
+There is no upper limit for either partitioning factor or replication factor.
+
+For example, the following cluster has a replication factor of 2 and a cluster size of 10, which produces a partitioning factor of stem:[10 / 2 = 5].
+
+.Replication factor vs. partitioning factor
 image::cluster_arch.png[Replication factor vs. partitioning factor]
 
-If the replication factor is 2, a fully-functioning system maintains two copies of the data, stored on separate machines. Users can choose a higher replication factor for greater query throughput and greater system resiliency.
 
 == System Requirements
+* A highly available cluster has a cluster size of at least 4 and a replication factor of at least 2.
+A highly available cluster can withstand the failure of any node in the cluster.
+* If you choose to resize a cluster after installation, ensure every node across the cluster is running the same version of TigerGraph.
 
-* The total cluster size should be (partitioning factor) X (replication factor).
-* The smallest possible distributed database with HA is 2 x 2 = 4 machines.
-* The smallest possible non-distributed database with HA is 1 x 3 = 3 machines.
-* There is no upper limit for either partitioning factor or replication factor.
-* The same version of the TigerGraph software package is installed on each machine.
 
-== Configuring HA
+== Configuring HA settings
+There are two ways of configuring HA settings for a cluster:
 
-Starting from version 3.0, configuring a HA cluster is part of platform installation. See the xref:installation:install.adoc[Installation Guide] page for details.
+* Configure HA settings xref:installation:install.adoc#_step_2_configure_installation_settings[during installation].
+* xref:cluster-resizing:README.adoc[Resize a cluster] after installation.
 
-[WARNING]
-====
-HA configuration can only be done at the time of system installation and before deploying the system for database use. HA configuration change after installation is not supported. Converting a non-HA system to an HA cluster would require reinstalling all the TigerGraph components and rebuilding the database from the start.
-====
 
-During TigerGraph platform installation, specify the replication factor. The default value for replication factor is 1, which means there is no HA setup for the cluster. The user does not explicitly set the partitioning factor. Instead, the TigerGraph system will set
+=== Configure HA settings during installation
+Configuring a HA cluster is part of platform xref:installation:install.adoc[installation].
+
+During TigerGraph platform installation, specify the replication factor.
+The default value for replication factor is 1, which means there is no HA setup for the cluster.
+The user does not explicitly set the partitioning factor. Instead, the TigerGraph system will set the partitioning factor through the following formula:
 
 `partitioning factor = (number of machines / replication factor)`
 
 If the division does not produce an integer, some machines will be left unused.
+For example, if you install a 7-node cluster with a replication factor of 2, the resulting configuration is 2-way HA for a database with a partitioning factor of 3. One machine is left unused.
 
-*Example*: If you install a 7-node cluster with replication factor = 2, the resulting configuration will be 2-way HA for a database with with a partitioning factor of 3. One machine will be unused.
+=== Resize a running cluster
+In addition to configuring HA settings during installation, you can also resize a running cluster.
 
-###
+
+xref:cluster-resizing:[Cluster resizing] allows you to perform the following:
+
+* Expand a cluster
+* Shrink a cluster
+* Repartition a cluster
+
+During cluster resizing, you should expect a brief amount of cluster downtime, during which your cluster will not be able to respond to requests.
+The specific amount of downtime varies depending on your cluster size, machine memory and CPU, etc.
+For reference:
+
+.Expansion downtime - Example 1
+|===
+||Before expansion |After expansion
+
+|Replication factor
+|2
+|2
+
+|Partitioning factor
+|2
+|4
+
+|Data volume (per copy)
+2+|100 GB
+
+
+|Instance type
+2+|GCP EC2 with 8 vCPUs and 32 GB memory
+
+
+|Downtime
+2+|About 4 minutes
+
+|===
+
+.Expansion downtime - Example 2
+|===
+||Before expansion |After expansion
+
+|Replication factor
+|2
+|4
+
+|Partitioning factor
+|4
+|4
+
+|Data volume (per copy)
+2+|500 GB
+
+
+|Instance type
+2+|GCP EC2 with 8 vCPUs and 32 GB memory
+
+
+|Downtime
+2+|About 9 minutes
+
+|===
+

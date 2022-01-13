@@ -1,6 +1,5 @@
 = Installation Guide
 :description: Installing Single-machine and Multi-machine systems
-:imagedir: images:/
 
 
 This guide describes how to install the TigerGraph platform either as a single node or as a multi-node cluster, interactively or non-interactively.
@@ -8,10 +7,9 @@ This guide describes how to install the TigerGraph platform either as a single n
 NOTE: If you signed up for the Enterprise Free license, you also have access to the TigerGraph platform as a Docker image or a virtual machine (VirtualBox) image.
 Follow the instructions in xref:cloud:start:getting-started.adoc[Getting started] to start up TigerGraph in a Docker container or with VirtualBox.
 
-Video walkthrough:
+Video walk-through:
 
-video::sfe3Q37oWJQ[youtube]
-
+video::sfe3Q37oWJQ[youtube,800,600]
 
 
 == Preparation
@@ -36,29 +34,16 @@ The following describes the procedure to install TigerGraph on Linux interactive
 
 ==== *Step 1*: Extract the package
 
-Extract the package by running the following command. A folder named `tigergraph-<version>-offline` __**__will be created.
+Extract the package by running the following command.
+A folder named `tigergraph-<version>-offline` will be created.
 
-
-[tabs]
-====
-Title A::
-+
---
 [,console]
 ----
 $ tar -xzf tigergraph-<version>.tar.gz
 ----
---
-Title B::
-+
---
-[,console]
-----
-$ gadmin status
-----
---
-====
 
+
+[#_step_2_run_installation_script]
 ==== *Step 2*:  Run installation script
 
 Navigate to the `tigergraph-<version>-offline` folder and run script `install.sh`  with the following commands:
@@ -102,7 +87,7 @@ TigerGraph cluster configuration enables the graph database to be partitioned an
 * The IP address of each node
 * Username and credentials information of the sudo user
  ** Every machine in the cluster must have a sudo user with the same username and password or SSH key.
-* Permission to set NPT time synchronization
+* Permission to set NTP time synchronization
 * Permission to set firewall rules among the cluster nodes
 
 
@@ -115,7 +100,7 @@ image::image (76).png[]
 
 ==== *Step 4*: Verify installation
 
-After installation is complete, you can switch to the Linux user who owns the platform (created in link:install.adoc#_step_2_run_installation_script[Step 2]) with the following command :
+After installation is complete, you can switch to the Linux user who owns the platform (created in xref:install.adoc#_step_2_run_installation_script[Step 2]) with the following command :
 
 [,console]
 ----
@@ -124,7 +109,7 @@ $ su <username>  # default username: tigergraph
 
 At the prompt, enter the password that was set in Step 2.
 
-After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin:adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE __**__and GPE will show `"Warmup"`.
+After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin.adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE and GPE will show `"Warmup"`.
 
 image::image (77).png[Status of all components upon successful installation]
 
@@ -201,7 +186,7 @@ Here is a description of all the fields in the config file:
   *** `"LogRoot"`: Absolute path to where the log folder will be.
   *** `"TempRoot"`: Absolute path to where the temp folder will be.
  ** `"License"`: Your TigerGraph license string.
- ** `"Node List"`:  A JSON array of the nodes in the cluster. Each machine in the cluster is defined as a key-value pair, where the key is a machine alias (m1, m2, m3, etc) and the value is the IP address of the node.
+ ** `"Node List"`:  A JSON array of the nodes in the cluster. Each machine in the cluster is defined as a key-value pair, where the key is a machine alias (m1, m2, m3, etc.) and the value is the IP address of the node.
 * `"AdvancedConfig"`
  ** `"ClusterConfig"`: Cluster configurations
   *** `"LoginConfig"`: Login configurations
@@ -222,14 +207,15 @@ Start the non-interactive installation process by running the `install.sh` scrip
 $ sudo ./install.sh -n
 ----
 
+[#_installation_options]
 === Installation options
 
 The following default settings will be applied if no parameters are specified:
 
-* The installer will create a Linux user with username `tigergraph` and with password `tigergraph`. This user will be the only user authorized to run `gadmin` commands to manage the TigerGraph platform and services.
- ** If there is already a user named `tigergraph`, this user will be designated as the platform owner and no other user will be created.
-* The default root directory for the installation would be `/home/tigergraph/tigergraph` ****with the App/Data/Log/Temp files within it : App Path : `/home/tigergraph/tigergraph/app` ****Data Path :``/home/tigergraph/tigergraph/data`` ****Log Path :``/home/tigergraph/tigergraph/log`` ****Temp Path :``/home/tigergraph/tigergraph/tmp``
-* The root directory for the installation (referred to as `<tigerGraph_root_dir>`) is a folder called `tigergraph` __**__located in the tigergraph user's home directory, i.e., `/home/tigergraph/tigergraph`.
+* The installer will create a Linux user with username `tigergraph` and with password `tigergraph`.This user will be the only user authorized to run `gadmin` commands to manage the TigerGraph platform and services.
+** If there is already a user named `tigergraph`, this user will be designated as the platform owner and no other user will be created.
+* The default root directory for the installation would be `/home/tigergraph/tigergraph` with the App/Data/Log/Temp files within it : App Path : `/home/tigergraph/tigergraph/app` ****Data Path :``/home/tigergraph/tigergraph/data`` ****Log Path :``/home/tigergraph/tigergraph/log`` ****Temp Path :``/home/tigergraph/tigergraph/tmp``
+* The root directory for the installation (referred to as `<tigerGraph_root_dir>`) is a folder called `tigergraph` located in the tigergraph user's home directory, i.e., `/home/tigergraph/tigergraph`.
 
 The installation can be customized by running command-line options with the `install.sh` script:
 
