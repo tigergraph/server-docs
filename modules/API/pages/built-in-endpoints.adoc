@@ -264,7 +264,7 @@ $ curl -X GET
 ]
 ----
 
-In the below example, `what` and `latest` are used. The request asks for the `10` latest data points regarding ``mem``ory usage:
+In the below example, `what` and `latest` are used. The request asks for the 10 latest data points regarding memory usage:
 
 [source,console]
 ----
@@ -639,7 +639,7 @@ In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Stor
 The check passes if there are no discrepancies between the GSE and GPE in terms of deleted vertices. If there is a discrepancy, the check fails and the return result will contain the IDs of the deleted vertices that are not synced properly. If you are running TigerGraph on a distributed cluster, the check will be performed on each node of the cluster, and the endpoint will return a list containing the results of the check for every node.
 
 ==== Parameters
-[width="100%",cols="15%,10%,75%",options="header",]
+[width="100%",cols="15%,10%,75%a",options="header",]
 |===
 |Name |Required |Description
 |`threadnum` |No |Integer that indicates the number of threads used to
@@ -810,7 +810,7 @@ curl --user example_username:example_password -X GET "localhost:9000/requesttoke
 | Name of the graph that the token will be valid for.
 |===
 
-Users can use either `secret` or their username and password to generate a token. If no secret is supplied and the user chooses to use their username and password instead, then the parameter `graph` becomes required.
+Users can generate a token with either `secret` or their username and password. If the user chooses to use their username and password instead of supplying a secret, then the parameter `graph` becomes required.
 
 === Request a token (`POST`)
 
@@ -1311,7 +1311,7 @@ $ curl -u tigergraph:tigergraph \
 
 | `graph`
 | Yes
-| The name of the graph from which the schema will be retrieved.
+| The name of the graph whose schema to retrieve.
 
 | `type`
 | No
@@ -1326,7 +1326,7 @@ This endpoint upserts vertices and/or edges into a graph. To upsert means that i
 
 ==== Atomic upsert transaction
 
-By default, the `+POST /graph/{graph_name}+` endpoint is not atomic, meaning it is not all-or-nothing. If something goes wrong while the request is being made,  the request data can be partially received by the database.
+By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If something goes wrong during the server processing stage of the request, the request data can be partially consumed by the database.
 
 You can append a query string parameter `atomic_post` to the URL of the request and set its value to true to make the request an atomic transaction, which means that updates to the database contained in the request are all-or-nothing. Either all changes are successful, or none are successful.
 
@@ -2489,7 +2489,7 @@ vertices:`vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
 
 ==== Specify replica
 
-If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range `[1 - (cluster replication factor)]`. If you supply an invalid value for the header, the request will return an error.
+If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range `[1, (cluster replication factor)]`. If you supply an invalid value for the header, the request will return an error.
 
 ==== Specify thread limit
 
@@ -2504,24 +2504,24 @@ To run query `hello` on a graph named `social`, and the query parameter is of ty
 .Running a query via HTTP request
 
 [source,bash]
---
+----
 curl -X GET "http://localhost:9000/query/social/hello?p=Tom"
---
+----
 .Limiting the query to use under 4 threads
 [source,bash]
---
+----
 curl -x GET -H "GSQL-THREAD-LIMIT: 4" "http://localhost:9000/query/social/hello?p=Tom"
---
+----
 .Specifying the query to run on the first replica
 [source,bash]
---
+----
 curl -X GET -H "GSQL-REPLICA: 2" "http://localhost:9000/query/social/hello?p=Tom"
---
+----
 .Specifying the query to run on the primary cluster
 [source,bash]
---
+----
 curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom"
---
+----
 
 
 
@@ -2585,27 +2585,27 @@ For example, if you have a cluster of three nodes, each with 8 vCPUs, then a que
 The query in this sample request takes a parameter of type `VERTEX<person>`:
 
 [source.wrap,bash]
---
+----
 curl -X POST -d '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
---
+----
 .Specify that the query run on the first replica
 [source.wrap,bash]
---
+----
 curl -X POST -d -H "GSQL-REPLICA: 2" '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
---
+----
 .Specify that the query run on the primary cluster
 [source.wrap,bash]
---
+----
 curl -X POST -d -H "GSQL-REPLICA: 1" '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
---
+----
 .Specify that the query run with a limit of 4 threads
 [source.wrap,bash]
---
+----
 curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
---
+----
 
 [NOTE]
 ====
@@ -2750,7 +2750,7 @@ Response::
 
 | `url`
 | No
-| The endpoint on which to abort running queries. You must specify the base of the endpoint's URL, but then use a wildcard to allow for different parameters. For example, to abort all running queries for the endpoint `/sleepgpe`, use `url=/sleepgpe.*`
+| The endpoint whose running queries to abord. You must specify the base of the endpoint's URL, but then use a wildcard to allow for different parameters. For example, to abort all running queries for the endpoint `/sleepgpe`, use `url=/sleepgpe.*`
 |===
 
 === Check query status (Detached Mode)
