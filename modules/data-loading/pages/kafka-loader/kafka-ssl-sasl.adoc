@@ -2,7 +2,7 @@
 :description:
 
 TigerGraph's Kafka loader supports encrypting data in-transit using SSL and SASL protocols.
-This page details how to set up
+This page details how to set up the following authentication and encryption protocol between the server (the external Kafka cluster) and the client (your TigerGraph instance).
 
 * Set up one-way SSL
 * Set up two-way SSL
@@ -10,27 +10,22 @@ This page details how to set up
 * Set up SSL and SASL
 
 == Set up one-way SSL
-You can set up SSL to only have the server side (the external Kafka cluster) verify the identity of the client (TigerGraph).
+You can set up SSL to only have the client (TigerGraph) verify the identity of the server (your external Kafka cluster or broker).
 
 === Before you begin
 The following prerequisites should be met on the server side:
 
-* Ensure you have link:https://docs.confluent.io/platform/current/kafka/authentication_ssl.html[enabled SSL encryption for your Kafka cluster].
-** For one-way SSL, you do not need to configure truststore properties in `server.properties`.
-Instead, you supply truststore information when you configure data source for the kafka loader.
-* Ensure you have created a key for every broker with the Common Name (CN) matching th the fully qualified domain name (FQDN) of the server.
-* Ensure you have created a Certificate Authority(CA).
-* Ensure that you have signed the certificates with the CA and imported both the certificate of the CA and the signed certificate into the broker keystore:.
-* Add the full qualified domain name of the server to `/etc/hosts`
+* Ensure you have generated a Certificate Authority (CA) on the server.
+* Ensure you have generated a certificate and private key with the server's hostname as the alias on the server.
+The certificate has been signed by the CA.
 
-You will need the following files and passwords in order to configure SSL on TigerGraph.
+You will need the following files in order to configure SSL on TigerGraph.
 
 * The truststore file from the broker
 * The broker's Certificate Authority
 
 === Procedure
-. Copy configuration files and certificates from broker to TigerGraph servers.
-Below is the list of files to copy:
+. Copy the following files from the server side to your TigerGraph cluster's m1 machine:
 * The truststore file from the broker
 ** For example, `server.truststore.jks`
 * The broker's Certificate Authority
@@ -50,7 +45,7 @@ For example:
    }
 }
 ----
-<1> The hostname of the broker.
+<1> The hostname and port of the broker.
 <2> `ssl.ca.location` and `ssl.truststore.location` should match the paths where you copied the certificate authority and the truststore file.
 
 Once you have defined the data source with the correct SSL configuration, you have configured one-way SSL.
@@ -62,7 +57,12 @@ When you run loading jobs from this data source, SSL secures data in transit and
 You can set up two-way SSL between TigerGraph and your external Kafka cluster and have the client authenticate the server and vice versa.
 
 === Before you begin
-* Ensure you have link:https://docs.confluent.io/platform/current/kafka/authentication_ssl.html[enabled SSL encryption for your Kafka cluster].
+* Ensure you have link:https://docs.confluent.io/platform/current/kafka/authentication_ssl.html#brokers[enabled SSL authentication for your Kafka cluster].
+You only need to follow the instructions in Confluent's documentation to configure brokers.
+The steps for configuring the client are described on this page.
+** `ssl.endpoint.identification.algorithm` should be left empty.
+
+* Ensure you have created a certificate for the client, and signed it with the broker's CA
 
 === Procedure
 . Copy the following files from the broker to every node:
