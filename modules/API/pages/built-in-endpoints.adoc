@@ -47,7 +47,7 @@ This endpoint performs a simple server health check. It listens on port 14240 an
 
 ==== Sample request:
 
-[source,text]
+[source,bash]
 ----
 $ curl 'http://localhost:14240/api/ping'
 ​
@@ -76,7 +76,7 @@ To include one or more of the endpoint types in the output, include the endpoint
 
 .Example: Report on all built-in endpoints
 
-[source,console]
+[source,bash]
 ----
 curl -X GET "http://localhost:9000/endpoints?builtin=true" | jq .
 ----
@@ -141,11 +141,21 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
 
 This endpoint returns the GIT versions of all components of the system.
 
-==== Sample request:
-
-[source,console]
+[tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 curl -X GET "http://localhost:9000/version"
+----
+--
+Response::
++
+--
+[source.wrap,console]
+----
 {"error":"false", "message":"TigerGraph RESTPP:
  --- Version ---
 product              release_2.6.0_05-09-2020 ab1e3d0da6237c27468d6cabb90900119d63759d  2020-04-15 15:46:29 -0700
@@ -168,6 +178,8 @@ blue_features        release_2.6.0_05-09-2020 5d7a4e8d806519f529274b331496d3bc78
 blue_commons         release_2.6.0_05-09-2020 432763afc49bf986aed4731e50254243d3665bc3  2019-07-30 03:34:46 -0700
 "}
 ----
+--
+====
 
 ==== Parameters
 
@@ -227,17 +239,28 @@ endpoint
 
 ==== Sample requests
 
-In the sample request below, three filters are used: `from`, `to` and `what`.
+The sample request below uses three filters: `from`, `to` and `what`.
 
-The timeframe specified by `from` and `to` indicate start and end times of `1618957536` to `1619023346`.
+`from` and `to` specify a timeframe with start and end times of `1618957536` and `1619023346`.
 
 The `what` filter specifies that the response should only include `CPU` information:
 
-[source,console]
+[tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 $ curl -X GET
 "https://crunch.i.tgcloud.io:14240/ts3/api/datapoints?from=1618957536&to=1619023346&what=cpu"
-
+----
+--
+Response::
++
+--
+[source.wrap, console]
+----
 # Three data points returned
 [
   {
@@ -263,14 +286,27 @@ $ curl -X GET
   }
 ]
 ----
+--
+====
 
 In the below example, `what` and `latest` are used. The request asks for the 10 latest data points regarding memory usage:
 
-[source,console]
+[tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
 $ curl -X GET
 "https://crunch.i.tgcloud.io:14240/ts3/api/datapoints?what=mem&latest=10"
-
+----
+--
+Response::
++
+--
+[source.wrap,json]
+----
 [
   {
     "detail": 159,
@@ -344,7 +380,8 @@ $ curl -X GET
   }
 ]
 ----
-
+--
+====
 === Show query performance
 
 `+GET /statistics/{graph_name}+`
@@ -353,14 +390,25 @@ This endpoint returns real-time query performance statistics over the given time
 
 ==== Sample request:
 
-The return object is a hash of the endpoints and their performance data:
+The return object is a hash of the endpoints and their performance data.
 
-[source,console]
+This example shows two endpoints (`/graph/vertex` and  `/statistics`) called during the past 60 seconds.
+
+[tabs]
+====
+Request::
++
+--
+[source,bash]
 ----
-# The example shows two endpoints (/graph/vertex and
-# /statistics) called during the past 60 seconds.
 curl -X GET "http://localhost:9000/statistics/poc_graph?seconds=60" | jq '.'
-
+----
+--
+Response::
++
+--
+[source.wrap, json]
+----
 {
   "GET /graph/vertices/{vertex_type}/{vertex_id}": {
     "CompletedRequests": 8,
@@ -404,6 +452,8 @@ curl -X GET "http://localhost:9000/statistics/poc_graph?seconds=60" | jq '.'
   }
 }
 ----
+--
+====
 
 Each endpoint has the following attributes:
 
@@ -532,7 +582,7 @@ For example, when TigerGraph is starting up, GPE is in the "Warmup" state and ca
 Request::
 +
 --
-[source.wrap,console]
+[source.wrap,bash]
 ----
 $ curl -X POST http://localhost:14240/informant/current-service-status -d '{ "ServiceDescriptors":  [{ "ServiceName": "gpe","Partition": 2, "Replica": 1}]}' | jq
 ----
@@ -1404,7 +1454,6 @@ The JSON format for describing a vertex set or edge set is summarized below.
 The payload data should be in JSON according to the schema shown below:
 
 .Request body schema
-====
 [source,bash]
 ----
 {
@@ -1441,7 +1490,6 @@ The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a l
 The keys which are not in angle brackets are exact texts that must be used as they are.
 The nested hierarchy means that vertices are grouped by type.
 Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
-====
 
 The first example below shows two `User` vertices having an attribute called `age`:
 
@@ -1814,7 +1862,6 @@ Response::
 This endpoint deletes vertices by their vertex type. The delete operation is a cascading deletion. If a vertex is deleted, then all edges connected to it are automatically deleted as well.
 
 ==== Sample request:
-====
 The response object will contain a `"deleted_vertices"` field that indicates the number of vertices that were deleted.
 [tabs]
 Request::
@@ -1845,7 +1892,7 @@ Response::
 }
 ----
 --
-====
+
 ==== Parameters
 [width="100%",cols="15%,10%,75%",options="header",]
 |===
