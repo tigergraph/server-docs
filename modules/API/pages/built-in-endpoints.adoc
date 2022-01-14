@@ -335,7 +335,8 @@ $ curl -X GET
 
 `+GET /statistics/{graph_name}+`
 
-This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` __**__parameter.The `seconds` parameter must be a positive integer less than or equal to 60.
+This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` parameter.
+The `seconds` parameter must be a positive integer less than or equal to 60.
 
 ==== Sample request:
 
@@ -414,7 +415,7 @@ If there is no query sent in the past given seconds, an empty json will be retur
 
 | `segments`
 | No
-| Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into.The value for this endpoint must be between 1 and 100 and has a default value of 10.
+| Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into. The value for this endpoint must be between 1 and 100 and has a default value of 10.
 |===
 
 [#_show_service_status]
@@ -619,7 +620,7 @@ $ cat finished.summary.txt
 
 === Check deleted vertices
 
-[.line-through]#`GET /deleted_vertex_check`#
+`GET /deleted_vertex_check`
 
 In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Storage Engine (GSE) might be out of sync on vertex deletion information. When this happens, some vertices might exist on one of the components, but not the other. Even though these errors are exceedingly rare, TigerGraph provides an endpoint that allows you to check the deleted vertices on GSE and GPE and see if they out of sync.
 
@@ -1291,26 +1292,40 @@ _*Graph schema object*_ *fields:*
 
 === Upsert data to graph
 
-`+POST /graph/{graph_name}+`
+`POST /graph/{graph_name}`
 
-This endpoint upserts vertices and/or edges into a graph. To upsert means that if a vertex or edge does not exist, it is inserted, and if it does exist, it is updated.
+This endpoint upserts vertices and/or edges into a graph.
+To upsert means that if a vertex or edge does not exist, it is inserted, and if it does exist, it is updated.
 
 ==== Atomic upsert transaction
 
-By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If something goes wrong during the process of the request,  the request data can be partially consumed by the database.
+By default, the `POST /graph/{graph_name}` endpoint is not atomic. If something goes wrong during the process of the request, the request data can be partially consumed by the database.
 
-You can append a query string parameter `atomic_post` to the URL of the request and set its value to true to make the request an atomic transaction, which means that updates to the database contained in the request are all-or-nothing. Either all changes are successful, or none is successful.
+You can append a request header `gsql-atomic-level` to the request to set the request's atomicity level.
+The header parameter accepts the following values:
+
+* `atomic`: The request is an atomic transaction.
+An atomic transaction means that updates to the database contained in the request are all-or-nothing: either all changes are successful, or none is successful.
+* `nonatomic`: The request is not atomic.
+This is the default behavior of the endpoint.
 
 For example, suppose we have the following request to upsert two vertices:
 
-[source,text]
+[tabs]
+====
+Request::
++
+--
+[source,console]
 ----
-curl --data-binary @vertices.json http://localhost:9000/graph/social
+$ curl --data-binary @vertices.json http://localhost:9000/graph/social
 ----
-
-And the content of `vertices.json` is:
-
-[source,text]
+--
+Request body::
++
+--
+Content of `vertices.json` is:
+[source,json]
 ----
 {
  "vertices": {
@@ -1329,15 +1344,17 @@ And the content of `vertices.json` is:
   }
 }
 ----
+--
+====
 
 With the request above, if the vertex `Kelly` fails to be upserted due to a machine failure, it is still possible that the vertex `Velma` is upserted to the database.
 
-If you add the `atomic_post` parameter to the request URL and set its value to true, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
+If you add the `gsql-atomic-level` header to the request URL and set its value to `atomic`, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
 
-[source,bash]
+[source,console]
 ----
 # This is an atomic request
-curl --data-binary @vertices.json http://localhost:9000/graph/social
+$ curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
 ----
 
 ==== Parameters
@@ -1362,7 +1379,9 @@ Default value is false.
 
 |`update_vertex_only`|No |If `update_vertex_only` is set to true, the request will only update existing vertices and not insert new vertices.
 
-|`atomic_post`|No |If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
+|`atomic_post`|No a|NOTE: This parameter is deprecated. Please use the `gsql-atomic-level` header instead.
+
+If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
 Default value is false.|
 |===
 
@@ -1376,7 +1395,6 @@ The JSON format for describing a vertex set or edge set is summarized below.
 The payload data should be in JSON according to the schema shown below:
 
 .Request body schema
-====
 [source,bash]
 ----
 {
@@ -1413,7 +1431,7 @@ The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a l
 The keys which are not in angle brackets are exact texts that must be used as they are.
 The nested hierarchy means that vertices are grouped by type.
 Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
-====
+
 
 The first example below shows two `User` vertices having an attribute called `age`:
 
@@ -1552,7 +1570,7 @@ Each attribute value may be accompanied by an operation (op) code, which provide
 
 If an attribute is not given in the payload, the attribute stays unchanged if the vertex/edge already exists, or if the vertex/edge does not exist, a new vertex/edge is created and assigned the default value for that data type. The default value is 0 for `int/uint`, 0.0 for `float/double`, and `""`(empty string) for string.
 
-==== Invalid data types cause the request to be rejected
+==== Valid data types
 
 The RESTPP server validates the request before updating the values. The following schema violations will cause the entire request to fail and no change will be made to a graph:
 
@@ -2379,12 +2397,11 @@ curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom
 
 
 
-[#_run_an_installed_query_post]
 === Run an installed query (`POST`)
 
 `+POST /query/{graph_name}/{query_name}+`
 
-Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON.This is especially helpful when the query takes complex parameters.
+Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON. This is especially helpful when the query takes complex parameters.
 
 ==== Parameters
 
