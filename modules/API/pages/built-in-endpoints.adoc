@@ -335,7 +335,8 @@ $ curl -X GET
 
 `+GET /statistics/{graph_name}+`
 
-This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` __**__parameter. The `seconds` parameter must be a positive integer less than or equal to 60.
+This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` parameter.
+The `seconds` parameter must be a positive integer less than or equal to 60.
 
 ==== Sample request:
 
@@ -619,7 +620,7 @@ $ cat finished.summary.txt
 
 === Check deleted vertices
 
-[.line-through]#`GET /deleted_vertex_check`#
+`GET /deleted_vertex_check`
 
 In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Storage Engine (GSE) might be out of sync on vertex deletion information. When this happens, some vertices might exist on one of the components, but not the other. Even though these errors are exceedingly rare, TigerGraph provides an endpoint that allows you to check the deleted vertices on GSE and GPE and see if they out of sync.
 
