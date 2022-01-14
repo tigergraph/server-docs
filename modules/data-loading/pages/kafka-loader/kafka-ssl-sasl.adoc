@@ -1,7 +1,7 @@
-= Set up SSL/SASL for Kafka Loader
+= SSL/SASL Authentication for Kafka Loader
 :description:
 
-TigerGraph's Kafka loader supports encrypting data in-transit using SSL and SASL protocols.
+TigerGraph's Kafka loader supports authentication and encryption using SSL and SASL protocols.
 This page details how to set up the following authentication and encryption protocol between the server (the external Kafka cluster) and the client (your TigerGraph instance).
 
 * Set up one-way SSL
@@ -18,6 +18,7 @@ The following prerequisites should be met on the server side:
 * Ensure you have generated a Certificate Authority (CA) on the server.
 * Ensure you have generated a certificate and private key with the server's hostname as the alias on the server.
 The certificate has been signed by the CA.
+* Ensure the IP address and the fully qualified domain name (FQDN) of the server is listed in the `/etc/hosts` file on the server.
 
 You will need the following files in order to configure SSL on TigerGraph.
 
@@ -28,7 +29,7 @@ You will need the following files in order to configure SSL on TigerGraph.
 . Copy the following files from the server side to your TigerGraph cluster's m1 machine:
 * The truststore file from the broker
 ** For example, `server.truststore.jks`
-* The broker's Certificate Authority
+* The certificate for the broker's CA
 . xref:kafka-loader/kafka-ssl-sasl.adoc[Create the Kafka data source] and specify SSL configurations in the datasource configuration JSON file.
 For example:
 +
@@ -54,19 +55,21 @@ When you run loading jobs from this data source, SSL secures data in transit and
 
 == Set up two-way SSL
 
-You can set up two-way SSL between TigerGraph and your external Kafka cluster and have the client authenticate the server and vice versa.
+You can set up two-way SSL between TigerGraph and your external Kafka cluster.
+Two-way authentication means the client authenticates the server and the server also authenticates the client.
 
 === Before you begin
 * Ensure you have link:https://docs.confluent.io/platform/current/kafka/authentication_ssl.html#brokers[enabled SSL authentication for your Kafka cluster].
 You only need to follow the instructions in Confluent's documentation to configure brokers.
 The steps for configuring the client are described on this page.
-** `ssl.endpoint.identification.algorithm` should be left empty.
+** For optional settings, `ssl.endpoint.identification.algorithm` should be left empty.
 
-* Ensure you have created a certificate for the client, and signed it with the broker's CA
+* Ensure you have created a certificate for the client, and signed it with the broker's CA.
+* Ensure the IP address and the fully qualified domain name (FQDN) of both the server and the client are in the `/etc/hosts` file of the server.
 
 === Procedure
 . Copy the following files from the broker to every node:
-* The broker's CA
+* The certificate for the broker's CA
 * The client's certificate signed by the broker's CA
 * The client's key
 * The broker's truststore file
@@ -102,10 +105,10 @@ When you run loading jobs from this data source, SSL secures data in transit and
 === Before you begin
 .On broker
 * Ensure you have link:https://docs.confluent.io/platform/current/kafka/authentication_sasl/authentication_sasl_gssapi.html[configured SASL with GSSAPI] on the broker.
-* Ensure the IP address and the hostname of the broker is in the `hosts` file in the `/etc` directory of the OS.
+* Ensure the IP address and the hostname of the broker is in the `/etc/hosts` file.
 
 .On client
-* Make sure the following packages are installed on the client (TigerGraph) server.
+* Make sure the following dependencies are installed on the client (TigerGraph) server.
 ** On Centos:
 +
 [,console]
@@ -124,7 +127,8 @@ apt install libsasl2-modules-gssapi-heimdal <1>
 <1> You only need to install `libsasl2-modules-gssapi-heimdal` if you are on Ubuntu 20.04 LTS
 
 === Procedure
-. Add the IP address and the hostname of the broker to the `/etc/hosts` file.
+. Copy the following files from the server to the client's m1 machine.
+* The server's producer keytab.
 . Define the data source and provide SASL configurations in the data source configuration file.
 For example:
 +
@@ -135,15 +139,15 @@ For example:
    "kafka_config":{
        "security.protocol": "SASL_PLAINTEXT",
        "sasl.mechanism": "GSSAPI",
-       "sasl.kerberos.service.name":"kafka", <1>
-       "sasl.kerberos.principal": "kafka-producer@TIGERGRAPH.COM", <2>
-       "sasl.kerberos.keytab": "/home/tigergraph/kafka_ssl/kafka-producer.keytab",
+       "sasl.kerberos.service.name":"kafka",
+       "sasl.kerberos.principal": "kafka-producer@TIGERGRAPH.COM", <1>
+       "sasl.kerberos.keytab": "/home/tigergraph/kafka_ssl/kafka-producer.keytab" <2>,
        "sasl.jaas.config": "com.sun.security.auth.module.Krb5LoginModule required  debug=true useKeyTab=true  storeKey=true  keyTab=\"/home/tigergraph/kafka_ssl/kafka-producer.keytab\"  principal=\"kafka-producer@TIGERGRAPH.COM\";"
    }
 }
 ----
-<1> `sasl.kerberos.service.name` needs to match
-<2> `sasl.kerberos.principal` needs to match the principal value in the broker's JAAS configuration file.
+<1> `sasl.kerberos.principal` needs to match the principal value in the broker's JAAS configuration file.
+<2> `sasl.kerberos.keytab` needs to match the paths where you copied the producer's keytab.
 
 Once you have defined the data source with the correct SASL configuration, you have configured SASL with GSSAPI between TigerGraph and your Kafka cluster for Kafka loading.
 
