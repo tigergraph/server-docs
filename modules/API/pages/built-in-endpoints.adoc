@@ -840,13 +840,15 @@ The endpoint expects a JSON request body in the following format:
 [,javascript]
 ----
 {
-    "secret": <secret_value>, <1>
-    "lifetime": <token_lifetime> <2>
+    "token": <token_value>, <1>
+    "secret": <secret_value>, <2>
+    "lifetime": <token_lifetime> <3>
 }
 ----
-<1> User's secret to generate the token.
+<1> Token to be refreshed.
+<2> User's secret to generate the token.
 Required  if username and userpassword are not suplied.
-<2> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
+<3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 
 ==== Sample request
 [tabs]
