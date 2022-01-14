@@ -841,15 +841,12 @@ The endpoint expects a JSON request body in the following format:
 ----
 {
     "secret": <secret_value>, <1>
-    "graph": <graph_name>, <2>
-    "lifetime": <token_lifetime> <3>
+    "lifetime": <token_lifetime> <2>
 }
 ----
 <1> User's secret to generate the token.
-Required if the request body does not supply `graph`.
-<2> Name of the graph that the token is valid for.
-Required if the request body does not supply `secret`.
-<3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
+Required  if username and userpassword are not suplied.
+<2> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 
 ==== Sample request
 [tabs]
@@ -910,14 +907,12 @@ The endpoint expects a JSON request body in the following format:
 [,javascript]
 ----
 {
-    "secret": <secret_value>, <1>
-    "graph": <graph_name>, <2>
+    "token": <token_value>, <1>
+    "secret": <secret_value>, <2>
 }
 ----
-<1> User's secret to generate the token.
-Required if the request body does not supply `graph`.
-<2> Name of the graph that the token is valid for.
-Required if the request body does not supply `secret`.
+<1> Token to delete.
+<2> User’s secret to generate the token. Required if username and userpassword are not suplied.
 
 ==== Sample request
 
