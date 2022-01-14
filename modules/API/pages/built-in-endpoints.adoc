@@ -920,15 +920,32 @@ Required if the request body does not supply `secret`.
 
 ==== Sample request
 
-[source,bash]
+[tabs]
+====
+With secret::
++
+--
+[source.wrap,console]
 ----
 curl -X DELETE http://localhost:9000/requesttoken \
      -d '{"secret": "jiokmfqqfu2f95qs6ug85o89rpkneib3", "token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq"}'
-
+----
+--
+With username-password pair::
++
+--
+[source.wrap,console]
+----
 curl --user example_username:example_password \
      -X DELETE http://localhost:9000/requesttoken \
      -d '{"token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq"}'
-
+----
+--
+Response::
++
+--
+[source.wrap,json]
+----
 {
   "code": "REST-0000",
   "expiration": -1,
@@ -937,6 +954,8 @@ curl --user example_username:example_password \
   "token": "0mq98l9pderkaivndf820gudg923p3l0"
 }
 ----
+--
+====
 
 ==== Parameters:
 
