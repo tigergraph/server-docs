@@ -706,16 +706,16 @@ If none is provided, the check will be performed on all vertex types.
 results. Here is a list of accepted values and their corresponding level
 of detail:
 
-`0` (default) : Only return whether the check passed and the
+* `0` (default) : Only return whether the check passed and the
 list of unsynced vertex IDs
 
-`1`: In addition to the previous level, also
+* `1`: In addition to the previous level, also
 return vertex count information
 
-`2`: In addition to the previous level,
+* `2`: In addition to the previous level,
 return vertex count information for every segment
 
-`4`: In addition to the previous level, also return the IDs of deleted vertices for every
+* `4`: In addition to the previous level, also return the IDs of deleted vertices for every
 segment
 
 |`log` |No |Integer that indicates the log level of the deleted vertex
@@ -723,12 +723,12 @@ check. This log is not returned in the endpoint’s HTTP response, but is
 printed to the logs of the GPE component at
 `/tigergraph/log/gpe/log.INFO`
 
-`0` (default): Report brief log for the
+* `0` (default): Report brief log for the
 check as a whole
 
-`1`: Report logs for each segment
+* `1`: Report logs for each segment
 
-`2`: Report additional
+* `2`: Report additional
 logs on the obtained deleted ID list
 |===
 
@@ -1376,7 +1376,7 @@ This endpoint upserts vertices and/or edges into a graph. To upsert means that i
 
 ==== Atomic upsert transaction
 
-By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If something goes wrong during the server processing stage of the request, the request data can be partially consumed by the database.
+By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If anything goes wrong during the lifecycle of a request, the request data can be partially consumed by the database.
 
 You can append a query string parameter `atomic_post` to the URL of the request and set its value to true to make the request an atomic transaction, which means that updates to the database contained in the request are all-or-nothing. Either all changes are successful, or none are successful.
 
@@ -2797,7 +2797,7 @@ Response::
 
 | `url`
 | No
-| The endpoint whose running queries to abord. You must specify the base of the endpoint's URL, but then use a wildcard to allow for different parameters. For example, to abort all running queries for the endpoint `/sleepgpe`, use `url=/sleepgpe.*`
+| The endpoint whose running queries to abort. You must specify the base of the endpoint's URL, but then use a wildcard to allow for different parameters. For example, to abort all running queries for the endpoint `/sleepgpe`, use `url=/sleepgpe.*`
 |===
 
 === Check query status (Detached Mode)
