@@ -743,8 +743,11 @@ $ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0
 The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server.
 *These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
 
-
 === Request a token
+[NOTE]
+====
+`GET` is no longer a supported HTTP method to request a new token. Please use `POST` instead.
+====
 
 `POST /requesttoken`
 
