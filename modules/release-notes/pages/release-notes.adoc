@@ -1,94 +1,38 @@
 = Release Notes
-:description: Release notes for TigerGraph 3.4.
+:description: Release notes for TigerGraph 3.5.
 :page-aliases: change-log.adoc
 
-TigerGraph Server 3.4.0 was released on Dec 21st, 2021.
+TigerGraph Server 3.5.0 was released on Jan 31st, 2022.
 
-== Security patch for Log4j CVE-2021-45105
-TigerGraph 3.4.0 includes a security patch for Log4j CVE-2021-45105.
-See <<Fixed issues>> for details.
-
-== New - TigerGraph GraphQL Service
-Along with TigerGraph Server 3.4.0, we are proudly introducing xref:graphql::intro.adoc[TigerGraph GraphQL Service].
-
-TigerGraph GraphQL Service allows you to make GraphQL requests to access graph data in TigerGraph.
-To learn more, please see xref:graphql::intro.adoc[TigerGraph GraphQL Service].
 
 == New Features
 
-Below is a list of new features and improvements in TigerGraph 3.4.0:
+Below is a list of new features and improvements in TigerGraph 3.5.0:
 
 === Manageability
-* Added the xref:ha:cluster-commands.adoc#_show_current_gsql_leader[`-leader` option] to `gsql` to display the current cluster leader.
-* Added Oracle Linux 8 (OEL 8) to the xref:{page-component-version}@installation:hw-and-sw-requirements.adoc#_certified_operating_systems[list of certified operating systems].
-* Improved query installation process.
-Failure in installing a subset of the queries in a single `INSTALL QUERY` command will no longer cause all installations to abort.
+
 
 === Observability
-* Added xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_show_service_status[endpoint `POST /current-service-status`] to report TigerGraph service status through HTTP requests.
+
 
 === Reliability
-* Added Kafka protection to GSE to prevent message loss during high-volume data loading.
+* Added the `gsql-atomic-level` header to the endpoint `POST /graph/\{graph_name}` to allow users to set atomicity levels in upsert requests.
 
 === Security
-* Masked AWS S3 secret from GSQL logs
+* Masked secrets and user credentials in RESTPP logs.
 
 
 === Usability - GSQL
-* Added support for xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_container_variable[local container variables] in the GSQL Query Language.
-* Relaxed GSQL local variable declaration rules.
-Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_base_type_variables[declared at a lower level] to override the value of a variable with the same name.
-* Added support for declaring a xref:3.4@gsql-ref:querying:accumulators.adoc#_heapaccum[`HeapAccum`] without specifying size.
-* Removed the requirement of `LIMIT` clauses when using `ORDER BY` in xref:3.4@gsql-ref:querying:select-statement/sql-like-select-statement.adoc[SQL-like `SELECT` statements].
-* Removed the limitations on the following functions in Distributed Query Mode:
-** `edgeAttribute()`
-** `neighborAttribute()`
-** `neighbor()`
-** `size()`
-* Added removal methods to xref:3.4@gsql-ref:querying:accumulators.adoc#_listaccum[`ListAccum`] andxref:3.4@gsql-ref:querying:accumulators.adoc#_mapaccum[`MapAccum`]:
-** `ListAccum`
-*** `.remove()`
-*** `.removeOne()`
-*** `.removeAll()`
-** `MapAccum`
-*** `.removeKey()`
+
 
 === Usability - GraphStudio and Admin Portal
-* Added support for _xref:{page-component-version}@gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_add_a_pattern_view[Pattern View]_ in Visual Query Builder (VQB) that allows outputting a specified subset of a visual pattern's match results.
-* Added support for using a vertex or edge's primary ID in expressions if primary ID is marked as an attribute.
-* Added support for xref:gui:graphstudio:explore-graph/graph-exploration-panel.adoc[formatting number attributes].
-* Added support for search in GSQL query list.
-* Added support for search in visual pattern list.
-* Added a removal tool tip and a checkbox to select all privileges in the user-defined roles interface
-* Removed the deprecated `STRING COMPRESS` data type from schema design options
+
+
 
 == Fixed issues
 
-=== Fixed in 3.4.0
-* Upgraded log4j to 2.17.0 to resolve potential security vulnerability
-* Reduced system minimum free memory requirement for transactions
-* Increased the timeout limit for downloading, updating, and deleting the graph catalog
-* Fixed a bug that allowed non-privileged users being able to access GSQL output files through the Admin Portal
-* Increased timeout limit for file operations
-* Fixed an issue that led to GSE crash when a subquery uses file variables
-* Fixed issue where SmartContainer collects hardware-info more than once
-* Fixed an issue that led to cluster shrinking failure when instance as over 1000 queries
-* Increased timeout limit for checking Kafka broker ID
-* Fixed an issue that caused certain queries to use more memory than expected
-* Fixed an issue that in rare cases caused RESTPP memory leak
-* Fixed an issue that occasionally caused GPE to hang when interpreter raises an exception
-* Disabled proxy buffering for /gsqlserver endpoints
-* Fixed an issue that led to backup and restore failures on Kubernetes deployments
-* Fixed an issue with query-request memory tracking that in rare cases led to GPE segmentation fault
-* Fixed an issue that caused unexpected early query return when `getAttr()` has an invalid attribute
-* Fixed an issue that caused local base type variable to lose type inference after being overridden
-* Fixed an issue that caused `PER` clause to return unexpected results
-* Fixed an issue that produced unexpected output when a `WHERE` clause uses parentheses
-* Fixed an issue that caused `v.outdegree()` to return unexpected results
-* Fixed an issue that cause errors in accumulator conjunctive functions calls
-* Fixed an issue in GraphStudio that led to browser crash when dealing with huge map data columns
-* Fixed an issue where services don't automatically restart after updating license
-* Fixed an issue with GSQL syntax checker that threw an unexpected error when a SQL-like query uses built-in functions with multiple arguments
+=== Fixed in 3.5.0
+
 
 
 
@@ -118,6 +62,8 @@ Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-
 == Release notes for previous versions
 * xref:3.3@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.3]
 * xref:3.2@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.2]
+
+== Compatibility with TigerGraph 3.5
 
 == Compatibility with TigerGraph 3.1
 
