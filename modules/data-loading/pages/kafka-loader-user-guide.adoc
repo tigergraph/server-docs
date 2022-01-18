@@ -1,4 +1,5 @@
 = Kafka Loader User Guide
+:description: This guide walks you through how to use the Kafka Loader to load data from an external Kafka cluster into your TigerGraph instance.
 
 == Overview
 
@@ -6,7 +7,7 @@ Kafka is a popular pub-sub system in enterprise IT, offering a distributed and f
 
 The Kafka Loader consumes data in a Kafka cluster and loads data into the TigerGraph system.
 
-== Architecture 
+== Architecture
 
 From a high level, a user provides instructions to the TigerGraph system through GSQL, and the external Kafka cluster loads data into TigerGraph's RESTPP server. The following diagram demonstrates the Kafka Loader data architecture.
 
@@ -14,12 +15,98 @@ image::kafka-loading-architecture.png[Kafka Data Loader Architecture]
 
 == Prerequisites
 
-You should have a Kafka cluster configured and set up in your environment.
+* You should have a Kafka cluster configured and set up in your environment.
 
-Once you have the external Kafka cluster setup, you need to prepare the following two configuration files and place them in your desired location in TigerGraph system:
+* Once you have the external Kafka cluster setup, you need to prepare the following two configuration files and place them in your desired location in TigerGraph system:
+** <<_kafka_data_source_configuration_file>>
+** <<_kafka_topic_and_partition_configuration_file>>
 
-. Kafka data source configuration file: This file includes the external Kafka broker's domain name and port. Through the configuration file, TigerGraph system knows the location and port of the external Kafka broker.  Please see an example in link:#_1_define_the_data_source[*Step 1. Define the Data Source*].
-. Kafka topic and partition configuration file: This file includes the Kafka topic, partition list, and start offset for the loading messages.  Please see an example in link:#_2_create_a_loading_job[*Step 2. Create a Loading Job*].
+[#_kafka_data_source_configuration_file]
+=== Kafka data source configuration file
+
+The data source configuration file's content, structured as a JSON object, describes the Kafka server's global settings, including the data source IP and port.
+A sample `kafka.conf` is shown in the following example:
+
+[source,javascript]
+----
+{
+  "broker": "192.168.1.11:9092",
+}
+----
+
+The `broker` key is required, and its value is a fully qualified domain name (or IP) and port.
+Additional Kafka configuration parameters may be provided (see Kafka documentation) by using the optional `"kafka_config"` key.
+For its value, provide a list of key-value pairs.For example:
+
+[source,javascript]
+----
+{
+  "broker": "localhost:9092",
+  "kafka_config": {"group.id":"tigergraph"}
+}
+----
+
+[#_kafka_topic_and_partition_configuration_file]
+=== Kafka topic and partition configuration file
+
+The topic-partition configuration file tells the TigerGraph system exactly which Kafka records to read.
+Similar to the data source configuration file described above, the contents are in JSON object format.
+
+There are two root-level fields in the configuration file:
+
+`topic`:: Required.
+Specifies the Kafka topic to read from.
+`partition_list`:: Optional.
+Specifies which topic partitions to read and what start offsets to use.
+If the `partition_list` key is missing or empty, all partitions in this topic will be used for loading.
+The default offset for loading is `-1`, which means you will load data from the most recent message in the topic, that is, the end of the topic.
+If you want to load from the beginning of a topic, the `start_offset` value should be `-2`.
+
+An example file is shown below:
+
+.Example Kafka topic and partition configuration file
+[source,javascript]
+----
+{
+  "topic": "topicName1",
+  "partition_list": [
+    {
+      "start_offset": -1,
+      "partition": 0
+    },
+    {
+      "start_offset": -1,
+      "partition": 1
+    },
+    {
+      "start_offset": -1,
+      "partition": 2
+    }
+  ]
+}
+----
+
+You can also overwrite the default offset by setting `"default_start_offset"` in the Kafka topic configuration file.
+For example,
+
+[source,javascript]
+----
+{
+  "topic": "topicName1" <1>
+}
+
+{
+  "topic": "topicName1",
+  "partition_list": [] <1>
+}
+
+{
+  "topic": "topicName1",
+  "default_start_offset": 0 <2>
+}
+----
+<1> All partition will be used if the config file doesn't provide `partition_list` or if the partition list is empty.
+<2> This overwrites the default start offset to 0.
 
 == Configuring and Using the Kafka Loader
 
@@ -31,56 +118,32 @@ There are three basic steps:
 
 The GSQL syntax for the Kafka Loader is designed to be consistent with the existing GSQL loading syntax.
 
+[#_1_define_the_data_source]
 === 1. Define the Data Source
 
-Before starting a Kafka data loading job, you need to define the Kafka server as a data source. The `CREATE DATA_SOURCE` statement defines a data_source variable with a subtype of KAFKA:
+Before starting a Kafka data loading job, you need to define the Kafka server as a data source.
+The `CREATE DATA_SOURCE` statement defines a data source variable with a subtype of `KAFKA`:
 
 [source,gsql]
 ----
-GSQL > CREATE DATA_SOURCE KAFKA data_source_name
+GSQL > CREATE DATA_SOURCE KAFKA example_data_source
 ----
-
-*Specify Kafka Data Source Configuration File*
 
 After the data source is created, then use the `SET` command to specify the path to a configuration file for that data source.
+Each time when the config file is updated, you must run `SET example_data_source` to update the data source details in the dictionary.
 
 [source,gsql]
 ----
-GSQL > SET data_source_name = "/path/to/kafka.config"
+GSQL > SET example_data_source = "/path/to/kafka.config" <1>
 ----
-
-This SET command reads, validates, and applies the configuration file, integrating its settings into TigerGraph's dictionary. The data source configuration file's content, structured as a JSON object, describes the Kafka server's global settings, including the data source IP and port. A sample kafka.conf is shown in the following example:
-
-[source,text]
-----
-{
-  "broker": "192.168.1.11:9092",
-}
-----
-
-The "broker" key is required, and its value is composite of a fully qualified domain name (or IP) and port. Additional Kafka configuration parameters may be provided (see Kafka documentation) by using the optional `"kafka_config"` key. For its value, provide a list of key-value pairs. For example:
-
-[source,text]
-----
-{
-  "broker": "localhost:9092",
-  "kafka_config": {"group.id":"tigergraph"}
-}
-----
+<1> If you have a TigerGraph cluster, the configuration file must be on machine m1, where the GSQL server and GSQL client both reside,  and it must be in JSON format. If the configuration file uses a relative path, the path should be relative to the GSQL client working directory.
 
 For simplicity, you can merge the `CREATE DATA_SOURCE` and `SET` statements:
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "/path/to/kafka.config"
 ----
-
-[NOTE]
-====
-
-* If you have a TigerGraph cluster, the configuration file must be on machine m1, where the GSQL server and GSQL client both reside,  and it must be in JSON format. If the configuration file uses a relative path, the path should be relative to the GSQL client working directory.
-* Each time when the config file is updated, you must run "SET data_source_name"  to update the data source details in the dictionary.
-====
 
 To further simplify, instead of specifying the Kafka data source config file path, you can also directly provide the Kafka data source configuration as a string argument, as shown below:
 
@@ -89,17 +152,84 @@ To further simplify, instead of specifying the Kafka data source config file pat
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "{\"broker\":\"broker.full.domain.name:9092\"}"
 ----
 
-[NOTE]
+[TIP]
 ====
-*Tip*: The above simplified statement is useful for using Kafka Data Loader in TigerGraph Cloud. In TigerGraph Cloud (tgcloud.io), you can use GSQL web shell to define and create Kafka data sources, without creating the Kafka data source configuration file in filesystem.
+The above simplified statement is useful for using Kafka Data Loader in TigerGraph Cloud. In TigerGraph Cloud (tgcloud.io), you can use GSQL web shell to define and create Kafka data sources, without creating the Kafka data source configuration file in filesystem.
 ====
 
-*Local data source vs global data source:*
+
+[#_2_create_a_loading_job]
+=== 2. Create a Loading Job
+
+The Kafka Loader uses the same basic https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/creating-a-loading-job#create-loading-job[CREATE LOADING JOB] syntax used for standard GSQL loading jobs.A `DEFINE FILENAME` statement should be used to assign a loader `FILENAME` variable to a Kafka data source name and the path to its config file.
+
+In addition, the filename can be specified in the `RUN LOADING JOB` statement with the `USING` clause.The filename value set by a `RUN` statement overrides the value set in the `CREATE LOADING JOB`.
+
+Below is the syntax for `DEFINE FILENAME` for use with the Kakfa Loader.In the syntax, `$DATA_SOURCE_NAME` is the Kafka data source name, and the path points to a configuration file with topic and partition information of the Kafka server.The Kafka configuration file must be in JSON format.
+
+[source,ebnf]
+----
+DEFINE FILENAME filevar "=" [filepath_string | data_source_string];
+data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
+----
+
+*Example:* Load a Kafka Data Source `k1`,where the path to the topic-partition configuration file is `"~/topic_partition1_conf.json"`:
+
+[source,gsql]
+----
+DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
+----
+
+Instead of specifying the config file path, you can also provide the topic-partition configuration as a string argument, as shown below:
+
+[source,text]
+----
+DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
+DEFINE FILENAME f1 = "$k1:{\"topic\":\"zzz\",\"default_start_offset\":2,\"partition_list\":[]}";
+----
+
+[#_3_run_the_loading_job]
+=== 3. Run the loading Job
+
+The Kafka Loader uses the same xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[`RUN LOADING JOB`] statement that is used for GSQL loading from files.
+Each filename variable can be assigned a string `<data_source_name>:<topic_partition_configuration_filepath>`, which will override the value defined in the loading job.
+
+In the example below, the config files for f3 and f4 are being set by the `RUN command`, whereas f1 is using the config which was specified in the `CREATE LOADING JOB` statement.
+
+[source,gsql]
+----
+RUN LOADING JOB job1 USING f1, f3="$k1:~/topic_part3_config.json", f4="$k1:~/topic_part4_config.json", EOF="true";
+----
+
+[CAUTION]
+====
+A `RUN LOADING JOB` command may only use one type of data source.
+
+For example, you may not mix both Kafka data sources and regular file data sources in one loading job.
+====
+
+All filename variables in one loading job statement must refer to the same `DATA_SOURCE` variable.
+
+There are two modes for the Kafka Loader: streaming mode and EOF mode. The default mode is streaming mode.
+In streaming mode, loading will never stop until the job is aborted. In EOF mode,  loading will stop after consuming the current Kafka message.
+
+To set EOF mode, an optional parameter is added to the `RUN LOADING JOB` syntax:
+
+[source,ebnf]
+----
+RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
+   [ USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
+   [, CONCURRENCY="cnum"][,BATCH_SIZE="bnum"]][, EOF="true"]
+----
+
+To learn about each option and parameter of the `RUN LOADING JOB` command, see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_options[Loading job options].
+
+== Manage data sources
 
 A data source can be either global or local:
 
-* A global data source can only be created by a superuser, who can grant it to any graph.
-* An admin user can only create a local data source, which cannot be accessed by other graphs.
+* A global data source can only be created by a user with `WRITE_DATASOURCE` privilege on the global scope, who can grant it to any graph.
+* A local data source belongs to a graph and cannot be accessed by other graphs.
 
 The following are examples of permitted `DATA_SOURCE` operations.
 
@@ -127,10 +257,10 @@ GSQL > CREATE DATA_SOURCE KAFKA k1 = "/path/to/config" FOR GRAPH test_graph
 
 [NOTE]
 ====
-In the above statement, the local data_source k1 is only accessible to graph test_graph. A superuser cannot grant it to another graph**.**
+In the above statement, the local data_source k1 is only accessible to graph test_graph. A superuser cannot grant it to another graph.
 ====
 
-==== DROP DATA_SOURCE
+=== DROP DATA_SOURCE
 
 A data source variable can be dropped by a user who has privilege. A global data source can only be dropped by a users with global `WRITE_DATASOURCE` privilege. Users with `WRITE_DATASOURCE` privilege for one graph can drop data sources on that graph. The syntax for the `DROP DATA_SOURCE` command is as follows:
 
@@ -151,11 +281,11 @@ GSQL > DROP DATA_SOURCE *
 GSQL > DROP DATA_SOURCE ALL
 ----
 
-==== SHOW DATA_SOURCE
+=== SHOW DATA_SOURCE
 
 The `SHOW DATA_SOURCE` command will display a summary of all existing data_sources for which the user has privilege:
 
-[source,c]
+[source,gsql]
 ----
 GSQL > SHOW DATA_SOURCE *
 
@@ -165,118 +295,7 @@ Data Source:
 The global data source will be shown in global scope. The graph scope will only show the data source it has access to.
 ----
 
-=== 2. Create a Loading Job
-
-The Kafka Loader uses the same basic https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/creating-a-loading-job#create-loading-job[CREATE LOADING JOB] syntax used for standard GSQL loading jobs. A `DEFINE FILENAME` statement should be used to assign a loader `FILENAME` variable to a Kafka data source name and the path to its config file.
-
-In addition, the filename can be specified in the `RUN LOADING JOB` statement with the `USING` clause. The filename value set by a `RUN` statement overrides the value set in the `CREATE LOADING JOB`.
-
-Below is the syntax for `DEFINE FILENAME` for use with the Kakfa Loader. In the syntax, `$DATA_SOURCE_NAME` is the Kafka data source name, and the path points to a configuration file with topic and partition information of the Kafka server. The Kafka configuration file must be in JSON format.
-
-[source,ebnf]
-----
-DEFINE FILENAME filevar "=" [filepath_string | data_source_string];
-data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
-----
-
-*Example:* _****_Load a Kafka Data Source _****_**k1**, _****_where the path to the topic-partition configuration file is `"~/topic_partition1_conf.json"`:
-
-[source,gsql]
-----
-DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
-----
-
-*Kafka Topic-Partition Configuration File*
-
-The topic-partition configuration file tells the TigerGraph system exactly which Kafka records to read.  Similar to the data source configuration file described above, the contents are in JSON object format. An example file is shown below:
-
-.topic_partition_config.json
-
-[source,yaml]
-----
-{
-  "topic": "topicName1",
-  "partition_list": [
-    {
-      "start_offset": -1,
-      "partition": 0
-    },
-    {
-      "start_offset": -1,
-      "partition": 1
-    },
-    {
-      "start_offset": -1,
-      "partition": 2
-    }
-  ]
-}
-----
-
-
-
-The `"topic"` key is required. Optionally,  a `"partition_list"` array can be included to specify which topic partitions to read and what start offsets to use.  If the `"partition_list"` key is missing or empty, all partitions in this topic will be used for loading. The default offset for loading is `"-1"`, which means you will load data from the most recent message in the topic, i.e., the end of the topic. If you want to load from the beginning of a topic, the "``start_offset"`` value should be "-2".
-
-You can also overwrite the default offset by setting `"default_start_offset"` in the Kafka topic configuration file. For example,
-
-[source,yaml]
-----
-# all partition will be used if no "partition_list" item
-{
-  "topic": "topicName1"
-}
-
-# with empty "partition_list"
-{
-  "topic": "topicName1",
-  "partition_list": []
-}
-
-# overwrite the default start offset
-{
-  "topic": "topicName1",
-  "default_start_offset": 0
-}
-----
-
-Instead of specifying the config file path, you can also directly provide the topic-partition configuration as a string argument, as shown below:
-
-[source,text]
-----
-DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
-DEFINE FILENAME f1 = "$k1:{\"topic\":\"zzz\",\"default_start_offset\":2,\"partition_list\":[]}";
-----
-
-=== 3. Run the loading Job
-
-The Kafka Loader uses the same https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-job#run-loading-job[RUN LOADING JOB] statement that is used for GSQL loading from files. Each filename variable can be assigned a string "DATA_SOURCE Var:topic_partition configure", which will override the value defined in the loading job. In the example below, the config files for f3 and f4 are being set by the RUN command, whereas f1 is using the config which was specified in the CREATE LOADING JOB statement.
-
-[source,gsql]
-----
-RUN LOADING JOB job1 USING f1, f3="$k1:~/topic_part3_config.json", f4="$k1:~/topic_part4_config.json", EOF="true";
-----
-
-[CAUTION]
-====
-A `RUN LOADING JOB` command may only use one type of data source.  E.g., you may not mix both Kafka data sources and regular file data sources in one loading job.
-====
-
-All filename variables in one loading job statement must refer to the same `DATA_SOURCE` variable.
-
-There are two modes for the Kafka Loader: streaming mode and EOF mode. The default mode is streaming mode.  In streaming mode, loading will never stop until the job is aborted. In EOF mode,  loading will stop after consuming the current Kafka message.
-
-To set EOF mode, an optional parameter is added to the `RUN LOADING JOB` syntax:
-
-[source,ebnf]
-----
-RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
-   [ USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
-   [, CONCURRENCY="cnum"][,BATCH_SIZE="bnum"]][, EOF="true"]
-----
-
-To learn about each option and parameter of the `RUN LOADING JOB` command, see xref:3.2@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_options[Loading job options].
-
-== Manage Loading Jobs
+== Manage loading jobs
 
 Kafka Loader loading jobs are managed the same way as regular loading jobs. The three key commands are
 
@@ -326,5 +345,3 @@ CREATE LOADING JOB load_person FOR GRAPH test_graph {
 # load the data
 RUN LOADING JOB load_person
 ----
-
-##

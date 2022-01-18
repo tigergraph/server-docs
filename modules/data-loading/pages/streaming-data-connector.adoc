@@ -28,7 +28,115 @@ The connector configurations provide the following information:
 * Information on how to parse the source data
 * Mapping between connector and source file
 
-Below is a sample configuration:
+[discrete]
+==== Specify connector class
+The connector class indicates what type of connector the configuration file is used to create.
+Connector class is specified by the `connector.class` key.
+For connecting to Google Cloud Filestore, its value is set to `com.tigergraph.kafka.connect.filesystem.FsSourceConnector`.
+
+[discrete]
+==== Provide GCP account credentials
+You need to provide following information for the connector to access the files in your GCP Filestore bucket:
+
+* `file.reader.settings.fs.gs.auth.service.account.email`: The email address associated with the service account
+* `file.reader.settings.fs.gs.auth.service.account.private.key.id`: The private key ID associated with the service account used for GCS access.
+* `file.reader.settings.fs.gs.auth.service.account.private.key`: The private key associated with the service account used for GCS access.
+* `file.reader.settings.client_email`:
+* `file.reader.settings.fs.gs.project.id`: Google Cloud Project ID with access to GCS buckets.
+* `file.reader.settings.fs.gs.auth.service.account.enable`: Whether to create objects for the parent directories of objects with `/` in their path. For example, creating `gs://bucket/foo/` upon deleting or renaming `gs://bucket/foo/bar`.
+* `file.reader.settings.fs.gs.impl`: The FileSystem for gs: (GCS) uris.
+The value for this configuration should be `com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem`.
+* `file.reader.settings.fs.AbstractFileSystem.gs.impl`: The AbstractFileSystem for `gs:` (GCS) URIs. Only necessary for use with Hadoop 2.
+The value for this configuration should be `com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS`.
+
+[discrete]
+==== Specify parsing rules
+The streaming connector supports the following file types:
+
+* CSV files
+* directories
+* tar files
+* zip files
+
+For URIs that point to directories and compressed files, the connector will look for all CSV files inside the directory or the compressed file.
+If you set `file.recursive`, the connector will look for CSV files recursively.
+
+The following parsing options are available:
+
+|===
+|Name |Description |Default
+
+|`file.regexp`
+|The regular expression to filter which files to read.
+The default value matches all files.
+|`.*`
+
+|`file.recursive`
+|Whether to retrieve files recursively if the URI points to a directory.
+|`true`
+
+|`file.reader.type`
+|Column 2, row 5
+|Column 3, row 5
+
+|`file.reader.batch.size`
+|Number of records to process at a time. Non-positive values disable batching.
+|Column 3, row 6
+
+|`file.reader.text.eol`
+|End of line character.
+|`\n`
+
+|`file.reader.text.header`
+|Whether the first line of the files is a header line.
+|Column 3, row 8
+
+|`file.reader.text.archive.type`
+|File type for archive files.
+Setting the value of this configuration to `auto` will allow the connector to decide file types automatically based on the file extensions.
+|Column 3, row 9
+
+|`file.reader.text.archive.extensions.tar`
+|If a file has this extension, treat it as a tar file
+|Column 3, row 10
+
+|`file.reader.text.archive.extensions.zip`
+|If a file has this extension, treat it as a zip file
+|
+
+|`file.reader.text.archive.extensions.gzip`
+|If a file has this extension, treat it as a gzip file
+|
+|===
+
+
+[discrete]
+==== Map source file to connector
+The below configurations are required:
+
+|===
+|Name |Description |Default
+
+| `name`
+| Name of the connector.
+| None. Must be provided by the user.
+
+| `topic`
+| Name of the topic to create in Kafka.
+| None. Must be provided by the user.
+
+|`tasks.max`
+|The maximum number of tasks which can run in parallel.
+|1
+
+|`file.uris`
+|The path(s) to the data files on Google Cloud Filestore.
+The URI may point to a CSV file, a zip file, a gzip file, or a directory
+|None.
+Must be provided by the user.
+|===
+
+Below is an example configuration:
 
 [,text]
 ----
@@ -104,66 +212,142 @@ CREATE DATA_SOURCE KAFKA k1 FOR GRAPH social
 Create a loading job to load data from the data source:
 
 . Create a topic-partition configuration for each topic.
++
+[,javascript]
+----
+{
+  "topic": <topic_name>, <1>
+  "partition_list": [ <2>
+    {
+      "start_offset": <offset_value>, <3>
+      "partition": <partition_number> <4>
+    },
+    {
+      "start_offset": <offset_value>, <3>
+      "partition": <partition_number> <4>
+    }
+    ...
+  ]
+}
+----
+<1> Replace `<topic_name>` with the name of the topic this configuration applies to.
+<2> List of partitions you want to stream from.
+For each partition, you can set a start offset.
+If this list is empty, or `partition_list` isn't included, all partitions are used with the default offset.
+<3> Replace `<offset_value>` with the offset value you want.
+The default offset for loading is `-1`, which means you will load data from the most recent message in the topic.
+If you want to load from the beginning of a topic, the `start_offset` value should be `-2`.
+<4> Replace `<partition_number>` with the partition number if you want to configure.
 . Create a loading job and map data to graph.
-
 See xref:kafka-loader-user-guide.adoc#_2_create_a_loading_job[Kafka loader guide] for how to map data from a Kafka data source to the graph.
 
+For example, suppose we have the following two CSV files and schema:
+
+[tabs]
+====
+Schema::
++
+--
+[,gsql]
+----
+CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
+CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
+CREATE GRAPH social (person, friendship)
+----
+--
+p.csv::
++
+--
+[,csv]
+----
+name,gender,age,state
+Tom,male,40,ca
+Dan,male,34,ny
+Jenny,female,25,tx
+Kevin,male,28,az
+Amily,female,22,ca
+Nancy,female,20,ky
+Jack,male,26,fl
+A,male,29,ca
+----
+--
+f.csv::
++
+--
+[,csv]
+----
+person1,person2,date
+Tom,Dan,2017-06-03
+Tom,Jenny,2015-01-01
+Dan,Jenny,2016-08-03
+Jenny,Amily,2015-06-08
+Dan,Nancy,2016-01-03
+Nancy,Jack,2017-03-02
+Dan,Kevin,2015-12-30
+Amily,Dan,1990-1-1
+----
+--
+====
+
+
+The following topic-partition configurations and loading job will load the two CSV files into the graph:
+
+[tabs]
+====
+topic_person.json::
++
+--
+[,json]
+----
+{
+  "topic": "person-demo-104",
+  "partition_list": [
+    {
+      "start_offset": -2,
+      "partition": 0
+    }
+  ]
+}
+----
+--
+topic_friend.json::
++
+--
+[,json]
+----
+{
+  "topic": "friend-demo-104",
+  "partition_list": [
+    {
+      "start_offset": -2,
+      "partition": 0
+    }
+  ]
+}
+----
+--
+Loading job::
++
+--
+[.wrap,gsql]
+----
+CREATE LOADING JOB load_person FOR GRAPH social {
+    DEFINE FILENAME f1 = "$k1:/home/mydata/topic_person.json";
+    DEFINE FILENAME f2 = "$k1:/home/mydata/topic_friend.json";
+    LOAD f1 TO VERTEX person VALUES ($0, $0, $2, $1, $3) USING separator=",";
+    LOAD f2 TO EDGE friendship VALUES ($0, $1, $2)  USING separator=",";
+}
+----
+--
+====
+
 ==== Run loading job
-Run the loading job created in the last step:
+Run the loading job created in the last step will load data into the graph.
+If you make changes to the topic-partition configuration file, you can overwrite the values for the filename variables with the `USING` clause.
 
 [,gsql]
 ----
-GSQL > RUN LOADING JOB
+GSQL > RUN LOADING JOB load_person
 ----
 
-=== Parsing configuration reference
-
-The following parsing options are available:
-
-
-|===
-|Name |Description |Default
-
-|`tasks.max`
-|The maximum number of tasks which can run in parallel.
-|1
-
-|`file.uris`
-|The path(s) to the data files on Google Cloud Filestore.
-|No default value.
-Must be provided by the user.
-
-|`file.regexp`
-|The regular expression to filter which files to read.
-The default value matches all files.
-|`.*`
-
-|`file.scan.interval.ms`
-|The wait time in ms before starting another scan of the file directory after finishing the current scan.
-|Column 3, row 4
-
-|Column 1, row 5
-|Column 2, row 5
-|Column 3, row 5
-
-|Column 1, row 6
-|Column 2, row 6
-|Column 3, row 6
-
-|Column 1, row 7
-|Column 2, row 7
-|Column 3, row 7
-
-|Column 1, row 8
-|Column 2, row 8
-|Column 3, row 8
-
-|Column 1, row 9
-|Column 2, row 9
-|Column 3, row 9
-
-|Column 1, row 10
-|Column 2, row 10
-|Column 3, row 10
-|===
 
