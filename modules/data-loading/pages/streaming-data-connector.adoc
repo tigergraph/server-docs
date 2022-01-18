@@ -1,0 +1,169 @@
+= Streaming Data Connector
+:description: A guide to TigerGraph's Streaming Data Connector.
+:sectnums:
+
+TigerGraph Streaming Data Connector provides fast and scalable data streaming between TigerGraph and other data systems.
+
+== Supported data systems
+The streaming data connectors supports the following data systems:
+
+* Google Cloud Filestore
+
+== Stream data from Google Cloud File Storage
+You can create a data connector between TigerGraph's internal Kafka server and your Google Cloud Filestore with a specified topic.
+Having created the connector, you can create a loading job using the Kafka loader.
+Running the loading job will pull data from the source into TigerGraph.
+
+=== Prerequisites
+* Your source data files are stored in Google Cloud Filestore bucket.
+* You have link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating[generated a key that has access to your source data from your Google Cloud Platform service account].
+
+=== Procedure
+
+==== Specify connector configurations
+The connector configurations provide the following information:
+
+* Connector class
+* Your GCP service account credentials
+* Information on how to parse the source data
+* Mapping between connector and source file
+
+Below is a sample configuration:
+
+[,text]
+----
+connector.class=com.tigergraph.kafka.connect.filesystem.FsSourceConnector
+file.reader.settings.fs.gs.auth.service.account.email=gcsconnect@tigergraph-dev.iam.gserviceaccount.com
+file.reader.settings.fs.gs.auth.service.account.private.key.id=55c1d79a46c1f3f59ef72e0df53285a3eef8ec38
+file.reader.settings.fs.gs.auth.service.account.private.key="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDSqbYRwD68FvA7\nLkC1HpjrJ9QIJ+iOyQPFeSoI+3pjmVTrX2B2aYIMByNubV6Js+n1x5ro/XW0nt3y\nk/BhdOTXj7JVRj6JMIb0yjsRQMi3J+3yOb2EFVHUDQ+4nmTuSJsdiOI1mh1pFN+Q\nXdvHP5hOwCaB4Pb/X7ya9YOokW3dVqbHtj/DO3l+rDhqEP0SH4+RInFbZon1AT3J\ncWDdMTsx4yW1PQNERzP/9M34du3ihWeT1xLLXquhMnFO+zECuPsoz1jFQrLCAFeX\nQSBx0/NgBCRqEsX4XESQ43bB4mD3D9AvfOc6IuYqKBcjG2HmmjOvidmnlRUgZJy/\n2rymIUXnAgMBAAECggEAR6itI0qmzGptG2R3ZGTdFZi9umyA4hkkrEaz8sxAbKLa\nzRnrgTwQnbDL76NKdkL6Ab39RuX45RDpZLvIGA6gTWc2/WTgnuAf+CLWht7np83w\nVeYoPkbWR/CNeXp/0MJn6VsHv74F5RnRlpUmzpcmYxtfvexdeK8DRB7hwzR9D73t\nCyad7O6NZabuOQBrTMgKL+So6gurVjW+KB8S9vgMvULLOmTZ1iUpRlh89cJ4/jRh\n4ltV+4EvBJvIlXD2GKMGRw8d/YPWmETO/dpz0aAs3sMgXdiFV3SAjAn8BgaYita8\nIAhLLOf/kFmFmmlM2k02iAZPIBjFvAs7ChGEHsXecQKBgQDq9AKPXaMOiy43EzHP\nU1cDKf8mwk9ELtfGPhySG9Z+zUclvoJnbq0XpP3cKJWgKILtcG+cUoYLSWrosE2i\n7W1976EwObNgg22CEICWclE0Mc2vMXkJT+ZUoqWWK5n83ZK+R05AqsBhWC9FLTQB\nBD5XlOnCUKQT3+3TRkNAB5I/6QKBgQDliKxQ2TR8OEkgII8ugyhVAfKamE2nVrED\nW0U/IbBQUaTk1niZbzROLRRfgqYqtLM0vEfMkKwiMDinmXsuurw2IOZaGbEyNFZT\nLpDXNjTTePJn192OT6wyRpDsuZNh+0uiXBFyJb8vRrMyWmtau9HXqD2kXOcKCesL\nVDfilsAFTwKBgCkKpsfUW39W4KPOPo0wyapL0745gw8t/5MplmQPaNCNmzgEp1La\nCnJu58llbX2klfpUAasU30Vpdbtf0K/9OXseONHrwmHBk4d8ynl9TqIHcR6BTdtK\nkbmHD9XDmAqLye5jFlBFg4V9mgRDeSoUS6+Q26SN4Zt3KlwVkfnFWM7BAoGBAJnr\nA3oXnQ1rhQXJL5qGEwamDrRCS1haVsskahQCmEPT69oUQ7zICHAf5JiDeMAMeltz\nokX4AaXPZj5lOmhEii9V8oIa1msPE5AmGrRmQhhI82xVIdnrbVItZcOIUd+Tbs2K\nJZzA2Spvo3yxi2nFptqRk/xi2/8sVXQ8XllQs6UbAoGAdqnrlEAIlCb5hdVNrLXT\nToqdq54G9g82L8/Y+WraqJSNOFKXCGQvC2N16ava4sZ65DCjT6FnCR/UhYS7Z6Vf\nR5EtMRYAyAcyn3g9tcfzINmEbpvwpHBqsr1xPcrfx/WRurIC6EBgLPgX+lALBI0G\n+Uu87tgHhcGFJfmQMQNeQWM=\n-----END PRIVATE KEY-----\n"
+file.reader.settings.client_email="gcsconnect@tigergraph-dev.iam.gserviceaccount.com"
+file.reader.settings.fs.gs.project.id="tigergraph-dev"
+file.reader.settings.fs.gs.auth.service.account.enable=true
+file.reader.settings.fs.gs.impl=com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem
+file.reader.settings.fs.AbstractFileSystem.gs.impl="com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS"
+
+mode=eof
+file.regexp=".*"
+file.recursive=true
+file.reader.type=text
+file.reader.batch.size=10000
+file.reader.text.eol="\\n"
+file.reader.text.header=true
+file.reader.text.archive.type=auto
+file.reader.text.archive.extensions.tar=tar
+file.reader.text.archive.extensions.zip=zip
+file.reader.text.archive.extensions.gzip=tar.gz,tgz
+
+[connector_person]
+name = fs-person-demo-104
+tasks.max=10
+topic=person-demo-104
+file.uris=gs://tg_csv/p.csv
+
+[connector_friend]
+name = fs-friend-demo-104
+tasks.max=10
+topic=friend-demo-104
+file.uris=gs://tg_csv/f.csv
+----
+
+==== Create connector
+Run command `gadmin connector create` and specify the configuration file to create the connector:
+
+  gadmin connector create --c test.cfg
+
+The connectors start loading from the data source immediately after creation if the configurations are valid.
+You can run `gadmin connector status` to verify the status of the connectors.
+If the configurations are valid, the connectors should be in `RUNNING` status.
+
+==== Create data source
+Now that the connector has started loading data into TigerGraph's internal Kafka cluster, you can create a data source and point it to the Kafka cluster:
+
+. Create a data source configuration file.
+The broker's IP and hostname should be `localhost:30002`, which points to the port for TigerGraph's internal Kafka cluster.
+In the `kafka.config` field, set `group.id` to `tigergraph`:
++
+[,json]
+----
+{
+	"broker":"localhost:30002",
+    "kafka_config":
+        {
+            "group.id": "tigergraph"
+        }
+}
+----
+. Run `CREATE DATA SOURCE` to create the data source:
++
+[,gsql]
+----
+CREATE DATA_SOURCE KAFKA k1 FOR GRAPH social
+----
+
+==== Create loading job
+Create a loading job to load data from the data source:
+
+. Create a topic-partition configuration for each topic.
+. Create a loading job and map data to graph.
+
+See xref:kafka-loader-user-guide.adoc#_2_create_a_loading_job[Kafka loader guide] for how to map data from a Kafka data source to the graph.
+
+==== Run loading job
+Run the loading job created in the last step:
+
+[,gsql]
+----
+GSQL > RUN LOADING JOB
+----
+
+=== Parsing configuration reference
+
+The following parsing options are available:
+
+
+|===
+|Name |Description |Default
+
+|`tasks.max`
+|The maximum number of tasks which can run in parallel.
+|1
+
+|`file.uris`
+|The path(s) to the data files on Google Cloud Filestore.
+|No default value.
+Must be provided by the user.
+
+|`file.regexp`
+|The regular expression to filter which files to read.
+The default value matches all files.
+|`.*`
+
+|`file.scan.interval.ms`
+|The wait time in ms before starting another scan of the file directory after finishing the current scan.
+|Column 3, row 4
+
+|Column 1, row 5
+|Column 2, row 5
+|Column 3, row 5
+
+|Column 1, row 6
+|Column 2, row 6
+|Column 3, row 6
+
+|Column 1, row 7
+|Column 2, row 7
+|Column 3, row 7
+
+|Column 1, row 8
+|Column 2, row 8
+|Column 3, row 8
+
+|Column 1, row 9
+|Column 2, row 9
+|Column 3, row 9
+
+|Column 1, row 10
+|Column 2, row 10
+|Column 3, row 10
+|===
+
