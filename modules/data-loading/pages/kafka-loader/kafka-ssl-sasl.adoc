@@ -26,10 +26,19 @@ You will need the following files in order to configure SSL on TigerGraph.
 * The broker's Certificate Authority
 
 === Procedure
-. Copy the following files from the server side to your TigerGraph cluster's m1 machine:
+. Copy the following files from the server side to all machines in your TigerGraph cluster at the same absolute path:
++
+--
 * The truststore file from the broker
 ** For example, `server.truststore.jks`
 * The certificate for the broker's CA
+--
+After copying the files, change the owner of the files to the TigerGraph Linux user:
++
+[,console]
+----
+$ chown -R tigergraph:tigergraph <file_path>
+----
 . xref:kafka-loader/kafka-ssl-sasl.adoc[Create the Kafka data source] and specify SSL configurations in the datasource configuration JSON file.
 For example:
 +
@@ -68,12 +77,21 @@ The steps for configuring the client are described on this page.
 * Ensure the IP address and the fully qualified domain name (FQDN) of both the server and the client are in the `/etc/hosts` file of the server.
 
 === Procedure
-. Copy the following files from the broker to every node:
+. Copy the following files from the broker to every machine in your TigerGraph cluster at the same absolute path:
++
+--
 * The certificate for the broker's CA
 * The client's certificate signed by the broker's CA
 * The client's key
 * The broker's truststore file
 * The broker's keystore file
+--
+After copying the files, change the owner of the files to the TigerGraph Linux user:
++
+[,console]
+----
+$ chown -R tigergraph:tigergraph <file_path>
+----
 . xref:kafka-loader/kafka-ssl-sasl.adoc[Create the Kafka data source] and specify SSL configurations in the datasource configuration JSON file.
 The location of the CA, the truststore and the keystore files should match the paths where you copied the files.
 For example:
@@ -127,8 +145,17 @@ apt install libsasl2-modules-gssapi-heimdal <1>
 <1> You only need to install `libsasl2-modules-gssapi-heimdal` if you are on Ubuntu 20.04 LTS
 
 === Procedure
-. Copy the following files from the server to the client's m1 machine.
+. Copy the following files from the server to all machines in your TigerGraph cluster at the same absolute path.
++
+--
 * The server's producer keytab.
+--
+After copying the files, change the owner of the files to the TigerGraph Linux user:
++
+[,console]
+----
+$ chown -R tigergraph:tigergraph <file_path>
+----
 . Define the data source and provide SASL configurations in the data source configuration file.
 For example:
 +
@@ -141,7 +168,7 @@ For example:
        "sasl.mechanism": "GSSAPI",
        "sasl.kerberos.service.name":"kafka",
        "sasl.kerberos.principal": "kafka-producer@TIGERGRAPH.COM", <1>
-       "sasl.kerberos.keytab": "/home/tigergraph/kafka_ssl/kafka-producer.keytab" <2>,
+       "sasl.kerberos.keytab": "/home/tigergraph/kafka_ssl/kafka-producer.keytab", <2>
        "sasl.jaas.config": "com.sun.security.auth.module.Krb5LoginModule required  debug=true useKeyTab=true  storeKey=true  keyTab=\"/home/tigergraph/kafka_ssl/kafka-producer.keytab\"  principal=\"kafka-producer@TIGERGRAPH.COM\";"
    }
 }
@@ -164,13 +191,24 @@ This guide focuses on configuring the client (TigerGraph server).
 
 === Procedure
 . Copy the following files from the broker to the client.
++
+--
 * The broker's CA
 * The client's certificate signed by the broker's CA
 * The client's key
 * The broker's truststore
 * The broker's keystore
 * The Kafka producer's keytab
+--
+After copying the files, change the owner of the files to the TigerGraph Linux user:
++
+[,console]
+----
+$ chown -R tigergraph:tigergraph <file_path>
+----
 . On the client server, create a JAAS configuration file `kafka_client_jaas.conf`. In the configuration file, configure the following values:
++
+--
 * Set `com.sun.security.auth.module.Krb5LoginModule` to `required`.
 * Set `useKeyTab` to `true`.
 * Set `storeKey` to `true`.
@@ -186,6 +224,13 @@ KafkaClient {
     keyTab="/home/tigergraph/kafka_ssl/kafka-producer.keytab"
     principal="kafka-producer@TIGERGRAPH.COM";
 };
+----
+--
+Add following line into `~/.bashrc` to point the auth config filepath to the JAAS configuration file you just created.
++
+[,text]
+----
+export KAFKA_OPTS="-Djava.security.auth.login.config=/path/to/kafka_client_jaas.conf"
 ----
 . Define the Kafka data source with the following configuration:
 +
