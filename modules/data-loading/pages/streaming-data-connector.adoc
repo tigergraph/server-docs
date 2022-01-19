@@ -63,6 +63,7 @@ If you set `file.recursive`, the connector will look for CSV files recursively.
 
 The following parsing options are available:
 
+
 |===
 |Name |Description |Default
 
@@ -76,12 +77,33 @@ The default value matches all files.
 |`true`
 
 |`file.reader.type`
-|Column 2, row 5
-|Column 3, row 5
+|The type of file reader to use.
+The only supported value is `text`.
+|`text`
+
+|`file.reader.delimited.separator`
+|The character that separates columns.
+|`,`
+
+|`file.reader.delimited.quote`
+a|The explicit boundary markers for string tokens, either single or double quotation marks.
+
+The parser will not treat separator characters found within a pair of quotation marks as a separator.
+
+Accepted values:
+
+* `single`: single quotes `'` are boundary markers.
+* `double`: double quotes `"` are boundary markers.
+* Empty string `""`: Quotation marks are treated as ordinary characters.
+| Empty string `""`
+
+|`file.reader.delimited.value.default`
+|The default value for a column when its value is null.
+| Empty string `""`
 
 |`file.reader.batch.size`
-|Number of records to process at a time. Non-positive values disable batching.
-|Column 3, row 6
+|The maximum number of lines to include in a single batch.
+|`1000`
 
 |`file.reader.text.eol`
 |End of line character.
@@ -89,24 +111,31 @@ The default value matches all files.
 
 |`file.reader.text.header`
 |Whether the first line of the files is a header line.
-|Column 3, row 8
+|`false`
 
 |`file.reader.text.archive.type`
-|File type for archive files.
+a|File type for archive files.
 Setting the value of this configuration to `auto` will allow the connector to decide file types automatically based on the file extensions.
-|Column 3, row 9
+Accepted values:
+
+* `tar`
+* `zip`
+* `gzip`
+* `none`
+* `auto`
+|`auto`
 
 |`file.reader.text.archive.extensions.tar`
 |If a file has this extension, treat it as a tar file
-|Column 3, row 10
+|`tar`
 
 |`file.reader.text.archive.extensions.zip`
 |If a file has this extension, treat it as a zip file
-|
+|`zip`
 
 |`file.reader.text.archive.extensions.gzip`
 |If a file has this extension, treat it as a gzip file
-|
+|`gz`, `tgz`
 |===
 
 
@@ -178,7 +207,7 @@ file.uris=gs://tg_csv/f.csv
 ==== Create connector
 Run command `gadmin connector create` and specify the configuration file to create the connector:
 
-  gadmin connector create --c test.cfg
+  gadmin connector create --c <config_file>
 
 The connectors start loading from the data source immediately after creation if the configurations are valid.
 You can run `gadmin connector status` to verify the status of the connectors.
@@ -343,11 +372,9 @@ CREATE LOADING JOB load_person FOR GRAPH social {
 
 ==== Run loading job
 Run the loading job created in the last step will load data into the graph.
-If you make changes to the topic-partition configuration file, you can overwrite the values for the filename variables with the `USING` clause.
+If you make changes to the topic-partition configuration file, you can overwrite the values for the filename variables with xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_run_loading_job[the `USING` clause].
 
 [,gsql]
 ----
 GSQL > RUN LOADING JOB load_person
 ----
-
-
