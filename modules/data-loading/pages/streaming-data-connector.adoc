@@ -1,21 +1,21 @@
-= Streaming Data Connector
+= Data Streaming Connector
 :description: A guide to TigerGraph's Streaming Data Connector.
 :sectnums:
 
-TigerGraph Streaming Data Connector provides fast and scalable data streaming between TigerGraph and other data systems.
+TigerGraph Data Streaming Connector is a link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and other data systems.
 
 == Supported data systems
-The streaming data connectors supports the following data systems:
+The data streaming connector supports the following data systems:
 
-* Google Cloud Filestore
+* Google Cloud Storage (GCS)
 
-== Stream data from Google Cloud File Storage
-You can create a data connector between TigerGraph's internal Kafka server and your Google Cloud Filestore with a specified topic.
-Having created the connector, you can create a loading job using the Kafka loader.
-Running the loading job will pull data from the source into TigerGraph.
+== Stream data from Google Cloud Storage
+You can create a data connector between TigerGraph's internal Kafka server and your GCS service with a specified topic.
+The connector will stream data from the data source in your GCS buckets to TigerGraph's internal Kafka cluster.
+You can then create and run a loading job using the Kafka loader from Kafka into the graph store.
 
 === Prerequisites
-* Your source data files are stored in Google Cloud Filestore bucket.
+* Your source data files are stored in Google Cloud Storage buckets.
 * You have link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating[generated a key that has access to your source data from your Google Cloud Platform service account].
 
 === Procedure
@@ -209,9 +209,11 @@ Run command `gadmin connector create` and specify the configuration file to crea
 
   gadmin connector create --c <config_file>
 
-The connectors start loading from the data source immediately after creation if the configurations are valid.
+The connectors start streaming from the data source immediately after creation if the configurations are valid.
 You can run `gadmin connector status` to verify the status of the connectors.
 If the configurations are valid, the connectors should be in `RUNNING` status.
+
+Data streamed from the source will stay in TigerGraph's internal Kafka topics until they are ingested by a loading job.
 
 ==== Create data source
 Now that the connector has started loading data into TigerGraph's internal Kafka cluster, you can create a data source and point it to the Kafka cluster:
@@ -371,10 +373,64 @@ CREATE LOADING JOB load_person FOR GRAPH social {
 ====
 
 ==== Run loading job
-Run the loading job created in the last step will load data into the graph.
+Run the loading job created in the last step will load the streamed data into the graph.
 If you make changes to the topic-partition configuration file, you can overwrite the values for the filename variables with xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_run_loading_job[the `USING` clause].
 
 [,gsql]
 ----
 GSQL > RUN LOADING JOB load_person
+----
+
+By default, loading jobs that use Kafka data sources run in streaming mode and do not stop until manually aborted.
+As data is streamed from the data source, the running loading job will continuously ingest the streamed data into the graph store.
+
+==== Stream data source updates
+
+To load updates to the data source after you've created the connectors, you need to delete the connector and recreate another connector.
+
+In the future, the streaming data connector will support automatically scanning for updates and stream data to TigerGraph.
+
+== Manege connectors
+
+After creating a connector, you can choose to delete it or pause it.
+You can also use `gadmin` commands to view status of all existing connectors.
+
+=== List connectors
+You can list all running connectors or view detailed configuration of a specific connector.
+
+To view a list of all connectors, run `gadmin connector list` from your bash terminal as the TigerGraph Linux user.
+
+To view configuration details of a specific connector, run `gadmin connector list <name_of_connector>` and replace `<name_of_connector>` with the name of the connector you want to inspect.
+
+=== Pause a connector
+Pausing a connector stops the connector from streaming data from the data source.
+The data that has been streamed to TigerGraph's internal Kafka can still be loaded into the graph store via a loading job.
+
+To pause a connector, run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector pause <connector_name>
+----
+
+=== Resume a connector
+Resuming a connector resumes streaming for a paused connector.
+
+To resume a connector,  run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector resume <connector_name>
+----
+
+=== Delete a connector
+Deleting a connector removes a connector.
+It stops the connector from streaming, but the data that has been streamed to Kafka can still be ingested by a loading job.
+This action cannot be undone and a removed connector cannot be resumed.
+
+To delete a connector,  run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector delete <connector_name>
 ----
