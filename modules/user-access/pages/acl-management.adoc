@@ -186,13 +186,19 @@ GSQL > GRANT ACL PRIVILEGE READ ON example_query TO example_role
 
 === Revoke ACL privilege from a role
 The owner of a query can revoke ACL privileges on the query from a role.
-If you revoke an ACL privilege on the query from all roles, then the ACL entry status for that privilege becomes `NOBODY`.
-When the ACL entry status for a privilege is unspecified, no one, including the query owner, can access the query in the corresponding manner.
+If the ACL entry for a privilege (either `READ` or `EXECUTE`) becomes empty after removing specified roles, the xref:access-control-model.adoc#_acl_entry_status[entry status] for the privilege becomes `NOBODY`.
+When the ACL entry status for a privilege is `NOBODY`, no one, including the query owner, can access the query in the corresponding manner.
+
+[CAUTION]
+====
+The effect of revoking ACL privileges from all roles in an entry by revoking from specified roles is different from <<_revert_access_control_to_rbac,revoking ACL privileges from all using the keyword `ALL`>>.
+====
+
 
 ==== Syntax
 [.wrap,gsql]
 ----
-REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM ( <role1>, <role2>, ... ) | ALL ) [SECURED BY <owner_acl_password>]
+REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM ( <role1>, <role2>, ... ) [SECURED BY <owner_acl_password>]
 ----
 
 ==== Required privilege
@@ -209,6 +215,30 @@ GSQL > REVOKE ACL PRIVILEGE READ ON QUERY example_query FROM role1 SECURED BY
 "owner_acl_password"
 ----
 
+[#_revert_access_control_to_rbac]
+=== Revert access control to RBAC
+The owner of a query can choose to revert access control governance of a query to RBAC by changing its ACL entry status to unspecified.
+
+==== Syntax
+[.wrap,gsql]
+----
+REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM ALL [SECURED BY <owner_acl_password>]
+----
+
+==== Required privilege
+None.
+Only query owner can run the command.
+If the query owner set their ACL password, running the command requires entering the ACL password.
+
+==== Procedure
+To revert access control on read operations on `example_query` to RBAC, run the following command and replace `owner_acl_password` with the ACL password of the owner.
+If you want to revert access control for `RUN QUERY` (`EXECUTE` privilege), replace `READ` with `EXECUTE`.
+
+[.wrap,gsql]
+----
+GSQL > REVOKE ACL PRIVILEGE READ ON QUERY example_query FROM ALL SECURED BY
+"owner_acl_password"
+----
 
 
 === Disallow access for all
