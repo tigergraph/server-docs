@@ -2491,6 +2491,141 @@ The JSON response object contains three fields:
 | Name of the query
 |===
 
+=== Install a Query
+
+Once a query has been created for a graph, the user can use the `/gsql/queries/install` endpoint to make a request to install a query (using `POST`) or check installation status (using `GET`).
+
+An installation request will wait in the background for any currently running processes to complete, leaving the foreground unoccupied in the meantime.
+
+Any errors will be written to logs.
+
+==== POST
+
+`POST /gsql/queries/install HTTP/1.1`
+
+==== Parameters
+
+|===
+Name | Type | Location | Description
+
+|graph | string | body | The name of the graph the queries belong to
+|queries | array of strings | body | The name of the queries to install as an array list (supports `ALL` and `*` to install all queries)
+|===
+
+==== Returns
+
+|===
+| Name | Description
+
+| location | URI where the request can be found. Example: `/gsql/queries/install/1234`
+|error | Indicates whether an error occurred and what kind of message is included
+|message | Indicates request success or failure, with details included for failure
+|===
+
+In the below example, the user requests to install all queries on the graph `poc_graph` by using the `*` wildcard.
+
+==== Sample request:
+[tabs]
+====
+Request::
++
+--
+[source.wrap,console]
+----
+curl --user tigergraph:tigergraph -X POST 'http://localhost:8123/gsql/queries/install?graph=poc_graph&queries=*'
+----
+--
+Response::
++
+--
+[source.wrap,json]
+----
+{
+"location": "/gsql/queries/install/1234",
+"error": false,
+"message": "Request 1234 successfully created",
+"results": ""
+}
+----
+--
+====
+
+==== GET
+
+`GET /gsql/queries/install HTTP/1.1`
+
+The GET request returns the state of the installation request for each query.
+
+The POST request response included the location of the query under `location`. The `GET` request must include this request ID.
+
+==== Returns
+
+|===
+| Name | Description
+
+| state | Indicates state of installation request for the individual queries. Returns `NEW`,`RUNNING`,`SUCCESS`, or `FAILED`.
+| error | Indicates whether an error occurred and what kind of message is included
+| message | The error message, if any
+| queries | Includes an array list of queries (name, state)
+| name | Name of the query
+| graph | Name of the graph
+|===
+
+In the below example, the user requests information about the queries installed in the above `POST` example. The response shows that three query install requests were made with `POST`: queries `t1`, `t2`, and `t3`.
+
+At the time of response, `t1` had installed successfully, while the other two were still running in the background.
+
+[NOTE]
+====
+The installation request state shown with `state` will return `SUCCESS` even if some queries fail to install, as long as at least one has successfully installed at the time of response.
+====
+
+==== Sample request:
+[tabs]
+====
+Request::
++
+--
+[source.wrap,console]
+----
+curl --user tigergraph:tigergraph -X GET 'http://localhost:8123/gsql/queries/install/1234'
+----
+--
+Response::
++
+--
+[source.wrap,json]
+----
+{
+  "state": "RUNNING",
+  "error": false,
+  "message": "",
+  "results": "",
+  "queries": [
+    {
+      "name": "t1",
+      "state": "SUCCESS"
+    },
+    {
+      "name": "t2",
+      "state": "RUNNING"
+    },
+    {
+      "name": "t3",
+      "state": "RUNNING"
+    }
+  ],
+  "graph": "poc_graph"
+}
+----
+--
+====
+
+[NOTE]
+====
+If you install all queries and receive a state of `SUCCESS` for one or more queries that had been installed previously, it does not mean that they were reinstalled. A returned state of `SUCCESS` is a confirmation that a query is ready to be run.
+====
+
 === Run an installed query (`GET`)
 
 `+GET /query/{graph_name}/{query_name}+`
