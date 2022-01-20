@@ -12,7 +12,7 @@ The data streaming connector supports the following data systems:
 == Stream data from Google Cloud Storage
 You can create a data connector between TigerGraph's internal Kafka server and your GCS service with a specified topic.
 The connector will stream data from the data source in your GCS buckets to TigerGraph's internal Kafka cluster.
-You can then create and run a loading job using the Kafka loader from Kafka into the graph store.
+You can then create and run a loading job to load data from Kafka into the graph store using the xref:kafka-loader-user-guide.adoc[Kafka loader].
 
 === Prerequisites
 * Your source data files are stored in Google Cloud Storage buckets.
@@ -32,16 +32,18 @@ The connector configurations provide the following information:
 ==== Specify connector class
 The connector class indicates what type of connector the configuration file is used to create.
 Connector class is specified by the `connector.class` key.
-For connecting to Google Cloud Filestore, its value is set to `com.tigergraph.kafka.connect.filesystem.FsSourceConnector`.
+For connecting to GCS, its value is set to `com.tigergraph.kafka.connect.filesystem.FsSourceConnector`.
 
 [discrete]
 ==== Provide GCP account credentials
-You need to provide following information for the connector to access the files in your GCP Filestore bucket:
+You need to provide following information for the connector to access the files in your GCP Filestore bucket.
+You should be able to find all items on this list in your link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating[service account key]:
 
 * `file.reader.settings.fs.gs.auth.service.account.email`: The email address associated with the service account
 * `file.reader.settings.fs.gs.auth.service.account.private.key.id`: The private key ID associated with the service account used for GCS access.
 * `file.reader.settings.fs.gs.auth.service.account.private.key`: The private key associated with the service account used for GCS access.
 * `file.reader.settings.client_email`:
+The service account email.
 * `file.reader.settings.fs.gs.project.id`: Google Cloud Project ID with access to GCS buckets.
 * `file.reader.settings.fs.gs.auth.service.account.enable`: Whether to create objects for the parent directories of objects with `/` in their path. For example, creating `gs://bucket/foo/` upon deleting or renaming `gs://bucket/foo/bar`.
 * `file.reader.settings.fs.gs.impl`: The FileSystem for gs: (GCS) uris.
