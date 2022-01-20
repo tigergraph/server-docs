@@ -43,7 +43,7 @@ Change password of another user::
 To change the ACL password of another user, run the following command and replace `user1` with the user whose ACL password you want to change:
 [.wrap,gsql]
 ----
-GSQL > ALTER USER user1 PASSWORD SET examplePassword <1>
+GSQL > ALTER USER user1 ACL PASSWORD SET examplePassword <1>
 ----
 <1> Since the password isn't enclosed in double quotes, only alphanumerical characters are allowed.
 --
@@ -68,7 +68,7 @@ In both scenarios, changing ACL password requires the current password.
 ==== Procedure
 [tabs]
 ====
-Changing password of current user::
+Change password of current user::
 +
 --
 To change the password of the current user, run the following command and replace `"current_password"` with the current password of the user:
@@ -80,7 +80,7 @@ GSQL > ALTER ACL PASSWORD SET "new_password" REPLACE "current_password" <1>
 <1> Putting the password in double quotes allow you to use special characters.
 You can enter a password without the double quotes, in which case you are only able to use alphanumerical characters.
 --
-Changing password of another user::
+Change password of another user::
 +
 --
 To change the password of another user, run the following command and replace `"current_password"` with the current password of the user:
@@ -166,7 +166,7 @@ To grant an ACL privilege, the query owner must have the corresponding RBAC priv
 ==== Syntax
 [.wrap,gsql]
 ----
-GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY TO ROLE (<role1>, <role2> ...) [SECURED BY <owner_acl_password>]
+GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY TO (<role1>, <role2> ...) [SECURED BY <owner_acl_password>]
 ----
 
 ==== Required privilege
@@ -180,14 +180,14 @@ To grant `EXECUTE` privilege instead, replace `READ` with `EXECUTE`:
 
 [.wrap,gsql]
 ----
-GSQL > GRANT ACL PRIVILEGE READ ON example_query TO ROLE example_role
+GSQL > GRANT ACL PRIVILEGE READ ON example_query TO example_role
 ----
 
 
 === Revoke ACL privilege from a role
 The owner of a query can revoke ACL privileges on the query from a role.
-If you revoke an ACL privilege on the query from all roles, then the ACL entry status for that privilege becomes unspecified.
-When the ACL entry status for a privilege is unspecified, RBAC governs access for the corresponding operation.
+If you revoke an ACL privilege on the query from all roles, then the ACL entry status for that privilege becomes `NOBODY`.
+When the ACL entry status for a privilege is unspecified, no one, including the query owner, can access the query in the corresponding manner.
 
 ==== Syntax
 [.wrap,gsql]
@@ -209,14 +209,7 @@ GSQL > REVOKE ACL PRIVILEGE READ ON QUERY example_query FROM role1 SECURED BY
 "owner_acl_password"
 ----
 
-[CAUTION]
-====
-Removing `role1` from the ACL entry for `READ` privilege on `example_query` does not always mean that `role1` will not be able to access `example_query`.
 
-* If after removing `role1`, the ACL entry for `READ` privilege becomes empty, then RBAC governs access to the query.
-In this scenario, as long as `role1` has the `READ_QUERY` privilege, users with `role1` role can still access the query.
-* If after removing `role1`, the ACL entry for `READ` still contains other roles, then users with `role1` role cannot access `example_query` even if they have the `READ_QUERY` RBAC privilege.
-====
 
 === Disallow access for all
 If the query owner grants a type of ACL privilege on a query to `NOBODY`, no one will be able to access the query, including the query owner.
@@ -224,7 +217,7 @@ If the query owner grants a type of ACL privilege on a query to `NOBODY`, no one
 ==== Syntax
 [.wrap,gsql]
 ----
-GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> NOBODY SECURED BY <owner_acl_password>
+GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> TO NOBODY [ SECURED BY <owner_acl_password> ]
 ----
 
 ==== Required privilege
