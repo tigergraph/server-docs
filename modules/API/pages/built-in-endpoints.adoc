@@ -743,7 +743,6 @@ $ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0
 The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server.
 *These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
 
-
 === Request a token
 
 `POST /requesttoken`
@@ -840,15 +839,14 @@ The endpoint expects a JSON request body in the following format:
 [,javascript]
 ----
 {
-    "secret": <secret_value>, <1>
-    "graph": <graph_name>, <2>
+    "token": <token_value>, <1>
+    "secret": <secret_value>, <2>
     "lifetime": <token_lifetime> <3>
 }
 ----
-<1> User's secret to generate the token.
-Required if the request body does not supply `graph`.
-<2> Name of the graph that the token is valid for.
-Required if the request body does not supply `secret`.
+<1> Token to be refreshed.
+<2> User's secret to generate the token.
+Required if username and userpassword are not suplied.
 <3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 
 ==== Sample request
@@ -910,14 +908,12 @@ The endpoint expects a JSON request body in the following format:
 [,javascript]
 ----
 {
-    "secret": <secret_value>, <1>
-    "graph": <graph_name>, <2>
+    "token": <token_value>, <1>
+    "secret": <secret_value>, <2>
 }
 ----
-<1> User's secret to generate the token.
-Required if the request body does not supply `graph`.
-<2> Name of the graph that the token is valid for.
-Required if the request body does not supply `secret`.
+<1> Token to delete.
+<2> User’s secret to generate the token. Required if username and userpassword are not suplied.
 
 ==== Sample request
 
