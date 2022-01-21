@@ -1,12 +1,13 @@
 = Lightweight Directory Access Protocol (LDAP)
 
-The Lightweight Directory Access Protocol (LDAP) is an industry-standard protocol for accessing and maintaining directory information services across a network. Typically, LDAP servers provide centralized user authentication services. The Tigergraph system supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials. During the authentication process, the GSQL server connects to the LDAP server and requests the LDAP server to authenticate the user.
+The Lightweight Directory Access Protocol (LDAP) is an industry-standard protocol for accessing and maintaining directory information services across a network.
+Typically, LDAP servers provide centralized user authentication services. The TigerGraph system supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials. During the authentication process, the GSQL server connects to the LDAP server and requests the LDAP server to authenticate the user.
 
 == Supported Features
 
-GSQL LDAP authentication supports any LDAP server that follows the LDAPv3 protocol. StartTLS/SSL connection is also supported.
+* GSQL LDAP authentication supports any LDAP server that follows the LDAPv3 protocol. StartTLS/SSL connection is also supported.
 
-SASL authentication is not yet supported. Some LDAP servers are configured to require a client certificate upon connection. Client certificates are not yet supported in GSQL LDAP authentication.
+* Some LDAP servers are configured to require a client certificate upon connection. Client certificates are not yet supported in GSQL LDAP authentication.
 
 == Mapping Users From LDAP to GSQL
 
@@ -33,12 +34,12 @@ In order to choose and specify your LDAP configuration settings, you should be f
 
 === Prerequisites
 
-On a cluster, all nodes must have the LDAP certification file in the same place.
+* On a cluster, all nodes must have the LDAP certification file in the same place.
 
-Sufficient privileges are required to configure LDAP Authentication:
+* Sufficient privileges are required to configure LDAP Authentication:
 
-* `WRITE_ROLE`
-* `WRITE_PROXYGROUP`
+** `WRITE_ROLE`
+** `WRITE_PROXYGROUP`
 
 === Step 1 - Configure the LDAP Connection
 
