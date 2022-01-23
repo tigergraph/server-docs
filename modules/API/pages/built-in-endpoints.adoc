@@ -2640,16 +2640,16 @@ Response::
 
 `GET /gsql/queries/install HTTP/1.1`
 
-The GET request returns the state of the installation request for each query.
+The GET request returns the state of the installation request for each query, as well as the overall state of the request itself.
 
-The POST request response included the location of the query under `location`. The `GET` request must include this request ID.
+The POST request response includes the location of the query under `location`. The `GET` request must include this request ID.
 
 ==== Returns
 
 |===
 | Name | Description
 
-| state | Indicates state of installation request for the individual queries. Returns `NEW`,`RUNNING`,`SUCCESS`, or `FAILED`.
+| state | Indicates overall status of installation request for the individual queries. Returns `NEW`,`RUNNING`,`SUCCESS`, or `FAILED`.
 | error | Indicates whether an error occurred and what kind of message is included
 | message | The error message, if any
 | queries | Includes an array list of queries (name, state)
@@ -2663,7 +2663,11 @@ At the time of response, `t1` had installed successfully, while the other two we
 
 [NOTE]
 ====
-The installation request state shown with `state` will return `SUCCESS` even if some queries fail to install, as long as at least one has successfully installed at the time of response.
+The installation request state shown with `state` shows the overall status of the query installation request.
+
+It will return `SUCCESS` even if some queries fail to install, as long as each query has been given a chance to install. If the overall status is `SUCCESS` but each query has failed, it indicates that something is wrong with the queries. If the overall status is `FAILURE`, it indicates that something is wrong with the install job itself independent of the queries.
+
+It will return `NEW` if the query installation request has been made, but the resource manager is occupied with another request at the time the user made the overall status request.
 ====
 
 ==== Sample request:
