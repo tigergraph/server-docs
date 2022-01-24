@@ -516,6 +516,41 @@ RuntimeMemory:
 	MaxUserResidentSetSize: 1073741824.00MB
 ----
 
+=== gadmin connector
+`gadmin connector` commands manage the creation, deletion and update for the streaming data connector.
+
+[,console]
+----
+$ gadmin connector -h
+
+Manage the creation, deletion, update for the Kafka connector
+
+Usage:
+  gadmin connector [flags]
+  gadmin connector [command]
+
+Description:
+  You can manage the creation, deletion and update for the Kafka connector
+
+Available Commands:
+  create      Create connectors with configuration file
+  delete      Delete the corresponding connector
+  list        List the information of the specific connector or list all available connector
+  pause       Pause the corresponding connector
+  restart     Restart the corresponding connector
+  resume      Resume the corresponding connectors
+  status      Get the status of the corresponding connectors
+
+Flags:
+  -h, --help   help for connector
+
+Global Flags:
+      --debug   enable debug log output to stdout
+
+Use "gadmin connector [command] --help" for more information about a command.
+----
+
+
 === gadmin log
 
 The `gadmin log` command will reveal the location of all commonly checked log files for the TigerGraph system.
