@@ -10,7 +10,7 @@ TigerGraph Server 3.5.0 was released on Jan 31st, 2022.
 Below is a list of new features and improvements in TigerGraph 3.5.0:
 
 === Data integration
-* Introduced the Data Streaming Connector with Google Cloud Storage data streaming support.
+* Introduced the xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector] with Google Cloud Storage data streaming support.
 
 === Manageability
 
@@ -29,7 +29,7 @@ Below is a list of new features and improvements in TigerGraph 3.5.0:
 
 
 === Usability - GSQL
-* Changed default GSQL syntax to syntax v2
+* Changed default GSQL syntax to syntax V2.
 * Added support for xref:gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_tuple_variable[local tuple variables].
 
 
@@ -68,10 +68,17 @@ Below is a list of new features and improvements in TigerGraph 3.5.0:
  ** Queries that use secondary index may still see the vertices being deleted until after the snapshots are fully rebuilt.
 
 == Release notes for previous versions
+* xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
 * xref:3.3@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.3]
 * xref:3.2@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.2]
 
-== Compatibility with TigerGraph 3.5
+== Compatibility with TigerGraph 3.4
+* GSQL Syntax version change.
+Beginning with TigerGraph 3.5, the default GSQL syntax version is V2.
+Syntax V1 is still supported by TigerGraph, but queries written in V1 syntax will need the version specifier at the query level or a session parameter specifying the syntax version to compile.
+* `GET /requesttoken` endpoint is dropped.
+Please use `POST /requesttoken` to request authentication tokens instead.
+* `GET /gsqlserver/gsql/queryinfo:14240` endpoint now returns the query input parameters in the same order as they are in the query instead of an unordered list.
 
 == Compatibility with TigerGraph 3.1
 

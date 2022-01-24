@@ -12,7 +12,7 @@ The data streaming connector supports the following data systems:
 == Stream data from Google Cloud Storage
 You can create a data connector between TigerGraph's internal Kafka server and your GCS service with a specified topic.
 The connector will stream data from the data source in your GCS buckets to TigerGraph's internal Kafka cluster.
-You can then create and run a loading job to load data from Kafka into the graph store using the xref:kafka-loader/kafka-loader-user-guide.adoc[Kafka loader].
+You can then create and run a loading job to load data from Kafka into the graph store using the xref:kafka-loader/index.adoc[Kafka loader].
 
 === Prerequisites
 * Your source data files are stored in Google Cloud Storage buckets.
@@ -274,7 +274,7 @@ The default offset for loading is `-1`, which means you will load data from the 
 If you want to load from the beginning of a topic, the `start_offset` value should be `-2`.
 <4> Replace `<partition_number>` with the partition number if you want to configure.
 . Create a loading job and map data to graph.
-See xref:kafka-loader/kafka-loader-user-guide.adoc#_2_create_a_loading_job[Kafka loader guide] for how to map data from a Kafka data source to the graph.
+See xref:kafka-loader/index.adoc#_2_create_a_loading_job[Kafka loader guide] for how to map data from a Kafka data source to the graph.
 
 WARNING: Known bug: to use the `-1` value for offset, delete the `start_offset` key instead of setting it to `-1`.
 
