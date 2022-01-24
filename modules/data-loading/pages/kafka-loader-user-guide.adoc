@@ -17,14 +17,14 @@ image::kafka-loading-architecture.png[Kafka Data Loader Architecture]
 
 * You should have a Kafka cluster configured and set up in your environment.
 
-* Once you have the external Kafka cluster setup, you need to prepare the following two configuration files and place them in your desired location in TigerGraph system:
+* Once you have the external Kafka cluster setup, you need to prepare the following two configuration files and place them in your desired location in the TigerGraph system:
 ** <<_kafka_data_source_configuration_file>>
 ** <<_kafka_topic_and_partition_configuration_file>>
 
 [#_kafka_data_source_configuration_file]
 === Kafka data source configuration file
 
-The data source configuration file's content, structured as a JSON object, describes the Kafka server's global settings, including the data source IP and port.
+The data source configuration file's content, structured as a JSON object, describes the Kafka server's global settings, including the data source IP address and port.
 A sample `kafka.conf` is shown in the following example:
 
 [source,javascript]
@@ -36,7 +36,8 @@ A sample `kafka.conf` is shown in the following example:
 
 The `broker` key is required, and its value is a fully qualified domain name (or IP) and port.
 Additional Kafka configuration parameters may be provided (see Kafka documentation) by using the optional `"kafka_config"` key.
-For its value, provide a list of key-value pairs.For example:
+For its value, provide a list of key-value pairs.
+For example:
 
 [source,javascript]
 ----
@@ -163,9 +164,12 @@ The above simplified statement is useful for using Kafka Data Loader in TigerGra
 
 The Kafka Loader uses the same basic https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/creating-a-loading-job#create-loading-job[CREATE LOADING JOB] syntax used for standard GSQL loading jobs.A `DEFINE FILENAME` statement should be used to assign a loader `FILENAME` variable to a Kafka data source name and the path to its config file.
 
-In addition, the filename can be specified in the `RUN LOADING JOB` statement with the `USING` clause.The filename value set by a `RUN` statement overrides the value set in the `CREATE LOADING JOB`.
+In addition, the filename can be specified in the `RUN LOADING JOB` statement with the `USING` clause.
+The filename value set by a `RUN` statement overrides the value set in the `CREATE LOADING JOB`.
 
-Below is the syntax for `DEFINE FILENAME` for use with the Kakfa Loader.In the syntax, `$DATA_SOURCE_NAME` is the Kafka data source name, and the path points to a configuration file with topic and partition information of the Kafka server.The Kafka configuration file must be in JSON format.
+Below is the syntax for `DEFINE FILENAME` for use with the Kakfa Loader.
+In the syntax, `$DATA_SOURCE_NAME` is the Kafka data source name, and the path points to a configuration file with topic and partition information of the Kafka server.
+The Kafka configuration file must be in JSON format.
 
 [source,ebnf]
 ----
@@ -173,7 +177,7 @@ DEFINE FILENAME filevar "=" [filepath_string | data_source_string];
 data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
 ----
 
-*Example:* Load a Kafka Data Source `k1`,where the path to the topic-partition configuration file is `"~/topic_partition1_conf.json"`:
+Example: Load a Kafka data source `k1`, where the path to the topic-partition configuration file is `"~/topic_partition1_conf.json"`:
 
 [source,gsql]
 ----
@@ -262,7 +266,10 @@ In the above statement, the local data_source k1 is only accessible to graph tes
 
 === DROP DATA_SOURCE
 
-A data source variable can be dropped by a user who has privilege. A global data source can only be dropped by a users with global `WRITE_DATASOURCE` privilege. Users with `WRITE_DATASOURCE` privilege for one graph can drop data sources on that graph. The syntax for the `DROP DATA_SOURCE` command is as follows:
+A data source variable can be dropped by a user who has sufficient privileges.
+A global data source can only be dropped by a users with global `WRITE_DATASOURCE` privilege.
+Users with `WRITE_DATASOURCE` privilege for one graph can drop data sources on that graph.
+The syntax for the `DROP DATA_SOURCE` command is as follows:
 
 [source,gsql]
 ----
@@ -283,7 +290,7 @@ GSQL > DROP DATA_SOURCE ALL
 
 === SHOW DATA_SOURCE
 
-The `SHOW DATA_SOURCE` command will display a summary of all existing data_sources for which the user has privilege:
+The `SHOW DATA_SOURCE` command will display a summary of all existing data sources for which the user has privilege:
 
 [source,gsql]
 ----
