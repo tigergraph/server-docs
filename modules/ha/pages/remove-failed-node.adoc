@@ -1,0 +1,53 @@
+= Removal of Failed Nodes
+:description: This page describes the procedure to remove a failed node.
+
+If a node fails in a highly available (HA) cluster (replication factor > 1), you can remove the failed node from the cluster while keeping all your data intact.
+After removal, you can choose to use the xref:cluster-resizing:expand-a-cluster.adoc[cluster expansion] feature to restore your cluster to its original size.
+
+You should only consider removing a node when the node has failed.
+Removing a node from a cluster does not redistribute the data in the cluster.
+If all nodes are working in a cluster, and you want to reduce the size of the cluster, xref:cluster-resizing:shrink-a-cluster.adoc[shrink the cluster] instead.
+
+== Remove a single node
+If only a single node fails in a HA cluster, you can always remove the node without incurring any data loss.
+
+=== Prerequisites
+* Your cluster should have a replication factor greater than 1.
+* All services in your cluster should be in `RUNNING` status.
+You can check service status by running xref:system-management:management-with-gadmin.adoc#_gadmin_status[`gadmin status`].
+If a service is down, and you cannot restart it, please contact mailto:support@tigergraph.com[TigerGraph Support].
+
+
+=== Procedure
+To remove a failed node from a cluster, run the following command and replace `<node_name>` with the name of the node and `node_ip_address` with the internal IP address of the node:
+
+[,console]
+----
+$ gadmin cluster remove <node_name>:<node_ip_address>
+----
+
+
+== Remove multiple nodes
+If there are multiple node failures in a cluster, recovering all data might not be possible.
+However, as long as there is at least one remaining copy for each partition and cluster services are still operational, it is possible to remove the failed nodes and restore the cluster afterwards with all data intact.
+
+=== Prerequisites
+* Your cluster should have a replication factor greater than 1.
+* All services in your cluster should be in `RUNNING` status.
+You can check service status by running xref:system-management:management-with-gadmin.adoc#_gadmin_status[`gadmin status`].
+If a service is down, and you cannot restart it, please contact mailto:support@tigergraph.com[TigerGraph Support].
+* There is at least 1 remaining copy for each partition of the data.
+
+=== Procedure
+. Run the following command to adjust Kafka minimum sync replica number:
++
+[,console]
+----
+$ gadmin config set Kafka.MinInsyncReplicas 1
+----
+. To remove a failed node from a cluster, run the following command and replace `<node_name>` with the name of the node and `node_ip_address` with the internal IP address of the node:
++
+[,console]
+----
+$ gadmin cluster remove <node_name>:<node_ip_address>
+----
