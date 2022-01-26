@@ -1,5 +1,5 @@
 = Quickstart with GKE
-:cloud-code: gke
+:description: A quickstart guide for running TigerGraph in Kubernetes in GKE.
 
 This is a quick start guide for deploying TigerGraph on Kubernetes with Google Kubernetes Engine (GKE).
 
@@ -90,12 +90,16 @@ ssh tigergraph@ip_m1
 
 === Remove single server resources
 
-Run the command below to delete all cluster resources:
 
-[source,text]
+Use the `tg` script in the `k8s` directory of the repo to delete all cluster resources.
+Replace `<namespace_name>` with the name of the namespace within which you want to delete the resources.
+If you don't specify a namespace, the command will delete the resources in the namespace `default`:
+
+[source,console]
 ----
-$ kubectl delete -f deploy/tigergraph-gke.yaml && kubectl delete pvc -l app=tigergraph
+$ ./tg gke delete -n <namespace_name>
 ----
+
 
 == Cluster deployment
 

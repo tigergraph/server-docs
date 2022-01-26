@@ -13,7 +13,7 @@ Below is a list of new features and improvements in TigerGraph 3.5.0:
 * Introduced the xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector] with Google Cloud Storage data streaming support.
 
 === Manageability
-* Added support to backup and restore for xref:kubernetes:index.adoc[TigerGraph deployments on Kubernetes].
+* Added support for backup and restore to xref:kubernetes:index.adoc[TigerGraph deployments on Kubernetes].
 
 === Observability
 
@@ -77,12 +77,11 @@ Below is a list of new features and improvements in TigerGraph 3.5.0:
 * xref:3.2@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.2]
 
 == Compatibility with TigerGraph 3.4
-* GSQL Syntax version change.
-Beginning with TigerGraph 3.5, the default GSQL syntax version is V2.
-Syntax V1 is still supported by TigerGraph, but queries written in V1 syntax will need the version specifier at the query level or a session parameter specifying the syntax version to compile.
 * `GET /requesttoken` endpoint is dropped.
 Please use `POST /requesttoken` to request authentication tokens instead.
 * `GET /gsqlserver/gsql/queryinfo:14240` endpoint now returns the query input parameters in the same order as they are in the query instead of an unordered list.
+* Deploying TigerGraph in Kubernetes now requires more service account permissions than previous versions.
+For details, see Prerequisites section in xref:kubernetes:quickstart-with-gke.adoc[], xref:kubernetes:quickstart-with-aks.adoc[], and xref:kubernetes:quickstart-with-eks.adoc[].
 
 == Compatibility with TigerGraph 3.1
 
