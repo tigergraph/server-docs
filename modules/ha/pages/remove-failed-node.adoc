@@ -2,7 +2,7 @@
 :description: This page describes the procedure to remove a failed node.
 
 If a node fails in a highly available (HA) cluster (replication factor > 1), you can remove the failed node from the cluster while keeping all your data intact.
-After removal, you can choose to use the xref:cluster-resizing:expand-a-cluster.adoc[cluster expansion] feature to restore your cluster to its original size.
+After removal, use the xref:cluster-resizing:expand-a-cluster.adoc[cluster expansion] feature to restore your cluster to its original size.
 
 You should only consider removing a node when the node has failed.
 Removing a node from a cluster does not redistribute the data in the cluster.
@@ -36,7 +36,9 @@ However, as long as there is at least one remaining copy for each partition and 
 * All services in your cluster should be in `RUNNING` status.
 You can check service status by running xref:system-management:management-with-gadmin.adoc#_gadmin_status[`gadmin status`].
 If a service is down, and you cannot restart it, please contact mailto:support@tigergraph.com[TigerGraph Support].
-* There is at least 1 remaining copy for each partition of the data.
+* There is at least 1 complete instance of the data.
+** For example, if your cluster has a replication factor of 2 and a partitioning factor of 3.
+If there are two failed nodes
 
 === Procedure
 . Run the following command to adjust Kafka minimum sync replica number:
