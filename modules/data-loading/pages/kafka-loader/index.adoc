@@ -110,7 +110,7 @@ For example,
 <1> All partition will be used if the config file doesn't provide `partition_list` or if the partition list is empty.
 <2> This overwrites the default start offset to 0.
 
-== Configuring and Using the Kafka Loader
+== Configure and use the Kafka loader
 
 There are three basic steps:
 
@@ -121,7 +121,7 @@ There are three basic steps:
 The GSQL syntax for the Kafka Loader is designed to be consistent with the existing GSQL loading syntax.
 
 [#_1_define_the_data_source]
-=== 1. Define the Data Source
+=== 1. Define the data source
 
 Before starting a Kafka data loading job, you need to define the Kafka server as a data source.
 The `CREATE DATA_SOURCE` statement defines a data source variable with a subtype of `KAFKA`:
@@ -161,9 +161,10 @@ The above simplified statement is useful for using Kafka Data Loader in TigerGra
 
 
 [#_2_create_a_loading_job]
-=== 2. Create a Loading Job
+=== 2. Create a loading job
 
-The Kafka Loader uses the same basic https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/creating-a-loading-job#create-loading-job[CREATE LOADING JOB] syntax used for standard GSQL loading jobs.A `DEFINE FILENAME` statement should be used to assign a loader `FILENAME` variable to a Kafka data source name and the path to its config file.
+The Kafka Loader uses the same basic xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[`CREATE LOADING JOB`] syntax used for standard GSQL loading jobs.
+A `DEFINE FILENAME` statement should be used to assign a loader `FILENAME` variable to a Kafka data source name and the path to its config file.
 
 In addition, the filename can be specified in the `RUN LOADING JOB` statement with the `USING` clause.
 The filename value set by a `RUN` statement overrides the value set in the `CREATE LOADING JOB`.
@@ -194,7 +195,7 @@ DEFINE FILENAME f1 = "$k1:{\"topic\":\"zzz\",\"default_start_offset\":2,\"partit
 ----
 
 [#_3_run_the_loading_job]
-=== 3. Run the loading Job
+=== 3. Run the loading job
 
 The Kafka Loader uses the same xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[`RUN LOADING JOB`] statement that is used for GSQL loading from files.
 Each filename variable can be assigned a string `<data_source_name>:<topic_partition_configuration_filepath>`, which will override the value defined in the loading job.
@@ -327,7 +328,7 @@ To refer to a specific job instance, using the job_id which is provided when `RU
 
 See https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-job#inspecting-and-managing-loading-jobs[Inspecting and Managing Loading Jobs] for more details.
 
-== Kafka Loader Example
+== Kafka loader example
 
 Here is an example code for loading data through Kafka Loader:
 
