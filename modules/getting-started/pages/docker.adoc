@@ -88,7 +88,7 @@ If you use Windows and have write permission issues with the above command,  try
 $ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t docker.tigergraph.com/tigergraph:latest
 ----
 
-== 4. Use SSH to connect to your container
+== 4. Connect to your container (via SSH or `docker exec`)
 
 After launching the container, you can use SSH to connect to your container:
 
@@ -105,6 +105,14 @@ $ docker ps | grep tigergraph
 ----
 $ ssh -p 14022 tigergraph@localhost
 ----
+
+You can also access your TigerGraph container via `docker exec` with the following command:
++
+[source,console]
+----
+$ docker exec -it $(docker ps | grep tigergraph | awk '{print $1}') /bin/sh
+----
+
 
 == 5. Start TigerGraph
 
