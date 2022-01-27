@@ -1,4 +1,5 @@
 = Quickstart with AKS
+:description: A quickstart guide for running TigerGraph in Kubernetes in AKS.
 
 This is a quickstart guide for deploying TigerGraph single servers and clusters in Kubernetes on Azure Kubernetes Service(AKS).
 
@@ -10,23 +11,35 @@ This is a quickstart guide for deploying TigerGraph single servers and clusters 
 * Provision Kubernetes cluster on AKS with nodes that meet the xref:installation:hw-and-sw-requirements.adoc[hardware and software requirements] to run TigerGraph.
 * https://kubernetes.io/docs/tasks/tools/[Install `kubectl` on your machine,] and make sure your local `kubectl` version is within one minor version's difference from the `kubectl` version on your cluster.
 * https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough#connect-to-the-cluster[Configure `kubectl` for ASK cluster access].
+* Ensure your have the following permissions in your Kubernetes context:
+** Create and delete Pods, Services, StatefulSets, and ConfigMaps
+** Create and delete Jobs, CronJobs
+** Create and delete Service Accounts, roles and role bindings
 
+
+[#_single_server_deployment]
 == Single-server deployment
 
 This section describes the steps to deploy, verify, and remove a single-server deployment of TigerGraph on AKS.
 
 === Deploy single server
 
-*Step 1: Generate deployment manifest*. Clone the https://github.com/tigergraph/ecosys.git[TigerGraph ecosystems repository] and change into the `k8s` directory. You can edit the `kustimization.yaml` file in the `aks` folder to change the namespace and image name for your deployment. The default namespace is `default`, and the default image is the official docker image for TigerGraph 3.2.0. No need to edit the files if no changes are needed.
+*Step 1: Generate deployment manifest*.
+Clone the https://github.com/tigergraph/ecosys.git[TigerGraph ecosystems repository] and change into the `k8s` directory.
+You can edit the `kustimization.yaml` file in the `aks` folder to change the namespace and image name for your deployment.
+The default namespace is `default`, and the default image is the official docker image for TigerGraph in the latest.
+No need to edit the files if no changes are needed.
 
-Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment. A `deploy` directory will be created automatically and you should find the manifest named `tigergraph-aks.yaml` in the directory.
+Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment.
+A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-aks.yaml` in the directory.
 
 [source,console]
 ----
 ./tg aks kustomize -s 1
 ----
 
-*Step 2: Deploy manifest*. Run `kubectl apply` to create the deployment using the manifest you generated in step 1.
+*Step 2: Deploy manifest*.
+Run `kubectl apply` to create the deployment using the manifest you generated in step 1.
 
 [source,console]
 ----
@@ -45,11 +58,12 @@ installer-zsnb4   1/1     Running   0          4m11s
 tigergraph-0      1/1     Running   0          4m10s
 ----
 
-Run `kubectl describe service/tg-external-service` to find the IP address of the load balancer. You can then make curl calls to port 9000 to make sure that RESTPP is running:
+Run `kubectl get services` to find the IP addresses of the RESTPP service as well as the GUI service.
+You can then make curl calls to the IP address of `tg-rest-service` at port 9000 to make sure that RESTPP is running:
 
 [source,console]
 ----
-$ curl <load_balancer_ip>:9000/echo | jq .
+$ curl <restpp_ip>:9000/echo | jq .
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100    39  100    39    0     0    120      0 --:--:-- --:--:-- --:--:--   120
@@ -59,7 +73,7 @@ $ curl <load_balancer_ip>:9000/echo | jq .
 }
 ----
 
-You can also copy the IP address into your browser and visit port 14240 to make sure that GraphStudio is working.
+You can also copy the IP address of the GUI service into your browser and visit port 14240 to make sure that GraphStudio is working.
 
 === Connect to single server
 
@@ -77,13 +91,18 @@ ssh tigergraph@ip_m1
 
 === Remove single server resources
 
-Run the command below to delete all cluster resources:
+
+Use the `tg` script in the `k8s` directory of the repo to delete all cluster resources.
+Replace `<namespace_name>` with the name of the namespace within which you want to delete the resources.
+If you don't specify a namespace, the command will delete the resources in the namespace `default`:
 
 [source,console]
 ----
-$ kubectl delete -f deploy/tigergraph-aks.yaml && kubectl delete pvc -l app=tigergraph
+$ ./tg gke delete -n <namespace_name>
 ----
 
+
+[#_cluster_deployment]
 == Cluster deployment
 
 This section describes the steps to deploy, verify, and delete a TigerGraph cluster in Kubernetes on AKS.
@@ -135,11 +154,12 @@ tigergraph-0      1/1     Running   0          4m10s
 tigergraph-1      1/1     Running   0          75s
 ----
 
-Run `kubectl describe service/tg-external-service` to find the IP address of the load balancer for your AKS cluster. You can make a curl call to port 9000 to make sure that RESTPP is working:
+Run `kubectl get services` to find the IP addresses of the RESTPP service as well as the GUI service.
+You can then make curl calls to the IP address of `tg-rest-service` at port 9000 to make sure that RESTPP is running:
 
 [source,console]
 ----
-$ curl <load_balancer_ip>:9000/echo | jq .
+$ curl <restpp_ip>:9000/echo | jq .
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100    39  100    39    0     0    120      0 --:--:-- --:--:-- --:--:--   120
@@ -149,7 +169,7 @@ $ curl <load_balancer_ip>:9000/echo | jq .
 }
 ----
 
-You can also copy the IP address into your browser and visit port 14240 to make sure that GraphStudio is working.
+You can also copy the IP address of the GUI service into your browser and visit port 14240 to make sure that GraphStudio is working.
 
 === Connect to instances
 
@@ -167,9 +187,13 @@ ssh tigergraph@ip_m1
 
 === Delete cluster resources
 
-Run the command below to delete all cluster resources:
+
+Use the `tg` script in the `k8s` directory of the repo to delete all cluster resources.
+Replace `<namespace_name>` with the name of the namespace within which you want to delete the resources.
+If you don't specify a namespace, the command will delete the resources in the namespace `default`:
 
 [source,console]
 ----
-$ kubectl delete -f deploy/tigergraph-aks.yaml && kubectl delete pvc -l app=tigergraph
+$ ./tg gke delete -n <namespace_name>
 ----
+
