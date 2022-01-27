@@ -15,6 +15,7 @@ Below is a list of new features and improvements in TigerGraph 3.5.0:
 === Manageability
 * Added support for xref:ha:remove-failed-node.adoc[removing one or more failed nodes] from a cluster.
 After removal, users can xref:cluster-resizing:expand-a-cluster.adoc[expand the cluster] back to its original size.
+* Added support for backup and restore to xref:kubernetes:index.adoc[TigerGraph deployments on Kubernetes].
 
 
 === Observability
@@ -37,6 +38,10 @@ After removal, users can xref:cluster-resizing:expand-a-cluster.adoc[expand the 
 
 === GraphStudio Enhancement
 * Added pagination support to AdminPortal metric charts
+
+=== Other tools
+* Added xref:API:built-in-endpoints.adoc#_install_a_query[`POST /gsql/queries/install` endpoint] to install queries.
+* Added xref:API:built-in-endpoints.adoc#_check_query_installation_status[`GET /gsql/queries/install/\{request_id}` endpoint] to check the status of query installation requests.
 
 
 == Fixed issues
@@ -70,17 +75,16 @@ After removal, users can xref:cluster-resizing:expand-a-cluster.adoc[expand the 
  ** Queries that use secondary index may still see the vertices being deleted until after the snapshots are fully rebuilt.
 
 == Release notes for previous versions
-* xref:3.4@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.4]
-* xref:3.3@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.3]
-* xref:3.2@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.2]
+* xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
+* xref:3.3@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.3]
+* xref:3.2@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.2]
 
 == Compatibility with TigerGraph 3.4
-* GSQL Syntax version change.
-Beginning with TigerGraph 3.5, the default GSQL syntax version is V2.
-Syntax V1 is still supported by TigerGraph, but queries written in V1 syntax will need the version specifier at the query level or a session parameter specifying the syntax version to compile.
 * `GET /requesttoken` endpoint is dropped.
 Please use `POST /requesttoken` to request authentication tokens instead.
 * `GET /gsqlserver/gsql/queryinfo:14240` endpoint now returns the query input parameters in the same order as they are in the query instead of an unordered list.
+* Deploying TigerGraph in Kubernetes now requires more service account permissions than previous versions.
+For details, see Prerequisites section in xref:kubernetes:quickstart-with-gke.adoc[], xref:kubernetes:quickstart-with-aks.adoc[], and xref:kubernetes:quickstart-with-eks.adoc[].
 
 == Compatibility with TigerGraph 3.1
 
