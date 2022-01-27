@@ -1,4 +1,6 @@
 = Get Started with Docker
+:sectnums:
+:description: A quickstart guide to run Tigergraph with Docker.
 
 This document provides step-by-step instructions on how to pull the latest TigerGraph Enterprise Edition docker image to your host machine. You can follow the sections in sequence to set up the TigerGraph docker environment.
 
@@ -6,14 +8,14 @@ The latest TigerGraph docker image includes the following content:
 
 * The latest version of TigerGraph
 * Linux packages:
- ** openssh-server
- ** git
- ** wget
- ** curl
- ** emac
- ** vim
- ** jq
- ** tar
+ ** `openssh-server`
+ ** `git`
+ ** `wget`
+ ** `curl`
+ ** `emac`
+ ** `vim`
+ ** `jq`
+ ** `tar`
 * Tutorial material
  ** GSQL 101
  ** GSQL 102
@@ -21,9 +23,9 @@ The latest TigerGraph docker image includes the following content:
 
 This follow-along video shows the whole setup process:
 
-video::https://www.youtube.com/watch?v=V5VvgJyjLxA[]
+video::V5VvgJyjLxA[youtube,width=640,height=320]
 
-== 1. Install Docker Desktop
+== Install Docker Desktop
 
 Follow the steps below to install Docker Desktop on your machine and configure it with sufficient resources for TigerGraph:
 
@@ -38,7 +40,7 @@ Follow the steps below to install Docker Desktop on your machine and configure i
  ** Minimum: 2 cores and 10GB memory
  ** Click the Docker Desktop icon, click *Preferences* >> *Resources*, drag the CPU and Memory sliders to the desired configuration, save and restart Docker Desktop
 
-== 2. Prepare a Shared Folder on Host OS to be shared with Docker Container
+== Prepare a Shared Folder on Host OS to be shared with Docker Container
 
 Open a shell on your host machine and create or select a directory for sharing data between your host machine and docker container. Grant read+write+execute permission to the folder. For example, to create a folder called data in Linux:
 
@@ -52,7 +54,7 @@ You can mount (map) the data folder to a folder under the docker container, whic
 
 For example, if you mount the host OS folder `~/data` to the docker folder `/home/tigergraph/mydata`,  then anything you put on `~/data` will be visible in the docker container under `/home/tigergraph/mydata`, and vice versa.
 
-== 3. Run TigerGraph Docker image as a daemon
+== Run TigerGraph Docker image as a daemon
 
 Run the following command to pull the TigerGraph docker image, bind ports, map a shared data folder, and start a container from the image. Note: this command is very long; please make sure you copy the whole command by dragging the scroll bar to the end:
 
@@ -88,7 +90,7 @@ If you use Windows and have write permission issues with the above command,  try
 $ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t docker.tigergraph.com/tigergraph:latest
 ----
 
-== 4. Use SSH to connect to your container
+== Connect to your container (via SSH or `docker exec`)
 
 After launching the container, you can use SSH to connect to your container:
 
@@ -106,7 +108,14 @@ $ docker ps | grep tigergraph
 $ ssh -p 14022 tigergraph@localhost
 ----
 
-== 5. Start TigerGraph
+You can also access your TigerGraph container via `docker exec` with the following command:
+[source,console]
+----
+$ docker exec -it $(docker ps | grep tigergraph | awk '{print $1}') /bin/sh
+----
+
+
+== Start TigerGraph
 
 . After connecting to the container via ssh, inside the container, start all TigerGraph services with the following command (which may take up to one minute):
 +
