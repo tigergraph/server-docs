@@ -1,4 +1,5 @@
 = Quickstart with GKE
+:description: A quickstart guide for running TigerGraph in Kubernetes in GKE.
 
 This is a quick start guide for deploying TigerGraph on Kubernetes with Google Kubernetes Engine (GKE).
 
@@ -9,8 +10,12 @@ This is a quick start guide for deploying TigerGraph on Kubernetes with Google K
 
 * The https://cloud.google.com/sdk/docs/install[`gcloud` command-line interface (CLI) is installed] on your machine.
 * The https://kubernetes.io/docs/tasks/tools/[`kubectl` Kubernetes client command-line tool] is installed on your machine.
-* A running GKE  cluster with nodes that meet the minimum xref:installation:hw-and-sw-requirements.adoc[hardware and software requirements]for running TigerGraph.
+* A running GKE  cluster with nodes that meet the minimum xref:installation:hw-and-sw-requirements.adoc[hardware and software requirements] for running TigerGraph.
 * You have https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl[configured cluster access for `kubectl`].
+* Ensure your have the following permissions in your Kubernetes context:
+** Create and delete Pods, Services, StatefulSets, and ConfigMaps
+** Create and delete Jobs, CronJobs
+** Create and delete Service Accounts, roles and role bindings
 
 == Single-server deployment
 
@@ -18,9 +23,15 @@ This section describes the steps to deploy, verify, and remove a single-server d
 
 === Deploy single server
 
-*Step 1: Generate deployment manifest*. Clone the https://github.com/tigergraph/ecosys[TigerGraph ecosystems repository] and change into the `k8s` directory. You can edit the `kustimization.yaml` file in the `gke` folder to change the namespace and image name for your deployment. The default namespace is `default`. No need to edit the files if no changes are needed.
+*Step 1: Generate deployment manifest*.
+Clone the https://github.com/tigergraph/ecosys[TigerGraph ecosystems repository] and change into the `k8s` directory.
+You can edit the `kustimization.yaml` file in the `gke` folder to change the namespace and image name for your deployment.
+The default namespace is `default`. No need to edit the files if no changes are needed.
 
-Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment. A `deployment` directory will be created automatically and you should find the manifest named `tigergraph-gke.yaml` in the directory.
+Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment.
+You can use the `--prefix` option to specify a prefix for your pods.
+The default prefix is `tigergraph`.
+A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-gke.yaml` in the directory.
 
 [source,console]
 ----
@@ -31,7 +42,7 @@ $ ./tg gke kustomize -s 1
 
 [source,console]
 ----
-$ kubectl apply -f deployment/tigergraph-gke.yaml
+$ kubectl apply -f deploy/tigergraph-gke.yaml
 ----
 
 === Verify single server
@@ -46,11 +57,12 @@ installer-zsnb4   1/1     Running   0          4m11s
 tigergraph-0      1/1     Running   0          4m10s
 ----
 
-Run `kubectl describe service/tg-external-service` to find the IP address of the load balancer. You can then make curl calls to port 9000 to make sure that RESTPP is running:
+Run `kubectl get services` to find the IP addresses of the RESTPP service as well as the GUI service.
+You can then make curl calls to the IP address of `tg-rest-service` at port 9000 to make sure that RESTPP is running:
 
 [source,console]
 ----
-$ curl <load_balancer_ip>:9000/echo | jq .
+$ curl <restpp_ip>:9000/echo | jq .
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100    39  100    39    0     0    120      0 --:--:-- --:--:-- --:--:--   120
@@ -60,7 +72,7 @@ $ curl <load_balancer_ip>:9000/echo | jq .
 }
 ----
 
-You can also copy the IP address into your browser and visit port 14240 to make sure that GraphStudio is working.
+You can also copy the IP address of the GUI service into your browser and visit port 14240 to make sure that GraphStudio is working.
 
 === Connect to single server
 
@@ -78,12 +90,16 @@ ssh tigergraph@ip_m1
 
 === Remove single server resources
 
-Run the command below to delete all cluster resources:
 
-[source,text]
+Use the `tg` script in the `k8s` directory of the repo to delete all cluster resources.
+Replace `<namespace_name>` with the name of the namespace within which you want to delete the resources.
+If you don't specify a namespace, the command will delete the resources in the namespace `default`:
+
+[source,console]
 ----
-$ kubectl delete -f deploy/tigergraph-gke.yaml && kubectl delete pvc -l app=tigergraph
+$ ./tg gke delete -n <namespace_name>
 ----
+
 
 == Cluster deployment
 
@@ -103,7 +119,8 @@ $ cd ecosys/k8s
 
 You can customize your deployment by editing the `kustomize.yaml` file in the `gke` directory. The `tg` script in the `k8s` folder offers a convenient way to make common customizations such as namespace, TigerGraph version, as well as cluster size. Run `./tg -h` to view the help text on how to use the script.
 
-Use the `tg` script in the `k8s` directory of the repo to create a Kubernetes manifest.  Use `-s` or `--size` to indicate the number of nodes in the cluster. Use the `--ha` option to indicate the replication factor of the cluster, and the partitioning factor will be the number of nodes divided by the replication factor.
+Use the `tg` script in the `k8s` directory of the repo to create a Kubernetes manifest.
+Use `-s` or `--size` to indicate the number of nodes in the cluster. Use the `--ha` option to indicate the replication factor of the cluster, and the partitioning factor will be the number of nodes divided by the replication factor.
 
 For example, the following command will create a manifest that will deploy a 3*2 cluster with a replication factor of 2 and a partitioning factor of 3.
 
@@ -120,7 +137,7 @@ Run `kubectl apply` to create the deployment
 
 [source,text]
 ----
-$ kubectl apply -f ./deployment/tigergraph-gke.yaml
+$ kubectl apply -f ./deploy/tigergraph-gke.yaml
 ----
 
 === Verify cluster
@@ -136,11 +153,12 @@ tigergraph-0      1/1     Running   0          4m10s
 tigergraph-1      1/1     Running   0          75s
 ----
 
-Run `kubectl describe service/tg-external-service` to find the IP address of the load balancer for your GKE cluster. You can make a curl call to port 9000 to make sure that RESTPP is working:
+Run `kubectl get services` to find the IP addresses of the RESTPP service as well as the GUI service.
+You can then make curl calls to the IP address of `tg-rest-service` at port 9000 to make sure that RESTPP is running:
 
-[source,text]
+[source,console]
 ----
-$ curl <load_balancer_ip>:9000/echo | jq .
+$ curl <restpp_ip>:9000/echo | jq .
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100    39  100    39    0     0    120      0 --:--:-- --:--:-- --:--:--   120
@@ -150,13 +168,13 @@ $ curl <load_balancer_ip>:9000/echo | jq .
 }
 ----
 
-You can also copy the IP address into your browser and visit port 14240 to make sure that GraphStudio is working.
+You can also copy the IP address of the GUI service into your browser and visit port 14240 to make sure that GraphStudio is working.
 
 === Connect to instances
 
 You can use `kubectl` to get a shell to the container or log in via `ssh`
 
-[source,text]
+[source,console]
 ----
 # Via kubectl
 kubectl exec -it tigergraph-0 -- /bin/bash
@@ -168,9 +186,11 @@ ssh tigergraph@ip_m1
 
 === Delete cluster resources
 
-Run the command below to delete all cluster resources:
+Use the `tg` script in the `k8s` directory of the repo to delete all cluster resources.
+Replace `<namespace_name>` with the name of the namespace within which you want to delete the resources.
+If you don't specify a namespace, the command will delete the resources in the namespace `default`:
 
-[source,text]
+[source,console]
 ----
-$ kubectl delete -f deploy/tigergraph-gke.yaml && kubectl delete pvc -l app=tigergraph
+$ ./tg gke delete -n <namespace_name>
 ----
