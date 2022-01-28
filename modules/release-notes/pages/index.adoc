@@ -31,6 +31,7 @@ Below is a list of new features and improvements in TigerGraph 3.5.0:
 === Query Language Enhancement
 * Changed default GSQL syntax to syntax V2.
 * Added support for xref:gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_tuple_variable[local tuple variables].
+* Added support for multiple `POST-ACCUM` clauses in `SELECT` statements in syntax V1.
 
 
 === GraphStudio Enhancement
@@ -44,9 +45,14 @@ Below is a list of new features and improvements in TigerGraph 3.5.0:
 == Fixed issues
 
 === Fixed in 3.5.0
-
-
-
+* Fixed an issue where the installer does not check `AllowerUser` on all nodes for installation on OEL8.
+* Fixed an issue that in rare cases led to GPE crash when the database is empty.
+* Fixed an issue that caused large parallel loading to trigger race conditions.
+* Fixed an issue that threw out-of-range errors when a 64-bit `BitwiseAccum` flips all bits with its `flip()` method.
+* Fixed an issue where `PRINT` statements printed vertex accumulators declared after the `PRINT` statement.
+* Improved the error message of the `/requesttoken` endpoint.
+* Fixed an issue where in rare cases clusters with over 10 partitions fail to elect a GSE leader.
+* Fixed an issue 
 
 
 == Known Issues
@@ -77,6 +83,7 @@ Below is a list of new features and improvements in TigerGraph 3.5.0:
 * xref:3.2@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.2]
 
 == Compatibility with TigerGraph 3.4
+* A single `POST-ACCUM` clause can no longer reference more than one vertex alias in Syntax V1.
 * `GET /requesttoken` endpoint is dropped.
 Please use `POST /requesttoken` to request authentication tokens instead.
 * `GET /gsqlserver/gsql/queryinfo:14240` endpoint now returns the query input parameters in the same order as they are in the query instead of an unordered list.
