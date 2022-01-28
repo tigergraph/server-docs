@@ -15,14 +15,10 @@ If only a single node fails in a HA cluster, you can always remove the node with
 
 === Prerequisites
 * Your cluster should have a replication factor greater than 1.
-* Service status in your TigerGraph cluster needs to meet the following requirements:
-You can check service status by running xref:system-management:management-with-gadmin.adoc#_gadmin_status[`gadmin status`].
-+
---
-** At least 1 `CTRL`(Controller) service is in `RUNNING` status
-** All `ZK`, `ETCD` and `EXE` services except those on the node being removed are in `RUNNING` status.
---
-If the above services are down, and you cannot restart them, please contact mailto:support@tigergraph.com[TigerGraph Support].
+* All services on the rest of the nodes in the cluster except the node to be removed are in `RUNNING` status:
+You can check service status by running xref:system-management:management-with-gadmin.adoc#_gadmin_status[`gadmin status`]
+** If any service is down, try running `gadmin start all --ignore-error` to start them.
+If you cannot start them, contact mailto:support@tigergraph.com[TigerGraph Support].
 
 
 === Procedure
@@ -45,6 +41,8 @@ Therefore, the default Kafka configurations in TigerGraph do not prepare for mul
 You can modify the default Kafka configurations to prepare for multi-node failure.
 However, you must do so before the failures happen.
 
+NOTE: If you experience multi-node failures without modifying the default configurations and still want to remove the failed nodes, contact mailto:support@tigergraph.com[TigerGraph support].
+
 === Prerequisites
 * Your cluster's Kafka configurations have been modified **before** the failures occurred.
 ** To prepare for 2-node failures, run `gadmin config set Kafka.MinInsyncReplicas 1` to set `Kafka.MinInsyncReplicas` to 1.
@@ -56,8 +54,7 @@ However, you must do so before the failures happen.
 You can check service status by running xref:system-management:management-with-gadmin.adoc#_gadmin_status[`gadmin status`].
 If a service is down, and you cannot restart it, please contact mailto:support@tigergraph.com[TigerGraph Support].
 * There is at least 1 complete instance of the data.
-** For example, if your cluster has a replication factor of 2 and a partitioning factor of 3.
-If there are two failed nodes, they must be on
+In other words, at least one replica does have a failed node.
 
 === Procedure
 To remove failed nodes from a cluster, run the following command and replace `<node_name>` with the names of the nodes and `node_ip_address` with the internal IP addresses of the nodes;
