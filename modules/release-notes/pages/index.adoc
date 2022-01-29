@@ -19,6 +19,7 @@ After removal, users can xref:cluster-resizing:expand-a-cluster.adoc[expand the 
 
 
 === Observability
+* Improved error messaging when the maximum graph size allowed by license is reached.
 
 
 === Reliability
@@ -55,7 +56,10 @@ After removal, users can xref:cluster-resizing:expand-a-cluster.adoc[expand the 
 * Fixed an issue where `PRINT` statements printed vertex accumulators declared after the `PRINT` statement.
 * Improved the error message of the `/requesttoken` endpoint.
 * Fixed an issue where in rare cases clusters with over 10 partitions fail to elect a GSE leader.
-* Fixed an issue 
+* Fixed an issue that caused connection refused errors when connecting to a TigerGraph cluster behind a load balancer through a remote GSQL client.
+* Fixed an issue that caused the `getAttr()` function of vertices and edges to invalidate a clause even if it doesn't get called.
+* Fixed an issue that caused the `edgeAttribute()` method of a vertex to erroneously throw type check errors in syntax V2.
+
 
 
 == Known Issues
