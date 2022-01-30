@@ -260,18 +260,18 @@ Importing and exporting clusters is not fully automated in the current version. 
 
 === Export from a Cluster
 
-Rather than creating a single export zip file, the `EXPORT QUERY` command will create a file for each machine. Before exporting, specific folders must be created on each server using the following commands:
+Rather than creating a single export zip file, the `EXPORT GRAPH` command will create a file for each machine. Before exporting, specific folders must be created on each server using the following commands:
 
 .Run on each server before `EXPORT`
 
 [source,text]
-----
+----https://github.com/tigergraph/tigdsl-docs.git
 grun all "mkdir -p /path/to/export_directory/GlobalTypes/"
 grun all "mkdir -p /path/to/export_directory/graph_<graphName>/"
 ----
 
 
-Then run the export command on one server. The `EXPORT QUERY` command does not bundle all the files to one server, and it does not compress each server's files to one zip. Some files, including the data files, will be exported to each server, to the folders created above. Some files will be only on the local server where `EXPORT GRAPH` was run.
+Then run the export command on one server. The `EXPORT GRAPH` command does not bundle all the files to one server, and it does not compress each server's files to one zip. Some files, including the data files, will be exported to each server, to the folders created above. Some files will be only on the local server where `EXPORT GRAPH` was run.
 
 === Import to a Cluster
 
