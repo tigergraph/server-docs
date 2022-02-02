@@ -1,9 +1,12 @@
 = Database Import/Export
-:description: Export/Import is a complement to Backup/Restore, not a substitute.
+:description: This page details the instructions and requirements of importing and exporting a graph in TigerGraph. 
 
 == Introduction
 
-The GSQL `EXPORT` and `IMPORT` commands perform a logical backup and restore. A database export contains the database's data, and optionally some types of metadata, which can be subsequently imported in order to recreate the same database, in the original or in a different TigerGraph platform instance.
+The GSQL `EXPORT GRAPH` and `IMPORT GRAPH` commands perform a logical backup and restore.
+A database export contains the database's data, and optionally some types of metadata.
+This data can be subsequently imported in order to recreate the same database, in the original or in a different TigerGraph platform instance.
+Import/export is a complement to backup/restore, but not a substitute.
 
 To import an exported database, ensure that the export files are from a database that was running *the exact same version* of TigerGraph as the database that you are importing into.
 
@@ -19,7 +22,8 @@ Known Issues (Updated Feb 16th):
 
 The `+EXPORT GRAPH ALL+` command reads the data and metadata for all
 graphs in the TigerGraph system and writes the information to a zip file
-in the designated folder. If no options are specified, then a full
+in the designated folder.
+If no options are specified, then a full
 backup is performed, including schema, data, template information, and
 user profiles.
 
@@ -71,11 +75,16 @@ jobs and UDFs.
 data in CSV in addition to graph schema or template.
 
 |`+-U+` or `+--Users+` |Must be used with either `+-S+` or `+-T+`.
-Export users, role assginments, secrets, and tokens.
+Export users, role assignments, secrets, and tokens.
 
 |`+-P+` or -`+-Password+` |Encrypt the exported file with a password.
 Users will be prompted to enter a password when using this option.
 |===
+
+[NOTE]
+====
+xref:user-access:ldap.adoc#_proxy_user[Proxy users] cannot be exported.
+====
 
 === Output
 
@@ -94,7 +103,7 @@ functions.
 
 The following files are created in the specified directory when
 exporting and are then zipped into a single file called
-ExportedGraphs.zip.
+`ExportedGraphs.zip`.
 
 [CAUTION]
 ====
@@ -116,7 +125,7 @@ If the file is password-protected, it can only be unzipped using GSQL IMPORT. Th
   *** vertex_name.csv
   *** edge_name.csv
  ** *run_loading_jobs.gsql* - DDL created by the export command which will be used during import:
-  *** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it is has run.
+  *** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it has run.
   *** Loading jobs to load data for global and local vertex/edges.
 * Database's saved queries, loading jobs, and schema change jobs
  ** *SchemaChangeJob/ -* folder containing DDL for schema change jobs. See section "Schema Change Jobs" for more information
@@ -128,7 +137,7 @@ If the file is password-protected, it can only be unzipped using GSQL IMPORT. Th
  ** *ExprFunctions.hpp* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`
  ** *ExprUtil.hpp* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
 * Users:
- ** *users.gsql* - DDL to create all exported users and import Secrets and Tokens, and grant permissions.
+ ** *users.gsql* - DDL to create all exported users, import Secrets and Tokens and grant permissions.
 
 .Example
 
@@ -191,8 +200,8 @@ importOptions ::= [-P | --PASSWORD ] [ (-KU | -- keep-users]
 |`+-P+` or `+--PASSWORD+` |Decrypt with password. You will be prompted
 to enter a password when using this option.
 
-|`+-KU+` or `+--KEEP-USERS+` |Keep the current users for during the
-import operation. New users from the imported graph will still be added
+|`+-KU+` or `+--KEEP-USERS+` |Keep the current users during the
+import operation. New users from the imported graph will still be added.
 |===
 
 === Example
@@ -220,8 +229,8 @@ IMPORT GRAPH ALL FROM "/tmp/export_graphs/"
 
 There are two sets of loading jobs:
 
-. Those that were in the *catalog* of the database which was exported. These are embedded in the file DBImportExport_graphName.gsql
-. Those that are *created by EXPORT GRAPH* and are used to assist with the import process. These are embedded in the file run_loading_jobs,gsql.
+. Those that were in the *catalog* of the database which was exported. These are embedded in the file `DBImportExport_graphName.gsql`
+. Those that are *created by `EXPORT GRAPH`* and are used to assist with the import process. These are embedded in the file `run_loading_jobs.gsql`.
 
 The catalog loading jobs are not needed to restore the data. They are included for archival purposes.
 
@@ -238,10 +247,10 @@ Some special rules apply to importing loading jobs. Some catalog loading jobs wi
 
 There are two sets of schema change jobs:
 
-. Those that were in the catalog of the database which was exported. These are stored in the folder /SchemaChangeJobs.
-. Those that were created by EXPORT GRAPH and are used to assist with the import process.  These are in the run_loading_jobs.gsql command file.  The jobs are dropped after the import command is finished with them.
+. Those that were in the catalog of the database which was exported. These are stored in the folder `/SchemaChangeJobs`.
+. Those that were created by `EXPORT GRAPH` and are used to assist with the import process.  These are in the `run_loading_jobs.gsql` command file.  The jobs are dropped after the import command is finished with them.
 
-The database's schema change jobs are not executed during the import process. This is because if a schema change job had been run before the export, then the exported schema already reflects the result of the schema change job. The directory /SchemaChangeJobs contains these files:
+The database's schema change jobs are not executed during the import process. This is because if a schema change job had been run before the export, then the exported schema already reflects the result of the schema change job. The directory `/SchemaChangeJobs` contains these files:
 
 * *Global_Schema_Change_Jobs.gsql* contains all global schema change jobs
 * *<graphName>_Schema_Change_Jobs.gsql* contains schema change jobs for each graph <graphName>.
@@ -252,9 +261,9 @@ Importing and exporting clusters is not fully automated in the current version. 
 
 === Export from a Cluster
 
-Rather than creating a single export zip file, export will create a file for each machine. Before exporting, specific folders must be created on each server using the following commands:
+Rather than creating a single export zip file, the `EXPORT GRAPH` command will create a file for each machine. Before exporting, specific folders must be created on each server using the following commands:
 
-.Run on each server before EXPORT
+.Run on each server before `EXPORT`
 
 [source,text]
 ----
@@ -263,7 +272,7 @@ grun all "mkdir -p /path/to/export_directory/graph_<graphName>/"
 ----
 
 
-Then run the export command on one server. The EXPORT command does not bundle all the files to one server, and it does not compress each server's files to one zip. Some files, including the data files, will be exported to each server, to the folders created above. Some files will be only on the local server where EXPORT GRAPH was run.
+Then run the export command on one server. The `EXPORT GRAPH` command does not bundle all the files to one server, and it does not compress each server's files to one zip. Some files, including the data files, will be exported to each server, to the folders created above. Some files will be only on the local server where `EXPORT GRAPH` was run.
 
 === Import to a Cluster
 
@@ -275,7 +284,7 @@ You may only import to a cluster that has the same number and configuration of s
 
 . Manually modify the loading jobs
 
-On the main server, edit the run_loading_jobs.gsql files as follows.
+On the main server, edit the `run_loading_jobs.gsql` files as follows.
 
 Find the line(s) of the form: +
 `+LOAD "sys.data_root/.../<vertex_or_edge_type>.csv"+` +
@@ -294,4 +303,4 @@ LOAD "$sys.data_root/graph_graph1/localE.csv"
 
 *Comment out the LOAD line and uncomment the LOAD all: line*. Be sure that you do this for all data source files.
 
-. Run the IMPORT GRAPH command from the main server (e.g., the one that corresponds to the server where EXPORT GRAPH was run).
+. Run the `IMPORT GRAPH` command from the main server (e.g., the one that corresponds to the server where `EXPORT GRAPH` was run).
