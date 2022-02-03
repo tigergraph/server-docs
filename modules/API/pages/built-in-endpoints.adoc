@@ -1158,7 +1158,7 @@ curl -X POST --data-binary @./work_at.csv \
 
 If there are special characters in your parameter values, the special characters should use https://www.w3schools.com/tags/ref_urlencode.asp[URL encoding]. To avoid confusion about whether you should you one or two backslashes, we do not support backslash escapes for the `eol` or `sep` parameter.
 
-The maximum size of data you can upload via this endpoint is controlled by the xref:API:intro.adoc#_request_body_size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
+The maximum size of data you can upload via this endpoint is controlled by the xref:API:index.adoc#_request_body_size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
 
 == Graphs
 
@@ -1541,7 +1541,7 @@ Default value is false.|
 
 The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted.
 The JSON code can be stored in a text file or specified directly in a command line.
-There is a maximum size for a `POST` data payload (see the xref:API:intro.adoc#_size_and_time_limits[*Size Limits*] section).
+There is a maximum size for a `POST` data payload (see the xref:API:index.adoc#_size_and_time_limits[*Size Limits*] section).
 The JSON format for describing a vertex set or edge set is summarized below.
 
 ==== Request body
@@ -1654,7 +1654,7 @@ Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Like
 }
 ----
 
-Follow the instructions in the Introduction section to xref:API:intro.adoc#_formatting_data_in_json[format advanced data types].
+Follow the instructions in the Introduction section to xref:API:index.adoc#_formatting_data_in_json[format advanced data types].
 
 For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
 
@@ -2718,7 +2718,7 @@ Each time a new TigerGraph query is installed, a dynamic endpoint is generated. 
 
 ==== Query parameter passing
 
-When using a `GET` request to run an installed query, the query parameters are xref:API:intro.adoc#_query_string_parameters[passed in through the query string of the URL].
+When using a `GET` request to run an installed query, the query parameters are xref:API:index.adoc#_query_string_parameters[passed in through the query string of the URL].
 [width="100%",cols="28%,36%,36%",options="header",]
 |===
 |Parameter type |Query string format |Example
@@ -2800,7 +2800,7 @@ Users can also run queries through a `POST` request, which allows them to pass q
 
 ==== Query parameter Passing
 
-When using a `POST` request to run an installed query, the query parameters are passed in through the request body and xref:API:intro.adoc#_formatting_data_in_json[encoded in JSON format]. The formatting rules for the JSON payload is the same as xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
+When using a `POST` request to run an installed query, the query parameters are passed in through the request body and xref:API:index.adoc#_formatting_data_in_json[encoded in JSON format]. The formatting rules for the JSON payload is the same as xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
 
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
@@ -2882,7 +2882,7 @@ The request body for this endpoint should be the entire `INTERPRET QUERY` statem
 
 ==== Parameter passing:
 
-When running an interpreted query through this endpoint, the query parameters should be xref:intro.adoc#_query_string_parameters[passed in through the URL query string].
+When running an interpreted query through this endpoint, the query parameters should be xref:index.adoc#_query_string_parameters[passed in through the URL query string].
 
 ==== Sample request:
 
@@ -3067,7 +3067,7 @@ Response::
 | The query ID associated with the given query status JSON object.
 
 | `expirationTime`
-| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the xref:intro.adoc#_gsql_query_timeout[GSQL-TIMEOUT] header.
+| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the xref:index.adoc#_gsql_query_timeout[GSQL-TIMEOUT] header.
 
 | `elapsedTime`
 | Elapsed real time of the given query measured in milliseconds. For completed queries, the value shows the total runtime of the request. For ongoing queries, it shows the amount of time taken so far.
@@ -3091,7 +3091,7 @@ object.
 
 |`expirationTime` |The timestamp for when the given query times out. The
 default timeout limit is 16 seconds and can be set using
-the xref:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`]
+the xref:index.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`]
 header.
 
 |`elapsedTime` |Elapsed real time of the given query measured in
