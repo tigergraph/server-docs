@@ -87,7 +87,7 @@ To change the password of another user, run the following command and replace `"
 
 [.wrap,gsql]
 ----
-GSQL > ALTER USER user1 SET newPassword REPLACE currentPassword <1>
+GSQL > ALTER USER user1 ACL PASSWORD SET newPassword REPLACE currentPassword <1>
 ----
 <1> Since the password isn't enclosed in double quotes, only alphanumerical characters are allowed.
 --
@@ -139,7 +139,7 @@ GSQL > ALTER USER user1 ACL PASSWORD CLEAR REPLACE "current_password"
 With the ACL password of the current query owner, the owner themself or users with the `WRITE ROLE` privilege can change the owner of a query.
 If the current owner of the query doesn't have an ACL password, then changing the owner does not require a password.
 
-If a query does not have a current owner due to upgrades from an older version of TigerGraph, then
+If a query does not have a current owner due to upgrades from an older version of TigerGraph, then anyone with the `WRITE_ROLE` privilege can run the command to change the query owner.
 
 ==== Syntax
 [.wrap,gsql]
@@ -180,7 +180,7 @@ To grant `EXECUTE` privilege instead, replace `READ` with `EXECUTE`:
 
 [.wrap,gsql]
 ----
-GSQL > GRANT ACL PRIVILEGE READ ON example_query TO example_role
+GSQL > GRANT ACL PRIVILEGE READ ON QUERY example_query TO example_role
 ----
 
 
@@ -328,5 +328,5 @@ To view the ACL privileges of role `role1` and `role2`, run the following comman
 
 [.wrap,gsql]
 ----
-SHOW ACL PRIVILEGE of ROLE role1, role2
+SHOW ACL PRIVILEGE ON ROLE role1, role2
 ----
