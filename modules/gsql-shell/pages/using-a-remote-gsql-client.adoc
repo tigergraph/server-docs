@@ -43,6 +43,8 @@ To obtain the SSL certificate from the remote server, you can copy it from the p
 === Obtain SSL certificate from a TigerGraph Cloud instance
 To obtain the SSL certificate from a TigerGraph Cloud instance, run the following command, and replace `<ip_address>` with the IP address of your Cloud instance and replace `<path_to_certificate>` with the path to place the certificate file.
 
+You need to install link:https://www.openssl.org/[`openssl`] on your client machine to run this command.
+
 [.wrap,console]
 ----
 echo | openssl s_client  -connect <ip_address>:443 |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <path_to_certificate>
