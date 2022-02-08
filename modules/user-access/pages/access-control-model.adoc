@@ -93,8 +93,9 @@ Users can define roles with their own list of privileges they want to grant to t
 ACLs give you the ability to apply finer-grain level of access to GSQL queries.
 ACLs are bound to queries, and specify who can read or execute the query.
 
-An ACL contains entries for two types of privileges: `READ` and `EXECUTE`.
-Both privilege have a permission list that allow those on the list to either read or execute (run) the query.
+An ACL contains two entries - `READ` and `EXECUTE` - for read privilege and execute privilege on a given query respectively.
+Both entries have a permission list that contains roles.
+Users with roles on the list have the permission to either read or execute (run) the query.
 
 [#_acl_entry_status]
 === ACL entry status
@@ -144,4 +145,4 @@ By default, both ACL entries (`READ` and `EXECUTE`) for a query are _unspecified
 ** Even if a user has the `READ_QUERY` permission on a graph, they cannot read a query if the `READ` ACL entry for the query is specified and the user is not on the list.
 
 .How permission is evaluated for a query operation
-image::acl-query-flow.png[]
+image::acl-query-flow.svg[]
