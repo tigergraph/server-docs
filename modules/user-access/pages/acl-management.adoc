@@ -166,7 +166,7 @@ To grant an ACL privilege, the query owner must have the corresponding RBAC priv
 ==== Syntax
 [.wrap,gsql]
 ----
-GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> TO (<role1>, <role2> ...) [SECURED BY <owner_acl_password>]
+GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> TO <role1> (, <role2> ...)* [SECURED BY <owner_acl_password>]
 ----
 
 ==== Required privilege
@@ -198,7 +198,7 @@ The effect of revoking ACL privileges from all roles in an entry by revoking fro
 ==== Syntax
 [.wrap,gsql]
 ----
-REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM ( <role1>, <role2>, ... ) [SECURED BY <owner_acl_password>]
+REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM <role1> (, <role2>, ... )* [SECURED BY <owner_acl_password>]
 ----
 
 ==== Required privilege
