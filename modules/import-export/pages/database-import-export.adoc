@@ -14,8 +14,8 @@ To import an exported database, ensure that the export files are from a database
 ====
 Known Issues (Updated Feb 16th):
 
-* User-defined loading jobs containing xref:3.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
-* If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be reimported.
+* User-defined loading jobs containing xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
+* If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be re-imported.
 ====
 
 == EXPORT GRAPH ALL
@@ -200,8 +200,10 @@ importOptions ::= [-P | --PASSWORD ] [ (-KU | -- keep-users]
 |`+-P+` or `+--PASSWORD+` |Decrypt with password. You will be prompted
 to enter a password when using this option.
 
-|`+-KU+` or `+--KEEP-USERS+` |Keep the current users during the
+|`+-KU+` or `+--KEEP-USERS+` a|Keep the current users during the
 import operation. New users from the imported graph will still be added.
+
+##You must include this option if you run the `IMPORT GRAPH` command as a user other than the default superuser `tigergraph`. ##
 |===
 
 === Example
