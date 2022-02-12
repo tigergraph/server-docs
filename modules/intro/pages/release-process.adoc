@@ -7,7 +7,7 @@ TigerGraph is committed to providing the most scalable, most secure, and highest
 
 To meet our commitment, we follow a release cadence that allows us to regularly deliver product and service improvements in the form of new features, enhancements, bug fixes and security patches.
 
-Generally, we plan to conduct at least two Full releases per quarter, with the ultimate goal of monthly releases to ensure rapid product advancement.
+Our ultimate goal is to conduct Full releases monthly releases to ensure rapid product advancement.
 Between Full releases we may conduct Patch releases as necessary, which include bug fixes.
 That being said, we don’t recommend customers to adopt more than one release per quarter if there are no bug fixes or new features their workload depends on.
 
@@ -26,7 +26,7 @@ This article describes the process we follow for these three types of releases.
 == Naming Convention
 For full and patch releases, we use https://en.wikipedia.org/wiki/Software_versioning[sequence-based identifiers] in the format *major.minor.patch*.
 
-Here, *major* is a number and increment for the most significant releases, *minor* is a number and increment for less significant releases, and *patch* is a number for the patch release.
+Here, *major* is a number and increment for the most significant releases, *minor* is an incrementable number for less significant releases, and *patch* is a number for the patch release.
 
 For example, in the release version *3.2.1*, the major version is 3, the minor version is 2, and the patch version is 1.
 
@@ -37,7 +37,7 @@ We do not provide a new documentation branch for patch releases. Instead, we may
 
 === Full Release
 
-A full release is a planned non-trivial product release, where either the major or the minor number in the release version name is changed.
+A full release is a planned product roadmap release, where either the major or the minor number in the release version name is changed.
 Either the minor number is increased, leaving the major number unchanged, or the major number is increased and the minor number is reset to 0.
 
 A full release's name is usually *major.minor.0*, abbreviated as *major.minor*.
@@ -61,7 +61,7 @@ TigerGraph’s Customer Success team will also proactively share the release not
 === Patch Release
 
 A patch release is a release version that only includes fixes for the most recent one or two full releases.
-It will only be created when a set of critical bug fixes has accumulated that will affect a majority of customers before the next planned full release.
+It will only be created when a set of critical bug fixes has accumulated before the next planned full release.
 
 Depending on the schedule, if we have a full release planned at the same time, a Patch release may not be necessary.
 If a Patch release applies to version *major.minor.patch*, then its name will be *major.minor.(patch+1)*.
