@@ -150,3 +150,109 @@ By default, both ACL entries (`READ` and `EXECUTE`) for a query are _unspecified
 
 .How permission is evaluated for a query operation
 image::acl-query-flow.svg[]
+
+=== Example 1: `READ` Privilege
+
+In the following example, `user1` protects their query `q1` from being seen by anyone, including superusers.
+
+[source.wrap, gsql]
+----
+// login as user 'user1'
+// create the object
+CREATE QUERY q1() {
+  int x = 3;
+  print x;
+}
+
+// If you are not already the object owner, change the object owner to yourself.
+CHANGE OWNER OF QUERY q1 TO user1
+
+// (login as user1) Forbid anyone to read the query, even the owner
+GRANT ACL PRIVILEGE READ ON QUERY q1 TO NOBODY
+
+// verify the ACL privilege on the query
+// The output should be:
+// Query: "q1"
+//   - Owner:   user1
+//   - READ:    <Nobody>
+//   - EXECUTE: <Unspecified>
+SHOW ACL PRIVILEGE ON QUERY q1
+
+// test using "SHOW QUERY"
+// the output should be:
+// CREATE QUERY q1() {
+//   /******* Query Content is Hidden. Require ACL privilege READ *******/
+// }
+SHOW QUERY q1
+
+// change ACL password for user 'user1'.
+// this will forbid other users to change the ACL privilege on objects owned by 'user1'
+ALTER ACL PASSWORD SET XXXXXX
+----
+
+=== Example 2: `EXECUTE` Privilege
+
+In this example, the superuser `tigergraph` grants and revokes `EXECUTE` privilege for query `q1` using user-defined roles `role1` and `admin`.
+
+User `user1` is first granted the privilege while `user2` is not, then the privilege is revoked from all users.
+
+[source.wrap,gsql]
+----
+// login as superuser 'tigergraph'
+// set acl password for user 'tigergraph'
+ALTER ACL PASSWORD SET XXXXXX
+
+// create the object
+USE GRAPH G1
+create query q1() for graph G1 {
+  int x = 3;
+  print x;
+}
+
+// create a role (can be local or global)
+CREATE ROLE role1 ON GRAPH G1
+
+// allow specific roles to run this query using the password set above
+GRANT ACL PRIVILEGE EXECUTE ON QUERY q1 TO role1, admin SECURED BY XXXXXX
+
+// check acl privilege on the role
+// the output should be:
+//  Role: "role1"
+//  - QUERY:
+//    - EXECUTE:
+//      - Graph 'G1': [q1]
+//  Role: "admin"
+//  - QUERY:
+//    - EXECUTE:
+//      - Graph 'G1': [q1]
+SHOW ACL PRIVILEGE ON ROLE role1, admin
+
+// grant roles to users
+GRANT ROLE role1 ON GRAPH G1 TO user1
+
+// check acl privilege on users
+// the output should be:
+// User: "user1"
+// - QUERY:
+//   - EXECUTE:
+//     - Graph 'G1': [q1]
+SHOW ACL PRIVILEGE ON USER user1
+
+// login as user outside the role 'user2', then run the query
+// the output should be:
+// User 'user2' does not have the permission to run the command. Required ACL privilege EXECUTE on the query q1.
+INTERPRET QUERY q1()
+
+// login as superuser 'tigergraph'
+// disable acl privilege on q1
+REVOKE ACL PRIVILEGE EXECUTE ON QUERY q1 FROM ALL SECURED BY XXXXXX
+
+// check acl privilege on users again
+// the output should be:
+// User: "user1"
+//
+SHOW ACL PRIVILEGE ON USER user1
+
+// clear acl password for user 'tigergraph'
+ALTER ACL PASSWORD CLEAR REPLACE XXXXXX
+----
