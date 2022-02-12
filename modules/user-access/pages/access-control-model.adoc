@@ -2,7 +2,7 @@
 :description: A brief explanation of TigerGraph's access control model.
 :page-aliases: roles-and-privileges.adoc
 
-TigerGraph supports both Role-based access control(RBAC) and Access Control Lists (ACL).
+TigerGraph supports both Role-based Access Control (RBAC) and Access Control Lists (ACL).
 RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
 ACLs let you grant fine-grained access to a specific query.
 
@@ -13,7 +13,10 @@ Outside the permissions granted by their roles, a user has no access to the syst
 
 === Privileges
 
-Privilege is permission to perform an action in a given scope. When a privilege is assigned to a role, it allows users with the role to perform the specified action in the specified scope. For example, the privilege `READ_SCHEMA` on graph `social` gives a user read permission to the schema of the graph `social`. This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph.
+A privilege is permission to perform an action in a given scope.
+When a privilege is assigned to a role, it allows users with the role to perform the specified action in the specified scope.
+For example, the privilege `READ_SCHEMA` on graph `social` gives a user read permission to the schema of the graph `social`.
+This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph.
 
 To view a complete list of privileges available in TigerGraph and the commands they enable a user to run, see xref:reference:list-of-privileges.adoc[List of Privileges].
 
@@ -85,17 +88,18 @@ GSQL offers 5 built-in local roles and 2 built-in global roles. The built-in rol
 
 === User-defined roles
 
-Users can define roles with their own list of privileges they want to grant to the role.To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
+Users can define roles with their own list of privileges they want to grant to the role.
+To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
 
 
 [#_access_control_lists]
 == Access control lists
-ACLs give you the ability to apply finer-grain level of access to GSQL queries.
-ACLs are bound to queries, and specify who can read or execute the query.
+ACLs give you the ability to apply finer-grained levels of access to a GSQL query by specifying who can read or execute the query.
+ACLs are bound to queries.
 
-An ACL contains two entries - `READ` and `EXECUTE` - for read privilege and execute privilege on a given query respectively.
+An ACL contains two entries - `READ` and `EXECUTE` - for read privilege and execute (run) privilege on a given query respectively.
 Both entries have a permission list that contains roles.
-Users with roles on the list have the permission to either read or execute (run) the query.
+Users with roles on the list have the permission to either read or execute the query.
 
 [#_acl_entry_status]
 === ACL entry status
