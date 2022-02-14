@@ -1,0 +1,99 @@
+= TigerGraph Release And Patch Process
+:description:This page explains TigerGraph's release process and patch naming conventions.
+
+== Overview of Releases
+
+TigerGraph is committed to providing the most scalable, most secure, and highest performing enterprise-grade graph database.
+
+To meet our commitment, we follow a release cadence that allows us to regularly deliver product and service improvements in the form of new features, enhancements, bug fixes and security patches.
+
+Our ultimate goal is to conduct Full releases monthly releases to ensure rapid product advancement.
+Between Full releases we may conduct Patch releases as necessary, which include bug fixes.
+That being said, we don’t recommend customers to adopt more than one release per quarter if there are no bug fixes or new features their workload depends on.
+
+In addition to Full releases and Patch releases, occasionally TigerGraph will provide a One-Off patch for a selected set of existing releases that may or may not impact all customers.
+These are used to address security vulnerabilities or critical bugs in a timely manner.
+
+In summary, the TigerGraph release types are:
+
+. Full releases
+. Patch releases
+. One-Off patches
+
+This article describes the process we follow for these three types of releases.
+
+
+== Naming Convention
+For full and patch releases, we use https://en.wikipedia.org/wiki/Software_versioning[sequence-based identifiers] in the format *major.minor.patch*.
+
+Here, *major* is a number and increment for the most significant releases, *minor* is an incrementable number for less significant releases, and *patch* is a number for the patch release.
+
+For example, in the release version *3.2.1*, the major version is 3, the minor version is 2, and the patch version is 1.
+
+Our documentation (found at https://docs.tigergraph.com/https://docs.tigergraph.com/[docs.tigergraph.com]) is updated with a new branch when the major or minor version number changes.
+We do not provide a new documentation branch for patch releases. Instead, we may update the corresponding *major.minor* version’s documents.
+
+== Release Types and Action Plan
+
+=== Full Release
+
+A full release is a planned product roadmap release, where either the major or the minor number in the release version name is changed.
+Either the minor number is increased, leaving the major number unchanged, or the major number is increased and the minor number is reset to 0.
+
+A full release's name is usually *major.minor.0*, abbreviated as *major.minor*.
+It may include any of the following:
+
+* New features
+* Feature enhancements or updates
+* Bug fixes
+
+In addition, the following documentation deliverables accompany a full release:
+
+* xref:release-notes:index.adoc[] section included in the TigerGraph online documentation.
+* xref:installation:upgrade.adoc[Upgrade] section included in the TigerGraph online documentation.
+* Updated TigerGraph online documentation for each new full release version.
+
+*Notification:* Full releases will be announced on our documentation website.
+TigerGraph’s Customer Success team will also proactively share the release notes with existing customers.
+
+*Upgrades:* Customers using a legacy release can refer to the upgrade section of the online documentation to plan a server upgrade or contact TigerGraph Technical Support Engineering by opening a ticket at http://tigergraph.freshdesk.com[tigergraph.freshdesk.com] or emailing support@tigergraph.com.
+
+=== Patch Release
+
+A patch release is a release version that only includes fixes for the most recent one or two full releases.
+It will only be created when a set of critical bug fixes has accumulated before the next planned full release.
+
+Depending on the schedule, if we have a full release planned at the same time, a Patch release may not be necessary.
+If a Patch release applies to version *major.minor.patch*, then its name will be *major.minor.(patch+1)*.
+If needed, additional patch releases will be published to address any issues that are encountered during or after the release process.
+
+*Notification:* Patch releases are announced on our documentation website in a subsection of the Release Notes. TigerGraph’s Customer Success team will proactively share the release notes with existing customers.
+
+*Upgrades:* The patch release upgrade process is the same as the upgrade guidance in a full release, as documented in the xref:installation:upgrade.adoc[Upgrade] section of the documentation. Depending on the urgency of the patch, our Customer Success team may reach out to customers to discuss the upgrade of a Patch release.
+
+=== One-Off Patches
+
+In some instances, a One-Off patch is released for a Full or Patch release to address critical security issues or critical bugs.
+Unlike Patch releases, a one-off patch is usually an urgent point fix, meaning that it will not wait for other fixes.
+One-off patches are released as the situation demands.
+They could be universal, applicable to all customers, or specific, applicable to a handful of customers who have deployed a TigerGraph product under a certain environment.
+
+*Notification:* As a One-Off patch is being developed, the Customer Success team will reach out to the affected customers to inform them of the discovered issue and the immediate remediation plan while the patch is under development.
+
+*Application of the patch:* After the patch is developed and has gone through the release certification process, the technical support team will email customers instructions on downloading and applying the patch.
+
+*Post-release:* Since a One-Off patch is for timely fixing of urgent issues, post-release it will be merged immediately with the new full and patch releases.
+
+=== Support
+
+Customers who need assistance can open a support ticket at http://tigergraph.freshdesk.com[tigergraph.freshdesk.com] or email support@tigergraph.com.
+
+== Managed Service
+
+For customers who subscribe to TigerGraph’s Managed Service, our Cloud Engineering team will apply upgrades for backward compatible changes or One-Off patches transparently when the release is available or during the customer-notified system maintenance window (in situations requiring system downtime).
+
+For releases with non-backward compatible changes, the TigerGraph Customer Success team will reach out to customers to discuss opt-out or opt-in choices.
+
+Should the customer choose to opt-in, our Cloud Engineering team will coordinate and perform the upgrade for the customer.
+
+
