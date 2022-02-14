@@ -1,95 +1,93 @@
 = Using a Remote GSQL Client
+:description: Instructions on how to use a remote GSQL to connect to a TigerGraph instance.
 
-== Installation
+You can use the GSQL client to access a GSQL server on a different machine, including on a TigerGraph Cloud instance.
 
-When the TigerGraph platform is installed, the GSQL client and server are on the same machine.  The client is packaged as a Java jar file, `gsql_client.jar` ***located in the folder `<TigerGraph_root_dir>/app/<VERSION_NUM>/dev/gdk/gsql/lib/` ***. Installation consists of copying the file `gsql_client.jar` to the client machine and storing it anywhere the user finds appropriate.  The client machine needs to have Java 7.0 or higher.
+== Prerequisites
+* The machine running the GSQL client needs to have Java 7.0 or later.
+* The server machine allows the client machine to access port 14240.
 
-== Running the Client
+== Download the GSQL client
 
-To run the client, execute the jar file each time that you would run gsql if you were local to the GSQL server.  That is, the command
+To download the GSQL client, you can do either of the following:
 
-[,gsql]
+* Copy the file `gsql_client.jar` to from an existing installation to the client machine and storing it anywhere the user finds appropriate.
+The client is packaged as a Java jar file, `gsql_client.jar` located in the folder `<TigerGraph_root_dir>/app/<VERSION_NUM>/dev/gdk/gsql/lib/`.
+* xref:attachment$gsql_client.jar[Download the GSQL client for {page-component-version} directly from this page].
+
+
+== Connect to remote server
+To connect to a remote server, your must provide the following to the GSQL client:
+
+* The IP address of the GSQL server.
+* Your TigerGraph user credentials.
+* If you are running GSQL commands, the user you are logged in as must have the privileges to run them.
+* If SSL/TLS encryption (e.g., HTTPS) is enabled on the server, you must <<_obtaining_ssl_certificate_from_remote_server,provide the server's SSL certificate>>.
+
+Run the following command to connect to the remote server:
+[.wrap,console]
 ----
-java -jar <path>gsql_client.jar
+java -jar  gsql_client  -cacert <path_to_certificate> -ip <ip_address> -u <username> -p <password> <1> <2> <3> <4>
+----
+<1> Replace `<path_to_certificate>` with the path to your SSL certificate.
+If the remote server doesn't have SSL/TLS encryption enabled, omit the `-cacert` flag.
+<2> Replace `<ip_address>` with the IP address of your remote server.
+You can also <<_specify_server_ip_address_in_file, specify the IP address in a file and omit this flag>>.
+<3> Replace `<username>` and `<password>` with the username and password of the TigerGraph user you want to be logged in as.
+If you don't provide a `<username>`, the client uses the default user `tigergraph`.
+
+[#_obtaining_ssl_certificate_from_remote_server]
+=== Obtain SSL certificate from remote server
+To obtain the SSL certificate from the remote server, you can copy it from the path: `$(gadmin config get System.DataRoot)/configs/nginx/conf/ssl.cert`.
+
+=== Obtain SSL certificate from a TigerGraph Cloud instance
+To obtain the SSL certificate from a TigerGraph Cloud instance, run the following command, and replace `<ip_address>` with the IP address of your Cloud instance and replace `<path_to_certificate>` with the path to place the certificate file.
+
+You need to install link:https://www.openssl.org/[`openssl`] on your client machine to run this command.
+
+[.wrap,console]
+----
+echo | openssl s_client  -connect <ip_address>:443 |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <path_to_certificate>
 ----
 
-takes the place of gsql.  For example, the commands
+[#_specify_server_ip_address_in_file]
+=== Specify server IP address in file
+You can create a one-line file called `gsql_server_ip_config` containing the IP address of the GSQL server.
+*This file needs to be in the same directory where you run GSQL.*
 
-[,gsql]
-----
-gsql DROP ALL
-gsql create_my_schema.gsql
-gsql LS
-----
+When there is a `gsql_server_up_config` file in the same directory where you run the GSQL client, the GSQL client uses IP address stored in the file.
+You won't need to specify the IP address in the command.
 
-would become
-
-[,gsql]
-----
-java -jar gsql_client.jar DROP ALL
-java -jar gsql_client.jar create_my_schema.gsql
-java -jar gsql_client.jar LS
-----
-
-Therefore, it may be useful to define a Unix alias:
-
-[,gsql]
-----
-alias gsql="java -jar <path>/gsql_client.jar"
-----
-
-The java operation alone is not sufficient, however, because it does not tell the client where to find the GSQL server. In addition, the client needs to satisfy three conditions:
-
-. It must know the IP address of the GSQL server.
-. It must have the authorization to access the server in general and to execute the requested GSQL commands in particular.
-. If a SSL/TLS encrypted connection (e.g., HTTPS) is used, then it must provide the certificate chain.
-
-=== Specifying Server IP Address
-
-There are two ways to provide the IP address of the GSQL Server.
-
-* Method 1: Store the address in a file. Create a one-line file called *gsql_server_ip_config* containing the ip address of the GSQL server. *This file needs to be in the same directory where you run GSQL.*
-* Method 2 : Every time you run the client jar, provide the ip address on the command line, e.g., " _gsql -ip 192.168.55.46_ "
-
-=== Client Authorization and Authentication
-
-The GSQL server applies the same user authentication procedures to remote GSQL users that it applies to local GSQL users. That is, if user authentication has been enabled, then each gsql command line must include valid user credentials.
-
-The client addresses the server at server port 14240. You need to make sure your security policy allows the access to this port.
-
-[WARNING]
-====
-It is strongly recommended that you enable user authentication. See the document xref:user-access:enabling-user-authentication.adoc[] for more details.
-====
-
-=== HTTPS Connection
-
-If SSL/TLS is enabled for TigerGraph, to connect a GSQL remote client to the GSQL server, each GSQL command line should provide the certificate chain file via the -cacert option. This certificate file should be exactly the same as the file of entry Nginx.SSL.Cert setting SSL for Nginx. See xref:security:encrypting-connections.adoc[Encrypting Connections: Step 2. Configure SSL with gadmin]. For example:
+=== Define a Unix alias for command to run GSQL client
+You can define a Unix alias to simplify the command to run the GSQL client:
 
 [,console]
 ----
-gsql -cacert /path/to/certificate -ip hostname:port
+alias gsql="java -jar <path_to_gsql_client>"
 ----
 
-== File Path Semantics
+After defining the preceding alias, running `gsql` is equivalent to running `java -jar <path_to_gsql_client>`.
 
-Data loading jobs always specify an input file location; logically the data should be on the server side, not on the client side. Because the command request comes from one machine and the target data file is on another machine, it no longer makes sense to use a relative path.
+== Filepath semantics
+
+Data loading jobs always specify an input file location; logically the data should be on the server side, not on the client side.
+Because the command request comes from one machine and the target data file is on another machine, it no longer makes sense to use a relative path.
 
 [WARNING]
 ====
-Rule: If a remote GSQL client invokes an instruction containing a relative path, the GSQL server considers the starting point of the path to be `<tigergraph_rootdir>/app/<VERSION_NUM>/dev/gdk/gsql` on the GSQL server.
+If a remote GSQL client invokes an instruction containing a relative path, the GSQL server considers the starting point of the path to be `<tigergraph_rootdir>/app/<VERSION_NUM>/dev/gdk/gsql` on the GSQL server.
 
-*It is strongly recommended that remotely-run GSQL commands use absolute paths only.*
+It is strongly recommended that GSQL commands use absolute paths only when run remotely.
 ====
 
-For example, if the data file cf_data.csv is in the folder /home/tigergraph/example/cf/, then the command to run the loading job might look like this:
+For example, if the data file `cf_data.csv` is in the folder `/home/tigergraph/example/cf/`, then the command to run the loading job might look like the following:
 
-[,gsql]
+[,console]
 ----
 java -jar gsql_client.jar 'RUN JOB load_cf USING FILENAME="/home/tigergraph/example/cf/cf_data.csv", SEPARATOR=",", EOL="\n"
 ----
 
-== Example: Modifying a Bash Script for a Remote GSQL Client
+== Example: Modifying a Bash script for a remote GSQL client
 
 The GSQL Tutorials employ both GSQL and bash scripts to run the examples.  Typically, each example case contains 3 GSQL command files (for schema creation, data loading, and querying) and one bash script to run all the parts together and to display status information.  Below is a simplified version of the Collaborative Filtering (cf) bash script:
 
@@ -116,21 +114,22 @@ gsql -g gsql_demo 'RUN QUERY topCoLiked("id1", 10)'
 
 The bash script will not run from a remote GSQL client unless a few changes are made:
 
-* We need to invoke "java -jar gsql_client.jar" instead of "gsql", and need to specify the server ip address.
-* If we use the gsql_server_ip_config file, this file must be in the same folder as the command file.
+* We need to invoke `java -jar gsql_client.jar` instead of `gsql`, and need to specify the server ip address.
+* If we use the `gsql_server_ip_config` file, this file must be in the same folder as the command file.
 
-The GSQL Tutorial has several different folders, one for each example, so that suggests making several config files.
+The GSQL Tutorial has several folders, one for each example, which suggests making several config files.
 
 Below is an approach that minimizes the changes required and maximizes standardization.
 
 . Do initial client setup. This is done only once.
 
-.. Store gsql_client.jar in a standard location, say _~/gsql_client/gsql_client.jar_ (e.g,, _/home/tigergraph/gsql_client/ gsql_client.jar_ )
-.. Create a file called gsql_server_ip_config containing the GSQL server's IP address, and store it a standard location, say _~/gsql_client/gsql_server_ip_config_ .
+.. Store `gsql_client.jar` in a standard location.
+For example, `/home/tigergraph/gsql_client/ gsql_client.jar` )
+.. Create a file called `gsql_server_ip_config` containing the GSQL server's IP address, and store it a standard location, say `~/gsql_client/gsql_server_ip_config`.
 
 +
 .Sample config file:/home/tigergraph/gsql_client/gsql_server_ip_config
-[,gsql]
+[,text]
 ----
 123.45.67.255
 ----
@@ -138,7 +137,7 @@ Below is an approach that minimizes the changes required and maximizes standardi
 +
 .. In the .bashrc file in your home directory, add an alias for gsql which points to the standard location:
 +
-[,gsql]
+[,console]
 ----
 alias gsql='java -jar ~/gsql_client/gsql_client.jar'
 ----
@@ -146,7 +145,7 @@ alias gsql='java -jar ~/gsql_client/gsql_client.jar'
 . Add a standard header to each bash script.
 +
 .Standard which makes 'gsql' work on remote clients
-[,gsql]
+[,console]
 ----
 alias gsql='java -jar gsql_client.jar'
 shopt -s expand_aliases
@@ -157,17 +156,16 @@ ln -s ~/gsql_client/gsql_server_ip_config gsql_server_ip_config
 +
 This header does the following:
 
-.. Repeat the alias definition for the gsql command.  The definition in .bashrc may not be visible here.
+.. Repeat the alias definition for the gsql command.  The definition in `.bashrc` may not be visible here.
 .. By default, bash scripts ignore aliases.  Instruct the script to use aliases.
-.. Define softlinks from the current folder to the locations of the client jar and config file.
+.. Define soft links from the current folder to the locations of the client jar and config file.
 
 . Change any relative paths to absolute paths. This is the only step that must be customized for each script.
 
 +
-Here is the resulting script.  Four standard lines were added to the beginning, and one line was edited in the cf_load.gsql file.
+Here is the resulting script.  Four standard lines were added to the beginning, and one line was edited in the `cf_load.gsql` file.
 
 .RUN_cf_remote.sh: Modified bash script for Collaborative Filtering (cf) example
-
 [,gsql]
 ----
 #!/bin/bash
