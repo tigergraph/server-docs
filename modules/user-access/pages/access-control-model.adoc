@@ -2,18 +2,21 @@
 :description: A brief explanation of TigerGraph's access control model.
 :page-aliases: roles-and-privileges.adoc
 
-TigerGraph supports both Role-based access control(RBAC) and Access Control Lists (ACL).
+TigerGraph supports both role-based access control (RBAC) and access control lists (ACL).
 RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
 ACLs let you grant fine-grained access to a specific query.
 
 == Role-based access control
-TigerGraph uses Role-based Access Control (RBAC) to manage authorization.
+TigerGraph uses role-based access control (RBAC) to manage authorization.
 On every graph, privileges to perform actions are assigned to roles, and roles are granted to users.
 Outside the permissions granted by their roles, a user has no access to the system.
 
 === Privileges
 
-Privilege is permission to perform an action in a given scope. When a privilege is assigned to a role, it allows users with the role to perform the specified action in the specified scope. For example, the privilege `READ_SCHEMA` on graph `social` gives a user read permission to the schema of the graph `social`. This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph.
+A privilege is permission to perform an action in a given scope.
+When a privilege is assigned to a role, it allows users with the role to perform the specified action in the specified scope.
+For example, the privilege `READ_SCHEMA` on graph `social` gives a user read permission to the schema of the graph `social`.
+This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph.
 
 To view a complete list of privileges available in TigerGraph and the commands they enable a user to run, see xref:reference:list-of-privileges.adoc[List of Privileges].
 
@@ -85,17 +88,18 @@ GSQL offers 5 built-in local roles and 2 built-in global roles. The built-in rol
 
 === User-defined roles
 
-Users can define roles with their own list of privileges they want to grant to the role.To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
+Users can define roles with their own list of privileges they want to grant to the role.
+To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
 
 
 [#_access_control_lists]
 == Access control lists
-ACLs give you the ability to apply finer-grain level of access to GSQL queries.
-ACLs are bound to queries, and specify who can read or execute the query.
+ACLs give you the ability to apply finer-grained access control to a GSQL query by specifying who can read or execute the query.
+ACLs are bound to queries.
 
-An ACL contains two entries - `READ` and `EXECUTE` - for read privilege and execute privilege on a given query respectively.
+An ACL contains two entries - `READ` and `EXECUTE` - for read privilege and execute (run) privilege on a given query, respectively.
 Both entries have a permission list that contains roles.
-Users with roles on the list have the permission to either read or execute (run) the query.
+Users with roles on the list have the permission to either read or execute the query.
 
 [#_acl_entry_status]
 === ACL entry status
@@ -132,6 +136,88 @@ These operations include:
 * Changing the owner of a query
 * Modifying the ACL privileges on a query
 
+[#_acl_examples]
+=== Examples
+
+==== Using `NOBODY` entry status to hide query from everyone
+
+In the following example, `user1` protects their query `q1` from being seen by anyone including users with `superuser` roles, by setting the status of the `READ` entry of their query's ACL to `NOBODY`.
+
+Even though no one can see the content of the query, but since the `EXECUTE` entry is unspecified, users with sufficient RBAC privileges can still execute the query.
+This allows you to protect the content of a sensitive query, but still allows people to run it.
+
+The following GSQL command are performed by `user1`.
+
+[source.wrap, gsql]
+----
+GSQL > GRANT ACL PRIVILEGE READ ON QUERY q1 TO NOBODY <1>
+[WARNING] The READ privileges on the query q1 are denied for any user.
+Successfully granted READ on query q1 in the graph ldbc_snb to roles: <NOBODY>.
+GSQL > SHOW ACL PRIVILEGE ON QUERY q1 <2>
+Query: "q1"
+    - Owner:   user1
+    - READ:    <Nobody> <2>
+    - EXECUTE: <Unspecified>
+GSQL > SHOW QUERY q1
+CREATE QUERY q1 () {
+  /******* Query Content is Hidden. Require ACL privilege READ *******/ <3>
+}
+GSQL > ALTER ACL PASSWORD SET XXXXXX <4>
+----
+<1> This command forbids anyone to read the query, even the owner.
+See <<_acl_entry_status, ACL entry status: `NOBODY`>>.
+<2> Use the `SHOW ACL PRIVILEGE ON QUERY` command to verify the `NOBODY` status of the `READ` entry.
+<3> Query content cannot be seen by any user, including the owner.
+<4> If user `user1` does not have an <<_acl_password,ACL password>>, it is important to set one.
+Otherwise, other users with the `WRITE_ROLE` privilege can xref:acl-management.adoc#_change_query_owner[change the owner of the query].
+
+==== Granting and revoking `EXECUTE` Privilege
+
+In this example, the superuser `tigergraph` grants and revokes `EXECUTE` privilege for query `q1` for roles `role1` and `admin`.
+
+User `user1` is first granted the privilege while `user2` is not, then the privilege is revoked from all users.
+
+[source.wrap,gsql]
+----
+GSQL > CREATE ROLE role1 ON GRAPH G1
+Successfully created local roles on graph 'G1': [role1].
+GSQL > GRANT ACL PRIVILEGE EXECUTE ON QUERY q1 TO role1, admin SECURED BY "example_password"
+Successfully granted EXECUTE on query q1 in the graph ldbc_snb to roles: [role1, admin].
+GSQL > SHOW ACL PRIVILEGE ON ROLE role1, admin
+Role: "role1"
+- QUERY:
+  - EXECUTE:
+    - Graph 'G1': [q1]
+Role: "admin"
+- QUERY:
+  - EXECUTE:
+    - Graph 'G1': [q1]
+GSQL > GRANT ROLE role1 ON GRAPH G1 TO user1
+GSQL > SHOW ACL PRIVILEGE ON USER user1
+User: "user1"
+- QUERY:
+  - EXECUTE:
+    - Graph 'G1': [q1]
+----
+
+If someone logs in as user `user2`, who doesn't have the roles `role1` or `admin`, and tries to run the query, their request is denied.
+
+[.wrap,gsql]
+----
+GSQL > INTERPRET QUERY q1()
+User 'user2' does not have the permission to run the command. Required ACL privilege EXECUTE on the query q1.
+----
+
+Log back in as the owner of the query, you can set ACL entries in the query to status `unspecified`.
+This disables ACL access control and revert access control to RBAC.
+[.wrap,gsql]
+----
+GSQL > REVOKE ACL PRIVILEGE EXECUTE ON QUERY q1 FROM ALL SECURED BY XXXXXX
+GSQL > SHOW ACL PRIVILEGE ON USER user1
+User: "user1"
+----
+
+
 == How permissions are evaluated
 All operations that don't involve queries are only governed by RBAC.
 ACLs only apply to queries.
@@ -146,3 +232,6 @@ By default, both ACL entries (`READ` and `EXECUTE`) for a query are _unspecified
 
 .How permission is evaluated for a query operation
 image::acl-query-flow.svg[]
+
+
+
