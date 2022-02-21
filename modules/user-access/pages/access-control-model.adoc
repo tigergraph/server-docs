@@ -233,5 +233,9 @@ By default, both ACL entries (`READ` and `EXECUTE`) for a query are _unspecified
 .How permission is evaluated for a query operation
 image::acl-query-flow.svg[]
 
+== Importing and exporting
 
+When exporting graphs, ACLs are only exported when both queries and users are exported.
 
+* When you export graphs without queries, there is no ACL on the exported graphs because there are no queries.
+* When you export graphs with queries but without users, the ACL entries on the exported are reset to the _unspecified_ status.
