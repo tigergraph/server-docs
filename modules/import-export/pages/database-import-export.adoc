@@ -12,7 +12,7 @@ To import an exported database, ensure that the export files are from a database
 
 [WARNING]
 ====
-Known Issues (Updated Feb 16th):
+Known Issues:
 
 * User-defined loading jobs containing xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
 * If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be re-imported.
@@ -68,7 +68,7 @@ to. Must be an absolute path.
 |Option |Description
 |`+-S or --SCHEMA+` |Only export graph schema.
 
-|`+-T+` or `+--TEMPLATE+` |Only export graph schema, queries, loading
+|`+-T+` or `+--TEMPLATE+` a|Only export graph schema, queries, loading
 jobs and UDFs.
 
 |`+-D+` or `+--DATA+` |Must be used with either `+-S+` or `+-T+`. Export
@@ -88,59 +88,69 @@ xref:user-access:ldap.adoc#_proxy_user[Proxy users] cannot be exported.
 
 === Output
 
-The `+EXPORT GRAPH+` command exports all graphs in the database.
+The `EXPORT GRAPH` command exports all graphs in the database.
 
-The export contains four categories of files:
+The export contains the following categories of files:
 
 * Data files in CSV format, one file for each type of vertex and each
 type of edge.
-* GSQL DDL command files created by the export command. The import
-command uses these files to recreate the graph schema(s) and reload the
+* GSQL DDL command files created by the export command.
+The import command uses these files to recreate the graph schema(s) and reload the
 data.
 * Copies of the database's queries, loading jobs, and user-defined
 functions.
 * GSQL command files used to recreate the users and their privileges.
+* An encrypted file containing the Access Control List (ACL) privilege catalog.
+
+[NOTE]
+====
+When exporting graphs, ACLs are only exported when both queries and users are exported.
+
+* If you use the `-U` option without using the `-T` option, there is no ACL on the exported graphs because there are no queries.
+* If you use the `-T` option without using the `-U` option, the ACL entries on the exported are reset to the _unspecified_ status.
+====
+
 
 The following files are created in the specified directory when
-exporting and are then zipped into a single file called
+exporting and are then zipped into a single file named
 `ExportedGraphs.zip`.
 
 [CAUTION]
 ====
-If the file is password-protected, it can only be unzipped using GSQL IMPORT. The security feature prevents users from directly unzipping it.
+If the file is password-protected, it can only be unzipped using the GSQL command `IMPORT GRAPH ALL`.
+The security features prevent users from directly unzipping it.
 ====
 
-* A *DBImportExport_<graphName>.gsql* for each graph called <graphName> in a multigraph database that contains a series of GSQL DDL statements that do the following:
+* A `DBImportExport_<graphName>.gsql` for each graph called `graphName` in a multigraph database that contains a series of GSQL DDL statements that do the following:
  ** Create the exported graph, along with its local vertex, edge, and tuple types,
  ** Create the loading jobs from the exported graphs
  ** Create data source file objects
  ** Create queries
-* A *graph_<graphName>/* folder for each graph in a multigraph database containing data for local vertex/edge types in <graphName>. For each vertex or edge type called <type>, there is one of the following two data files:
- ** vertex_<type>.csv
- ** edge_<type>.csv
-* *global.gsql* - DDL job to create all global vertex and edge types, and data sources.
-* *tuple.gsql* - DDL job to create all User Defined Tuples.
+* A `graph_<graphName>/` folder for each graph in a multigraph database containing data for local vertex/edge types in `<graphName>`.
+For each vertex or edge type called `<type>`, there is one of the following two data files:
+ ** `vertex_<type>.csv`
+ ** `edge_<type>.csv`
+* `global.gsql` - DDL job to create all global vertex and edge types, and data sources.
+* `tuple.gsql` - DDL job to create all User Defined Tuples.
 * Exported data and jobs used to restore the data:
- ** *GlobalTypes/* - folder containing data for global vertex/edge types
-  *** vertex_name.csv
-  *** edge_name.csv
- ** *run_loading_jobs.gsql* - DDL created by the export command which will be used during import:
+ ** *`GlobalTypes/`* - folder containing data for global vertex/edge types
+  *** `vertex_name.csv`
+  *** `edge_name.csv`
+ ** *`run_loading_jobs.gsql`* - DDL created by the export command which will be used during import:
   *** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it has run.
   *** Loading jobs to load data for global and local vertex/edges.
 * Database's saved queries, loading jobs, and schema change jobs
- ** *SchemaChangeJob/ -* folder containing DDL for schema change jobs. See section "Schema Change Jobs" for more information
-  *** Global_Schema_Change_Jobs.gsql contains all global schema change jobs
-  *** graphName_Schema_Change_Jobs.gsql contains schema change jobs for each graph "graphName"
-
-+
-*Tokenbank.cpp* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/TokenBank/TokenBank.cpp`
- ** *ExprFunctions.hpp* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`
- ** *ExprUtil.hpp* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
+ ** *`SchemaChangeJob/` -* folder containing DDL for schema change jobs. See section "Schema Change Jobs" for more information
+  *** `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
+  *** `graphName_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `graphName`
+* User-defined functions
+** *`Tokenbank.cpp`* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/TokenBank/TokenBank.cpp`
+** *`ExprFunctions.hpp`* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`
+ ** *`ExprUtil.hpp`* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
 * Users:
- ** *users.gsql* - DDL to create all exported users, import Secrets and Tokens and grant permissions.
+ ** *`users.gsql`* - DDL to create all exported users, import Secrets and Tokens and grant permissions.
 
 .Example
-
 [source,gsql]
 ----
 EXPORT GRAPH ALL TO "/tmp/export_graphs/"
@@ -149,18 +159,26 @@ EXPORT GRAPH ALL TO "/tmp/export_graphs/"
 
 === Insufficient Disk Space
 
-If not enough disk space is available for the data to be exported, the system returns an error message indicating not all data has been exported. Some data may have already been written to disk. If an insufficient disk error occurs, the files will not be zipped, due to the possibility of corrupted data which would then corrupt the zip file. The user should clear enough disk space, including deleting the partially exported data, before reattempting the export.
+If not enough disk space is available for the data to be exported, the system returns an error message indicating not all data has been exported.
+Some data may have already been written to disk.
+If an insufficient disk error occurs, the files will not be zipped, due to the possibility of corrupted data which would then corrupt the zip file.
+The user should clear enough disk space, including deleting the partially exported data, before reattempting the export.
 
 [CAUTION]
 ====
-It is possible for all the files to be written to disk and then to run out of disk space during the zip operation. If that is the case, the system will report this error. The unzipped files will be present in the specified export directory.
+It is possible for all the files to be written to disk and then to run out of disk space during the zip operation.
+If that is the case, the system will report this error.
+The unzipped files will be present in the specified export directory.
 ====
 
-=== Default Timeout and Session Parameter export_timeout
+=== Export timeout
 
-If the timeout limit is reached during export, the system returns an error message indicating not all data has been exported. Some data may have already been written to disk. If a timeout error occurs, the files will not be zipped. The user should delete the export files, increase the timeout limit and then rerun the export.
+If the timeout limit is reached during export, the system returns an error message indicating not all data has been exported.
+Some data may have already been written to disk. If a timeout error occurs, the files will not be zipped.
+The user should delete the export files, increase the timeout limit and then rerun the export.
 
-The timeout limit is controlled by the session parameter *export_timeout*.  The default timeout is ~138 hours. To change the timeout limit, use the command:
+The timeout limit is controlled by the session parameter `export_timeout`.
+The default timeout is ~138 hours. To change the timeout limit, use the command:
 
 [source,GSQL]
 ----
@@ -170,6 +188,12 @@ SET EXPORT_TIMEOUT = <timeout_in_ms>
 == IMPORT GRAPH ALL
 
 The `IMPORT GRAPH` command unzips the `.zip` file `ExportedGraph.zip` located in the designated folder, unzips it, and then runs the GSQL command files within.
+
+`IMPORT GRAPH` erases the current database (equivalent to running `DROP ALL`).
+The current version does not support incremental or supplemental changes to an existing database (except for the --keep-users option)
+
+`IMPORT GRAPH` looks for specific filenames.
+If either the zip file or any of its contents are renamed by the user, IMPORT GRAPH may fail.
 
 === Required privilege
 `WRITE_SCHEMA`, `WRITE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USERS`
@@ -208,54 +232,49 @@ import operation. New users from the imported graph will still be added.
 
 === Example
 
-
-.Example
-
 [source,text]
 ----
 IMPORT GRAPH ALL FROM "/tmp/export_graphs/"
 ----
 
-
-[WARNING]
-====
-`IMPORT GRAPH` looks for specific filenames.  If either the zip file or any of its contents are renamed by the user, IMPORT GRAPH may fail.
-====
-
-[WARNING]
-====
-`IMPORT GRAPH` erases the current database (equivalent to running DROP ALL). The current version does not support incremental or supplemental changes to an existing database (except for the --keep-users option)
-====
-
 === Loading Jobs
 
 There are two sets of loading jobs:
 
-. Those that were in the *catalog* of the database which was exported. These are embedded in the file `DBImportExport_graphName.gsql`
-. Those that are *created by `EXPORT GRAPH`* and are used to assist with the import process. These are embedded in the file `run_loading_jobs.gsql`.
+* Those that were in the *catalog* of the database which was exported.
+These are embedded in the file `DBImportExport_graphName.gsql`
+* Those that are *created by `EXPORT GRAPH`* and are used to assist with the import process.
+These are embedded in the file `run_loading_jobs.gsql`.
 
-The catalog loading jobs are not needed to restore the data. They are included for archival purposes.
+The catalog loading jobs are not needed to restore the data.
+They are included for archival purposes.
 
 [CAUTION]
 ====
-Some special rules apply to importing loading jobs. Some catalog loading jobs will not be imported.
+Some special rules apply to importing loading jobs.
+Some catalog loading jobs will not be imported.
 ====
 
-. *If a catalog loading job contains `DEFINE FILENAME F = "/path/to/file/"`*, the path will be removed and the imported loading job will only contain *`DEFINE FILENAME F`*.  This is to allow a loading job to still be imported even though the file may no longer exist or the path may be different due to moving to another TigerGraph instance.
-. *If a specific file path is used directly in the LOAD statement, and the file cannot be found, the loading job cannot be created and will be skipped.*  For example, `LOAD "/path/to/file" to vertex v1` cannot be created if `/path/to/file` does not exist.
-. *Any file path using `$sys.data_root` will be skipped.* This is because the value of `$sys.data_root` is  not retained from export. During import, `$sys.data_root` is set to the root folder of the import location.
+. *If a catalog loading job contains `DEFINE FILENAME F = "/path/to/file/"`*, the path will be removed and the imported loading job will only contain *`DEFINE FILENAME F`*.
+This is to allow a loading job to still be imported even though the file may no longer exist or the path may be different due to moving to another TigerGraph instance.
+. *If a specific file path is used directly in the LOAD statement, and the file cannot be found, the loading job cannot be created and will be skipped.*
+For example, `LOAD "/path/to/file" to vertex v1` cannot be created if `/path/to/file` does not exist.
+. *Any file path using `$sys.data_root` will be skipped.* This is because the value of `$sys.data_root` is  not retained from export.
+During import, `$sys.data_root` is set to the root folder of the import location.
 
 === Schema Change Jobs
 
 There are two sets of schema change jobs:
 
 . Those that were in the catalog of the database which was exported. These are stored in the folder `/SchemaChangeJobs`.
-. Those that were created by `EXPORT GRAPH` and are used to assist with the import process.  These are in the `run_loading_jobs.gsql` command file.  The jobs are dropped after the import command is finished with them.
+. Those that were created by `EXPORT GRAPH` and are used to assist with the import process.
+These are in the `run_loading_jobs.gsql` command file.
+The jobs are dropped after the import command is finished with them.
 
 The database's schema change jobs are not executed during the import process. This is because if a schema change job had been run before the export, then the exported schema already reflects the result of the schema change job. The directory `/SchemaChangeJobs` contains these files:
 
-* *Global_Schema_Change_Jobs.gsql* contains all global schema change jobs
-* *<graphName>_Schema_Change_Jobs.gsql* contains schema change jobs for each graph <graphName>.
+* `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
+* `<graphName>_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `<graphName>`.
 
 == Cluster import/export
 
@@ -274,24 +293,28 @@ grun all "mkdir -p /path/to/export_directory/graph_<graphName>/"
 ----
 
 
-Then run the export command on one server. The `EXPORT GRAPH` command does not bundle all the files to one server, and it does not compress each server's files to one zip. Some files, including the data files, will be exported to each server, to the folders created above. Some files will be only on the local server where `EXPORT GRAPH` was run.
+Then run the export command on one server. The `EXPORT GRAPH` command does not bundle all the files to one server, and it does not compress each server's files to one zip.
+Some files, including the data files, will be exported to each server, to the folders created above. Some files will be only on the local server where `EXPORT GRAPH` was run.
 
-=== Import to a Cluster
+=== Import to a cluster
 
-==== 1. Place the files on the import servers
+The following are the steps to import an export file to a cluster.
 
-You may only import to a cluster that has the same number and configuration of servers as the data from which the export originated. *Transfer the files from one export server to a corresponding import server.* That is, copy the files from +
-`export_server_n:/path/to/export_directory` to +
-`import_server_n:/path/to/import/directory`
+You may only import to a cluster that has the same number and configuration of servers as the data from which the export originated.
 
-. Manually modify the loading jobs
+==== 1. Transfer files to import servers
 
-On the main server, edit the `run_loading_jobs.gsql` files as follows.
+Transfer the export files from one export server to a corresponding import server.
+For example, the files on m1 on the cluster that exported the graphs must be copied to the m1 server on the cluster that is importing the graphs.
 
-Find the line(s) of the form: +
-`+LOAD "sys.data_root/.../<vertex_or_edge_type>.csv"+` +
-Close to it should be similar line that is commented out which have the "all:" data source directive: +
-`+#LOAD "all:sys.data_root/.../<vertex_or_edge_type>.csv"+`
+==== 2. Modify loading jobs
+
+On the server that corresponds to the server that ran the `EXPORT GRAPH ALL` command, edit the `run_loading_jobs.gsql` files as follows.
+
+Find the line(s) of the form:
+`LOAD "sys.data_root/.../<vertex_or_edge_type>.csv"`
+Close to it should be a similar line that is commented out which have the `all:` data source directive:
+`#LOAD "all:sys.data_root/.../<vertex_or_edge_type>.csv"`
 
 See the example below:
 
@@ -303,6 +326,9 @@ LOAD "$sys.data_root/graph_graph1/localE.csv"
     TO EDGE localE VALUES ($"from", $"to") USING SEPARATOR = "^]", HEADER = "true";
 ----
 
-*Comment out the LOAD line and uncomment the LOAD all: line*. Be sure that you do this for all data source files.
+Comment out the `LOAD` line and uncomment the `LOAD all:` line.
+Do this for all data source files.
 
-. Run the `IMPORT GRAPH` command from the main server (e.g., the one that corresponds to the server where `EXPORT GRAPH` was run).
+==== 3. Run `IMPORT GRAPH ALL`
+
+Run the `IMPORT GRAPH ALL` command from the main server (that is, the one that corresponds to the server where `EXPORT GRAPH ALL` was run).
