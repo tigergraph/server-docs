@@ -2848,19 +2848,19 @@ curl -X POST -d '{"p":{"id":"Tom","type":"person"}}'
 .Specify that the query run on the first replica
 [source.wrap,bash]
 ----
-curl -X POST -d -H "GSQL-REPLICA: 2" '{"p":{"id":"Tom","type":"person"}}'
+curl -X POST -H "GSQL-REPLICA: 2" -d '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
 ----
 .Specify that the query run on the primary cluster
 [source.wrap,bash]
 ----
-curl -X POST -d -H "GSQL-REPLICA: 1" '{"p":{"id":"Tom","type":"person"}}'
+curl -X POST -H "GSQL-REPLICA: 1" -d '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
 ----
 .Specify that the query run with a limit of 4 threads
 [source.wrap,bash]
 ----
-curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
+curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
 ----
 
 [NOTE]
