@@ -1,7 +1,9 @@
 = Transaction Processing and ACID Support
 :pp: {plus}{plus}
 
-This document describes the transactional support provided by the TigerGraph platform. A TigerGraph _*transaction*_ is a sequence of operations which acts as a single logical unit of work. A _*read-only operation*_ in TigerGraph does not change any vertex/edge attribute value and doesn't insert any new or delete any existing vertex/edge. An _*update operation*_ in TigerGraph is an operation which either changes some vertex/edge attribute value or insert some new or delete some existing vertex/edge.
+This document describes the transactional support provided by the TigerGraph platform.
+
+A TigerGraph *transaction* is a sequence of operations which acts as a single logical unit of work. A *read-only operation* in TigerGraph does not change any vertex/edge attribute value and doesn't insert any new or delete any existing vertex/edge. An *update operation* in TigerGraph is an operation which either changes some vertex/edge attribute value or inserts some new or delete some existing vertex/edge.
 
 The TigerGraph system provides full ACID transactions with sequential consistency. Transactions are defined as follows:
 
@@ -11,7 +13,7 @@ The TigerGraph system provides full ACID transactions with sequential consistenc
 [discrete]
 ==== *Atomicity* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Atomicity">++++++</a>+++
 
-A transaction with update operations may insert/delete multiple vertices/edges or update the attribute values of multiple edges/vertices.  Such update requests are "`all or nothing`": either all changes are successful, or none is successful.
+A transaction with update operations may insert/delete multiple vertices/edges or update the attribute values of multiple edges/vertices.  Such update requests are "all or nothing": either all changes are successful, or none are.
 
 [discrete]
 ==== *Consistency* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Consistency">++++++</a>+++

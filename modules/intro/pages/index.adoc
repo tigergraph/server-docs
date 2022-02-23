@@ -46,17 +46,18 @@ For a more detailed description of the TigerGraph release process, please see th
 
 == Architecture overview
 The TigerGraph Platform runs on standard, commodity-grade Linux servers. 
-The core components (GSE and GPE) are implemented in C++ for optimal performance. TigerGraph system is designed to fit into your existing environment with a minimum of fuss.
+The core components of the Graph Storage Engine, or GSE, and the Graph Processing Engine, or GPE are implemented in C++ for optimal performance. TigerGraph is designed to fit into your existing environment with a minimum of fuss.
 
 * Data Sources: The platform includes a flexible, high-performance data loader which can stream in tabular or semi-structured data, while the system is online.
 * Infrastructure : The platform is available for on-premises, cloud, or hybrid use.
 * Integration : REST APIs are provided to integrate your TigerGraph with your existing enterprise data infrastructure and workflow.
 
 The TigerGraph system uses a message-passing design to coordinate the activities of the components. RESTPP, an enhanced RESTful server, is central to the task management. Users can choose how they wish to interact with the system:
-GSQL client.  One TigerGraph instance can support multiple GSQL clients, on remote nodes.
-GraphStudio - our graphical user interface, which provides most of the basic GSQL functionality, with a graphical and intuitive interface.
-REST API. Enterprise applications which need to run the same queries many times can maximize their efficiency by communicating directly with RESTPP.
-gAdmin is used for system administration.
+
+* *GSQL client*: One TigerGraph instance can support multiple GSQL clients, on remote nodes.
+* *GraphStudio*: Our intuitive graphical user interface, which provides most of the basic GSQL functionality.
+* *REST API*: Enterprise applications which need to run the same queries many times can maximize their efficiency by communicating directly with RESTPP.
+* *gAdmin* is used for system administration.
 
 == Key features
 === High performance
