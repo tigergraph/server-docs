@@ -283,16 +283,18 @@ The database's schema change jobs are not executed during the import process. Th
 * `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
 * `<graphName>_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `<graphName>`.
 
-== Cluster import/export
+[#_cluster_importexport]
+== Cluster export/import
 
-Importing and exporting clusters is not fully automated in the current version. The database can be exported and imported by following some additional steps.
+Importing and exporting clusters is not fully automated in the current version.
+The database can be exported and imported by following some additional steps.
 
 === Export from a Cluster
 
-Rather than creating a single export zip file, the `EXPORT GRAPH` command will create a file for each machine. Before exporting, specific folders must be created on each server using the following commands:
+Rather than creating a single export zip file, the `EXPORT GRAPH ALL` command creates a file for each machine.
+Before exporting, run the following commands:
 
-.Run on each server before `EXPORT`
-
+.Run on each server before exporting
 [source,text]
 ----
 grun all "mkdir -p /path/to/export_directory/GlobalTypes/"
