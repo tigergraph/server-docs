@@ -201,7 +201,12 @@ Partitions #1 to #5 each has 4 buckets, while partitions 6 to 9 only have 3 buck
 This means that each partition between #1 to #5 has 33% more data than a partition between #6 and #9.
 Therefore, partitions #1 to #5 altogether end up storing 20 / 32 = 62.5% percent of the data, when they should only store 5 / 9 = 55.5%.
 
-To reduce data skew in this scenario, change `GPE.NumberOfHashBucketInBit` to 6, which leaves the cluster with 64 buckets instead.
+To reduce data skew in this scenario, change `GPE.NumberOfHashBucketInBit` to 6 by running the following command:
+
+[,console]
+----
+$ gadmin config set GPE.NumberOfHashBucketInBit 6
+----
+
+This leaves the cluster with stem:[2^6=64] buckets instead.
 Each partition has 7 buckets, and only partition 1 has one extra bucket.
-
-
