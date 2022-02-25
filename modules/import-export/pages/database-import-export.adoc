@@ -188,13 +188,13 @@ SET EXPORT_TIMEOUT = <timeout_in_ms>
 
 == IMPORT GRAPH ALL
 
-The `IMPORT GRAPH` command unzips the `.zip` file `ExportedGraph.zip` located in the designated folder, and then runs the GSQL command files within.
+The `IMPORT GRAPH ALL` command unzips the `.zip` file `ExportedGraph.zip` located in the designated folder, and then runs the GSQL command files.
 
-`IMPORT GRAPH` erases the current database (equivalent to running `DROP ALL`).
-The current version does not support incremental or supplemental changes to an existing database (except for the `--keep-users` option)
+`IMPORT GRAPH ALL` erases the current database (equivalent to running `DROP ALL`).
+The current version does not support incremental or supplemental changes to an existing database (except for the `--keep-users` option).
 
-`IMPORT GRAPH` looks for specific filenames.
-If either the zip file or any of its contents are renamed by the user, IMPORT GRAPH may fail.
+`IMPORT GRAPH ALL` looks for specific filenames.
+If either the zip file or any of its contents are renamed by the user, `IMPORT GRAPH ALL` may fail.
 
 === Required privilege
 `WRITE_SCHEMA`, `WRITE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USERS`
