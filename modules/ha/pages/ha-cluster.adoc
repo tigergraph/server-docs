@@ -1,6 +1,8 @@
 = HA Cluster Configuration
 :description: An overview of HA concepts in TigerGraph and how to configure an HA cluster.
 :stem: latexmath
+:partition: partition
+:bucket: bucket
 
 A TigerGraph system with High Availability (HA) is a cluster of server machines which uses replication to provide continuous service when one or more servers are not available or when some service components fail.
 
@@ -116,4 +118,90 @@ For reference:
 2+|About 9 minutes
 
 |===
+
+== Configure bucket number to reduce data skew
+When you set up an HA cluster, TigerGraph automatically distributes data across different partitions in buckets for every instance of your data.
+The default number of buckets is fixed and does not change based on the number of partitions.
+When the number of buckets cannot be evenly divided by the number of partitions, more data is distributed to the partitions with extra buckets, resulting in data skew.
+However, you can configure the number of buckets before data loading to reduce or avoid data skew.
+
+The number of buckets is controlled by the parameter `GPE.NumberOfHashBucketInBit`.
+The number of buckets equals 2 to the power of the value of the parameter `GPE.NumberOfHashBucketInBit`.
+
+The default value of `GPE.NumberOfHashBucketInBit` is 5.
+Therefore, a cluster has stem:[2^5 = 32] buckets by default.
+This means that data skew happens when you have a partition number that cannot evenly divide 32.
+Data skew is more significant when the modulus stem:[M = N_{bucket} \bmod N_{partition}] is closer to half of stem:[N_{partition}], where stem:[N_{bucket}] is the number of buckets, and stem:[N_{partition}] is the number of partitions.
+
+To minimize data skew as well as resource contention issues that can be caused by a high number of buckets, choose the *lowest* bucket number that leaves the modulus close to *either 0* or *the number of partitions*.
+
+=== Example
+
+For example, if each instance of your data has 9 partitions, the 32 buckets are distributed as follows:
+
+|===
+|Partition 4+|Buckets
+
+|Partition #1
+|Bucket #1
+|Bucket #10
+|Bucket #19
+|Bucket #28
+
+|Partition #2
+|Bucket #2
+|Bucket #11
+|Bucket #20
+|Bucket #29
+
+|Partition #3
+|Bucket #3
+|Bucket #12
+|Bucket #21
+|Bucket #30
+
+|Partition #4
+|Bucket #4
+|Bucket #13
+|Bucket #22
+|Bucket #31
+
+|Partition #5
+|Bucket #5
+|Bucket #14
+|Bucket #23
+|Bucket #32
+
+|Partition #6
+|Bucket #6
+|Bucket #15
+|Bucket #24
+|
+
+|Partition #7
+|Bucket #7
+|Bucket #16
+|Bucket #25
+|
+
+|Partition #8
+|Bucket #8
+|Bucket #17
+|Bucket #26
+|
+
+|Partition #9
+|Bucket #9
+|Bucket #18
+|Bucket #27
+|
+|===
+
+Partitions #1 to #5 each has 4 buckets, while partitions 6 to 9 only have 3 buckets.
+This means that each partition between #1 to #5 has 33% more data than a partition between #6 and #9.
+Therefore, partitions #1 to #5 altogether end up storing 20 / 32 = 62.5% percent of the data, when they should only store 5 / 9 = 55.5%.
+
+To reduce data skew in this scenario, change `GPE.NumberOfHashBucketInBit` to 6, which leaves the cluster with 64 buckets instead.
+Each partition has 7 buckets, and only partition 1 has one extra bucket.
+
 
