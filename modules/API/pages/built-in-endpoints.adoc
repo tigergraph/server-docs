@@ -848,6 +848,7 @@ Required if the request body does not supply `secret`.
 <3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 
 ==== Sample request
+The responses are slightly different between requests made with secrets and username-password pair.
 
 [tabs]
 ====
@@ -860,6 +861,24 @@ curl -X POST http://localhost:9000/requesttoken \
      -d '{"secret": "jiokmfqqfu2f95qs6ug85o89rpkneib3", "lifetime": "100000"}'
 ----
 --
+Response::
++
+--
+[source.wrap,javascript]
+----
+{
+  "code": "REST-0000",
+  "expiration": 1616042814,
+  "error": false,
+  "message": "Generate new token successfully.\nWarning: Tigergraph Support cannot restore access to secrets/tokens for security reasons. Please save your secret/token and keep it safe and accessible.",
+  "token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq"
+}
+----
+--
+====
+
+[tabs]
+====
 With username-password pair::
 +
 --
@@ -873,14 +892,16 @@ curl --user example_username:example_password \
 Response::
 +
 --
-[source.wrap,json]
+[source.wrap,javascript]
 ----
 {
   "code": "REST-0000",
-  "expiration": 1616042814,
+  "expiration": 1648410519,
   "error": false,
   "message": "Generate new token successfully.\nWarning: Tigergraph Support cannot restore access to secrets/tokens for security reasons. Please save your secret/token and keep it safe and accessible.",
-  "token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq"
+  "results": {
+    "token": "j8s70l647fcdjlmpvedudl4btitm4luh"
+  }
 }
 ----
 --
@@ -2848,19 +2869,19 @@ curl -X POST -d '{"p":{"id":"Tom","type":"person"}}'
 .Specify that the query run on the first replica
 [source.wrap,bash]
 ----
-curl -X POST -d -H "GSQL-REPLICA: 2" '{"p":{"id":"Tom","type":"person"}}'
+curl -X POST -H "GSQL-REPLICA: 2" -d '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
 ----
 .Specify that the query run on the primary cluster
 [source.wrap,bash]
 ----
-curl -X POST -d -H "GSQL-REPLICA: 1" '{"p":{"id":"Tom","type":"person"}}'
+curl -X POST -H "GSQL-REPLICA: 1" -d '{"p":{"id":"Tom","type":"person"}}'
 "http://localhost:9000/query/social/hello"
 ----
 .Specify that the query run with a limit of 4 threads
 [source.wrap,bash]
 ----
-curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
+curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
 ----
 
 [NOTE]
