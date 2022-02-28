@@ -8,10 +8,10 @@ MultiGraph enables several powerful use cases:
 
 * Multiple Tenancy: Use one TigerGraph instance to support several completely separate data sets, each with its own set of users. Each user community cannot see the other user communities or other data sets.
 * Fine-grained privileges on the same set of data: Role-based access control, available on single graphs, grants permission for the privilege to run queries (include data modification queries). In a single graph scheme, there is no way to say "Query X can be run by some users but not by others." Using multiple graphs defined over the same set of data, each graph can have its own set of queries and own set of users, in effect customizing who can run which queries.
-* Overlapping graphs: Graphs can partially overlap, to enable a combination of shared and private data.
-* Hierarchical subgraphs: A Graph X can be defined to cover the domains of Graphs Y and Z, that is, Graph X = (Graph Y) U (Graph Z). This provides an interesting way to describe a data partitioning or parent-child structure. (This is not the same as defining sub-classes of data types; data types are still independent.)
+* Overlapping graphs: Graphs can partially overlap to enable a combination of shared and private data.
+* Hierarchical subgraphs: A graph X can be defined to cover the domains of Graphs Y and Z, that is, Graph X = (Graph Y) U (Graph Z). This provides an interesting way to describe a data partitioning or parent-child structure. (This is not the same as defining sub-classes of data types; data types are still independent.)
 
-If you implement only one graph now, you can upgrade to MultiGraph and add additional graphs at any time, without having to redo your existing design.
+If you implement only one graph now, you can upgrade to MultiGraph and add additional graphs at any time without having to redo your existing design.
 
 == Concepts
 
@@ -39,13 +39,13 @@ CREATE GRAPH <gname> (<list of vertex types & edge types>)
 
 === Graph-Specific Roles and Privileges
 
-The TigerGraph system includes several predefined roles**.** Each role is a fixed and logical set of privileges to perform operations. In order to access a graph, a user must be granted a role on that graph. Without a role, a user has no meaningful access.
+The TigerGraph system includes several predefined roles. Each role is a fixed and logical set of privileges to perform operations. In order to access a graph, a user must be granted a role on that graph. Without a role, a user has no meaningful access.
 
 [CAUTION]
 ====
 *Role-Based MultiGraph Access Control*
 
-* User roles are granted or revoked on a per-graph basis. Each GRANT or REVOKE statement specifies not only a role but also a graph.
+* User roles are granted or revoked on a per-graph basis. Each `GRANT` or `REVOKE` statement specifies not only a role but also a graph.
 * The `GRANT`/`REVOKE` privilege is reserved for superuser and admin users.
 * The *`superuser`* can grant a role to any user on any graph.
 * A *`superuser`* can pick a user to be an *`admin`* on a particular graph. The admin can then manage user privileges on their graph.

@@ -1,7 +1,11 @@
 = Transaction Processing and ACID Support
 :pp: {plus}{plus}
 
-This document describes the transactional support provided by the TigerGraph platform. A TigerGraph _*transaction*_ is a sequence of operations which acts as a single logical unit of work. A _*read-only operation*_ in TigerGraph does not change any vertex/edge attribute value and doesn't insert any new or delete any existing vertex/edge. An _*update operation*_ in TigerGraph is an operation which either changes some vertex/edge attribute value or insert some new or delete some existing vertex/edge.
+This document describes the transactional support provided by the TigerGraph platform.
+
+A TigerGraph *transaction* is a sequence of operations which acts as a single logical unit of work.
+
+A *read-only operation* in TigerGraph does not add or remove vertices or edges or change any vertex/edge attribute values. An *update operation* in TigerGraph is an operation which either changes some vertex/edge attribute value or inserts some new or delete some existing vertex/edge.
 
 The TigerGraph system provides full ACID transactions with sequential consistency. Transactions are defined as follows:
 
@@ -11,7 +15,7 @@ The TigerGraph system provides full ACID transactions with sequential consistenc
 [discrete]
 ==== *Atomicity* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Atomicity">++++++</a>+++
 
-A transaction with update operations may insert/delete multiple vertices/edges or update the attribute values of multiple edges/vertices.  Such update requests are "`all or nothing`": either all changes are successful, or none is successful.
+A transaction with update operations may insert/delete multiple vertices/edges or update the attribute values of multiple vertices/edges.  Such update requests are "all or nothing": either all changes are successful, or none are.
 
 [discrete]
 ==== *Consistency* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Consistency">++++++</a>+++
@@ -43,12 +47,19 @@ Multiple reads in a single read-only transaction T1 will get the same results, e
 [discrete]
 ==== *Durability*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Durability">++++++</a>+++
 
-Committed transactions are written to disk (SSD or HDD). The TigerGraph platform implements write-ahead logging (WAL) to provide durability.
+Committed transactions are written to disk. The TigerGraph platform implements write-ahead logging (WAL) to provide durability.
 
 [discrete]
 ==== *TigerGraph internal Snapshot Implementation*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-TigerGraphinternalSnapshotImplementation">++++++</a>+++
 
-The TigerGraph platform uses Snapshot/MVCC (Multi-version Concurrency Control) to implement isolation of concurrent operations.  At the high level, the platform can temporarily maintain multiple versions or snapshots of the graph data. When a transaction T1 is submitted to the system, it will work on the last consistent snapshot of the graph which has all the changes made by transactions committed before T1 was submitted but has no changes made by any transaction not yet committed when T1 was submitted. The version of the graph T1 is working on will not be changed by any transactions other than T1 , even if they commit before T1 is finished.
+The TigerGraph platform uses Snapshot/MVCC (Multi-version Concurrency Control) to implement isolation of concurrent operations.  At the high level, the platform can temporarily maintain multiple versions or snapshots of the graph data.
+
+When a transaction T1 is submitted to the system, it will work on the last consistent snapshot of the graph which has:
+
+* all the changes made by transactions committed before T1 was submitted
+* no changes made by any transaction not yet committed when T1 was submitted
+
+The version of the graph T1 is working on will not be changed by any transactions other than T1, even if they are committed before T1 is finished.
 
 == Example Scenarios
 
@@ -57,20 +68,30 @@ Let us examine a few transaction processing scenarios.
 [discrete]
 ==== Scenario 1 Read - Write +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario1Read-Write">++++++</a>+++
 
-A read-only transaction R1 is running. Before R1 finishes, an update transaction W2 comes in.  W2 might finish before R1 is finished.  But R1 will not see the changes made by W2 before W2 is committed (no dirty reads).  Even if W2 is committed before R1 is finished, if R1 reads the same part of the graph multiple times, it will not see the changes made by W2 (repeatable reads).  There are no phantom reads either. This is because the graph version R1 is working on cannot be changed by any of the W2 transaction aforementioned. Bottom line: If W2 starts when R1 is not yet committed, R1 will see results as though W2 did not exist.
+A read-only transaction R1 is running. Before R1 finishes, an update transaction W2 comes in.
+
+W2 might finish before R1 is finished, but R1 will not see the changes made by W2 before W2 is committed (no dirty reads).  Even if W2 is committed before R1 is finished, if R1 reads the same part of the graph multiple times, it will not see the changes made by W2 (repeatable reads).  There are no phantom reads either. This is because the graph version R1 is working on cannot be changed by any of the W2 transaction aforementioned.
+
+Bottom line: If W2 starts when R1 is not yet committed, R1 will see results as though W2 did not exist.
 
 image::1 (2).png[]
 
 [discrete]
 ==== Scenario 2  Write - Read
 
-An update transaction W1 is running. Before W1 is committed, a read-only transaction R2 comes in.  R2 will not wait for W1 to finish and will be executed as if there is no W1. Later. even if W1 finishes and commits before R2 is finished, R2 will not see any changes made by W1.  This is because the graph version R2 works on is 'fixed' at the time when R2 is submitted and will not include the changes to be made by W1. Bottom line: If R2 starts when W1 is not yet committed, R2 will see results as though W1 did not exist.
+An update transaction W1 is running. Before W1 is committed, a read-only transaction R2 comes in.
+
+R2 will not wait for W1 to finish and will be executed as if there is no W1. Later. even if W1 finishes and commits before R2 is finished, R2 will not see any changes made by W1.  This is because the graph version R2 works on is 'fixed' at the time when R2 is submitted and will not include the changes to be made by W1.
+
+Bottom line: If R2 starts when W1 is not yet committed, R2 will see results as though W1 did not exist.
 
 image::2 (1).png[]
 
 [discrete]
 ==== Scenario 3  Write - Write +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario3Write-Write">++++++</a>+++
 
-An update transaction W1 is running. Before W1 finishes, a new update request W2 comes in.  W2 will wait for W1 to finish before it is executed. When multiple update transactions come in, they will be executed sequentially by the system according to the time they are received by the system.
+An update transaction W1 is running. Before W1 finishes, a new update request W2 comes in.
+
+W2 will wait for W1 to finish before it is executed. When multiple update transactions come in, they will be executed sequentially by the system according to the time they are received by the system.
 
 image::3 (1) (1).png[]
