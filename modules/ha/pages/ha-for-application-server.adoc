@@ -123,9 +123,9 @@ After successfully creating the Application Gateway, you should now be able to a
 
 === Set up GCP External HTTP(s) Load Balancer
 
-If your instances are provisioned on Google Cloud, you can set up anhttps://cloud.google.com/load-balancing/docs/https[External HTTP(s) Load Balancer]:
+If your instances are provisioned on Google Cloud, you can set up an https://cloud.google.com/load-balancing/docs/https[External HTTP(s) Load Balancer]:
 
-You can follow Google's provided steps in their documentation for setup here:https://cloud.google.com/iap/docs/load-balancer-howto[Setting up an external HTTPS load balancer  |  Identity-Aware Proxy]
+You can follow Google's provided steps in their documentation for setup here: https://cloud.google.com/iap/docs/load-balancer-howto[Setting up an external HTTPS load balancer  |  Identity-Aware Proxy]
 
 When https://cloud.google.com/iap/docs/load-balancer-howto#mig[creating the instance group]:
 
@@ -136,6 +136,6 @@ When https://cloud.google.com/load-balancing/docs/health-checks[setting up the h
 * For the port, use 14240.
 * For the path, use `/api/ping`.
 
-Lastly, we need to set up session affinity for our load balancer. This is outlined in GCP documentation here:https://cloud.google.com/load-balancing/docs/https#session_affinity[External HTTP(S) Load Balancing overview  |  Google Cloud]
+Lastly, we need to set up session affinity for our load balancer. This is outlined in GCP documentation here: https://cloud.google.com/load-balancing/docs/https#session_affinity[External HTTP(S) Load Balancing overview  |  Google Cloud]
 
 After successfully creating the load balancer, you should now be able to access GraphStudio from the frontend IP associated with the load balancer.
