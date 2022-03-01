@@ -12,45 +12,37 @@ The TigerGraph system provides full ACID transactions with sequential consistenc
 * Each GSQL query is a transaction. Each query may have multiple read or write operations.
 * Each REST{pp} GET, POST, or DELETE operation (which may have multiple update operations within it) is a transaction.
 
-[discrete]
-==== *Atomicity* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Atomicity">++++++</a>+++
+== *Atomicity*
 
 A transaction with update operations may insert/delete multiple vertices/edges or update the attribute values of multiple vertices/edges.  Such update requests are "all or nothing": either all changes are successful, or none are.
 
-[discrete]
-==== *Consistency* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Consistency">++++++</a>+++
+== *Consistency*
 
 The TigerGraph system provides traditional ACID consistency: A transaction can include data validation rules. The data validation rules can ensure any transaction will bring the system from one valid state to another.
 
 The TigerGraph system also provides distributed system Sequential Consistency: every replica of the data performs the same operations in the same order. This is one of the strongest forms of consistency available, stronger than causal consistency, for example.
 
-[discrete]
-==== *Isolation Level* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-IsolationLevel">++++++</a>+++
+== *Isolation Level*
 
 TigerGraph supports the Serializable isolation level, the strongest form of isolation. Internally, TigerGraph uses MVCC to implement the isolation. MVCC, or Multi-Version Concurrency Control, makes use of multiple snapshots of portions of the database state in order to support isolated concurrent operations.  In principle, there can be one snapshot per read or write operation.
 
-[discrete]
-==== *No Dirty Reads* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-NoDirtyReads">++++++</a>+++
+== *No Dirty Reads*
 
 A read-only transaction R1 will not see any changes made by an uncommitted update transaction, whether that update transaction was submitted before or after R1 was submitted to the system.
 
-[discrete]
-==== *Repeatable reads*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Repeatablereads">++++++</a>+++
+== *Repeatable reads*
 
 Multiple same reads in a single transaction T1 will get the same results, even if there are update transactions which change vertex or edge attribute values read by T1 during T1's duration.
 
-[discrete]
-==== *No phantom reads* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Nophantomreads">++++++</a>+++
+== *No phantom reads*
 
 Multiple reads in a single read-only transaction T1 will get the same results, even if there are update transactions which deleted/inserted vertices or edges read by T1 during T1's duration.
 
-[discrete]
-==== *Durability*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Durability">++++++</a>+++
+== *Durability*
 
 Committed transactions are written to disk. The TigerGraph platform implements write-ahead logging (WAL) to provide durability.
 
-[discrete]
-==== *TigerGraph internal Snapshot Implementation*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-TigerGraphinternalSnapshotImplementation">++++++</a>+++
+== *TigerGraph internal Snapshot Implementation*
 
 The TigerGraph platform uses Snapshot/MVCC (Multi-version Concurrency Control) to implement isolation of concurrent operations.  At the high level, the platform can temporarily maintain multiple versions or snapshots of the graph data.
 
@@ -66,7 +58,7 @@ The version of the graph T1 is working on will not be changed by any transaction
 Let us examine a few transaction processing scenarios.
 
 [discrete]
-==== Scenario 1 Read - Write +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario1Read-Write">++++++</a>+++
+=== Scenario 1 Read - Write
 
 A read-only transaction R1 is running. Before R1 finishes, an update transaction W2 comes in.
 
@@ -77,7 +69,7 @@ Bottom line: If W2 starts when R1 is not yet committed, R1 will see results as t
 image::1 (2).png[]
 
 [discrete]
-==== Scenario 2  Write - Read
+=== Scenario 2  Write - Read
 
 An update transaction W1 is running. Before W1 is committed, a read-only transaction R2 comes in.
 
@@ -88,7 +80,7 @@ Bottom line: If R2 starts when W1 is not yet committed, R2 will see results as t
 image::2 (1).png[]
 
 [discrete]
-==== Scenario 3  Write - Write +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario3Write-Write">++++++</a>+++
+=== Scenario 3  Write - Write
 
 An update transaction W1 is running. Before W1 finishes, a new update request W2 comes in.
 
