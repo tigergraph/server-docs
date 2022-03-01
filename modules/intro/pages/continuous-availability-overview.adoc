@@ -71,9 +71,12 @@ In the following example, the data sets in the cluster are spread across 5 parti
 
 image::replication-partitioning-factor.png[Replication factor and partitioning factor diagram]
 
-* All writes go to all replicas (e.g. both 1A and 1B).
-* Reads can be from any one replica (e.g. either 1A or 1B).
-* Distributed queries can read from a mix replicas (e.g. {1A, 2B, 3B, 4A, 5B}.
+* All writes go to all replicas.
+For example, both 1A and 1B.
+* Reads can be from any one replica.
+For example, either 1A or 1B.
+* Distributed queries can read from a mix replicas.
+For example, {1A, 2B, 3B, 4A, 5B}.
 
 === Continuous Availability - Cluster failover operations
 
