@@ -133,7 +133,11 @@ Therefore, a cluster has stem:[2^5 = 32] buckets by default.
 This means that data skew happens when you have a partition number that cannot evenly divide 32.
 Data skew is more significant when the modulus stem:[M = N_{bucket} \bmod N_{partition}] is closer to half of stem:[N_{partition}], where stem:[N_{bucket}] is the number of buckets, and stem:[N_{partition}] is the number of partitions.
 
-To minimize data skew as well as resource contention issues that can be caused by a high number of buckets, choose the *lowest* bucket number that leaves the modulus close to *either 0* or *the number of partitions*.
+To minimize data skew as well as resource contention issues that can be caused by a high number of buckets, choose a low bucket number that leaves the modulus close to *either 0* or *the number of partitions*.
+
+NOTE: We *do not suggest* you adjust the bucket number to be lower than the default value.
+A bucket number that is too low might negatively impact performance.  
+
 
 === Example
 
