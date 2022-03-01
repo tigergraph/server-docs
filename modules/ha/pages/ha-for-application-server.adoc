@@ -13,7 +13,7 @@ This page discusses what to do when a server dies when you haven't set up load b
 
 When a server dies, users can proceed to the next available server within the cluster to resume the operations. For example, assuming the TigerGraph cluster has Application Server on m1 and m2. If the server on m1 dies, users can access m2 to use GraphStudio and Admin Portal.
 
-To find out which node hosts the application server, run https://docs.tigergraph.com/v/3.2/admin/admin-guide/system-management/advanced-platform-operations#show-deployment-information[the `gssh` command] in the bash terminal of any active node in the cluster.
+To find out which node hosts the application server, run xref:cluster-commands.adoc#_show_deployment_information[the `gssh` command] in the bash terminal of any active node in the cluster.
 The output will show you which nodes are hosting a GUI server.
 
 Keep in mind that any long-running operation that is currently in process when the server dies will be lost.
