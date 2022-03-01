@@ -1,18 +1,21 @@
 = High Availability Support for Application Server
+:description: Overview of high availability support for the application server.
 
-== Introduction
+TigerGraph supports native HA functionality for its application server, which serves the APIs for TigerGraph's GUI - GraphStudio and Admin Portal.
+The application server follows the active-active architecture, in which the server runs on the first three nodes in a cluster.
+If one server falls offline, you can use the other servers without any loss of functionality.
 
-TigerGraph supports native HA functionality for its application server, which serves the APIs for TigerGraph's GUI - GraphStudio and Admin Portal. The application server follows the active-active architecture, in which *the server is always on m1 and all replicas of m1*. If one server falls offline, you can use the other servers without any loss of functionality.
-
-When you deploy TigerGraph in a cluster with multiple replicas, it is ideal to set up load balancing to distribute network traffic evenly across the different servers. This page discusses what to do when a server dies when you haven't set up load balancing, and the steps needed to set up load balancing for the application server.
+When you deploy TigerGraph in a cluster with multiple replicas, it is ideal to set up load balancing to distribute network traffic evenly across the different servers.
+This page discusses what to do when a server dies when you haven't set up load balancing, and the steps needed to set up load balancing for the application server.
 
 image::diagram-draft-1-.svg[]
 
-== *When a server dies*
+== When a server dies
 
 When a server dies, users can proceed to the next available server within the cluster to resume the operations. For example, assuming the TigerGraph cluster has Application Server on m1 and m2. If the server on m1 dies, users can access m2 to use GraphStudio and Admin Portal.
 
-To find out which node hosts the application server, run https://docs.tigergraph.com/v/3.2/admin/admin-guide/system-management/advanced-platform-operations#show-deployment-information[the `gssh` command] in the bash terminal of any active node in the cluster. The output will show you which nodes are hosting a GUI server.
+To find out which node hosts the application server, run https://docs.tigergraph.com/v/3.2/admin/admin-guide/system-management/advanced-platform-operations#show-deployment-information[the `gssh` command] in the bash terminal of any active node in the cluster.
+The output will show you which nodes are hosting a GUI server.
 
 Keep in mind that any long-running operation that is currently in process when the server dies will be lost.
 
