@@ -62,6 +62,7 @@ http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
 * When downloading the certificate from Auth0, choose *`.cer`* format instead of `.pem` format.
 
 :sectnums:
+
 == Enable Single Sign-On in TigerGraph
 
 Having configured the identity provider and obtained the identity provider's SSO URL, entity ID and certificate, the next step is to provide the information to TigerGraph to enable single sign-on.
@@ -101,7 +102,62 @@ Refer to your identity provider's documentation to determine which options to us
 * link:https://auth0.com/docs/configure/saml-configuration/customize-saml-assertions#saml-assertion-attributes[Auth0]
 * link:https://developer.okta.com/docs/reference/api/apps/#settings-9[Okta]
 
-== *Create user groups with proxy rules to authorize Single Sign-On users*
+=== Command-line options
+Besides providing the SSO information in the UI, you also have the option of providing the information using `gadmin config` through the command-line.
+
+Below is the list of parameters you need to configure.
+You can run xref:system-management:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] to configure their value non-interactively, or run `gadmin confing entry Security.SSO.SAML` to configure their values interactively in the terminal.
+
+|===
+|Name | Description | Example
+
+|Security.SSO.SAML.AssertionSigned |Require Identity Provider to sign
+assertions: default true |`+true+`
+
+|Security.SSO.SAML.AuthnRequestSigned |Sign AuthnRequests before sending
+to Identity Provider: default true |`+true+`
+
+|Security.SSO.SAML.BuiltinUser |The builtin user for SAML
+|`+__GSQL__saml+`
+
+|Security.SSO.SAML.Enable |Enable SAML2-based SSO: default false
+|`+false+`
+
+|Security.SSO.SAML.IDP.EntityId |Identity Provider Entity ID: default
+http://idp.example.com |`+http://idp.example.com+`
+
+|Security.SSO.SAML.IDP.SSOUrl |Single Sign-On URL: default
+http://idp.example.com/sso/saml |`+http://idp.example.com/sso/saml+`
+
+|Security.SSO.SAML.IDP.X509Cert |Identity Provider’s x509 Certificate
+filepath: default empty. You can use @/cert/file/path to pass the
+certificate from a file. |`+nan+`
+
+|Security.SSO.SAML.MetadataSigned |Sign Metadata: default true |`+true+`
+
+|Security.SSO.SAML.RequestedAuthnContext |Authentication context (comma
+separate multiple values) |`+nan+`
+
+|Security.SSO.SAML.ResponseSigned |Require Identity Provider to sign
+SAML responses: default true |`+true+`
+
+|Security.SSO.SAML.SP.Hostname |TigerGraph Service Provider URL: default
+http://127.0.0.1:14240 |`+http://127.0.0.1:14240+`
+
+|Security.SSO.SAML.SP.PrivateKey |Content of the host machine’s private
+key. Require PKCS#8 format (start with "`BEGIN PRIVATE KEY`"). You can
+use @/privatekey/file/path to pass the certificate from a file. |`+nan+`
+
+|Security.SSO.SAML.SP.X509Cert |Content of the x509 Certificate: default
+empty. You can use @/cert/file/path to pass the certificate from a file.
+|`+nan+`
+
+|Security.SSO.SAML.SignatureAlgorithm |Signiture algorithm
+[rsa-sha1/rsa-sha256/rsa-sha384/rsa-sha512]: default rsa-sha256
+|`+rsa-sha256+`
+|===
+
+== Create user groups with proxy rules to authorize Single Sign-On users
 
 In order to authorize Single Sign-On users, you need create user groups with proxy rules and grant roles on graphs for the user groups.
 Proxy rules assign users who log in through SSO into proxy groups based on the attributes of the user from the identity provider's response.
@@ -111,6 +167,8 @@ Proxy rules assign users who log in through SSO into proxy groups based on the a
 * `WRITE_PROXYGROUP` for creating proxy groups.
 * `WRITE_ROLE` for granting roles to users
 
+==== Create proxy groups in Admin Portal
+
 You can create proxy groups in Admin Portal:
 
 . From Admin Portal, navigate to menu:Management[Users > Proxy Group].
@@ -118,10 +176,34 @@ You can create proxy groups in Admin Portal:
 . Provide the attribute equation for the proxy group.
 If a user's specified attribute matches the value in the equation, they will be assigned to this proxy group.
 
-
 After creating the proxy group, you can start granting roles to the proxy group.
 All users matching the proxy rule will be granted all the privileges of that role.
 To learn how to grant roles, see xref:role-management.adoc[].
+
+==== Create proxy groups in GSQL shell
+You can create proxy groups with GSQL commands.
+
+===== Single User Proxy
+
+For example, if you want to create a user group `SuperUserGroup` that contains the user with nameid `admin@your.company.com` only, and grant `superuser` role to that user, you can do so with the following command:
+
+[.wrap,gsql]
+----
+GSQL > CREATE GROUP SuperUserGroup PROXY "nameid=admin@your.company.com"
+GSQL > GRANT ROLE superuser TO SuperUserGroup
+Role "superuser" is successfully granted to user(s): SuperUserGroup
+----
+
+===== User Group Proxy
+
+Suppose you want to create a user group `HrDepartment` which corresponds to the identity provider Single Sign-On users having the group attribute value `hr-department`, and want to grant the queryreader role to that group on the graph HrGraph:
+
+[.wrap,gsql]
+----
+GSQL > CREATE GROUP HrDepartment PROXY "group=hr-department"
+GSQL > GRANT ROLE queryreader ON GRAPH HrGraph TO HrDepartment
+Role "queryreader" is successfully granted to user(s): HrDepartment
+----
 
 == Test Single Sign-On
 
