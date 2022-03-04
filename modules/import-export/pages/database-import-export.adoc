@@ -1,26 +1,26 @@
 = Database Import/Export
-:description: Export/Import is a complement to Backup/Restore, not a substitute.
+:description: Instructions for exporting and exporting a TigerGraph database.
 
-== Introduction
 
-The GSQL `EXPORT` and `IMPORT` commands perform a logical backup and restore. A database export contains the database's data, and optionally some types of metadata, which can be subsequently imported in order to recreate the same database, in the original or in a different TigerGraph platform instance.
+The GSQL `EXPORT GRAPH ALL` and `IMPORT GRAPH ALL` commands perform a logical backup and restore.
+A database export contains the database's data, and optionally some types of metadata, which can be subsequently imported in order to recreate the same database, in the original or in a different TigerGraph platform instance.
 
 To import an exported database, ensure that the export files are from a database that was running *the exact same version* of TigerGraph as the database that you are importing into.
 
 [WARNING]
 ====
-Known Issues (Updated Feb 16th):
+Known Issues:
 
-* User-defined loading jobs containing xref:3.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
-* If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be reimported.
+* User-defined loading jobs containing xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
+* If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be re-imported.
 ====
 
 == EXPORT GRAPH ALL
 
 The `+EXPORT GRAPH ALL+` command reads the data and metadata for all
 graphs in the TigerGraph system and writes the information to a zip file
-in the designated folder. If no options are specified, then a full
-backup is performed, including schema, data, template information, and
+in the designated folder.
+If no options are specified, then a full backup is performed, including schema, data, template information, and
 user profiles.
 
 === Required privilege
@@ -31,7 +31,7 @@ EXPORT_GRAPH
 
 === Synopsis
 
-....
+----
 EXPORT GRAPH ALL [<export_options>] TO "<directory_name>"
 
 
@@ -44,7 +44,7 @@ exportOptions ::=
     -D, --DATA          Only Data Sources will be exported
     -U, --USERS         Includes Permissions, Secrets, and Tokens
     -P, --PASSWORD      Encrypt with password. User will be prompted
-....
+----
 
 CAUTION: The export directory should be empty before running the command because all contents are zipped and compressed.
 
@@ -71,7 +71,7 @@ jobs and UDFs.
 data in CSV in addition to graph schema or template.
 
 |`+-U+` or `+--Users+` |Must be used with either `+-S+` or `+-T+`.
-Export users, role assginments, secrets, and tokens.
+Export users, role assignments, secrets, and tokens.
 
 |`+-P+` or -`+-Password+` |Encrypt the exported file with a password.
 Users will be prompted to enter a password when using this option.
@@ -116,7 +116,7 @@ If the file is password-protected, it can only be unzipped using GSQL IMPORT. Th
   *** vertex_name.csv
   *** edge_name.csv
  ** *run_loading_jobs.gsql* - DDL created by the export command which will be used during import:
-  *** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it is has run.
+  *** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it runs.
   *** Loading jobs to load data for global and local vertex/edges.
 * Database's saved queries, loading jobs, and schema change jobs
  ** *SchemaChangeJob/ -* folder containing DDL for schema change jobs. See section "Schema Change Jobs" for more information
@@ -246,52 +246,35 @@ The database's schema change jobs are not executed during the import process. Th
 * *Global_Schema_Change_Jobs.gsql* contains all global schema change jobs
 * *<graphName>_Schema_Change_Jobs.gsql* contains schema change jobs for each graph <graphName>.
 
-== Cluster import/export
+[#_cluster_importexport]
+== Cluster export/import
 
-Importing and exporting clusters is not fully automated in the current version. The database can be exported and imported by following some additional steps.
+Importing and exporting clusters is not fully automated in the current version.
+The database can be exported and imported by following some additional steps.
 
 === Export from a Cluster
 
-Rather than creating a single export zip file, export will create a file for each machine. Before exporting, specific folders must be created on each server using the following commands:
+Rather than creating a single export zip file, the `EXPORT GRAPH ALL` command creates a file for each machine.
 
-.Run on each server before EXPORT
+To export,  run `EXPORT GRAPH ALL` from the GSQL shell on one node.
+The `EXPORT GRAPH` command does not bundle all the files to one server, and it does not compress each server's files to one zip file.
+Some files, including the data files, are exported to each server, while some files are only on the local server where `EXPORT GRAPH` was run.
 
-[source,text]
-----
-grun all "mkdir -p /path/to/export_directory/GlobalTypes/"
-grun all "mkdir -p /path/to/export_directory/graph_<graphName>/"
-----
+=== Import into a cluster
 
+The following are the steps to import an export file to a cluster.
 
-Then run the export command on one server. The EXPORT command does not bundle all the files to one server, and it does not compress each server's files to one zip. Some files, including the data files, will be exported to each server, to the folders created above. Some files will be only on the local server where EXPORT GRAPH was run.
+You may only import to a cluster that has the same number and configuration of servers as the data from which the export originated.
 
-=== Import to a Cluster
+==== 1. Transfer files to new cluster
 
-==== 1. Place the files on the import servers
+Transfer the export files from the export servers to the corresponding servers in the new cluster.
+For example, the files on the m1 node of the cluster that exported the graphs must be copied to the m1 server on the cluster that is importing the export files.
 
-You may only import to a cluster that has the same number and configuration of servers as the data from which the export originated. *Transfer the files from one export server to a corresponding import server.* That is, copy the files from +
-`export_server_n:/path/to/export_directory` to +
-`import_server_n:/path/to/import/directory`
+The export file on every node must share the same absolute path.
 
-. Manually modify the loading jobs
+==== 2. Run `IMPORT GRAPH ALL`
 
-On the main server, edit the run_loading_jobs.gsql files as follows.
+Run the `IMPORT GRAPH ALL` command from the server that corresponds to the server where `EXPORT GRAPH ALL` was run.
 
-Find the line(s) of the form: +
-`+LOAD "sys.data_root/.../<vertex_or_edge_type>.csv"+` +
-Close to it should be similar line that is commented out which have the "all:" data source directive: +
-`+#LOAD "all:sys.data_root/.../<vertex_or_edge_type>.csv"+`
-
-See the example below:
-
-[source,text]
-----
-LOAD "$sys.data_root/graph_graph1/localE.csv"
-#If running on a cluster, check that the file exists on all nodes then uncomment the line below and comment the line above.
-#LOAD "all:$sys.data_root/graph_graph1/localE.csv"
-    TO EDGE localE VALUES ($"from", $"to") USING SEPARATOR = "^]", HEADER = "true";
-----
-
-*Comment out the LOAD line and uncomment the LOAD all: line*. Be sure that you do this for all data source files.
-
-. Run the IMPORT GRAPH command from the main server (e.g., the one that corresponds to the server where EXPORT GRAPH was run).
+For example, if you exported from the m2 node in a cluster, you also need to run the `IMPORT GRAPH ALL` command from the m2 node of the cluster you are importing the export files into.
