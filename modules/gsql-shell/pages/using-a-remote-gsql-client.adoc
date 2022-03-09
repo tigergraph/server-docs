@@ -27,10 +27,14 @@ To connect to a remote server, your must provide the following to the GSQL clien
 Run the following command to connect to the remote server:
 [.wrap,console]
 ----
-java -jar  gsql_client  -cacert <path_to_certificate> -ip <ip_address> -u <username> -p <password> <1> <2> <3> <4>
+java -jar gsql_client.jar \
+  [--cacert <path_to_certificate>|--ssl] \ <1>
+  --ip <ip_address> \ <2>
+  -u <username> -p <password> <3>
 ----
-<1> Replace `<path_to_certificate>` with the path to your SSL certificate.
-If the remote server doesn't have SSL/TLS encryption enabled, omit the `-cacert` flag.
+<1> If you have the SSL certificate of the remote server, you can replace `<path_to_certificate>` with the path to your SSL certificate (most common).
+Otherwise, you can use `--ssl` instead to use the default certificate. Note that `--ssl` will be overridden by `--cacert` option.
+If the remote server doesn't have SSL/TLS encryption enabled, you can omit these flags.
 <2> Replace `<ip_address>` with the IP address of your remote server.
 You can also <<_specify_server_ip_address_in_file, specify the IP address in a file and omit this flag>>.
 <3> Replace `<username>` and `<password>` with the username and password of the TigerGraph user you want to be logged in as.
