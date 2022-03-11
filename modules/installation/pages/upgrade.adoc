@@ -1,12 +1,15 @@
 = Upgrading an Existing Installation
 
 This page describes the steps to upgrade an existing installation of
-TigerGraph to TigerGraph 3.2.
+TigerGraph to TigerGraph {page-component-version}.
 
 == Before you begin
+If you are upgrading from a version older than 3.2:
 
-* xref:backup-and-restore:index.adoc[Use GBAR to perform a backup *and restore*] on your existing installation. This step is necessary because TigerGraph 3.2 made major changes to the Graph Storage Engine and a restore is needed to remove certain files that would make the upgrade operation fail.
+* xref:backup-and-restore:index.adoc[Use GBAR to perform a backup *and restore*] on your existing installation.
+This step is necessary because TigerGraph {page-component-version} made major changes to the Graph Storage Engine and a restore is needed to remove certain files that would make the upgrade operation fail.
 * After restoring the backup, ensure that there are no vertex inserts or deletions before starting the upgrade.
+
 
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
@@ -17,7 +20,7 @@ running the installation script with the upgrade(`+-U+`) flag.
 [arabic]
 . Download the latest version of TigerGraph to your system.
 . Extract the tarball.
-. Run the install script under the Linux user created during
+. Run the installation script under the Linux user created during
 installation with the upgrade flag (`+-U+`) that was extracted from the
 tarball:
 
@@ -29,7 +32,7 @@ $ ./install.sh -U
 == Upgrading from v2.x
 
 Please contact TigerGraph Support to coordinate migration to TigerGraph
-3.2 version if you are currently using a v2.x version of TigerGraph.
+{page-component-version} version if you are currently using a v2.x version of TigerGraph.
 Even though all the steps for Migration are documented, it is strongly
 recommended that you review the migration process with the TigerGraph
 Support team.
