@@ -1,5 +1,6 @@
 = Lightweight Directory Access Protocol (LDAP)
 :description: This page describes TigerGraph's support for integrating with LDAP systems.
+:experimental:
 
 
 TigerGraph supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials.
@@ -94,6 +95,7 @@ This configures TigerGraph to use LDAP for authentication.
 . For `Security.LDAP.BaseDN`, provide the base distinguished name (DN), which specifies root node to start the search for matching entries.
 * If you are not sure what value to use for this parameter, use the domain root portion of your DN.
 For example, if you DN is `CN=Joe,CN=Users,DC=example,DC=com`, use `DC=example,DC=com` for your base DN.
+* If you are using AD, you can find your DN by opening AD Users and Computers, double-click the entity whose DN you want to obtain. In the top pane, click btn:[Attribute editor] and find the `distinguishedName` attribute.
 . For `Security.LDAP.SearchFilter`, specify a search filter for objects you want to include in the search.
 Setting the search filter to `objectClass=user` only includes user objects.
 Setting the search filter to `objectClass=*` includes all objects.
