@@ -8,6 +8,7 @@ We have verified the following identity providers that support SAML 2.0 protocol
 
 * https://www.okta.com/[Okta]
 * https://auth0.com/[Auth0]
+* https://docs.microsoft.com/en-us/azure/active-directory/[Azure Active Directory (Azure AD)]
 
 For supporting additional IDPs, please inquire sales@tigergraph.com and submit a feature request.
 
@@ -19,7 +20,7 @@ In order to use Single Sign-On , you need to perform three steps :
 
 :sectnums!:
 == Before you begin
-* Ensure that you can access GraphStudio UI through a web browser using the URL: http://tigergraph-machine-honestname:14240
+* Ensure that you can access GraphStudio UI through a web browser using the URL: \http://tigergraph-machine-honestname:14240
 ** If you enabled SSL connection, change `http` to `https`.
 If you changed the Nginx port of the TigerGraph system, replace 14240 with the port you have set.
 * Ensure that you have xref:enabling-user-authentication.adoc#_enable_gsql_authentication[enabled GSQL authentication by changing the password of the default user].
@@ -40,7 +41,7 @@ After you finish configuring your identity provider, you will get the following:
 
 === Okta
 
-Follow https://developer.okta.com/docs/guides/build-sso-integration/saml2/create-your-app/[Okta's documentation to create an Application Integration] for your TigerGraph application.
+https://developer.okta.com/docs/guides/build-sso-integration/saml2/create-your-app/[Create an Application Integration in Okta] for your TigerGraph application.
 Below are the Assertion Consumer Service URL / Single sign on URL , and SP Entity ID required for this process:
 
 * Assertion Consumer Service URL/Single sign on URL:
@@ -53,13 +54,17 @@ http://<tigergraph-machine-hostname>:14240/gsqlserver/gsql/saml/meta
 
 === Auth0
 
-. Follow the Auth0 documentation to https://auth0.com/docs/get-started/create-apps/single-page-web-apps[register TigerGraph as a Single-Page web application].
-. Follow the Auth0 documentation to https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider#configure-saml-sso-in-auth0[configure Auth0 as SAML Identity provider].
+. https://auth0.com/docs/get-started/create-apps/single-page-web-apps[Register TigerGraph as a Single-Page web application in Auth0].
+. https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider#configure-saml-sso-in-auth0[Configure Auth0 as SAML Identity provider].
 You will need to enter the following information when following Auth0's guide:
 * Application Callback URL:
 [literal]
 http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
 * When downloading the certificate from Auth0, choose *`.cer`* format instead of `.pem` format.
+
+=== Azure AD
+
+. 
 
 :sectnums:
 
