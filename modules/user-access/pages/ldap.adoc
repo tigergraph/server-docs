@@ -1,12 +1,9 @@
 = Lightweight Directory Access Protocol (LDAP)
 :description: This page describes TigerGraph's support for integrating with LDAP systems.
 
-The Lightweight Directory Access Protocol (LDAP) is an industry-standard protocol for accessing and maintaining directory information services across a network.
 
-The TigerGraph system supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials.
-During the authentication process, the GSQL server connects to the LDAP server and requests the LDAP server to authenticate the user.
-
-This page provides instructions on how to configure LDAP, map LDAP users to GSQL users, as well as specific instructions for integration with Azure Active Directory (AD).
+TigerGraph supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials.
+This page provides instructions on how to configure LDAP, map LDAP users to GSQL users, as well as specific instructions for integration with Active Directory (AD).
 
 
 TigerGraph LDAP authentication supports any LDAP server that follows the LDAPv3 protocol.
@@ -22,15 +19,19 @@ TigerGraph uses the following parameters for LDAP configuration.
 | Name | Description | Example
 
 | Security.LDAP.AdminDN
-| Configure the DN of LDAP user who has read access to the base DN specified above. Empty if everyone has read access to LDAP data: default empty
+| Configure the DN of LDAP user who has read access to the base DN specified above. Empty if everyone has read access to LDAP data.
+Default value is empty;
 | `nan`
 
 | Security.LDAP.AdminPassword
-| Configure the password of the admin DN specified above. Needed only when admin_dn is specified: default empty. If the value provided is a path to a script, the parameter will be set to the output of the script.
+| Configure the password of the admin DN specified above.
+Needed only when `Security.LDAP.AdminDN` is specified.
+Default value is empty.
+If the value provided is a path to a script, the parameter will be set to the output of the script.
 | `secret`
 
 | Security.LDAP.BaseDN
-| Configure LDAP search base DN, the root node to start the LDAP search for user authentication: must specify
+| Configure LDAP search base DN, the root node to start the LDAP search for user authentication.
 | `nan`
 
 | Security.LDAP.Enable
@@ -46,7 +47,8 @@ TigerGraph uses the following parameters for LDAP configuration.
 | `389`
 
 | Security.LDAP.SearchFilter
-| Configure LDAP search base DN, the root node to start the LDAP search for user authentication.
+| Configure LDAP search filter.
+Only objects that satisfy the conditions in the filter
 | `(objectClass=*)`
 
 | Security.LDAP.Secure.Protocol
@@ -62,7 +64,7 @@ TigerGraph uses the following parameters for LDAP configuration.
 | `JKS`
 
 | Security.LDAP.Secure.TruststorePassword
-| Configure the truststore password: default changeit
+| Configure the truststore password: default `changeit`.
 | `changeit`
 
 | Security.LDAP.Secure.TruststorePath
@@ -90,17 +92,20 @@ This prompts the user to enter the values for the LDAP configuration parameters.
 This configures TigerGraph to use LDAP for authentication.
 . For `Security.LDAP.Hostname` and `Security.LDAP.Port`, provide the hostname and port of the LDAP server.
 . For `Security.LDAP.BaseDN`, provide the base distinguished name (DN), which specifies root node to start the search for matching entries.
+* If you are not sure what value to use for this parameter, use the domain root portion of your DN.
+For example, if you DN is `CN=Joe,CN=Users,DC=example,DC=com`, use `DC=example,DC=com` for your base DN.
 . For `Security.LDAP.SearchFilter`, specify a search filter for objects you want to include in the search.
 Setting the search filter to `objectClass=user` only includes user objects.
 Setting the search filter to `objectClass=*` includes all objects.
 . For `Security.LDAP.UsernameAttribute`, specify the attribute of the entities on the LDAP server to use as the database username.
-If you are using Azure AD, set this parameter to `sAMAccountName`.
+If you are using AD, set this parameter to `sAMAccountName`.
 . For `Security.LDAP.AdminDN`, provide the DN of a user who has read access to the specified base DN.
 If all users have read access to the base DN, you can leave the parameter empty.
 If you specified an admin DN, you must also provide the password for the admin DN through `Security.LDAP.AdminPassword`;
 otherwise, leave `Security.LDAP.AdminPassword` empty.
 . For `Security.LDAP.Secure.Protocol`, specify the encryption protocol for LDAP connection.
-* Set the value to `none` if you don't want to use any encryption protocol.
+You must specify the same protocol as your LDAP server.
+* Set the value to `none` if your LDAP server does not use any encryption protocol.
 This is the default configuration.
 * For SSL, set the value to `ssl`.
 * For StartTLS, set the value to `starttls`.
@@ -208,26 +213,17 @@ When the roles and privileges of a proxy group changes, the roles and privileges
 Proxy groups cannot be xref:import-export:database-import-export.adoc[exported].However, performing a xref:backup-and-restore:index.adoc[backup and restore] will preserve all proxy groups present at the time of backup.
 ====
 
-== Frequently Asked Questions
+== Common errors
 
-=== What protocol should I use for security.ldap.secure.protocol?
+=== Parameter error
 
-It depends on what type of protocol your LDAP server uses. SSL/TLS is very common in enterprise use today. When SSL is used, the port is typically 636 instead of default port 389.
+"Parameter error" means some LDAP configurations are not set properly. Most often it is because admin_dn, admin_password, or the login username and password are not set correctly. Unfortunately, we cannot know exactly what field is wrong because the LDAP server side does not respond back with such detail
 
-=== Should I configure the truststore and how?
+=== Wrong username or password
 
-You need to configure the truststore when SSL/TLS is used in the LDAP server. The truststore's path, password, and format need to be configured accordingly. We support two formats: Java KeyStore (JKS) and PKCS12. The corresponding certificates for the LDAP server need to be imported to the JKS for successful authentication. Different truststore formats are typically interchangeable.
+If you are logging into a cluster, all nodes must have the certification file in the same place.
+If one node has the file under `/tmp/certificate/`, then all other nodes must have it in the same place to avoid this error.
 
-
-
-=== What does it mean when I try to login but got "parameter error"? Can I see a more detailed error message?
-
-"Parameter error" means some of the LDAP configurations are not set properly. Most often it is because admin_dn, admin_password, or the login username and password are not set correctly. Unfortunately, we cannot know exactly what field is wrong because the LDAP server side does not respond back with such detail
-
-=== Why am I getting an operations error that says "the username or password might be wrong" even with correct credentials?
-
-If you are logging into a cluster, all nodes must have the certification file in the same place. If one node has the file under `/tmp/certificate/`, then all other nodes must have it in the same place to avoid this error.
-
-=== What does it mean when I see the error "User does not match any proxy rule"?
+=== User does not match any proxy rule
 
 This means the LDAP is working. However, TigerGraph cannot find a matching rule for the login user. Please create a proxy group for the user.
