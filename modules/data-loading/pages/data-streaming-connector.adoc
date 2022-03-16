@@ -62,8 +62,10 @@ Each JSON object must be on a separate line.
 * tar files
 * zip files
 
-For URIs that point to directories and compressed files, the connector looks for all CSV or JSON files inside the directory or the compressed file.
-If you set `file.recursive` to true, the connector looks for CSV and JSON files recursively.
+For URIs that point to directories and compressed files, the connector looks for all files inside the directory or the compressed file that match the `file.regexp` parameter.
+By default, this includes both CSV and JSON files.
+
+If you set `file.recursive` to true, the connector looks for files recursively.
 
 The following parsing options are available:
 
