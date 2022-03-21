@@ -1,77 +1,124 @@
 = Lightweight Directory Access Protocol (LDAP)
+:description: This page describes TigerGraph's support for integrating with LDAP systems.
+:experimental:
 
-The Lightweight Directory Access Protocol (LDAP) is an industry-standard protocol for accessing and maintaining directory information services across a network.
-Typically, LDAP servers provide centralized user authentication services. The TigerGraph system supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials. During the authentication process, the GSQL server connects to the LDAP server and requests the LDAP server to authenticate the user.
 
-== Supported Features
+TigerGraph supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials.
+This page provides instructions on how to configure LDAP, map LDAP users to GSQL users, as well as specific instructions for integration with Active Directory (AD).
 
-* GSQL LDAP authentication supports any LDAP server that follows the LDAPv3 protocol. StartTLS/SSL connection is also supported.
 
-* Some LDAP servers are configured to require a client certificate upon connection. Client certificates are not yet supported in GSQL LDAP authentication.
+TigerGraph LDAP authentication supports any LDAP server that follows the LDAPv3 protocol.
+StartTLS/SSL connection is also supported.
 
-== Mapping Users From LDAP to GSQL
+CAUTION: Some LDAP servers are configured to require a client certificate upon connection.
+Client certificates are not supported in TigerGraph LDAP authentication.
 
-In order to manage the user roles and privileges, the TigerGraph GSQL server employs two concepts--proxy user and proxy group.
+== LDAP configuration parameters
+TigerGraph uses the following parameters for LDAP configuration.
 
-=== Proxy User
+|===
+| Name | Description | Example
 
-A proxy user is a GSQL user created to correspond to an external LDAP user. When operating within GSQL, the external LDAP user's roles and privileges are determined by the proxy user.
+| Security.LDAP.AdminDN
+| Configure the DN of LDAP user who has read access to the base DN specified above. Empty if everyone has read access to LDAP data.
+Default value is empty;
+| `nan`
 
-=== Proxy Group
+| Security.LDAP.AdminPassword
+| Configure the password of the admin DN specified above.
+Needed only when `Security.LDAP.AdminDN` is specified.
+Default value is empty.
+If the value provided is a path to a script, the parameter will be set to the output of the script.
+| `secret`
 
-A proxy group is a GSQL user group that is used to manage a group of proxy users who share similar properties/attributes in LDAP.
+| Security.LDAP.BaseDN
+| Configure LDAP search base DN, the root node to start the LDAP search for user authentication.
+| `nan`
 
-An existing LDAP user can log in to GSQL only when the user matches at least one of the existing proxy groups' criteria. Once the criteria are satisfied, a proxy user will be created for the LDAP user. The roles and privileges of the proxy user are at least as permissive as the proxy group(s) he belongs to. It is also possible to change the roles of a specific proxy user independently. When the roles and privileges of a proxy group changes, the roles and privileges of all the proxy users belonging to this proxy group change accordingly.
+| Security.LDAP.Enable
+| Enable LDAP authentication: default false
+| `false`
 
-[NOTE]
-====
-Proxy groups cannot be xref:import-export:database-import-export.adoc[exported]. However, performing a xref:backup-and-restore:index.adoc[backup and restore] will preserve all proxy groups present at the time of backup.
-====
+| Security.LDAP.Hostname
+| Configure LDAP server hostname: default localhost
+| `localhost`
 
-== Configure GSQL LDAP Authentication
+| Security.LDAP.Port
+| Configure LDAP server port: default 389
+| `389`
 
-To configure a TigerGraph system to use LDAP, there are two main configuration steps:
+| Security.LDAP.SearchFilter
+| Configure LDAP search filter.
+Only objects that satisfy the conditions in the filter
+| `(objectClass=*)`
 
-. Configure the LDAP Connection.
-. Configure GSQL Proxy Groups and Users.
+| Security.LDAP.Secure.Protocol
+| Enable SSL/StartTLS for LDAP connection [none/ssl/starttls]: default none
+| `none`
 
-In order to choose and specify your LDAP configuration settings, you should be familiar with some link:https://www.ldap.com/basic-ldap-concepts[basic LDAP concepts].
+| Security.LDAP.Secure.TrustAll
+| Configure to trust all LDAP servers (unsafe): default false
+| `false`
 
-=== Prerequisites
+| Security.LDAP.Secure.TruststoreFormat
+| Configure the truststore format [JKS/PKCS12]: default JKS
+| `JKS`
 
-* On a cluster, all nodes must have the LDAP certification file in the same place.
+| Security.LDAP.Secure.TruststorePassword
+| Configure the truststore password: default `changeit`.
+| `changeit`
 
-* Sufficient privileges are required to configure LDAP Authentication:
+| Security.LDAP.Secure.TruststorePath
+| Configure the truststore absolute path for the certificates used in SSL: default empty. If the value provided is a path to a script, the parameter will be set to the output of the script.
+| `nan`
 
-** `WRITE_ROLE`
-** `WRITE_PROXYGROUP`
+| Security.LDAP.UsernameAttribute
+| Configure the username attribute name in LDAP server: default uid
+| `uid`
+|===
 
-=== Step 1 - Configure the LDAP Connection
+== Configure TigerGraph to use LDAP
 
-To enable and configure LDAP, run three commands.
+To enable and configure LDAP, run the following command:
 
 .Configure LDAP:
-
 [source,console]
 ----
-gadmin config entry ldap
+$ gadmin config entry ldap
 ----
 
-The gadmin program will then prompt the user for the settings for several LDAP configuration parameters.
+This prompts the user to enter the values for the LDAP configuration parameters.
 
+. Set `Security.LDAP.Enable` to true.
+This configures TigerGraph to use LDAP for authentication.
+. For `Security.LDAP.Hostname` and `Security.LDAP.Port`, provide the hostname and port of the LDAP server.
+. For `Security.LDAP.BaseDN`, provide the base distinguished name (DN), which specifies root node to start the search for matching entries.
+* If you are not sure what value to use for this parameter, use the domain root portion of your DN.
+For example, if your DN is `CN=Joe,CN=Users,DC=example,DC=com`, use `DC=example,DC=com` for your base DN.
+* To find the DN of a user, you can open a command prompt and run the command `dsquery user -name <username>`, and replace `<username>` with the full name of the user.
+. For `Security.LDAP.SearchFilter`, specify a search filter for objects you want to include in the search.
+Setting the search filter to `objectClass=user` only includes user objects.
+Setting the search filter to `objectClass=*` includes all objects.
+. For `Security.LDAP.UsernameAttribute`, specify the attribute of the entities on the LDAP server to use as the database username.
+If you are using AD, set this parameter to `sAMAccountName`.
+. For `Security.LDAP.AdminDN`, provide the DN of a user who has read access to the specified base DN.
+If all users have read access to the base DN, you can leave the parameter empty.
+If you specified an admin DN, you must also provide the password for the admin DN through `Security.LDAP.AdminPassword`;
+otherwise, leave `Security.LDAP.AdminPassword` empty.
+. For `Security.LDAP.Secure.Protocol`, specify the encryption protocol for LDAP connection.
+You must specify the same protocol as your LDAP server.
+* Set the value to `none` if your LDAP server does not use any encryption protocol.
+This is the default configuration.
+* For SSL, set the value to `ssl`.
+* For StartTLS, set the value to `starttls`.
+. If you are using either SSL or StartTLS, you need to provide a truststore, specify its format and provide its password.
+* For `Security.LDAP.Secure.TruststorePath`, provide the absolute path to the truststore used in SSL.
+* For `Security.LDAP.Secure.TruststoreFormat`, specify your truststore format.
+Supported formats include `JKS/PKCS12`.
+* For `Security.LDAP.Secure.TruststorePassword`, specify the password to your truststore.
+. `Security.LDAP.Secure.TrustAll` should be set to false in any production environment as this overrides SSL/TLS settings and makes TigerGraph trust all LDAP servers.
+However, you can set this parameter to true in a development for testing purposes.
 
-.Apply the configuration:
-[source,console]
-----
-gadmin config apply -y
-----
-
-.Restart the gsql server:
-
-[source,console]
-----
-gadmin restart gsql -y
-----
 
 An example configuration is shown below.
 
@@ -122,130 +169,63 @@ New: false
 [   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
 ----
 
-Below is an explanation of each configuration parameter.
+== Mapping Users From LDAP to TigerGraph
 
-|===
-| Name | Description | Example
+This section explains how to configure a GSQL proxy group to allow LDAP user authentication.
 
-| Security.LDAP.AdminDN
-| Configure the DN of LDAP user who has read access to the base DN specified above. Empty if everyone has read access to LDAP data: default empty
-| `nan`
+Proxy groups specify privileges for users who log in through LDAP.
+If the user's LDAP entry matches the proxy rule of an existing proxy group, a proxy user is created to which the user logs in.
 
-| Security.LDAP.AdminPassword
-| Configure the password of the admin DN specified above. Needed only when admin_dn is specified: default empty. If the value provided is a path to a script, the parameter will be set to the output of the script.
-| `secret`
+For example, if there is an attribute called `role` in the LDAP directory, and `engineering` is one of the `role` attribute values, we can create a proxy group with the proxy rule `role=engineering`.
+All users with the `role` attribute whose value is `engineering` are matched to the proxy group and have the privileges granted to the proxy group.
 
-| Security.LDAP.BaseDN
-| Configure LDAP search base DN, the root node to start the LDAP search for user authentication: must specify
-| `nan`
+=== Configure Proxy Group
 
-| Security.LDAP.Enable
-| Enable LDAP authentication: default false
-| `false`
+Run the `CREATE GROUP` command to create a proxy group with a proxy rule.
 
-| Security.LDAP.Hostname
-| Configure LDAP server hostname: default localhost
-| `localhost`
-
-| Security.LDAP.Port
-| Configure LDAP server port: default 389
-| `389`
-
-| Security.LDAP.SearchFilter
-| Configure LDAP search base DN, the root node to start the LDAP search for user authentication.
-| `(objectClass=*)`
-
-| Security.LDAP.Secure.Protocol
-| Enable SSL/StartTLS for LDAP connection [none/ssl/starttls]: default none
-| `none`
-
-| Security.LDAP.Secure.TrustAll
-| Configure to trust all LDAP servers (unsafe): default false
-| `false`
-
-| Security.LDAP.Secure.TruststoreFormat
-| Configure the truststore format [JKS/PKCS12]: default JKS
-| `JKS`
-
-| Security.LDAP.Secure.TruststorePassword
-| Configure the truststore password: default changeit
-| `changeit`
-
-| Security.LDAP.Secure.TruststorePath
-| Configure the truststore absolute path for the certificates used in SSL: default empty. If the value provided is a path to a script, the parameter will be set to the output of the script.
-| `nan`
-
-| Security.LDAP.UsernameAttribute
-| Configure the username attribute name in LDAP server: default uid
-| `uid`
-|===
-
-=== Step 2 - Configure GSQL Proxy Groups and Users
-
-This section explains how to configure a GSQL proxy group in order to allow LDAP user authentication.
-
-==== *Configure Proxy Group*
-
-A GSQL proxy group is created by the CREATE GROUP command with a given proxy rule. For example, assume there is an attribute called `role` in the LDAP directory, and `engineering` is one of the `role` attribute values. We can create a proxy group with the proxy rule `role=engineering`. Different roles can then be assigned to the proxy group. An example is shown below. When a user logs in, the GSQL server searches for the user's entry in the LDAP directory. If the user's LDAP entry matches the proxy rule of an existing proxy group, a proxy user is created to which the user will log in.
-
-.CREATE GROUP command
-
+.`CREATE GROUP` command
 [source,gsql]
 ----
-# create a proxy group
 CREATE GROUP developers PROXY "role=engineering" // Any user in LDAP with role=engineer is proxied to the group 'developers'
-
-# grant role to proxy group
-GRANT ROLE querywriter ON GRAPH computerNet TO developers
 ----
 
+After creating the proxy group, you can xref:user-access:user-management.adoc[grant roles] to the group to give the proxy group privileges.
+
+==== Commands to manage proxy groups
+
+* `SHOW GROUP` displays information about all groups.
+* `DROP GROUP <group_name>` deletes the definition of a group.
 
 
-The SHOW GROUP command will display information about a group. The DROP GROUP command deletes the definition of a group.
+==== Proxy users
+A proxy user is a GSQL user created to correspond to an external LDAP user.
+When operating within GSQL, the external LDAP user's roles and privileges are determined by the proxy user.
 
-.SHOW GROUP and DROP GROUP commands
+Nothing needs to be configured for a proxy user.
+As long as the proxy rule matches, the proxy user will be automatically created upon login.
 
-[source,gsql]
-----
-# show the current groups
-SHOW GROUP
+A proxy user is very similar to a normal user.
+The minor differences are that a proxy user cannot change their password in GSQL and that a proxy user comes with default roles inherited from the proxy group that they belong to.
 
-# delete a proxy group
-DROP GROUP developers
-----
+It is also possible to change the roles of a specific proxy user independently.
+When the roles and privileges of a proxy group changes, the roles and privileges of all the proxy users belonging to this proxy group change accordingly.
 
+[NOTE]
+====
+Proxy groups cannot be xref:import-export:database-import-export.adoc[exported].However, performing a xref:backup-and-restore:index.adoc[backup and restore] will preserve all proxy groups present at the time of backup.
+====
 
+== Common errors
 
-==== *Proxy User*
+=== Parameter error
 
-Nothing needs to be configured for a proxy user. As long as the proxy rule matches, the proxy user will be automatically created upon login. A proxy user is very similar to a normal user. The minor differences are that a proxy user cannot change their password in GSQL and that a proxy user comes with default roles inherited from the proxy group that they belong to.
+"Parameter error" means some LDAP configurations are not set properly. Most often it is because admin_dn, admin_password, or the login username and password are not set correctly. Unfortunately, we cannot know exactly what field is wrong because the LDAP server side does not respond back with such detail
 
-== Frequently Asked Questions
+=== Wrong username or password
 
-=== What is security.ldap.admin_dn?
+If you are logging into a cluster, all nodes must have the certification file in the same place.
+If one node has the file under `/tmp/certificate/`, then all other nodes must have it in the same place to avoid this error.
 
-`admin_dn` is the "distinguished name" of an LDAP entry. In LDAP, the term "distinguished name" is often abbreviated as `dn`. When configuring this field, a `dn` entry with read permission on the ldap directory is expected. Configuring a `dn` with no read permission will result in an error. Not configuring this field will likely result in an error since the LDAP server is typically not publicly readable. Please note that only the `dn` field will be accepted for this entry. All other entries will result in an authentication error. The corresponding password for the configured `dn` should also be set correctly in the configured entry `security.ldap.admin_password`.
+=== User does not match any proxy rule
 
-=== What protocol should I use for security.ldap.secure.protocol?
-
-It depends on what type of protocol your LDAP server uses. SSL/TLS is very common in enterprise use today. When SSL is used, the port is typically 636 instead of default port 389.
-
-=== Should I configure the truststore and how?
-
-You need to configure the truststore when SSL/TLS is used in the LDAP server. The truststore's path, password, and format need to be configured accordingly. We support two formats: Java KeyStore (JKS) and PKCS12. The corresponding certificates for the LDAP server need to be imported to the JKS for successful authentication. Different truststore formats are typically interchangeable.
-
-=== What if I just want to test the LDAP login without any certificate?
-
-This might be the case if SSL/TLS is enabled from the LDAP server side but you don't have a certificate. You can set "security.ldap.secure.trust_all" to `true` to bypass the SSL/TLS certificate checking.
-
-=== What does it mean when I try to login but got "parameter error"? Can I see a more detailed error message?
-
-"Parameter error" means some of the LDAP configurations are not set properly. Most often it is because admin_dn, admin_password, or the login username and password are not set correctly. Unfortunately, we cannot know exactly what field is wrong because the LDAP server side does not respond back with such detail
-
-=== Why am I getting an operations error that says "the username or password might be wrong" even with correct credentials?
-
-If you are logging into a cluster, all nodes must have the certification file in the same place. If one node has the file under `/tmp/certificate/`, then all other nodes must have it in the same place to avoid this error.
-
-=== What does it mean when I see the error "User does not match any proxy rule"?
-
-Congratulations! This means the LDAP is working. However, TigerGraph cannot find a matching rule for the login user. Please create a proxy group for the user. See documents for <<_proxy_group>>.
+This means the LDAP is working. However, TigerGraph cannot find a matching rule for the login user. Please create a proxy group for the user.

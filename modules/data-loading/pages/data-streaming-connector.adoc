@@ -56,12 +56,13 @@ The value for this configuration should be `com.google.cloud.hadoop.fs.gcs.Googl
 The streaming connector supports the following file types:
 
 * CSV files
+* JSON files
 * directories
 * tar files
 * zip files
 
-For URIs that point to directories and compressed files, the connector will look for all CSV files inside the directory or the compressed file.
-If you set `file.recursive`, the connector will look for CSV files recursively.
+For URIs that point to directories and compressed files, the connector looks for all CSV or JSON files inside the directory or the compressed file.
+If you set `file.recursive` to true, the connector looks for CSV and JSON files recursively.
 
 The following parsing options are available:
 
@@ -113,6 +114,7 @@ Accepted values:
 
 |`file.reader.text.header`
 |Whether the first line of the files is a header line.
+If you are using JSON files, set this parameter to false.
 |`false`
 
 |`file.reader.text.archive.type`

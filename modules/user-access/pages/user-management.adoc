@@ -40,6 +40,7 @@ The user "frank" is created.
 ----
 +
 
+== Create a proxy group
 
 == View roles of a user
 
@@ -122,14 +123,15 @@ User: "tigergraph"
 
 To view xref:access-control-model.adoc#_access_control_lists[ACL privileges] of a user, see xref:acl-management.adoc#_view_acl_privileges_of_a_user_[View ACL privileges of a user].
 
-== Grant a role to a user
+[#_grant_a_role_to_a_user]
+== Grant a role to a user/proxy group
 
 === Syntax
 
 [source,gsql]
 ----
 GRANT ROLE <role_name1> (, role_name2)* [ON GRAPH <graph_name>]
-        TO <username1> (, <username2>)*
+  TO <username1>|<proxy_group_name1> (, <username2> | <proxy_group_name>2)*
 ----
 
 === Required privilege
@@ -150,8 +152,7 @@ GSQL > USE GRAPH example_graph
 +
 [source,gsql]
 ----
-GSQL > GRANT ROLE role1 , role2 ON GRAPH example_graph
-        TO user1, use2
+GSQL > GRANT ROLE role1 , role2 ON GRAPH example_graph TO user1, user2
 ----
 
 The above command will grant roles `role1` and `role2` on graph `example_graph` to users `user1` and `user2`.
@@ -242,3 +243,6 @@ GSQL > DROP USER user1, user2
 ----
 
 . GSQL will confirm that the users you entered have been dropped
+
+
+
