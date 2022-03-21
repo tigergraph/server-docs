@@ -56,13 +56,17 @@ The value for this configuration should be `com.google.cloud.hadoop.fs.gcs.Googl
 The streaming connector supports the following file types:
 
 * CSV files
-* JSON files
+* JSON files.
+Each JSON object must be on a separate line.
 * directories
 * tar files
 * zip files
 
-For URIs that point to directories and compressed files, the connector looks for all CSV or JSON files inside the directory or the compressed file.
-If you set `file.recursive` to true, the connector looks for CSV and JSON files recursively.
+For URIs that point to directories and compressed files, the connector looks for all files inside the directory or the compressed file that match the `file.regexp` parameter.
+By default, this includes both CSV and JSON files.
+
+If you set `file.recursive` to true, the connector looks for files recursively.
+
 
 The following parsing options are available:
 
@@ -86,10 +90,12 @@ The only supported value is `text`.
 
 |`file.reader.delimited.separator`
 |The character that separates columns.
+This parameter does not affect JSON files.
 |`,`
 
 |`file.reader.delimited.quote`
 a|The explicit boundary markers for string tokens, either single or double quotation marks.
+This parameter does not affect JSON files.
 
 The parser will not treat separator characters found within a pair of quotation marks as a separator.
 
@@ -102,6 +108,7 @@ Accepted values:
 
 |`file.reader.delimited.value.default`
 |The default value for a column when its value is null.
+This parameter does not affect JSON files.
 | Empty string `""`
 
 |`file.reader.batch.size`
@@ -219,7 +226,7 @@ The connectors start streaming from the data source immediately after creation i
 You can run `gadmin connector status` to verify the status of the connectors.
 If the configurations are valid, the connectors should be in `RUNNING` status.
 
-Data streamed from the source will stay in TigerGraph's internal Kafka topics until they are ingested by a loading job.
+Data streamed from the source stays in TigerGraph's internal Kafka topics until they are ingested by a loading job.
 
 ==== Create data source
 Now that the connector has started loading data into TigerGraph's internal Kafka cluster, you can create a data source and point it to the Kafka cluster:
@@ -277,6 +284,7 @@ If you want to load from the beginning of a topic, the `start_offset` value shou
 <4> Replace `<partition_number>` with the partition number if you want to configure.
 . Create a loading job and map data to graph.
 See xref:kafka-loader/index.adoc#_2_create_a_loading_job[Kafka loader guide] for how to map data from a Kafka data source to the graph.
+See xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_loading_json_data[Loading JSON data] on how to create a loading job for JSON data. 
 
 WARNING: Known bug: to use the `-1` value for offset, delete the `start_offset` key instead of setting it to `-1`.
 
