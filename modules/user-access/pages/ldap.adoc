@@ -94,7 +94,7 @@ This configures TigerGraph to use LDAP for authentication.
 . For `Security.LDAP.Hostname` and `Security.LDAP.Port`, provide the hostname and port of the LDAP server.
 . For `Security.LDAP.BaseDN`, provide the base distinguished name (DN), which specifies root node to start the search for matching entries.
 * If you are not sure what value to use for this parameter, use the domain root portion of your DN.
-For example, if you DN is `CN=Joe,CN=Users,DC=example,DC=com`, use `DC=example,DC=com` for your base DN.
+For example, if your DN is `CN=Joe,CN=Users,DC=example,DC=com`, use `DC=example,DC=com` for your base DN.
 * To find the DN of a user, you can open a command prompt and run the command `dsquery user -name <username>`, and replace `<username>` with the full name of the user.
 . For `Security.LDAP.SearchFilter`, specify a search filter for objects you want to include in the search.
 Setting the search filter to `objectClass=user` only includes user objects.
