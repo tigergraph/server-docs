@@ -64,7 +64,30 @@ http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
 
 === Azure AD
 
-. 
+. Log into https://aad.portal.azure.com/[Azure Active Directory Admin Center] as an Admin user.
+In the left menu, select menu:Enterprise applications[New Application].
++
+image::azure-new-application.png[]
+. In the top left corner, click btn:[Create your own application].
++
+image::azure-create-app.png[]
++
+In the form that appears on the right side of the page, fill in the name of your application and choose btn:[Integrate any other application you don't find in the gallery (Non-gallery)].
+This creates the application and takes you to the application page
+. On the left pane of the application page, click btn:[Single sign-on] and choose btn:[SAML].
++
+image::azure-saml.png[]
+This takes you to a page titled "Set up single sign-on with SAML".
+. Fill in *Identifier (Entity ID)* and *Reply URL* with the information below.
+Replace `<tigergraph-machine-hostname>` with the host name of your TigerGraph instance:
+* Identifier (Entity ID): `\https://<tigergraph-machine-hostname>:14240/gsqlserver/gsql/saml/meta`
+* Reply URL: `\https://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
+. After filling in the Entity ID and Reply URL, click btn:[Edit] for *SAML Signing Certificate*, and choose btn:[Sign SAML Assertion and Response].
+Click btn:[Save] and download certificate (base64).
+* We recommend signing both assertion and response for maximum security.
+However, you may choose to only sign one of them, but you need to match this setting with when you enable SSO on TigerGraph.
+. Under "Set up <Application name>", Azure AD provides a login URL, an Azure AD identifier, and a logout URL.
+These items are used in the next steps to configure single sign-on in TigerGraph.
 
 :sectnums:
 
@@ -72,13 +95,15 @@ http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
 
 Having configured the identity provider and obtained the identity provider's SSO URL, entity ID and certificate, the next step is to provide the information to TigerGraph to enable single sign-on.
 
+=== Navigate to SSO page
+From GraphStudio home page, click btn:[Admin Portal] in the upper right corner.
+In the left pane, click menu:Management[Security > SSO].
+At the top of the SSO page, click the toggle to btn:[Enable SAML-based SSO].
+
 === Update service provider URL
 The service provider (in this case - TigerGraph) URL is the same URL that you use to access GraphStudio.
 
-=== Provide IDP certificate, entity ID, and URLs
-Upload the certificate you downloaded from the identity provider in the previous step, and provide the identity provider's entity ID and single sign-on URL in the corresponding fields.
-
-=== Prepare certificate and private key on TigerGraph machine
+=== Prepare service provider certificate and private key
 Under SAML, the service provider can optionally sign the SAML requests made to the identity provider.
 This step configures the certificate and private key used for the signature.
 
@@ -87,6 +112,10 @@ This is different from configuring an SSL connection, where a CA-authorized cert
 
 You can generate a self-signed private key and x-509 certificate from GraphStudio.
 Click the button next to the Service Provider's private key field: menu:Upload file[Self Signed], and fill in your information to generate a self-signed private key and x-509 certificate.
+
+=== Provide IDP certificate, entity ID, and URLs
+Upload the certificate you downloaded from the identity provider in the previous step, and provide the identity provider's entity ID and single sign-on URL in the corresponding fields.
+
 
 === Configure security options
 At the bottom of the SSO page are a list of security options you can configure for SSO:
@@ -102,10 +131,9 @@ At the bottom of the SSO page are a list of security options you can configure f
 
 It is recommended that you enable as many of the options as possible for maximum security.
 However, some identity providers do not support enabling certain options at the same time.
-Refer to your identity provider's documentation to determine which options to use:
+Refer to your identity provider's documentation to determine which options to use.
 
-* link:https://auth0.com/docs/configure/saml-configuration/customize-saml-assertions#saml-assertion-attributes[Auth0]
-* link:https://developer.okta.com/docs/reference/api/apps/#settings-9[Okta]
+
 
 === Command-line options
 Besides providing the SSO information in the UI, you also have the option of providing the information using `gadmin config` through the command-line.
@@ -157,7 +185,7 @@ use @/privatekey/file/path to pass the certificate from a file. |`+nan+`
 empty. You can use @/cert/file/path to pass the certificate from a file.
 |`+nan+`
 
-|Security.SSO.SAML.SignatureAlgorithm |Signiture algorithm
+|Security.SSO.SAML.SignatureAlgorithm |Signature algorithm
 [rsa-sha1/rsa-sha256/rsa-sha384/rsa-sha512]: default rsa-sha256
 |`+rsa-sha256+`
 |===
