@@ -1,22 +1,23 @@
 = Single Sign-On
+:description: Instructions to set up single sign-on for TigerGraph with verified identity providers. 
 :experimental:
 :sectnums:
 
-The Single Sign-On (SSO) feature in TigerGraph enables you to use your organization's identity provider (IDP) to authenticate users to access TigerGraph GraphStudio and Admin Portal UI.
+Single sign-on (SSO) enables you to use your organization's identity provider (IDP) to authenticate users to access TigerGraph GraphStudio and Admin Portal UI.
 
-We have verified the following identity providers that support SAML 2.0 protocol:
+We have verified the following IDPs that support SAML 2.0 protocol:
 
 * https://www.okta.com/[Okta]
 * https://auth0.com/[Auth0]
 * https://docs.microsoft.com/en-us/azure/active-directory/[Azure Active Directory (Azure AD)]
 
-For supporting additional IDPs, please inquire sales@tigergraph.com and submit a feature request.
+For supporting additional IDPs, please contact sales@tigergraph.com and submit a feature request.
 
-In order to use Single Sign-On , you need to perform three steps :
+To set up single sign-on, you need to perform three steps :
 
 . Configure your identity provider to create a TigerGraph application.
-. Provide information from your identity provider to enable TigerGraph Single Sign-On.
-. Create user groups with proxy rules to authorize Single Sign-On users.
+. Provide information from your identity provider to enable TigerGraph single sign-on.
+. Create user groups with proxy rules to authorize single sign-on users.
 
 :sectnums!:
 == Before you begin
@@ -35,7 +36,7 @@ Please consult your IT or security department for how to configure the identity 
 
 After you finish configuring your identity provider, you will get the following:
 
-* An Identity Provider Single Sign-On URL
+* An Identity Provider single sign-on URL
 * An Identity Provider Entity ID
 * an X.509 certificate file `idp.cert`. You need these 3 things to configure TigerGraph next.
 
@@ -58,13 +59,12 @@ http://<tigergraph-machine-hostname>:14240/gsqlserver/gsql/saml/meta
 . https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider#configure-saml-sso-in-auth0[Configure Auth0 as SAML Identity provider].
 You will need to enter the following information when following Auth0's guide:
 * Application Callback URL:
-[literal]
-http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
+\http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
 * When downloading the certificate from Auth0, choose *`.cer`* format instead of `.pem` format.
 
 === Azure AD
 
-. Log into https://aad.portal.azure.com/[Azure Active Directory Admin Center] as an Admin user.
+. Log in to https://aad.portal.azure.com/[Azure Active Directory Admin Center] as an Admin user.
 In the left menu, select menu:Enterprise applications[New Application].
 +
 image::azure-new-application.png[]
@@ -73,7 +73,7 @@ image::azure-new-application.png[]
 image::azure-create-app.png[]
 +
 In the form that appears on the right side of the page, fill in the name of your application and choose btn:[Integrate any other application you don't find in the gallery (Non-gallery)].
-This creates the application and takes you to the application page
+This creates the application and takes you to the application page.
 . On the left pane of the application page, click btn:[Single sign-on] and choose btn:[SAML].
 +
 image::azure-saml.png[]
@@ -85,13 +85,13 @@ Replace `<tigergraph-machine-hostname>` with the host name of your TigerGraph in
 . After filling in the Entity ID and Reply URL, click btn:[Edit] for *SAML Signing Certificate*, and choose btn:[Sign SAML Assertion and Response].
 Click btn:[Save] and download certificate (base64).
 * We recommend signing both assertion and response for maximum security.
-However, you may choose to only sign one of them, but you need to match this setting with when you enable SSO on TigerGraph.
+However, you may choose to only sign one of them, but you need to match this with your SSO settings in TigerGraph.
 . Under "Set up <Application name>", Azure AD provides a login URL, an Azure AD identifier, and a logout URL.
 These items are used in the next steps to configure single sign-on in TigerGraph.
 
 :sectnums:
 
-== Enable Single Sign-On in TigerGraph
+== Enable single sign-on in TigerGraph
 
 Having configured the identity provider and obtained the identity provider's SSO URL, entity ID and certificate, the next step is to provide the information to TigerGraph to enable single sign-on.
 
@@ -159,7 +159,7 @@ to Identity Provider: default true |`+true+`
 |Security.SSO.SAML.IDP.EntityId |Identity Provider Entity ID: default
 http://idp.example.com |`+http://idp.example.com+`
 
-|Security.SSO.SAML.IDP.SSOUrl |Single Sign-On URL: default
+|Security.SSO.SAML.IDP.SSOUrl |single sign-on URL: default
 http://idp.example.com/sso/saml |`+http://idp.example.com/sso/saml+`
 
 |Security.SSO.SAML.IDP.X509Cert |Identity Provider’s x509 Certificate
@@ -190,9 +190,9 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 |`+rsa-sha256+`
 |===
 
-== Create user groups with proxy rules to authorize Single Sign-On users
+== Create user groups with proxy rules to authorize single sign-on users
 
-In order to authorize Single Sign-On users, you need create user groups with proxy rules and grant roles on graphs for the user groups.
+In order to authorize single sign-on users, you need create user groups with proxy rules and grant roles on graphs for the user groups.
 Proxy rules assign users who log in through SSO into proxy groups based on the attributes of the user from the identity provider's response.
 
 === Required privilege
@@ -229,7 +229,7 @@ Role "superuser" is successfully granted to user(s): SuperUserGroup
 
 ===== User Group Proxy
 
-Suppose you want to create a user group `HrDepartment` which corresponds to the identity provider Single Sign-On users having the group attribute value `hr-department`, and want to grant the queryreader role to that group on the graph HrGraph:
+Suppose you want to create a user group `HrDepartment` which corresponds to the identity provider single sign-on users having the group attribute value `hr-department`, and want to grant the queryreader role to that group on the graph HrGraph:
 
 [.wrap,gsql]
 ----
@@ -238,7 +238,7 @@ GSQL > GRANT ROLE queryreader ON GRAPH HrGraph TO HrDepartment
 Role "queryreader" is successfully granted to user(s): HrDepartment
 ----
 
-== Test Single Sign-On
+== Test single sign-on
 
 To test if single sign-on is working, visit the GraphStudio UI in your browser.
 You should see a btn:[Login with SSO] button:
@@ -251,7 +251,7 @@ Click the button to navigate to your identity provider's login portal:
 After about 10 seconds, the verification should finish, and you are authorized to use GraphStudio.
 * If you aren't logged in at your identity provider, you will need to log in.
 
-After logging in successfully, you will see your Single Sign-On username when you click the User icon  image:11.1 (1).png[,35]  at the upper right of the GraphStudio UI.
+After logging in successfully, you will see your single sign-on username when you click the User icon  image:11.1 (1).png[,35]  at the upper right of the GraphStudio UI.
 
 :sectnums!:
 == Common errors
@@ -263,7 +263,7 @@ Below are a few common SSO errors and how to resolve them.
 
 === "Login failed. Please contact system admin."
 
-* If your Single Sign-On fails with the above error message, it usually means the configuration are inconsistent between TigerGraph and your identity provider.
+* If your single sign-on fails with the above error message, it usually means the configuration are inconsistent between TigerGraph and your identity provider.
 
 
 You can check your GSQL log to investigate.
