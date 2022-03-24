@@ -99,9 +99,9 @@ REVOKE DATA_SOURCE s1 FROM GRAPH graph1, graph2
 +
 [,gsql]
 ----
-CREATE DATA_SOURCE S3 s1 = "/path/to/config" FOR GRAPH test_graph <1>
+CREATE DATA_SOURCE S3 s1 = "/path/to/config" FOR GRAPH Test_Graph <1>
 ----
-<1> The local data source `s1` is only accessible to graph test_graph.
+<1> The local data source `s1` is only accessible to graph Test_Graph.
 No one can grant it to another graph.
 
 
@@ -335,16 +335,12 @@ Here is an example code for loading data through the S3 Loader:
 
 [,gsql]
 ----
-USE GRAPH test_graph
-DROP JOB load_person
-DROP DATA_SOURCE s1
-
-// Create data_source s3 s1 = "s3_config.json" for graph test_graph.
-CREATE DATA_SOURCE S3 s1 FOR GRAPH est_graph
+// Create data_source s3 s1 = "s3_config.json" for graph Test_Graph.
+CREATE DATA_SOURCE S3 s1 FOR GRAPH Test_Graph
 SET s1 = "s3_config.json"
 
 // Define the loading jobs.
-CREATE LOADING JOB load_person FOR GRAPH test_graph {
+CREATE LOADING JOB load_person FOR GRAPH Test_Graph {
     DEFINE FILENAME f1 = "$s1:s3_file_config.json";
     LOAD f1
       TO VERTEX Person VALUES ($2, $0, $1),
