@@ -193,6 +193,7 @@ Below is a description of the fields in the config file:
   *** `"LoginConfig"`: Login configurations
    **** `"SudoUser"`: Username of the sudo user who will be used to execute the installation on all nodes.
    **** `"Method"`: Authentication method for SSH. Enter `"P"` to use password authentication and `"K"` to use key-based authentication.
+If you use key-based authentication, the sudo user you are providing must have password-less root privileges on all nodes in the cluster.
    **** `"P"`: Password of the sudo user.
    **** `"K"`: Absolute path to the SSH key to be used to authenticate the sudo user.
   *** `"ReplicationFactor"`: xref:ha:ha-cluster.adoc[Replication factor] of the cluster.
