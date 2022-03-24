@@ -2183,24 +2183,24 @@ When using a `GET` request to run an installed query, the query parameters are x
 |===
 |Parameter type |Query string format |Example
 |Set or bag of primitives |Assign multiple values to the same parameter
-name. |A set `p1` of integers: `**p1=1&p1=5&p1=10**`
+name. |A set `p1` of integers: `p1=1&p1=5&p1=10`
 
-|`VERTEX<type>` |Use the ID of the vertex:`parameterName=vertex_id` |A
-vertex with parameter name `vp` and an ID of person2: `**vp=person2**`
+|`VERTEX<type>` |Use the ID of the vertex: `parameterName=vertex_id` |A
+vertex with parameter name `vp` and an ID of person2: `vp=person2`
 
-|`VERTEX`(type not pre-specified) |Use two query string
-parameters**:**`parameterName=vertex_id\'\'parameterName.type=vertex_type`
-|A vertex with parameter name `va` , type `person` and and ID
-`person1`:`va=person1&va.type=person`
+|`VERTEX` (type not pre-specified) |Use two query string
+parameters: `parameterName=vertex_id&parameterName.type=vertex_type`
+|A vertex with parameter name `va`, type `person` and and ID
+`person1`: `va=person1&va.type=person`
 
 |Set or bag of `VERTEX<type>` |Assign multiple vertex IDs to the same
 `SET` or `BAG` parameter name. |A set parameter named `vp` of vertices
-of type person:`vp=person3&vp=person4`
+of type person: `vp=person3&vp=person4`
 
-|Set or bag of `VERTEX`(type not pre-specified) |The `SET` or `BAG` must
+|Set or bag of `VERTEX` (type not pre-specified) |The `SET` or `BAG` must
 be treated as an array. A vertex ID and type must be provided for the
 vertex element at each index. |A set parameter named `vp` of
-vertices:`vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
+vertices: `vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
 |===
 
 ==== Specify replica
