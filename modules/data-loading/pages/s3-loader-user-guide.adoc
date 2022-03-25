@@ -65,7 +65,7 @@ If the configuration file uses a relative path, the path should be relative to t
 
 Each time when the config file is updated, you must run `SET data_source_name`  to update the data source details.
 
-To further simplify, instead of specifying the S3 data source config file path, you can also directly provide the S3 data source configuration as a string argument, as shown below.
+To further simplify, instead of specifying the S3 data source config file path, you can also directly provide the S3 data source configuration as a string argument.
 This is useful when you only have access to the GSQL shell, but do not have OS level access such as when you are on TigerGraph Cloud:
 
 [.wrap,gsql]
@@ -77,8 +77,9 @@ CREATE DATA_SOURCE S3 data_source_name = "{\"file.reader.settings.fs.s3a.access.
 
 The S3 Loader supports the TigerGraph MultiGraph feature. In the MultiGraph context, a data source can be either global or local:
 
-* A global data source can only be created by a user with the `WRITE_DATASOURCE` privilege on the global scope, who can grant the global data source to any graph.
-* An user with `WRITE_DATASOURCE` privilege on a graph can only create local data sources on that graph, which cannot be accessed by other graphs.
+* A global data source can only be created by a user with `WRITE_DATASOURCE` privilege on the global scope, who can grant the global data source to any graph.
+* A user with `WRITE_DATASOURCE` privilege on a graph can only create local data sources on that graph.
+The local data sources cannot be accessed by other graphs.
 
 The following are examples of permitted `DATA_SOURCE` operations.
 
@@ -146,7 +147,7 @@ Data Source:
 
 === 2. Create a loading job
 
-The S3 Loader uses the same basic xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[CREATE LOADING JOB] syntax used for standard GSQL loading jobs.
+The S3 Loader uses the same basic xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[`CREATE LOADING JOB`] syntax used for standard GSQL loading jobs.
 A `DEFINE FILENAME` statement should be used to assign a loader `FILENAME` variable to a S3 data source name and the path to its config file.
 
 In addition, the filename can be specified in the `RUN LOADING JOB` statement with the USING clause.
@@ -172,8 +173,7 @@ DEFINE FILENAME f1 = "$s1:~/files.config";
 ==== S3 file configuration file
 
 The S3 file configuration file tells the TigerGraph system exactly which Amazon S3 files to read and how to read them.
-Similar to the data source configuration file described above, the contents are in JSON object format.
-An example file is shown below.
+Similar to the data source configuration file described prior, the contents are in JSON object format.
 
 .files.config
 [,typescript]
@@ -188,17 +188,17 @@ It specifies one or more paths on your Amazon S3 bucket.
 Each path is either to an individual file or to a directory.
 If it is a directory, then each file directly under that directory is included.
 You can specify multiple paths by using a comma-separated list.
-An example with multiple paths is show below:
+The following example configuration file contains multiple paths:
 
 .files.config
-[,typescript]
+[.wrap,typescript]
 ----
 {
     "file.uris": "s3://my-bucket1/data1.csv,s3://my-bucket1/data2.csv,s3://my-bucket2/data3.csv"
 }
 ----
 
-Instead of specifying the config file path, you can also directly provide the S3 file configuration as a string argument, as shown below:
+Instead of specifying the config file path, you can also directly provide the S3 file configuration as a string argument:
 
 [,gsql]
 ----
@@ -206,13 +206,13 @@ DEFINE FILENAME f1 = "$s1:~/files.config";
 DEFINE FILENAME f1 = "$s1:{\"file.uris\":\"s3://my-bucket/data.csv\"}";
 ----
 
-==== Configure how to read S3 file
+==== Configure s3 file loader
 
 Besides the required `file.uris` key, you can further configure the S3 loader.
-A sample full configuration is shown below:
+
+The following is a sample full configuration file:
 
 .files.config
-
 [,typescript]
 ----
 {
@@ -274,7 +274,7 @@ However, the file reader only supports gzip files containing tar files. Standard
 The S3 Loader uses the same xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[`RUN LOADING JOB`] statement that is used for GSQL loading from files.
 Each filename variable can be assigned a string `<datasource_variable>:<filepath>`, which overrides the value defined in the loading job.
 
-In the example below, the config files for f2 and f3 are being set by the `RUN LOADING JOB` command, whereas f1 is using the config which was specified in the `CREATE LOADING JOB` statement.
+In the following example, the config files for f2 and f3 are being set by the `RUN LOADING JOB` command, whereas f1 is using the config which was specified in the `CREATE LOADING JOB` statement.
 
 [,gsql]
 ----
@@ -297,7 +297,7 @@ The default mode is *streaming* mode.
 
 To use *EOF* mode, add `EOF="true"`  to the `RUN LOADING JOB` command:
 
-[,ebnf]
+[.wrap,ebnf]
 ----
 RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
    [ USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
