@@ -16,8 +16,8 @@ video::sfe3Q37oWJQ[youtube,800,600]
 
 Before you can install the TigerGraph system, you need the following:
 
-* One or more machines that meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_].
-* A sudo user with the same username and login credential on every machine.
+* One or more machines that meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_]
+* A sudo user with the same username and login credential on every machine
  ** If sudo privilege is not available, please contact TigerGraph support for workarounds.
 * A license key provided by TigerGraph (not applicable to Enterprise Free)
 * A TigerGraph system package
@@ -26,16 +26,17 @@ Before you can install the TigerGraph system, you need the following:
 
 == *Installation*
 
-TigerGraph's installation script support both single-node and cluster installation, and the user can choose to install either interactively and non-interactively.
+TigerGraph's installation script supports both single-node and cluster installation, and the user can choose to install interactively or non-interactively.
 
 === Interactive installation
 
-The following describes the procedure to install TigerGraph on Linux interactively. The filename of your package may vary, depending on the product edition and version. For the examples here, we use the filename `tigergraph-<version>.tar.gz`, which should be replaced by the actual filename of your package.
+Interactive installation allows the user to choose a username and installation file paths besides the defaults.
+The filename of your package may vary depending on the product edition and version.
+For the examples here, we use the filename `tigergraph-<version>.tar.gz`, which should be replaced by the actual filename of your package.
 
 ==== *Step 1*: Extract the package
 
-Extract the package by running the following command.
-A folder named `tigergraph-<version>-offline` will be created.
+Extract the package by running the following command to create a folder named `tigergraph-<version>-offline`.
 
 [,console]
 ----
@@ -46,7 +47,7 @@ $ tar -xzf tigergraph-<version>.tar.gz
 [#_step_2_run_installation_script]
 ==== *Step 2*:  Run installation script
 
-Navigate to the `tigergraph-<version>-offline` folder and run script `install.sh`  with the following commands:
+Navigate to the `tigergraph-<version>-offline` folder and run the `install.sh` script with the following commands:
 
 .Run the installation script
 [source,console]
@@ -60,12 +61,14 @@ $ sudo ./install.sh
 ----
 
 
-The installer will ask for the following information, for which you may choose to hit Enter to skip and use the system default or enter a new value:
+The installer will ask for the following information. You may choose to hit Enter to skip and use the system default or enter a new value:
 
 * Your agreement to the License Terms and Conditions
 * Your license key (not applicable for Enterprise Free)
 * Username for the Linux user who will own and manage the TigerGraph platform
- ** The installer creates a Linux user who is the only authorized user that can run `gadmin` commands to manage the TigerGraph Platform, and for whom this username is for
+ ** The installer creates a Linux user with this username who is the only authorized user that can run `gadmin` commands to manage the TigerGraph Platform.
+ ** If the installation and data folders are modified from their defaults, the newly created user must have appropriate permissions for these folders.
+    The installation folder requires read/write/execute access, and the other folders require read/write access.
 * Password for the Linux user who will own and manage the TigerGraph platform
 * Path to where the installation folder will be
 * Path to where the data folder will be
@@ -73,10 +76,10 @@ The installer will ask for the following information, for which you may choose t
 * Path to where the temp folder will be
 * The SSH port for your machine
 
-To see what the default settings are, read the <<_installation_options>> section below.
+See the <<_installation_options>> section below for the default settings.
 
-WARNING: Since license keys are long -- over 100 characters long. If you copy-and-paste the license key, be careful not to accidentally include an end-of-line character.
-
+[WARNING]
+License keys are long -- over 100 characters long. If you copy-and-paste the license key, be careful not to accidentally include an end-of-line character.
 
 ==== *Step 3*: Configure cluster settings
 
@@ -94,7 +97,7 @@ TigerGraph cluster configuration enables the graph database to be partitioned an
 NOTE: In TigerGraph 3.x, the installation machine can be within or outside the cluster. If outside the cluster, the installation machine still needs to be a Linux machine.
 
 
-After all the questions are answered, the script will proceed to installation. A screenshot of the interactive installation is shown below:
+After all the questions are answered, the script will proceed to installation as shown in this screenshot:
 
 image::image (76).png[]
 
@@ -115,12 +118,11 @@ image::image (77).png[Status of all components upon successful installation]
 
 === Non-interactive installation
 
-The following describes the procedure to install TigerGraph on Linux non-interactively.
+Non-interactive installation uses TigerGraph defaults for all prompts.
 
 ==== *Step 1*: Extract the package
 
-Extract the package by running the following command.A folder named `tigergraph-<version>-offline` will be created.
-
+Extract the package by running the following command to create a folder named `tigergraph-<version>-offline`.
 
 .Extract for version X.Y.Z
 [,console]
@@ -132,9 +134,11 @@ $ tar -xzf tigergraph-<version>.tar.gz
 [#_step_2_configure_installation_settings]
 ==== Step 2: Configure installation settings
 
-Navigate to the `tigergraph-<version>-offline` folder.Inside the folder, there is a file named `install_conf.json`.For non-interactive mode installation, the user must review and modify all the settings in the file _**_`install_conf.json` before running the installer.
+Navigate to the `tigergraph-<version>-offline` folder.
+Inside the folder, there is a file named `install_conf.json`.
+For non-interactive mode installation, the user must review and modify all the settings in the file `install_conf.json` before running the installer.
 
-Below is an example of the `install_conf.json` file:
+Here is an example `install_conf.json` file:
 
 [,javascript]
 ----
@@ -192,13 +196,18 @@ Here is a description of all the fields in the config file:
  ** `"ClusterConfig"`: Cluster configurations
   *** `"LoginConfig"`: Login configurations
    **** `"SudoUser"`: Username of the sudo user who will be used to execute the installation on all nodes.
-   **** `"Method"`: Authentication method for SSH. Enter `"P"` to use password authentication and `"K"` to use key-based authentication.
-If you use key-based authentication, the sudo user you are providing must have password-less root privileges on all nodes in the cluster.
+   **** `"Method"`: Authentication method for SSH.
+Enter `"P"` to use password authentication and `"K"` to use key-based authentication.
+If you use key-based authentication, the sudo user you are providing must have password-less sudo access on all nodes in the cluster.
    **** `"P"`: Password of the sudo user.
    **** `"K"`: Absolute path to the SSH key to be used to authenticate the sudo user.
   *** `"ReplicationFactor"`: xref:intro:continuous-availability-overview.adoc#_continuous_availability__definitions[Replication factor] of the cluster.
    **** If you would like to enable the High Availability (HA) feature, please make sure you have at least 3 nodes in the cluster and set the replication factor to be greater than 1. For example, if your cluster has 6 nodes, you could set the replication factor to be 2 or 3. If you set the replication factor to be 2, then the partitioning factor will be  6 / 2 = 3.  Therefore, 3 nodes will be used for one copy of the data, and the other 3 nodes will be used as a replica copy of the data.
    **** Ensure that the total number of nodes can be fully divided by the replication factor.  Otherwise, some nodes may not be utilized as parts of the HA cluster.
+
+[WARNING]
+If you alter the `RootDir` folder paths, make sure the new user created to manage the platform has the appropriate permissions.
+The user needs read/write/execute permissions on `AppRoot` and read/write permissions on the other folders at a minimum.
 
 ==== Step 3: Run install script with `-n` option
 
