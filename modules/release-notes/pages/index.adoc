@@ -6,6 +6,33 @@ TigerGraph Server 3.5.0 was released on Feb 8th, 2022.
 
 NOTE: TigerGraph Server 3.5.0 is available on xref:cloud:release-notes:release-notes.adoc[TigerGraph Cloud].
 
+== Patch releases
+
+=== 3.5.1
+
+TigerGraph 3.5.1 was released on March 31st, 2022.
+
+Issues fixed:
+
+* Fixed an issue that caused GraphStudio to issue too many expensive requests if the user stays on the Load Data page.
+* Fixed an issue that in rare cases prevented the Graph Processing Engine (GPE) process from restarting after being terminated.
+* Fixed an issue that in rare cases caused data upsert operations to cause queries to time out.
+* Fixed an issue that impacted upsert performance when upserting data to `STRING COMPRESS` data type.
+* Fixed an issue that in rare cases prevented a TigerGraph cluster from recovering from a Kafka failure.
+* Resolved SQL injection risks in GraphStudio.
+* Added a warning when a query written in syntax V2 uses the xref:gsql-ref:querying:select-statement/index.adoc#_sample_clause[`SAMPLE` clause] of a `SELECT` statement.
+* Fixed an issue that impacted performance when a query writes results to a file.
+* Fixed an issue that prevented loading jobs from loading data from other disks in a file system.
+* Fixed an issue that in some cases prevented GraphStudio from displaying the entire query if the query is too long.
+
+Improvements:
+
+* Added support for generic vertices in xref:gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT INTO <edge_type>` statements].
+
+'''
+
+The rest of this page provides the 3.5.0 release notes.
+
 == New Features
 
 Below is a list of new features and improvements in TigerGraph 3.5.0:
@@ -44,7 +71,6 @@ See xref:gsql-ref:querying:syntax-versions.adoc[] for a summary of the differenc
 * Added support for multiple `POST-ACCUM` clauses in `SELECT` statements in syntax V1.
 * Added 10 methods to xref:gsql-ref:querying:accumulators.adoc#_bitwiseandaccum_bitwiseoraccum[`BitwiseAndAccum` and `BitwiseOrAccum`] and increased their length limit.
 
-
 === GraphStudio Enhancement
 * Added pagination support to AdminPortal metric charts.
 
@@ -53,10 +79,9 @@ See xref:gsql-ref:querying:syntax-versions.adoc[] for a summary of the differenc
 * Added xref:API:built-in-endpoints.adoc#_check_query_installation_status[`GET /gsql/queries/install/\{request_id}` endpoint] to check the status of query installation requests.
 
 
+[#_fixed_issues]
 == Fixed issues
-
-=== Fixed in 3.5.0
-* Fixed an issue where the installer does not check `AllowerUser` on all nodes for installation on OEL8.
+* Fixed an issue where the installer did not check `AllowerUser` on all nodes for installation on OEL8.
 * Fixed an issue that in rare cases led to GPE crash when the database is empty.
 * Fixed an issue that caused large parallel loading to trigger race conditions.
 * Fixed an issue that threw out-of-range errors when a 64-bit `BitwiseAccum` flips all bits with its `flip()` method.
