@@ -129,8 +129,21 @@ At the bottom of the SSO page are a list of security options you can configure f
 * Require Identity Provider to sign link:https://en.wikipedia.org/wiki/SAML_metadata[metadata]
 * link:https://en.wikipedia.org/wiki/Digital_Signature_Algorithm[Signature algorithm]
 * link:http://docs.oasis-open.org/security/saml/v2.0/saml-authn-context-2.0-os.pdf[Authentication context]
-** An attribute that defines how a user should log in.
+** An attribute that defines how a user must log in.
+This is an optional configuration.
+You can leave it blank if you do not want to restrict how users must log in or if you are not sure what value to provide for this field.
 ** Example value: `urn:oasis:names:tc:SAML:2.0:ac:classes:Password`
+
+[WARNING]
+====
+Known issue: Authentication context is a required field in Admin Portal.
+To set this configuration to blank, log in to the server as the TigerGraph Linux user and run the following command:
+
+[,console]
+----
+$ gadmin config set Security.SSO.SAML.RequestedAuthnContext ""
+----
+====
 
 It is recommended that you enable as many of the options as possible for maximum security.
 However, some identity providers do not support enabling certain options at the same time.
