@@ -118,14 +118,13 @@ After being set up, the DR cluster will be read-only and all data update operati
 
 == *Fail over to the DR cluster*
 
-In the event of catastrophic failure that has impacted the full cluster due to Data Center or Region failure, the user can initiate the failover to the DR cluster. This is a manual process. Users will have to make the following configuration changes on the DR cluster to upgrade it to the primary cluster.
+In the event of catastrophic failure that has impacted the full cluster due to Data Center or Region failure, the user can initiate the failover to the DR cluster.
+This is a manual process.
+Users will have to make the following configuration changes on the DR cluster to upgrade it to the primary cluster.
 
 [source,console]
 ----
 gadmin config set System.CrossRegionReplication.Enabled false
-gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs
-gadmin config set System.CrossRegionReplication.PrimaryKafkaPort
-gadmin config set System.CrossRegionReplication.TopicPrefix Primary
 gadmin config apply -y
 gadmin restart -y
 ----
