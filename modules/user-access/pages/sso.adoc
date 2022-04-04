@@ -92,7 +92,24 @@ However, you may choose to only sign one of them, but you need to match this wit
 . Under "Set up <Application name>", Azure AD provides a login URL, an Azure AD identifier, and a logout URL.
 These items are used in the next steps to configure single sign-on in TigerGraph.
 
+=== PingFederate
+
+==== Prerequisites
+* You have a running PingFederate server with the https://docs.pingidentity.com/bundle/pingfederate-110/page/rnm1564002959599.html[required ports] available.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/uwm1564002973007.html[created users within PingFederate] for those who are using PingFederate to sign on to TigerGraph.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/uci1564002984974.html/#qnu1585865179023[created and exported a certificate] from on PingFederate.
+** The certificate's common name must be the IP of your PingFederate server.
+* You have created a Password Credential Validator (PCV) instance.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/nxg1564002998160.html[created an HTML Form IdP Adaptor instance] and https://docs.pingidentity.com/bundle/pingfederate-110/page/rpb1564002998288.html[configured] the adaptor instance to use your PCV.
+
+==== Procedure
+. 
+
+
+
 :sectnums:
+
+
 
 == Enable single sign-on in TigerGraph
 
