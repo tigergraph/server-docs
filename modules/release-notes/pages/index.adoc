@@ -4,7 +4,6 @@
 
 TigerGraph Server 3.5.0 was released on Feb 8th, 2022.
 
-NOTE: TigerGraph Server 3.5.0 is available on xref:cloud:release-notes:release-notes.adoc[TigerGraph Cloud].
 
 == Patch releases
 
@@ -12,15 +11,19 @@ NOTE: TigerGraph Server 3.5.0 is available on xref:cloud:release-notes:release-n
 
 TigerGraph 3.5.1 was released on March 31st, 2022.
 
+NOTE: TigerGraph Server 3.5.1 is available on TigerGraph Cloud.
+
 Issues fixed:
 
+* Resolved https://nvd.nist.gov/vuln/detail/CVE-2022-23302[CVE-2022-23302] and https://nvd.nist.gov/vuln/detail/CVE-2022-23305[CVE-2022-23305] by removing JDBCappender and JMSsink classes from ZK and Kafka log4j jar.
 * Fixed an issue that caused GraphStudio to issue too many expensive requests if the user stays on the Load Data page.
 * Fixed an issue that in rare cases prevented the Graph Processing Engine (GPE) process from restarting after being terminated.
 * Fixed an issue that in rare cases caused data upsert operations to cause queries to time out.
 * Fixed an issue that impacted upsert performance when upserting data to `STRING COMPRESS` data type.
 * Fixed an issue that in rare cases prevented a TigerGraph cluster from recovering from a Kafka failure.
 * Resolved SQL injection risks in GraphStudio.
-* Added a warning when a query written in syntax V2 uses the xref:gsql-ref:querying:select-statement/index.adoc#_sample_clause[`SAMPLE` clause] of a `SELECT` statement.
+* Added an error message when a query written in syntax V2 uses the xref:gsql-ref:querying:select-statement/index.adoc#_sample_clause[`SAMPLE` clause] of a `SELECT` statement.
+`SAMPLE` clauses are currently not supported in syntax V2.
 * Fixed an issue that impacted performance when a query writes results to a file.
 * Fixed an issue that prevented loading jobs from loading data from other disks in a file system.
 * Fixed an issue that in some cases prevented GraphStudio from displaying the entire query if the query is too long.
