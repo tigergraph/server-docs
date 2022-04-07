@@ -49,8 +49,7 @@ This endpoint performs a simple server health check. It listens on port 14240 an
 
 [source,bash]
 ----
-$ curl 'http://localhost:14240/api/ping'
-​
+curl 'http://localhost:14240/api/ping'
 {
   "error": "false",
   "message": "pong",
@@ -139,7 +138,7 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
 
 `GET /version`
 
-This endpoint returns the GIT versions of all components of the system.
+This endpoint returns the Git versions of all components of the system.
 
 [tabs]
 ====
@@ -252,7 +251,7 @@ Request::
 --
 [source,bash]
 ----
-$ curl -X GET
+curl -X GET
 "https://crunch.i.tgcloud.io:14240/ts3/api/datapoints?from=1618957536&to=1619023346&what=cpu"
 ----
 --
@@ -298,8 +297,7 @@ Request::
 --
 [source,bash]
 ----
-$ curl -X GET
-"https://crunch.i.tgcloud.io:14240/ts3/api/datapoints?what=mem&latest=10"
+curl -X GET "https://crunch.i.tgcloud.io:14240/ts3/api/datapoints?what=mem&latest=10"
 ----
 --
 Response::
@@ -584,7 +582,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-$ curl -X POST http://localhost:14240/informant/current-service-status -d '{ "ServiceDescriptors":  [{ "ServiceName": "gpe","Partition": 2, "Replica": 1}]}' | jq
+curl -X POST http://localhost:14240/informant/current-service-status -d '{ "ServiceDescriptors":  [{ "ServiceName": "gpe","Partition": 2, "Replica": 1}]}' | jq
 ----
 --
 Response::
@@ -658,7 +656,7 @@ segments will not be skipped.
 
 [source,console]
 ----
-$ curl -X GET 'http://localhost:9000/rebuildnow/social'
+curl -X GET 'http://localhost:9000/rebuildnow/social'
 
 # JSON response
 {
@@ -674,7 +672,7 @@ $ curl -X GET 'http://localhost:9000/rebuildnow/social'
 }
 
 # Example summary file
-$ cat finished.summary.txt
+cat finished.summary.txt
 
 [SELECTED]	Segment id: 106, vertextype: 0, vertexsubtypeid: 0, vertexcount: 187732, edgecount: 563196, deletevertexcount: 0, postqueue_pos: 16344, transaction id: 16344, rebuild ts: 1573106412990
 [SKIPPED]	Segment id: 6, vertextype: 0, vertexsubtypeid: 0, vertexcount: 85732, edgecount: 3106, deletevertexcount: 0, postqueue_pos: 16344, transaction id: 16344, rebuild ts: 1573106412900
@@ -737,7 +735,7 @@ logs on the obtained deleted ID list
 [source,bash]
 ----
 # Passing check performed on a single-node database
-$ curl -X GET "http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0" |jq .
+curl -X GET "http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0" |jq .
 
 {
   "version": {
@@ -759,7 +757,7 @@ $ curl -X GET "http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0
 
 # Failed check performed on a distributed cluster
 
-$ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0&vertextype=region' |jq .
+curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0&vertextype=region' |jq .
 {
   "version": {
     "edition": "enterprise",
@@ -953,7 +951,7 @@ With secret::
 --
 [source,console]
 ----
-$ curl -X PUT http://localhost:9000/requesttoken \
+curl -X PUT http://localhost:9000/requesttoken \
      -d '{"secret": "jiokmfqqfu2f95qs6ug85o89rpkneib3", "token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq", "lifetime": "15000"}'
 ----
 --
@@ -962,7 +960,7 @@ With username-password pair::
 --
 [source,console]
 ----
-$ curl --user example_username:example_password \
+curl --user example_username:example_password \
      -X PUT http://localhost:9000/requesttoken \
      -d '{"token": "tohvf6khjqju8jf0r0l1cohhlm8gi5fq", "lifetime": "15000"}'
 ----
@@ -1093,8 +1091,7 @@ CREATE LOADING JOB load_data for GRAPH poc_graph {
 }
 
 # Provide data for for the second LOAD statement
-curl -X POST --data-binary @./another_company.csv \
-"http://localhost:9000/ddl/poc_graph?tag=load_data&filename=__GSQL_FILENAME_0__" | jq
+curl -X POST --data-binary @./another_company.csv "http://localhost:9000/ddl/poc_graph?tag=load_data&filename=__GSQL_FILENAME_0__" | jq
 
 {
   "version": {
@@ -1135,12 +1132,10 @@ curl -X POST --data-binary @./another_company.csv \
 }
 
 # Provide data for filename f1 for the first LOAD statement
-curl -X POST --data-binary @./person.csv \
-"http://localhost:9000/ddl/poc_graph?tag=load_data&filename=f1"
+curl -X POST --data-binary @./person.csv  "http://localhost:9000/ddl/poc_graph?tag=load_data&filename=f1"
 
 # Provide data for filename f3 for the third LOAD statement
-curl -X POST --data-binary @./work_at.csv \
-"http://localhost:9000/ddl/poc_graph?tag=load_data&filename=f3"
+curl -X POST --data-binary @./work_at.csv "http://localhost:9000/ddl/poc_graph?tag=load_data&filename=f3"
 ----
 
 ==== Parameters:
@@ -1347,7 +1342,7 @@ Authentication credentials need to be provided.
 
 [source,bash]
 ----
-$ curl -u tigergraph:tigergraph \
+curl -u tigergraph:tigergraph \
 "localhost:14240/gsqlserver/gsql/schema?graph=workNet&type=company"
 
 {
@@ -1493,7 +1488,7 @@ Request::
 --
 [source,console]
 ----
-$ curl --data-binary @vertices.json http://localhost:9000/graph/social
+curl --data-binary @vertices.json http://localhost:9000/graph/social
 ----
 --
 Request body::
@@ -1529,7 +1524,7 @@ If you add the `gsql-atomic-level` header to the request URL and set its value t
 [source,console]
 ----
 # This is an atomic request
-$ curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
+curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
 ----
 
 ==== Parameters
@@ -1780,8 +1775,7 @@ The following example submits an upsert request by using the payload data stored
 
 [source,bash]
 ----
-$ curl -X POST --data-binary @add_id6.json \
-"http://localhost:9000/graph"
+curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph"
 
 {"accepted_vertices":1,"accepted_edges":2}
 ----
@@ -1791,8 +1785,7 @@ Therefore, inserting the content of `add_id6.json` to an empty graph would cause
 
 [source,bash]
 ----
-$ curl -X POST --data-binary @add_id6.json \
-"http://localhost:9000/graph?vertex_must_exist=true"
+curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph?vertex_must_exist=true"
 
 {
   "version": {
@@ -2460,7 +2453,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-$ curl -X DELETE "https://crunch.i.tgcloud.io:9000/graph/CrunchBasePre_2013/edges/person/p:23601/work_for_company/company/c:14478"
+curl -X DELETE "https://crunch.i.tgcloud.io:9000/graph/CrunchBasePre_2013/edges/person/p:23601/work_for_company/company/c:14478"
 ----
 --
 Response::
@@ -2513,7 +2506,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-$ curl -u tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/queryinfo?graph=workNet&query=to_vertex_setTest"
+curl -u tigergraph:tigergraph -X GET "http://localhost:14240/gsqlserver/gsql/queryinfo?graph=workNet&query=to_vertex_setTest"
 ----
 --
 Response::
@@ -2809,6 +2802,24 @@ curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom
 
 Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON format. This is especially helpful when the query takes complex parameters.
 
+==== Format of file in JSON format
+
+[source]
+----
+{
+    "parameter_1":"value_1",
+    "parameter_2":"value_2"
+}
+----
+
+==== Format of POST request
+
+[source.wrap, bash]
+----
+curl -X POST --data-binary @./<sample_file> "http://localhost:9000/query/<sample_graph>/<sample_query>"
+----
+
+
 ==== Parameters
 
 |===
@@ -2821,7 +2832,8 @@ Users can also run queries through a `POST` request, which allows them to pass q
 
 ==== Query parameter Passing
 
-When using a `POST` request to run an installed query, the query parameters are passed in through the request body and xref:API:index.adoc#_formatting_data_in_json[encoded in JSON format]. The formatting rules for the JSON payload is the same as xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
+When using a `POST` request to run an installed query, the query parameters are passed in through the request body and xref:API:index.adoc#_formatting_data_in_json[encoded in JSON format].
+The formatting rules for the JSON payload are the same as xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
 
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
@@ -3044,7 +3056,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-$ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&requestid=4.RESTPP_1_1.1599672031541.N"
+curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&requestid=4.RESTPP_1_1.1599672031541.N"
 ----
 --
 Response::
@@ -3135,7 +3147,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-$ curl -s -X GET curl -s -X GET "http://localhost:9000/query_result?requestid=196611.RESTPP_1_1.1630601692834.N"
+curl -s -X GET curl -s -X GET "http://localhost:9000/query_result?requestid=196611.RESTPP_1_1.1630601692834.N"
 ----
 --
 Response::
