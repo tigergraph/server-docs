@@ -10,6 +10,7 @@ We have verified the following IDPs that support SAML 2.0 protocol:
 * https://www.okta.com/[Okta]
 * https://auth0.com/[Auth0]
 * https://docs.microsoft.com/en-us/azure/active-directory/[Azure Active Directory (Azure AD)]
+* https://docs.pingidentity.com/bundle/pingfederate-110/page/ikr1564002999528.html[PingFederate]
 
 For supporting additional IDPs, please contact sales@tigergraph.com and submit a feature request.
 
@@ -91,6 +92,58 @@ Click btn:[Save] and download certificate (base64).
 However, you may choose to only sign one of them, but you need to match this with your SSO settings in TigerGraph.
 . Under "Set up <Application name>", Azure AD provides a login URL, an Azure AD identifier, and a logout URL.
 These items are used in the next steps to configure single sign-on in TigerGraph.
+
+=== PingFederate
+
+==== Prerequisites
+* You have a running PingFederate server with the https://docs.pingidentity.com/bundle/pingfederate-110/page/rnm1564002959599.html[required ports] available.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/uwm1564002973007.html[created users within PingFederate] for those who are using PingFederate to sign on to TigerGraph.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/uci1564002984974.html/#qnu1585865179023[created and exported a certificate] from on PingFederate.
+** The certificate's common name must be the IP of your PingFederate server.
+* You have created a Password Credential Validator (PCV) instance.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/nxg1564002998160.html[created an HTML Form IdP Adaptor instance] and https://docs.pingidentity.com/bundle/pingfederate-110/page/rpb1564002998288.html[configured] the adaptor instance to use your PCV.
+
+==== Procedure
+Go to the btn:[APPLICATIONS] page in PingFederate, open menu:Integration[ SP Connections], then click btn:[Create Connection] to add a Service Provider (SP) connection to TigerGraph.
+Follow the instructions in the product and enter the additional information as required.
+There are many configuration options available in PingFederate.
+This guide provides an example setup.
+To learn about each of the available options, see https://docs.pingidentity.com/bundle/pingfederate-110/page/ikr1564002999528.html[SP Connection Management].
+
+. In this guide, we do not use a connection template for this SP connection.
+. Choose the Browser SSO Profiles connection type on the btn:[Connection Type] page.
+. Check the Browser SSO option on the btn:[Connection Options] page and choose the SAML 2.0 protocol.
+. Skip the btn:[Import Metadata] step.
+. For btn:[General Info], choose a name to name your connection.
+Refer to the following for Partner's Entity ID and Base URL:
+* Partner's Entity ID (Connection ID): `\http://<tigergraph-machine-hostname>:14240/gsqlserver/gsql/saml/meta`
+* Base URL:
+`\http://<tigergraph-machine-hostname>:14240`
+. Click btn:[Configure Browser SSO] on the Browser SSO page to configure browser SSO.
+* Check btn:[IdP-Initiated SSO] and btn:[SP-Initiated SSO] on the btn:[SAML Profiles] page.
+* Choose btn:[Standard Identity Mapping] option for configuring assertion creation.
+** Change the Subject Name Format for the SAML_SUBJECT field to `urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified` or `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`
+** In btn:[Authentication Source Mapping], click btn:[Map New Adaptor Instance] and choose an adaptor instance.
+Follow the in-product instructions to finish configuring the adaptor instance.
+* Configure btn:[Protocol Settings].
+** For menu:Protocol Settings[Assertion Consumer Service URL], set Binding to "POST".
+For Endpoint URL, fill in `\http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`.
+** For btn:[Allowable SAML Bindings], check `POST` and `REDIRECT`.
+** Configure signature policy and encryption policy tp suit your needs.
+. Configure credentials.
+On the btn:[Credentials] page, click btn:[Configure Credentials], and choose a certificate to be the signing certificate.
+This must be the same certificate that you upload to TigerGraph later.
+. Verify the details of your SP connection and click btn:[Save].
+
+After setting up the SP connection, return to the btn:[SP Connections] page, find the connection and click menu:Action[Export Metadata].
+The exported XML file provides the information you need to configure single sign-on in TigerGraph.
+
+* IDP's SSO URL: `Location attribute` of the md:SingleSignOnService` element in the XML file.
+* Entity ID: `entityID` attribute of the `md:EntityDescriptor` element field in the XML file.
+* Identity Provider’s X509 certificate: `ds:X509Certificate` element in the XML file.
+You can also export the certificate directly in PingFederate.
+* Authentication context: `md:NameIDFormat` element in the XML file.
+
 
 :sectnums:
 
