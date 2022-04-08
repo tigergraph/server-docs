@@ -31,7 +31,7 @@ The default namespace is `default`, and the default image is the official docker
 No need to edit the files if no changes are needed.
 
 Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment.
-A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-aks.yaml` in the directory.
+A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-aks-default.yaml` in the directory.
 
 [source,console]
 ----
@@ -43,7 +43,7 @@ Run `kubectl apply` to create the deployment using the manifest you generated in
 
 [source,console]
 ----
-kubectl apply -f deploy/tigergraph-aks.yaml
+kubectl apply -f deploy/tigergraph-aks-default.yaml
 ----
 
 === Verify single server
@@ -98,7 +98,7 @@ If you don't specify a namespace, the command will delete the resources in the n
 
 [source,console]
 ----
-$ ./tg gke delete -n <namespace_name>
+$ ./tg aks delete -n <namespace_name>
 ----
 
 
@@ -138,7 +138,7 @@ Run `kubectl apply` to create the deployment
 
 [source,console]
 ----
-$ kubectl apply -f ./deploy/tigergraph-aks.yaml
+$ kubectl apply -f ./deploy/tigergraph-aks-default.yaml
 ----
 
 === Verify cluster
@@ -194,6 +194,6 @@ If you don't specify a namespace, the command will delete the resources in the n
 
 [source,console]
 ----
-$ ./tg gke delete -n <namespace_name>
+$ ./tg aks delete -n <namespace_name>
 ----
 

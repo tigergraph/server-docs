@@ -27,7 +27,7 @@ This section describes the steps to deploy, verify, and remove a single-server d
 Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment.
 You can use the `--prefix` option to specify a prefix for your pods.
 The default prefix is `tigergraph`.
-A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-gke.yaml` in the directory.
+A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-eks-default.yaml` in the directory.
 
 [source,console]
 ----
@@ -38,7 +38,7 @@ A `deploy` directory will be created automatically, and you should find the mani
 
 [source,console]
 ----
-kubectl apply -f deploy/tigergraph-eks.yaml
+kubectl apply -f deploy/tigergraph-eks-default.yaml
 ----
 
 === Verify single server
@@ -92,7 +92,7 @@ If you don't specify a namespace, the command will delete the resources in the n
 
 [source,console]
 ----
-$ ./tg gke delete -n <namespace_name>
+$ ./tg eks delete -n <namespace_name>
 ----
 
 
@@ -131,7 +131,7 @@ Run `kubectl apply` to create the deployment
 
 [source,console]
 ----
-$ kubectl apply -f ./deploy/tigergraph-eks.yaml
+$ kubectl apply -f ./deploy/tigergraph-eks-default.yaml
 ----
 
 === Verify cluster
@@ -187,5 +187,5 @@ If you don't specify a namespace, the command will delete the resources in the n
 
 [source,console]
 ----
-$ ./tg gke delete -n <namespace_name>
+$ ./tg eks delete -n <namespace_name>
 ----

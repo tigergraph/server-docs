@@ -31,7 +31,7 @@ The default namespace is `default`. No need to edit the files if no changes are 
 Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment.
 You can use the `--prefix` option to specify a prefix for your pods.
 The default prefix is `tigergraph`.
-A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-gke.yaml` in the directory.
+A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-gke-default.yaml` in the directory.
 
 [source,console]
 ----
@@ -42,7 +42,7 @@ $ ./tg gke kustomize -s 1
 
 [source,console]
 ----
-$ kubectl apply -f deploy/tigergraph-gke.yaml
+$ kubectl apply -f deploy/tigergraph-gke-default.yaml
 ----
 
 === Verify single server
@@ -137,7 +137,7 @@ Run `kubectl apply` to create the deployment
 
 [source,text]
 ----
-$ kubectl apply -f ./deploy/tigergraph-gke.yaml
+$ kubectl apply -f ./deploy/tigergraph-gke-default.yaml
 ----
 
 === Verify cluster
