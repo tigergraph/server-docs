@@ -6,7 +6,7 @@ TigerGraph to TigerGraph {page-component-version}.
 == Before you begin
 If you are upgrading from a version older than 3.2:
 
-* xref:backup-and-restore:index.adoc[Use GBAR to perform a backup *and restore*] on your existing installation.
+* First perform a backup *and a restore* xref:backup-and-restore:index.adoc[using GBAR (Graph Backup and Restore)] on your existing installation.
 This step is necessary because TigerGraph 3.2 made major changes to the Graph Storage Engine and a restore is needed to remove certain files that would make the upgrade operation fail.
 * After restoring the backup, ensure that there are no vertex inserts or deletions before starting the upgrade.
 
@@ -17,34 +17,33 @@ This step is necessary because TigerGraph 3.2 made major changes to the Graph St
 Any 3.x version of TigerGraph can be upgraded to another v3.x version by
 running the installation script with the upgrade(`+-U+`) flag.
 
-[arabic]
 . Download the latest version of TigerGraph to your system.
-. Extract the tarball.
+. Extract the tar file.
 . Run the installation script under the Linux user created during
 installation with the upgrade flag (`+-U+`) that was extracted from the
-tarball:
+tar file:
 
 ....
 $ ./install.sh -U
 ....
 
+[NOTE]
+Please upgrade from the most recent patch version in any minor release.
+If you are upgrading from a version that does not have the most recent patches applied to its minor version, upgrade to the most recent patches first before upgrading to another minor or major version.
+For example, if you are upgrading from 3.1.3 to 3.5, upgrade to 3.1.6 first using the installation script and then upgrade to 3.5.
+
 [[upgrading-from-v2x]]
 == Upgrading from v2.x
 
-Please contact TigerGraph Support to coordinate migration to TigerGraph
-{page-component-version} version if you are currently using a v2.x version of TigerGraph.
-Even though all the steps for Migration are documented, it is strongly
-recommended that you review the migration process with the TigerGraph
+Please contact TigerGraph Support to coordinate upgrading to TigerGraph version {page-component-version} if you are currently using a 2.x version of TigerGraph.
+Even though all the steps are documented, it is strongly
+recommended that you review the process with the TigerGraph
 Support team.
 
-Migration from versions later than 2.6 is supported. To migrate from
-versions prior to 2.6, users are advised to contact TigerGraph Support
-to check the feasibility of support the range of earlier versions.
+Upgrading the Developer Edition or migrating to another edition are not supported.
 
-Upgrade or migration from the Developer Edition is not supported.
-
-For detailed upgrade procedures, see
-https://tigergraph.freshdesk.com/support/solutions/articles/5000859240-2-x-to-3-0-0-upgrade-flow
+For detailed upgrade procedures, see our support article on the
+link:https://tigergraph.freshdesk.com/support/solutions/articles/5000859240-2-x-to-3-0-0-upgrade-flow[2.6.x to 3.x upgrade flow]
 
 [[upgrading-cloud-marketplace-image]]
 == Upgrading Cloud Marketplace images
