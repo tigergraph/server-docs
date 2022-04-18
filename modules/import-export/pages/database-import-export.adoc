@@ -1,5 +1,5 @@
 = Database Import/Export
-:description: This page details the instructions and requirements of importing and exporting a graph in TigerGraph. 
+:description: This page details the instructions and requirements of importing and exporting a graph in TigerGraph.
 
 
 The GSQL `EXPORT GRAPH` and `IMPORT GRAPH` commands perform a logical backup and restore.
@@ -124,33 +124,33 @@ The security features prevent users from directly unzipping it.
 ====
 
 * A `DBImportExport_<Graph_Name>.gsql` for each graph called `Graph_Name` in a multigraph database that contains a series of GSQL DDL statements that do the following:
- ** Create the exported graph, along with its local vertex, edge, and tuple types,
- ** Create the loading jobs from the exported graphs
- ** Create data source file objects
- ** Create queries
+** Create the exported graph, along with its local vertex, edge, and tuple types,
+** Create the loading jobs from the exported graphs
+** Create data source file objects
+** Create queries
 * A `graph_<Graph_Name>/` folder for each graph in a multigraph database containing data for local vertex/edge types in `<Graph_Name>`.
 For each vertex or edge type called `<type>`, there is one of the following two data files:
- ** `vertex_<type>.csv`
- ** `edge_<type>.csv`
+** `vertex_<type>.csv`
+** `edge_<type>.csv`
 * `global.gsql` - DDL job to create all global vertex and edge types, and data sources.
 * `tuple.gsql` - DDL job to create all User Defined Tuples.
 * Exported data and jobs used to restore the data:
- ** `GlobalTypes/` - folder containing data for global vertex/edge types
-  *** `vertex_name.csv`
-  *** `edge_name.csv`
- ** `run_loading_jobs.gsql` - DDL created by the export command which will be used during import:
-  *** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it has run.
-  *** Loading jobs to load data for global and local vertex/edges.
+** `GlobalTypes/` - folder containing data for global vertex/edge types
+*** `vertex_name.csv`
+*** `edge_name.csv`
+** `run_loading_jobs.gsql` - DDL created by the export command which will be used during import:
+*** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it has run.
+*** Loading jobs to load data for global and local vertex/edges.
 * Database's saved queries, loading jobs, and schema change jobs
- ** `SchemaChangeJob/` -* folder containing DDL for schema change jobs. See section "Schema Change Jobs" for more information
-  *** `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
-  *** `Graph_Name_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `Graph_Name`
+** `SchemaChangeJob/` -* folder containing DDL for schema change jobs. See section "Schema Change Jobs" for more information
+*** `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
+*** `Graph_Name_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `Graph_Name`
 * User-defined functions
 ** `Tokenbank.cpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/TokenBank/TokenBank.cpp`
 ** `ExprFunctions.hpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`
- ** `ExprUtil.hpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
+** `ExprUtil.hpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
 * Users:
- ** `users.gsql` - DDL to create all exported users, import Secrets and Tokens and grant permissions.
+** `users.gsql` - DDL to create all exported users, import Secrets and Tokens and grant permissions.
 * ACL privilege catalog:
 ** `ACLDict/1/ACLPrivilegeCatalog.json`.
 An encrypted file containing the ACL privilege catalog.
@@ -324,3 +324,4 @@ The export file on every node must share the same absolute path.
 Run the `IMPORT GRAPH ALL` command from the server that corresponds to the server where `EXPORT GRAPH ALL` was run.
 
 For example, if you exported from the m2 node in a cluster, you also need to run the `IMPORT GRAPH ALL` command from the m2 node of the cluster you are importing the export files into.
+
