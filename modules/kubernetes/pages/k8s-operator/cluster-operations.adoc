@@ -1,0 +1,61 @@
+= Cluster Operations
+:description: How to create, delete, list, and check the status of a cluster using the TigerGraph Kubernetes Operator.
+
+This page describes the steps to perform the following operations using the TigerGraph Kubernetes Operator.
+
+In Kubernetes, you provision resources such as TigerGraph clusters by creating a Deployment.
+Depending on the context, this document may refer to creating a cluster by creating a Deployment.
+
+[#_create_tigergraph_clusters]
+== Create TigerGraph clusters
+
+To create a TigerGraph cluster, run the following command:
+
+[.wrap,console]
+----
+$ kubectl tg create --cluster-name <cluster_name> --namespace <your_namespace>
+----
+
+If you have cloned TigerGraph images for a self-hosted registry, specify the registry with the `--docker-registry` option:
+
+[.wrap,console]
+----
+$ kubectl tg create --cluster-name <cluster_name> --namespace <your_namespace> --docker-registry <your_registry>
+----
+
+You can specify pod CPU, memory, and TigerGraph version etc. through command-line options.
+Run `kubectl tg help` to view all options available.
+
+If you do not specify the options,
+
+[#_list_tigergraph_clusters]
+== List TigerGraph clusters
+Run the following command to list all running TigerGraph clusters in all namespaces as well as their size:
+
+[.wrap,console]
+----
+$ kubectl tg list --namespace all
+----
+
+If you want to limit the scope to a specific namespace, change `all` to the namespace you want to list clusters for.
+
+[#_check_cluster_status]
+== Check cluster status
+Run the following command to check the status of a cluster.
+Replace `<cluster_name>` with the name of the cluster, and `<your_namespace>` with the name space where the cluster is provisioned::
+
+[.wrap,console]
+----
+$ kubectl tg status --cluster-name <cluster_name> --namespace <your_namespace>
+----
+
+
+[#_delete_tigergraph_clusters]
+== Delete TigerGraph clusters
+Run the following command to delete a cluster.
+Replace `<cluster_name>` with the name of the cluster, and `<your_namespace>` with the name space where the cluster is provisioned:
+
+[.wrap,console]
+----
+$ kubectl tg delete --cluster-name <cluster_name> --namespace <your_namespace>
+----
