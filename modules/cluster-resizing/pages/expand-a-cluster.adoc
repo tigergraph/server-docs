@@ -5,10 +5,11 @@ As your workload changes, you can expand your cluster to improve its query perfo
 Expanding a cluster adds more nodes to the cluster.
 During an expansion, you can also change the replication factor of your cluster.
 
-[NOTE]
-Downtime is required for expansion.
+Cluster expansion requires several minutes of cluster downtime.
+The exact amount of downtime varies depending on the size of your cluster.
 
-[discrete]
+WARNING: If your TigerGraph cluster uses a seeded license, please contact mailto:support@tigergraph[TigerGraph support] to obtain an unseeded temporary license before expanding your cluster.
+
 == Before you begin
 
 * TigerGraph must already be installed on the new nodes as single-node instances in *exactly the same version* as the cluster.
@@ -16,7 +17,7 @@ Downtime is required for expansion.
 * Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the expansion completes.
 * If the original cluster is a single node installation, make sure the IP used is not a https://en.wikipedia.org/wiki/Localhost[local loopback address] such as 127.0.0.1.
 
-[discrete]
+
 == Procedure
 
 === Identify new cluster replication and partition
