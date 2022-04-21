@@ -11,16 +11,14 @@ Shrinking a cluster can make sense for a few reasons:
 Shrinking an operational cluster is different from removing a failed node.
 If a node has failed in your cluster and needs to be removed, see xref:ha:remove-failed-node.adoc[].
 
-[NOTE]
-Downtime is required for shrinking.
+Cluster shrinking requires several minutes of cluster downtime.
+The exact amount of downtime and can vary depending on the size of your cluster.
 
-[discrete]
 == Before you begin
 
 * Ensure that no loading jobs, queries, or REST requests are running on the new node or the cluster.
 * Obtain a few key measures for the state of your data before shrinking, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after shrinking completes.
 
-[discrete]
 == Procedure
 
 === Identify new cluster replication and partition

@@ -6,16 +6,15 @@ You can repartition a cluster to meet the changing needs of your workload. Repar
 You can also change the replication factor when you expand or shrink a cluster. See xref:expand-a-cluster.adoc[Expand a Cluster] and xref:shrink-a-cluster.adoc[Shrink a Cluster].
 
 [NOTE]
-Downtime is required for repartitioning.
+Cluster repartitioning requires several minutes of cluster downtime.
+The exact amount of downtime varies depending on the size of your cluster.
 
-[discrete]
 == Before you begin
 
 
 * Ensure that no loading jobs, queries, or REST requests are running on the cluster.
 * Obtain a few key measures for the state of your data before the repartition, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the repartition completes.
 
-[discrete]
 == Procedure
 
 === Calculate new replication factor
