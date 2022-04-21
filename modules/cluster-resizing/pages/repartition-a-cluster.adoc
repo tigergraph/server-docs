@@ -1,21 +1,28 @@
 = Cluster Repartition
+:sectnums:
 
 You can repartition a cluster to meet the changing needs of your workload. Repartitioning a cluster changes the replication factor and the partitioning factor of your cluster without adding or removing nodes from the cluster.
 
 You can also change the replication factor when you expand or shrink a cluster. See xref:expand-a-cluster.adoc[Expand a Cluster] and xref:shrink-a-cluster.adoc[Shrink a Cluster].
 
+[NOTE]
+Downtime is required for repartitioning.
+
+[discrete]
 == Before you begin
 
-* No loading jobs, queries, or REST requests are running on the cluster. Downtime is required for repartitioning.
+
+* Ensure that no loading jobs, queries, or REST requests are running on the cluster.
 * Obtain a few key measures for the state of your data before the repartition, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the repartition completes.
 
+[discrete]
 == Procedure
 
-=== Step 1: Calculate new replication factor
+=== Calculate new replication factor
 
 To repartition a cluster, calculate the new replication factor for your cluster. You can calculate the replication factor by dividing the total number of nodes in the cluster by the number of partitions you'd like your cluster to have.
 
-=== Step 2: Repartition the cluster
+=== Repartition the cluster
 
 To repartition a cluster, use the `gadmin cluster expand` command like below. Use the `--ha` option to indicate the new replication factor of the cluster. For example, the command below will change the replication factor to 2:
 
@@ -32,6 +39,7 @@ For example, assume you begin with a 5-node cluster with a replication factor of
 Changing the replication factor to 2 without adding new nodes will change the distribution of your cluster to be 2*2, with one node being left idle.
 To avoid nodes being left idle, ensure that you pick a replication factor that can cleanly divide the total number of nodes you have in the cluster.
 
+[discrete]
 ==== Supply a staging location
 
 Extra disk space is required during cluster repartition. If more space is not available on the same disk, you can supply a staging location on a different disk to hold temporary data:
@@ -46,7 +54,7 @@ If you choose to supply a staging location, make sure that the TigerGraph Linux 
 For example, assume you are repartitioning from a 6-node cluster with a replication factor of 2 and a partitioning factor of 3, to a 6-node cluster with a replication factor of 3 and a partitioning factor of 2, and the size of the data root folder on a node is 50GB.
 You would need more than `(1 + Math.ceil(3/2)) * 50) = 150 GB` of free space on the staging path.
 
-=== Step 3: Verify success and delete temporary files
+=== Verify success and delete temporary files
 
 When the repartition completes, you should see a message confirming the completion of the cluster change. The message will also include the location of the temporary files created during the repartition.
 
