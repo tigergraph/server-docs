@@ -1531,11 +1531,15 @@ curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://l
 [width="100%",cols="23%,9%,68%",options="header",]
 |===
 |Name |Required |Description
-|`ack` |No |The value of this parameter can either be `"all"` or
-`"none"`. `"all"`: request will return after all GPE instances have
-acknowledged the POST `"none"`: request will return immediately after
-RESTPP processed the POST.
-Default value is false.
+|`ack` |No a|The value of this parameter can either be `"all"` or
+`"none"`.
+
+* `"all"`: request will return after all GPE instances have
+acknowledged the POST request
+* `"none"`: request will return immediately after
+RESTPP processed the POST request.
+
+Default value is `"none"`.
 
 |`new_vertex_only` |No |If `new_vertex_only` is set to true, the request will only insert new
 vertices and not update existing ones.
