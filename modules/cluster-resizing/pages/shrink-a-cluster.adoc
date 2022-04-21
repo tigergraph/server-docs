@@ -1,23 +1,29 @@
 = Cluster Shrinking
+:sectnums:
+
+Shrinking a cluster removes nodes from the cluster. The data stored on those nodes will be redistributed to the remaining nodes.
 
 Shrinking a cluster can make sense for a few reasons:
 
 * Your workload has changed and you can operate a cluster with fewer resources.
 * Your data volume is lower than projected.
 
-Shrinking a cluster removes nodes from the cluster. The data stored on those nodes will be redistributed to the remaining nodes.
-
 Shrinking an operational cluster is different from removing a failed node.
 If a node has failed in your cluster and needs to be removed, see xref:ha:remove-failed-node.adoc[].
 
+[NOTE]
+Downtime is required for shrinking.
+
+[discrete]
 == Before you begin
 
-* No loading jobs, queries, or REST requests are running on the new node or the cluster.
+* Ensure that no loading jobs, queries, or REST requests are running on the new node or the cluster.
 * Obtain a few key measures for the state of your data before shrinking, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after shrinking completes.
 
+[discrete]
 == Procedure
 
-=== Step 1: Identify new cluster replication and partition
+=== Identify new cluster replication and partition
 
 Before running any commands to shrink a cluster, make sure you have a clear idea of how the new cluster should be distributed. You should have the following information:
 
@@ -25,7 +31,7 @@ Before running any commands to shrink a cluster, make sure you have a clear idea
 * The new partitioning factor of the cluster
 * The names and IP addresses of the nodes to be removed from the cluster
 
-=== Step 2: Shrink the cluster
+=== Shrink the cluster
 
 To shrink the cluster, run the `gadmin cluster shrink` command like below. If the shrinking involves changing the replication factor, use the `--ha <replicattion_factor>` option to indicate the new replication factor:
 
@@ -41,6 +47,7 @@ $ gadmin cluster shrink node_ip_list [--ha <replication_factor>]
 $ gadmin cluster shrink m3:10.128.0.81,m4:10.128.0.82 --ha 1
 ----
 
+[discrete]
 ==== Supply a staging location
 
 Extra disk space is required during cluster shrinking. If more space is not available on the same disk, you can supply a staging location on a different disk to hold temporary data:
@@ -52,15 +59,16 @@ $ gadmin cluster shrink m3:192.168.1.3,m4:192.168.1.4 --stagingPath /tmp/
 
 If you choose to supply a staging location, make sure that the TigerGraph Linux user has write permission to the path you provide. The overall amount of space required for cluster shrinking on each node is `(1 + Math.ceil(oldPartition/newPartition) ) * dataRootSize`. `oldPartition` and `newPartition` each stand for the partitioning factor of the cluster before and after shrinking; `dataRootSize` stands for the size of the data root folder on the node.
 
-For example, if you are shrinking from a 10-node cluster with a replication factor of 2 and a partitioning factor of 5, to a 6-node cluster with a replication factor of 2 and a partitioning factor of 3, and the size of the data root folder on a node is 50GB. Then you would need more than `(1 + Math.ceil(5/3)) * 50) = 150 GB` of free space on the staging path.
+For example, assume you are shrinking from a 10-node cluster with a replication factor of 2 and a partitioning factor of 5, to a 6-node cluster with a replication factor of 2 and a partitioning factor of 3, and the size of the data root folder on a node is 50GB.
+You would need more than `(1 + Math.ceil(5/3)) * 50) = 150 GB` of free space on the staging path.
 
-=== Step 3: Verify success and delete temporary files
+=== Verify success and delete temporary files
 
 When shrinking completes, you should see a message confirming the completion of the cluster change. The message will also include the location of the temporary files created during the operation.
 
 Verify data integrity by comparing vertex/edge counts or query results to what they were before the shrinking. After confirming a successful cluster contraction, delete the temporary files to free up disk space.
 
-=== Step 4: Uninstall TigerGraph on the removed nodes
+=== Uninstall TigerGraph on the removed nodes
 
 Uninstall TigerGraph from the removed nodes by removing all root directories (`app`, `data` and `tmp`) except the log directory of TigerGraph.
 
