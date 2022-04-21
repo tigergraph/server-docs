@@ -1,6 +1,12 @@
 = Cluster Expansion
+:description: Instructions to expand a TigerGraph cluster.
+:sectnums:
 
-As your workload changes, you can expand your cluster to improve its query performance, system availability, and fault tolerance. Expanding a cluster adds more nodes to the cluster. During an expansion, you can also change the replication factor of your cluster.
+As your workload changes, you can expand your cluster to improve its query performance, system availability, and fault tolerance.
+Expanding a cluster adds more nodes to the cluster.
+In an expansion, you can also change the replication factor of your cluster.
+
+The expansion operation requires a short period of cluster downtime.
 
 == Before you begin
 
@@ -11,15 +17,16 @@ As your workload changes, you can expand your cluster to improve its query perfo
 
 == Procedure
 
-=== Step 1: Identify new cluster replication and partition
+=== Identify new cluster replication and partition
 
-Before running any commands to expand a cluster, make sure you have a clear idea of how the new cluster should be distributed. You should have the following information:
+Before running any commands to expand a cluster, make sure you have a clear idea of how the new cluster should be distributed.
+You should have the following information:
 
 * The new replication factor of the cluster
 * The new partitioning factor of the cluster
 * The IP addresses of the new nodes to be added to the cluster
 
-=== Step 2: Expand the cluster
+=== Expand the cluster
 
 To expand the cluster, run the `gadmin cluster expand` command like below. If the expansion involves changing the replication factor, use the `--ha` option to indicate the new replication factor:
 
@@ -50,7 +57,7 @@ If you choose to supply a staging location, make sure that the TigerGraph Linux 
 
 For example, if you are expanding from a 6 node cluster with a replication factor of 2 and a partitioning factor of 3, to a 10-node cluster with a replication factor of 2 and a partitioning factor of 5, and the size of the data root folder on a node is 50GB. Then you would need more than `(1 + Math.ceil(3/5)) * 50) = 100 GB` of free space on the staging path.
 
-=== Step 3: Verify success and delete temporary files
+=== Verify success and delete temporary files
 
 When the expansion completes, you should see a message confirming the completion of the cluster change. The message will also include the location of the temporary files created during the expansion.
 
