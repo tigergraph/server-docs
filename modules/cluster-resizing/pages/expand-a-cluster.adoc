@@ -1,17 +1,25 @@
 = Cluster Expansion
+:sectnums:
 
-As your workload changes, you can expand your cluster to improve its query performance, system availability, and fault tolerance. Expanding a cluster adds more nodes to the cluster. During an expansion, you can also change the replication factor of your cluster.
+As your workload changes, you can expand your cluster to improve its query performance, system availability, and fault tolerance.
+Expanding a cluster adds more nodes to the cluster.
+During an expansion, you can also change the replication factor of your cluster.
 
+[NOTE]
+Downtime is required for expansion.
+
+[discrete]
 == Before you begin
 
 * TigerGraph must already be installed on the new nodes as single-node instances in *exactly the same version* as the cluster.
-* Ensure that no loading jobs, queries, or REST requests are running on the new node or the cluster. Downtime is required for expansion.
+* Ensure that no loading jobs, queries, or REST requests are running on the new node or the cluster.
 * Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the expansion completes.
 * If the original cluster is a single node installation, make sure the IP used is not a https://en.wikipedia.org/wiki/Localhost[local loopback address] such as 127.0.0.1.
 
+[discrete]
 == Procedure
 
-=== Step 1: Identify new cluster replication and partition
+=== Identify new cluster replication and partition
 
 Before running any commands to expand a cluster, make sure you have a clear idea of how the new cluster should be distributed. You should have the following information:
 
@@ -19,7 +27,7 @@ Before running any commands to expand a cluster, make sure you have a clear idea
 * The new partitioning factor of the cluster
 * The IP addresses of the new nodes to be added to the cluster
 
-=== Step 2: Expand the cluster
+=== Expand the cluster
 
 To expand the cluster, run the `gadmin cluster expand` command as shown.
 If the expansion involves changing the replication factor, use the `--ha` option to indicate the new replication factor:
@@ -38,6 +46,7 @@ $ gadmin cluster expand m3:10.128.0.81,m4:10.128.0.82 --ha 1
 
 We suggest naming the new nodes following the convention of `m<serial>`, such as `m1`, `m2`, and `m3` for a 3-node cluster. If you are adding a fourth node, then the fourth node would be named `m4`. If you decide to name them differently, make sure that all names are unique within the cluster.
 
+[discrete]
 ==== Supply a staging location
 
 Extra disk space is required during cluster expansion. If more space is not available on the same disk, you can supply a staging location on a different disk to hold temporary data:
@@ -54,7 +63,7 @@ For example, assume you are expanding from a 6-node cluster with a replication f
 You would need more than `(1 + Math.ceil(3/5)) * 50) = 100 GB` of free space on the staging path.
 
 
-=== Step 3: Verify success and delete temporary files
+=== Verify success and delete temporary files
 
 When the expansion completes, you should see a message confirming the completion of the cluster change. The message will also include the location of the temporary files created during the expansion.
 
