@@ -1,5 +1,5 @@
 = Database Import/Export
-:description: This page details the instructions and requirements of importing and exporting a graph in TigerGraph. 
+:description: This page details the instructions and requirements of importing and exporting a graph in TigerGraph.
 
 
 The GSQL `EXPORT GRAPH` and `IMPORT GRAPH` commands perform a logical backup and restore.
@@ -46,6 +46,7 @@ exportOptions ::=
     -D, --DATA          Only Data Sources will be exported
     -U, --USERS         Includes Permissions, Secrets, and Tokens
     -P, --PASSWORD      Encrypt with password. User will be prompted
+        --SEPARATOR     Specify a column separator
 ----
 
 CAUTION: The export directory should be empty before running the command.
@@ -77,11 +78,14 @@ Export users, role assignments, secrets, and tokens.
 
 |`+-P+` or -`+-Password+` |Encrypt the exported file with a password.
 Users will be prompted to enter a password when using this option.
+
+|`--SEPARATOR`
+|Specify the column separator character. Default is ASCII char 29.
 |===
 
 [NOTE]
 ====
-xref:user-access:ldap.adoc#_proxy_user[Proxy users] cannot be exported.
+xref:user-access:ldap.adoc#_proxy_users[Proxy users] cannot be exported.
 ====
 
 === Output
@@ -119,34 +123,34 @@ If the file is password-protected, it can only be unzipped using the GSQL comman
 The security features prevent users from directly unzipping it.
 ====
 
-* A `DBImportExport_<graphName>.gsql` for each graph called `graphName` in a multigraph database that contains a series of GSQL DDL statements that do the following:
- ** Create the exported graph, along with its local vertex, edge, and tuple types,
- ** Create the loading jobs from the exported graphs
- ** Create data source file objects
- ** Create queries
-* A `graph_<graphName>/` folder for each graph in a multigraph database containing data for local vertex/edge types in `<graphName>`.
+* A `DBImportExport_<Graph_Name>.gsql` for each graph called `Graph_Name` in a multigraph database that contains a series of GSQL DDL statements that do the following:
+** Create the exported graph, along with its local vertex, edge, and tuple types,
+** Create the loading jobs from the exported graphs
+** Create data source file objects
+** Create queries
+* A `graph_<Graph_Name>/` folder for each graph in a multigraph database containing data for local vertex/edge types in `<Graph_Name>`.
 For each vertex or edge type called `<type>`, there is one of the following two data files:
- ** `vertex_<type>.csv`
- ** `edge_<type>.csv`
+** `vertex_<type>.csv`
+** `edge_<type>.csv`
 * `global.gsql` - DDL job to create all global vertex and edge types, and data sources.
 * `tuple.gsql` - DDL job to create all User Defined Tuples.
 * Exported data and jobs used to restore the data:
- ** *`GlobalTypes/`* - folder containing data for global vertex/edge types
-  *** `vertex_name.csv`
-  *** `edge_name.csv`
- ** *`run_loading_jobs.gsql`* - DDL created by the export command which will be used during import:
-  *** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it has run.
-  *** Loading jobs to load data for global and local vertex/edges.
+** `GlobalTypes/` - folder containing data for global vertex/edge types
+*** `vertex_name.csv`
+*** `edge_name.csv`
+** `run_loading_jobs.gsql` - DDL created by the export command which will be used during import:
+*** Temporary global schema change job to add user-defined indexes. This schema job is dropped after it has run.
+*** Loading jobs to load data for global and local vertex/edges.
 * Database's saved queries, loading jobs, and schema change jobs
- ** *`SchemaChangeJob/` -* folder containing DDL for schema change jobs. See section "Schema Change Jobs" for more information
-  *** `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
-  *** `graphName_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `graphName`
+** `SchemaChangeJob/` -* folder containing DDL for schema change jobs. See section "Schema Change Jobs" for more information
+*** `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
+*** `Graph_Name_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `Graph_Name`
 * User-defined functions
-** *`Tokenbank.cpp`* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/TokenBank/TokenBank.cpp`
-** *`ExprFunctions.hpp`* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`
- ** *`ExprUtil.hpp`* - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
+** `Tokenbank.cpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/TokenBank/TokenBank.cpp`
+** `ExprFunctions.hpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp`
+** `ExprUtil.hpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
 * Users:
- ** *`users.gsql`* - DDL to create all exported users, import Secrets and Tokens and grant permissions.
+** `users.gsql` - DDL to create all exported users, import Secrets and Tokens and grant permissions.
 * ACL privilege catalog:
 ** `ACLDict/1/ACLPrivilegeCatalog.json`.
 An encrypted file containing the ACL privilege catalog.
@@ -158,7 +162,7 @@ EXPORT GRAPH ALL TO "/tmp/export_graphs/"
 ----
 
 
-=== Insufficient Disk Space
+=== Insufficient disk space
 
 If not enough disk space is available for the data to be exported, the system returns an error message indicating not all data has been exported.
 Some data may have already been written to disk.
@@ -196,7 +200,10 @@ The current version does not support incremental or supplemental changes to an e
 `IMPORT GRAPH ALL` looks for specific filenames.
 If either the zip file or any of its contents are renamed by the user, `IMPORT GRAPH ALL` may fail.
 
-=== Required privilege
+Any separator character defined in the export step is automatically included in the exported file.
+There is no need to specify the separator during import.
+
+=== Required privileges
 `WRITE_SCHEMA`, `WRITE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USERS`
 
 === Synopsis
@@ -248,8 +255,8 @@ IMPORT GRAPH ALL FROM "/tmp/export_graphs/"
 There are two sets of loading jobs:
 
 * Those that were in the *catalog* of the database which was exported.
-These are embedded in the file `DBImportExport_graphName.gsql`
-* Those that are *created by `EXPORT GRAPH`* and are used to assist with the import process.
+These are embedded in the file `DBImportExport_Graph_Name.gsql`
+* Those that are *created by `EXPORT GRAPH` and are used to assist with the import process.
 These are embedded in the file `run_loading_jobs.gsql`.
 
 The catalog loading jobs are not needed to restore the data.
@@ -261,7 +268,7 @@ Some special rules apply to importing loading jobs.
 Some catalog loading jobs will not be imported.
 ====
 
-. If a catalog loading job contains `DEFINE FILENAME F = "/path/to/file/"`, the path will be removed and the imported loading job will only contain *`DEFINE FILENAME F`*.
+. If a catalog loading job contains `DEFINE FILENAME F = "/path/to/file/"`, the path will be removed and the imported loading job will only contain `DEFINE FILENAME F`.
 This is to allow a loading job to still be imported even though the file may no longer exist or the path may be different due to moving to another TigerGraph instance.
 . If a specific file path is used directly in the LOAD statement, and the file cannot be found, the loading job cannot be created and will be skipped.
 For example, `LOAD "/path/to/file" to vertex v1` cannot be created if `/path/to/file` does not exist.
@@ -283,7 +290,7 @@ This is because if a schema change job had been run before the export, then the 
 The directory `/SchemaChangeJobs` contains these files:
 
 * `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
-* `<graphName>_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `<graphName>`.
+* `<Graph_Name>_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `<Graph_Name>`.
 
 [#_cluster_importexport]
 == Cluster export/import
@@ -291,7 +298,7 @@ The directory `/SchemaChangeJobs` contains these files:
 Importing and exporting clusters is not fully automated in the current version.
 The database can be exported and imported by following some additional steps.
 
-=== Export from a Cluster
+=== Export from a cluster
 
 Rather than creating a single export zip file, the `EXPORT GRAPH ALL` command creates a file for each machine.
 
@@ -317,3 +324,4 @@ The export file on every node must share the same absolute path.
 Run the `IMPORT GRAPH ALL` command from the server that corresponds to the server where `EXPORT GRAPH ALL` was run.
 
 For example, if you exported from the m2 node in a cluster, you also need to run the `IMPORT GRAPH ALL` command from the m2 node of the cluster you are importing the export files into.
+
