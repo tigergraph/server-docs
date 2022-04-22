@@ -175,9 +175,20 @@ This endpoint does not take any parameters.
 
 === Monitor system metrics
 
-`POST /ts3/api/datapoints`
+`GET /ts3/api/datapoints:14240`
 
-TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events. Many TigerGraph components will report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals. You can use this endpoint to read from TS3,  filtering for the data points you need by time (`when`, `from`, and `to`), component(`who`), metric(`what`) and location(`where`). Visualization of such metrics are available in Admin Portal - Dashboard - xref:3.2@gui:admin-portal:dashboard.adoc[Cluster Monitoring].
+TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events.
+Many TigerGraph components report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals.
+This endpoint listens on port 14240 instead of port 9000.
+
+You can use this endpoint to read from TS3. You can filter for the data points you need as follows:
+
+* time: `when`, `from`, and `to`
+* component: `who`
+* metric: `what`
+* location: `where`
+
+Visualization of such metrics are available in Admin Portal - Dashboard - xref:gui:admin-portal:dashboard.adoc[Cluster Monitoring].
 
 On a TigerGraph cluster, this endpoint is only present on the `m1` node.
 
