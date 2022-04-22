@@ -28,6 +28,10 @@ If you changed the Nginx port of the TigerGraph system, replace 14240 with the p
 * Ensure that you have xref:enabling-user-authentication.adoc#_enable_gsql_authentication[enabled GSQL authentication by changing the password of the default user].
 If you don't enable GSQL authentication, SSO configuration will not work and any user will be logged in automatically.
 
+WARNING: During the SSO authentication process, TigerGraph sends a response with a large header to confirm the result of the authentication request.
+If you use any middleware such as an Nginx load balancer between TigerGraph and your IDP, make sure that your middleware is able to handle the size of the responses.
+For example, if using Nginx, make sure proxy buffering is turned on.
+
 :sectnums:
 == Configure Identity Provider
 :sectnums!:
