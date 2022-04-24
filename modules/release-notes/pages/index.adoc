@@ -13,16 +13,16 @@ TigerGraph 3.5.2 was released on April 25thm 2022.
 
 Issues fixed:
 
-* Fixed an issue that in rare cases caused `Tokenbank.so` to be lost after restoring a backup.
-* Fixed an issue that in rare cases caused schema to become empty after cluster shrinking.
-* Fixed an issue that in rare cases caused the Graph Processing Engine (GPE) to crash after getting invalid responses from Zookeeper.
-* Fixed an issue that in rare cases cause the Graph Storage Engine (GSE) to crash during leader election.
+* Fixed an issue that could cause `Tokenbank.so` to be lost after restoring a backup in rare cases.
+* Fixed an issue that could cause schema to become empty after cluster shrinking in rare cases.
+* Fixed an issue that could cause the Graph Processing Engine (GPE) to crash after getting invalid responses from Zookeeper in rare cases.
+* Fixed an issue that could cause the Graph Storage Engine (GSE) to crash during leader election in rare cases.
 * Upgraded the dependencies of GUI server, GSQL server, Kafka, Kafka-connect, and Zookeeper to resolve related security issues.
 * Fixed an issue that prevented failed `CREATE VERTEX` or `CREATE EDGE` commands from being properly rolled back.
 * Fixed an issue that caused errors when a query's path pattern includes edge wildcards.
 * Fixed an issue that slowed the semantic checker when editing queries written in syntax V2 on GraphStudio.
 * Fixed an issue that prevented GPE's memory protection from recognizing when memory usage enters critical stage.
-* Fixed an issue that in rare cases prevented vertex upsertions after the Graph Storage Engine (GSE) restarts on a single-partition (including single-node) TigerGraph instance.
+* Fixed an issue that could prevent vertex upsertions after the Graph Storage Engine (GSE) restarts on a single-partition (including single-node) TigerGraph instance in rare cases.
 
 === 3.5.1
 
