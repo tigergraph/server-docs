@@ -2938,6 +2938,8 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsqls
 
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 
+This endpoint only shows queries sent to the requested node, not all queries in the graph.
+
 ==== Sample request:
 [tabs]
 ====
@@ -2990,6 +2992,8 @@ No Parameters.
 `+GET /abortquery/{graph_name}+`
 
 This endpoint safely aborts a selected query by ID or all queries of an endpoint by endpoint URL of a graph.
+
+This endpoint only allows you to check the results of a query sent to the requested node, not any query in the graph.
 
 ==== Sample request:
 [tabs]
@@ -3053,6 +3057,8 @@ Response::
 `GET /query_status`
 
 This endpoint allows you to check the status of a query run in xref:3.2@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
+
+This endpoint only allows you to check the status of a query sent to the requested node, not any query in the graph.
 
 ==== Sample request:
 [tabs]
@@ -3144,6 +3150,8 @@ so far.
 `GET /query_result`
 
 This endpoint allows you to check the results of queries run in Detached Mode if they have finished running. If the query is still running, the endpoint will respond with an error and a message saying `"Unable to retrieve result for query <requestid>"`.  Ensure that the query is finished before checking its result.
+
+This endpoint only allows you to check the results of a query sent to the requested node, not any query in the graph.
 
 ==== Sample request:
 [tabs]
