@@ -6,14 +6,8 @@ Kafka is a popular pub-sub system in enterprise IT, offering a distributed and f
 The Kafka Loader lets you integrate TigerGraph with a Kafka cluster and speed up your real-time data ingestion.
 The Kafka Loader is easily extensible using the many plugins available in the Kafka ecosystem.
 
-
-[NOTE]
-====
-Currently, the supported format of the messages consumed from Kafka topic is CSV. 
-If the Kafka loader fails to parse messages due to formatting issues, the Kafka Loader will skip the messages the fail to be parsed. 
-====
-
 The Kafka Loader consumes data in a Kafka cluster and loads data into the TigerGraph system.
+It supports all the data source formats supported by xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[GSQL loading jobs], which includes JSON, CSV, and Parquet.
 
 == Architecture
 
@@ -23,7 +17,7 @@ image::kafka-loading-architecture.png[Kafka Data Loader Architecture]
 
 == Prerequisites
 
-* You should have a Kafka cluster configured and set up in your environment.
+* Your TigerGraph instances has access to a running external Kafka cluster.
 
 * Once you have the external Kafka cluster setup, you need to prepare the following two configuration files and place them in your desired location in the TigerGraph system:
 ** <<_kafka_data_source_configuration_file>>
@@ -119,7 +113,7 @@ For example,
 
 == Configure and use the Kafka loader
 
-There are three basic steps:
+The following are the steps to load data into your TigerGraph database through the Kafka loader:
 
 . link:#_1_define_the_data_source[Define the data source]
 . link:#_2_create_a_loading_job[Create a loading job]
@@ -156,37 +150,41 @@ GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "/path/to/kafka.config"
 
 To further simplify, instead of specifying the Kafka data source config file path, you can also directly provide the Kafka data source configuration as a string argument, as shown below:
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "{\"broker\":\"broker.full.domain.name:9092\"}"
 ----
 
 [TIP]
 ====
-The above simplified statement is useful for using Kafka Data Loader in TigerGraph Cloud. In TigerGraph Cloud (tgcloud.io), you can use GSQL web shell to define and create Kafka data sources, without creating the Kafka data source configuration file in filesystem.
+The above simplified statement is useful for using Kafka Data Loader in TigerGraph Cloud.
+In TigerGraph Cloud, you can use GSQL web shell to define and create Kafka data sources, without creating the Kafka data source configuration file in filesystem.
 ====
 
 
 [#_2_create_a_loading_job]
 === 2. Create a loading job
 
-The Kafka Loader uses the same basic xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[`CREATE LOADING JOB`] syntax used for standard GSQL loading jobs.
-A `DEFINE FILENAME` statement should be used to assign a loader `FILENAME` variable to a Kafka data source name and the path to its config file.
+The Kafka Loader uses the same xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[`CREATE LOADING JOB` syntax] used for standard GSQL loading jobs.
+A `DEFINE FILENAME` statement should be used to assign a `FILENAME` variable to a Kafka data source name and the path to its config file.
 
 In addition, the filename can be specified in the `RUN LOADING JOB` statement with the `USING` clause.
 The filename value set by a `RUN` statement overrides the value set in the `CREATE LOADING JOB`.
 
-Below is the syntax for `DEFINE FILENAME` for use with the Kakfa Loader.
+==== Syntax
+
 In the syntax, `$DATA_SOURCE_NAME` is the Kafka data source name, and the path points to a configuration file with topic and partition information of the Kafka server.
 The Kafka configuration file must be in JSON format.
 
-[source,ebnf]
+[source.wrap,ebnf]
 ----
 DEFINE FILENAME filevar "=" [filepath_string | data_source_string];
 data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
 ----
 
-Example: Load a Kafka data source `k1`, where the path to the topic-partition configuration file is `"~/topic_partition1_conf.json"`:
+==== Example
+
+The following statement loads a Kafka data source `k1`, where the path to the topic-partition configuration file is `"~/topic_partition1_conf.json"`:
 
 [source,gsql]
 ----
@@ -195,7 +193,7 @@ DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
 
 Instead of specifying the config file path, you can also provide the topic-partition configuration as a string argument, as shown below:
 
-[source,text]
+[source.wrap,text]
 ----
 DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
 DEFINE FILENAME f1 = "$k1:{\"topic\":\"zzz\",\"default_start_offset\":2,\"partition_list\":[]}";
@@ -209,7 +207,7 @@ Each filename variable can be assigned a string `<data_source_name>:<topic_parti
 
 In the example below, the config files for f3 and f4 are being set by the `RUN command`, whereas f1 is using the config which was specified in the `CREATE LOADING JOB` statement.
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 RUN LOADING JOB job1 USING f1, f3="$k1:~/topic_part3_config.json", f4="$k1:~/topic_part4_config.json", EOF="true";
 ----
@@ -228,7 +226,7 @@ In streaming mode, loading will never stop until the job is aborted. In EOF mode
 
 To set EOF mode, an optional parameter is added to the `RUN LOADING JOB` syntax:
 
-[source,ebnf]
+[source.wrap,ebnf]
 ----
 RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
    [ USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
@@ -236,6 +234,48 @@ RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
 ----
 
 To learn about each option and parameter of the `RUN LOADING JOB` command, see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_options[Loading job options].
+
+== Examples
+
+Here is an example code for loading CSV data through Kafka Loader:
+
+[source.wrap,gsql]
+----
+// Create data_source kafka k1 = "kafka_config.json" for graph test_graph
+CREATE DATA_SOURCE KAFKA k1 FOR GRAPH test_graph
+SET k1 = "kafka_config.json"
+
+// Define the loading jobs
+CREATE LOADING JOB load_person FOR GRAPH Test_Graph {
+  DEFINE FILENAME f1 = "$k1:topic_partition_config.json";
+  LOAD f1
+      TO VERTEX Person VALUES ($2, $0, $1),
+      TO EDGE Person2Comp VALUES ($0, $1, $2)
+      USING SEPARATOR=",";
+}
+
+// Load the data
+RUN LOADING JOB load_person
+----
+
+The following example  loading job loads JSON data through the Kafka loader:
+
+[source.gsql]
+----
+CREATE LOADING JOB kafka_loader_json FOR GRAPH Store_Graph {
+
+	DEFINE FILENAME users = "$kafkaLoader:/home/tigergraph/config/topic-users.config";
+	DEFINE FILENAME transactions =
+      "$kafkaLoader:/home/tigergraph/config/topic-transactions.config";
+	LOAD users TO VERTEX user VALUES
+      ($"payload":"userid", $"payload":"regionid", $"payload":"gender") USING JSON_FILE="true";
+	LOAD transactions TO EDGE hasTransaction VALUES
+      ($"payload":"user_id", $"payload":"transaction_id") USING JSON_FILE="true";
+	LOAD transactions TO VERTEX transaction VALUES
+      ($"payload":"transaction_id", $"payload":"card_id", $"payload":"user_id", $"payload":"purchase_id", $"payload":"store_id")
+      USING JSON_FILE="true";
+}
+----
 
 == Manage data sources
 
@@ -335,29 +375,3 @@ To refer to a specific job instance, using the job_id which is provided when `RU
 
 See https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-job#inspecting-and-managing-loading-jobs[Inspecting and Managing Loading Jobs] for more details.
 
-== Kafka loader example
-
-Here is an example code for loading data through Kafka Loader:
-
-[source,gsql]
-----
-USE GRAPH test_graph
-DROP JOB load_person
-DROP DATA_SOURCE k1
-
-#create data_source kafka k1 = "kafka_config.json" for graph test_graph
-CREATE DATA_SOURCE KAFKA k1 FOR GRAPH test_graph
-SET k1 = "kafka_config.json"
-
-# define the loading jobs
-CREATE LOADING JOB load_person FOR GRAPH test_graph {
-  DEFINE FILENAME f1 = "$k1:topic_partition_config.json";
-  LOAD f1
-      TO VERTEX Person VALUES ($2, $0, $1),
-      TO EDGE Person2Comp VALUES ($0, $1, $2)
-      USING SEPARATOR=",";
-}
-
-# load the data
-RUN LOADING JOB load_person
-----
