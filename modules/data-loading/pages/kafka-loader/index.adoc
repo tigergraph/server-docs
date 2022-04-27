@@ -267,8 +267,8 @@ CREATE LOADING JOB kafka_loader_json FOR GRAPH Store_Graph {
 	DEFINE FILENAME users = "$kafkaLoader:/home/tigergraph/config/topic-users.config";
 	DEFINE FILENAME transactions =
       "$kafkaLoader:/home/tigergraph/config/topic-transactions.config";
-	LOAD users TO VERTEX user VALUES
-      ($"payload":"userid", $"payload":"regionid", $"payload":"gender") USING JSON_FILE="true";
+	LOAD users TO VERTEX User VALUES
+      ($"payload":"userid", $"payload":"regionid", $"payload":"gender") USING JSON_FILE="true"; <1>
 	LOAD transactions TO EDGE hasTransaction VALUES
       ($"payload":"user_id", $"payload":"transaction_id") USING JSON_FILE="true";
 	LOAD transactions TO VERTEX transaction VALUES
@@ -276,6 +276,9 @@ CREATE LOADING JOB kafka_loader_json FOR GRAPH Store_Graph {
       USING JSON_FILE="true";
 }
 ----
+<1> The `userid` field of the `payload` field is loaded to the first attribute in the `User` vertex type definition.
+The `regionid` field of the `payload` field is loaded to the second attribute in the `User` vertex type definition.
+For more information on loading JSON data, see xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_loading_json_data[Loading JSON data].
 
 == Manage data sources
 
