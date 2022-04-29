@@ -1060,7 +1060,7 @@ None.
 
 `+POST /ddl/{graph_name}+`
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:3.2@gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
 If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename variable at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.
 
@@ -2938,7 +2938,7 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsqls
 
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 
-This endpoint only shows queries sent to the requested node, not all queries in the graph.
+If you are running a TigerGraph cluster, this endpoint only shows queries running on the node to which the request is sent, not all running queries on the cluster.
 
 ==== Sample request:
 [tabs]
@@ -2993,7 +2993,7 @@ No Parameters.
 
 This endpoint safely aborts a selected query by ID or all queries of an endpoint by endpoint URL of a graph.
 
-This endpoint only allows you to check the results of a query sent to the requested node, not any query in the graph.
+If you are running a TigerGraph cluster, this endpoint only allows you to abort a query sent to the requested node, not any query in the cluster.
 
 ==== Sample request:
 [tabs]
@@ -3056,9 +3056,9 @@ Response::
 
 `GET /query_status`
 
-This endpoint allows you to check the status of a query run in xref:3.2@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
+This endpoint allows you to check the status of a query run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
-This endpoint only allows you to check the status of a query sent to the requested node, not any query in the graph.
+If you are running a TigerGraph cluster, this endpoint only allows you to check the status of a query running on the node to which the request is sent, not all nodes on the cluster.
 
 ==== Sample request:
 [tabs]
