@@ -1,32 +1,41 @@
 = Hardware and Software Requirements
-:description: This section provides an overview of the system requirements for running TigerGraph in a production or development environment.
+:description: System requirements for running TigerGraph in a production or development environment.
 :pp: {plus}{plus}
 
-TigerGraph can be used for different scopes and the system requirements largely depend on the use of the software. This page provides a good reference, but actual hardware requirements will vary based on your data size and workload.
+This page details the system requirements for running TigerGraph in a production or development environment.
+
+TigerGraph can be used for different scopes and the system requirements largely depend on the use of the software.
+This page provides a good reference, but actual hardware requirements will vary based on your data size and workload.
 
 == Hardware Requirements
 
-The TigerGraph system is optimized to take advantage of multiple cores.
-Performance is optimal when the memory is large enough to store the full graph and to perform computations.
+Hardware requirements are as follows:
 
 |===
-| Component | Minimum | Recommended
+| Component | Minimum | Recommended | Notes
 
 | CPU*
-| 4 cores for <500MB data, 8 cores for >500MB data (64-bit processor)
-| 16+ cores (64-bit processor)
+a| * 4 cores for <500MB data
+* 8 cores for >500MB data
+| 16+ cores
+a|Supported CPU architectures:
+
+* x86-64
 
 | Memory*
 | 8 GB
 | ≥ 64GB
+| Performance is optimal when the memory is large enough to store the full graph and to perform computations.
 
 | Storage*
 | 20 GB
-| ≥ 1TB, RAID10 volumes for better I/O throughput.  SSD storage is recommended.
+| ≥ 1TB, RAID10 volumes for better I/O throughput.
+| SSD storage is recommended.
 
 | Network
 | 1 Gigabit Ethernet adapter
-| 10Gigabit Ethernet adapter for inter-node communication
+| 10 Gigabit Ethernet adapter for inter-node communication
+|
 |===
 
 *Actual needs (CPU, memory, storage) depend on data size and application requirements.
@@ -37,7 +46,8 @@ Consult our solution architects for an estimate of memory and storage needs.
 [#_certified_operating_systems]
 == Certified Operating Systems
 
-The TigerGraph Software Suite is built on 64-bit Linux.It can run on a variety of Linux 64-bit distributions.
+The TigerGraph Software Suite is built on 64-bit Linux.
+It can run on a variety of Linux 64-bit distributions.
 The software has been tested on the operating systems listed below:
 
 .List of supported OS
@@ -51,7 +61,8 @@ The software has been tested on the operating systems listed below:
 
 When a range of versions is given, it means that the software has been tested on the oldest and newest versions.
 We continually evaluate the operating systems on the market and work to update our set of supported operating systems as needed.
-The TigerGraph installer will install its own copies of Java JDK and GCC, accessible only to the TigerGraph user account, to avoid interfering with any other applications on the same server.
+
+The TigerGraph installer installs its own copies of Java JDK and GCC, accessible only to the TigerGraph Linux user, to avoid interfering with any other applications on the same server.
 
 == Prerequisite Software
 
