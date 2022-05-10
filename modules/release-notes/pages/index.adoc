@@ -152,6 +152,10 @@ See xref:gsql-ref:querying:syntax-versions.adoc[] for a summary of the differenc
  ** Users who are upgrading from 3.0.X need to manually start GSQL HA service. Please reach out to support for help with the process documented in: https://tigergraph.freshdesk.com/a/solutions/articles/5000865072
 * *Stale data visible after Deletes using index*
  ** Queries that use secondary index may still see the vertices being deleted until after the snapshots are fully rebuilt.
+* *Concurrent read and write on the same vertex during loading*
+ ** Concurrent read and write operations on the same vertex and its connected edges during data loading could cause Graph Processing Engine (GPE) dysfunction in rare cases
+
+
 
 == Release notes for previous versions
 * xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
