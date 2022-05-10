@@ -1,4 +1,5 @@
-
+NOTE: Each of the commands below uses `kubectl` with the default namespace `default`.
+If you’ve deployed your cluster using a different namespace, you need to explicitly provide the namespace where your cluster is deployed.
 
 == Single-server deployment
 
@@ -6,7 +7,8 @@ This section describes the steps to deploy, verify, and remove a single-server d
 
 === Deploy single server
 
-*Step 1: Generate deployment manifest*.
+==== Generate deployment manifest
+
 Clone the https://github.com/tigergraph/ecosys[TigerGraph ecosystems repository] and change into the `k8s` directory.
 You can edit the `kustimization.yaml` file in the `{cloud-code}` folder to change the namespace and image name for your deployment.
 The default namespace is `default`. No need to edit the files if no changes are needed.
@@ -16,14 +18,15 @@ You can use the `--prefix` option to specify a prefix for your pods.
 The default prefix is `tigergraph`.
 A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-{cloud-code}-default.yaml` in the directory.
 
-[source,console,subs="attributes"]
+[source,console,subs="attributes+"]
 ----
 $ ./tg {cloud-code} kustomize -s 1
 ----
 
-*Step 2: Deploy manifest*. Run `kubectl apply` to create the deployment using the manifest you generated in Step1.
+==== Deploy manifest
+Run `kubectl apply` to create the deployment using the manifest you generated in Step1.
 
-[source.wrap,console,subs="verbatim,attributes"]
+[source.wrap,console,subs="attributes+"]
 ----
 $ kubectl apply -f deploy/<namespace>-{cloud-code}/tigergraph-{cloud-code}-default.yaml
 ----
@@ -78,7 +81,7 @@ Use the `tg` script in the `k8s` directory of the repo to delete all cluster res
 Replace `<namespace_name>` with the name of the namespace within which you want to delete the resources.
 If you don't specify a namespace, the command will delete the resources in the namespace `default`:
 
-[source,console,subs="attributes"]
+[source,console,subs="attributes+"]
 ----
 $ ./tg {cloud-code} delete -n <namespace_name>
 ----
@@ -90,7 +93,7 @@ Once your {cloud-caps} cluster is ready, you can start following the below steps
 
 === Deploy TigerGraph cluster
 
-==== 1. Generate Kubernetes manifest
+==== Generate Kubernetes manifest
 
 Clone the https://github.com/tigergraph/ecosys.git[TigerGraph ecosystem repository] and change into the `k8s` directory:
 
@@ -107,18 +110,18 @@ Use `-s` or `--size` to indicate the number of nodes in the cluster. Use the `--
 
 For example, the following command will create a manifest that will deploy a 3*2 cluster with a replication factor of 2 and a partitioning factor of 3.
 
-[source,console,subs="attributes"]
+[source,console,subs="attributes+"]
 ----
 $ ./tg {cloud-code} kustomize -s 6 --ha 2
 ----
 
 The command will create a directory named `deployment` with the manifest inside.
 
-==== 2. Deploy the cluster
+==== Deploy the cluster
 
 Run `kubectl apply` to create the deployment
 
-[source.wrap,console,subs="attributes,verbatim"]
+[source.wrap,console,subs="attributes+"]
 ----
 $ kubectl apply -f ./deploy/<namespace>-{cloud-code}/tigergraph-{cloud-code}-default.yaml
 ----
@@ -173,7 +176,7 @@ Use the `tg` script in the `k8s` directory of the repo to delete all cluster res
 Replace `<namespace_name>` with the name of the namespace within which you want to delete the resources.
 If you don't specify a namespace, the command will delete the resources in the namespace `default`:
 
-[source,console,subs="attributes"]
+[source,console,subs="attributes+"]
 ----
 $ ./tg {cloud-code} delete -n <namespace_name>
 ----
