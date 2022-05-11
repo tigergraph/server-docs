@@ -130,6 +130,10 @@ Starting in TigerGraph 3.2, function overloading is now available. Query UDFs wi
 
 == Known Issues
 
+=== Engine
+
+* Concurrent read and write operations on the same vertex and its connected edges during data loading could cause Graph Processing Engine (GPE) dysfunction in rare cases.
+
 === Applications
 
 * *GraphStudio*
@@ -139,7 +143,7 @@ Starting in TigerGraph 3.2, function overloading is now available. Query UDFs wi
 * *AdminPortal*
  ** xref:gui:admin-portal:known-issues.adoc[Known Issues for AdminPortal]
 
-=== *GSQL*
+=== GSQL
 
 * *Multiple (Conjunctive) Path Patterns*:
  ** There are no known functional problems, but the performance has not been optimized. Your feedback would be appreciated.
