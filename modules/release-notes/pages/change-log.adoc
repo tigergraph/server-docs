@@ -1,6 +1,31 @@
 = Change Log
 :description: This page will document all the changes to TigerGraph product including New Features and Bug Fixes.
 
+== TigerGraph 3.2.3
+Release date: 2022-05-12
+
+=== Fixed
+* Resolved https://nvd.nist.gov/vuln/detail/CVE-2022-23302[CVE-2022-23302] and https://nvd.nist.gov/vuln/detail/CVE-2022-23305[CVE-2022-23305] by removing JDBCappender and JMSsink classes from ZK and Kafka log4j jar and upgrading log4j-core to 2.17.1.
+* Fixed an issue that could cause Graph Storage Engine (GSE) to crash after loading 2 billion vertices in a single bucket.
+* Fixed an issue that could lead to GSE memory leaks when storing a large number of compressed strings.
+* Increased timeout limit for checking Kafka broker ID
+* Fixed an issue that could cause writes to fail if one Kafka broker goes offline.
+* Fixed an issue that could cause RESTPP to fail to parse privileges from authentication tokens.
+* Fixed an issue that impacted upsert performance when upserting data to `STRING COMPRESS` data type.
+* Fixed an issue that caused connection refused errors when connecting to a TigerGraph cluster behind a load balancer through a remote GSQL client.
+* Fixed an issue that could cause Graph Processing Engine (GPE) to crash if parameters were provided in the wrong order to the `SPLIT()` function.
+* Fixed an issue that could cause `Tokenbank.so` to be lost after restoring a backup in rare cases.
+* Fixed an issue that blocked upgrading from TigerGraph 3.1.5 if the database catalog contained subqueries.
+* Fixed an issue that caused GraphStudio Load Data page to issue time-consuming queries when an edge type has a wildcard `FROM` or `TO` vertex type.
+
+
+=== Improvements
+* Added parameters `fixGSE` and `fixGPE` to `GET deleted_vertices_check` endpoint to sync GSE and GPE vertex deletion.
+* Removed restrictions on fixed size binaries when creating schemas.
+* Increased the minimum timeout limit for changes to the catalog to 20 seconds.
+It can be increased through the `GSQL.ManageCatalogTimeoutSec` parameter.
+* Increased the speed for of the export process during cluster expansion and shrinking.
+
 == TigerGraph 3.2.2
 Release date: 2021-12-01
 
