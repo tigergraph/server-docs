@@ -1545,20 +1545,39 @@ Default value is `"none"`.
 
 |`new_vertex_only` |No |If `new_vertex_only` is set to true, the request will only insert new
 vertices and not update existing ones.
-Default value is false.
-
-|`vertex_must_exist` |No |If `vertex_must_exist` true, the request will only insert an *edge* if both the `FROM` and
-`TO` vertices of the edge already exist.
-If the value is false, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
-Note that this parameter does not affect vertices.
-Default value is false.
+Default value is `false`.
 
 |`update_vertex_only`|No |If `update_vertex_only` is set to true, the request will only update existing vertices and not insert new vertices.
 
 |`atomic_post`|No a|NOTE: This parameter is deprecated. Please use the `gsql-atomic-level` header instead.
 
 If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
-Default value is false.|
+Default value is `false`.
+
+|`vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if both the `FROM` and
+`TO` vertices of the edge already exist.
+If the value is false, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
+
+This parameter does not affect vertices.
+Default value is `false`.
+
+|`source_vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if the `FROM` vertex of the edge already exists.
+If the value is `false`, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
+
+This parameter does not affect vertices. For non-directed edges, the behavior of this parameter is identical to `vertex_must_exist`.
+Default value is `false`.
+
+This parameter is mutually exclusive with the general `vertex_must_exist` parameter and will return an error if both are used.
+
+|`target_vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if the `TO` vertex of the edge already exists.
+If the value is `false`, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
+
+This parameter does not affect vertices. For non-directed edges, the behavior of this parameter is identical to `vertex_must_exist`.
+Default value is `false`.
+
+This parameter is mutually exclusive with the general `vertex_must_exist` parameter and will return an error if both are used.
+
+|
 |===
 
 The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted.
