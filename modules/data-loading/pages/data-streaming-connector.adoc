@@ -8,19 +8,20 @@ TigerGraph Data Streaming Connector is a link:https://docs.confluent.io/home/con
 The data streaming connector supports the following data systems:
 
 * Google Cloud Storage (GCS)
+* Apache Kafka
 
 == Stream data from Google Cloud Storage
 You can create a data connector between TigerGraph's internal Kafka server and your GCS service with a specified topic.
 The connector will stream data from the data source in your GCS buckets to TigerGraph's internal Kafka cluster.
 You can then create and run a loading job to load data from Kafka into the graph store using the xref:kafka-loader/index.adoc[Kafka loader].
 
-=== Prerequisites
+Before you begin, make sure the following prerequisites are met:
+
 * Your source data files are stored in Google Cloud Storage buckets.
 * You have link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating[generated a key that has access to your source data from your Google Cloud Platform service account].
 
-=== Procedure
 
-==== Specify connector configurations
+=== Specify connector configurations
 The connector configurations provide the following information:
 
 * Connector class
@@ -28,15 +29,13 @@ The connector configurations provide the following information:
 * Information on how to parse the source data
 * Mapping between connector and source file
 
-[discrete]
 ==== Specify connector class
 The connector class indicates what type of connector the configuration file is used to create.
 Connector class is specified by the `connector.class` key.
 For connecting to GCS, its value is set to `com.tigergraph.kafka.connect.filesystem.FsSourceConnector`.
 
-[discrete]
 ==== Provide GCP account credentials
-You need to provide following information for the connector to access the files in your GCP Filestore bucket.
+You need to provide following information for the connector to access the files in your GCS bucket.
 You should be able to find all items on this list in your link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating[service account key]:
 
 * `file.reader.settings.fs.gs.auth.service.account.email`: The email address associated with the service account
@@ -51,7 +50,6 @@ The value for this configuration should be `com.google.cloud.hadoop.fs.gcs.Googl
 * `file.reader.settings.fs.AbstractFileSystem.gs.impl`: The AbstractFileSystem for `gs:` (GCS) URIs. Only necessary for use with Hadoop 2.
 The value for this configuration should be `com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS`.
 
-[discrete]
 ==== Specify parsing rules
 The streaming connector supports the following file types:
 
@@ -150,7 +148,6 @@ Accepted values:
 |===
 
 
-[discrete]
 ==== Map source file to connector
 The below configurations are required:
 
@@ -217,76 +214,11 @@ topic=friend-demo-104
 file.uris=gs://example/f.csv
 ----
 
-==== Create connector
-Run command `gadmin connector create` and specify the configuration file to create the connector:
+include::partial$create-connector.adoc[]
 
-  gadmin connector create --c <config_file>
+include::partial$create-data-source.adoc[]
 
-The connectors start streaming from the data source immediately after creation if the configurations are valid.
-You can run `gadmin connector status` to verify the status of the connectors.
-If the configurations are valid, the connectors should be in `RUNNING` status.
-
-Data streamed from the source stays in TigerGraph's internal Kafka topics until they are ingested by a loading job.
-
-==== Create data source
-Now that the connector has started loading data into TigerGraph's internal Kafka cluster, you can create a data source and point it to the Kafka cluster:
-
-. Create a data source configuration file.
-The broker's IP and hostname should be `localhost:30002`, which points to the port for TigerGraph's internal Kafka cluster.
-In the `kafka.config` field, set `group.id` to `tigergraph`:
-+
-[,json]
-----
-{
-	"broker":"localhost:30002",
-    "kafka_config":
-        {
-            "group.id": "tigergraph"
-        }
-}
-----
-. Run `CREATE DATA SOURCE` to create the data source:
-+
-[,gsql]
-----
-CREATE DATA_SOURCE KAFKA k1 FOR GRAPH social
-----
-
-==== Create loading job
-Create a loading job to load data from the data source:
-
-. Create a topic-partition configuration for each topic.
-+
-[,javascript]
-----
-{
-  "topic": <topic_name>, <1>
-  "partition_list": [ <2>
-    {
-      "start_offset": <offset_value>, <3>
-      "partition": <partition_number> <4>
-    },
-    {
-      "start_offset": <offset_value>, <3>
-      "partition": <partition_number> <4>
-    }
-    ...
-  ]
-}
-----
-<1> Replace `<topic_name>` with the name of the topic this configuration applies to.
-<2> List of partitions you want to stream from.
-For each partition, you can set a start offset.
-If this list is empty, or `partition_list` isn't included, all partitions are used with the default offset.
-<3> Replace `<offset_value>` with the offset value you want.
-The default offset for loading is `-1`, which means you will load data from the most recent message in the topic.
-If you want to load from the beginning of a topic, the `start_offset` value should be `-2`.
-<4> Replace `<partition_number>` with the partition number if you want to configure.
-. Create a loading job and map data to graph.
-See xref:kafka-loader/index.adoc#_2_create_a_loading_job[Kafka loader guide] for how to map data from a Kafka data source to the graph.
-See xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_loading_json_data[Loading JSON data] on how to create a loading job for JSON data. 
-
-WARNING: Known bug: to use the `-1` value for offset, delete the `start_offset` key instead of setting it to `-1`.
+include::partial$create-loading-job-kafka.adoc[]
 
 For example, suppose we have the following two CSV files and schema:
 
@@ -400,11 +332,130 @@ GSQL > RUN LOADING JOB load_person
 By default, loading jobs that use Kafka data sources run in streaming mode and do not stop until manually aborted.
 As data is streamed from the data source, the running loading job will continuously ingest the streamed data into the graph store.
 
-==== Stream data source updates
+=== Stream data source updates
 
 To load updates to the data source after you've created the connectors, you need to delete the connector and recreate another connector.
 
 In the future, the streaming data connector will support automatically scanning for updates and stream data to TigerGraph.
+
+== Stream data from an external Kafka cluster
+You can create a data connector between an external Kafka cluster (source cluster) and TigerGraph’s internal Kafka server (destination cluster) to stream data from the source cluster.
+The connector streams the Avro data to TigerGraph's internal Kafka server, and transforms the data into JSON format.
+You can then create and run a loading job to load data from Kafka into the graph store using the Kafka loader.
+
+Before you begin, make sure the following prerequisites are met:
+
+* Your TigerGraph instance has access to your external Kafka cluster
+
+=== Specify connector configurations
+
+The data streaming connector for external Kafka data is based on Apache Kafka MirrorMaker and shares many configurations as MirrorMaker.
+
+TO DO: explain what the important configurations are? What are the mandatory ones and what are the ones that users can usually go with the default values
+
+=== Specify SSL/SASL configurations (optional)
+If the source cluster has configured SSL or SASL protocols, you need to provide SSL/SASL configurations to the connector in order to communicate with the source connector. 
+
+include::partial$create-connector.adoc[]
+
+include::partial$create-data-source.adoc[]
+
+include::partial$create-loading-job-kafka.adoc[]
+
+For example, suppose we have the following graph schema with only one vertex type
+ and the following JSON line data in Kafka:
+
+[tabs]
+====
+Schema::
++
+--
+[.wrap,gsql]
+----
+CREATE VERTEX Company (primary_id name STRING, employee_num INT)
+CREATE GRAPH Company_Graph (Company)
+----
+--
+Data::
++
+--
+[.wrap,json]
+----
+{"company":"TigerGraph","employee_num":346}
+{"company":"Apple","employee_num":373704}
+{"company":"Google","employee_num":277618}
+----
+--
+====
+
+To create the loading job, we start by creating a data source configuration file and point it to the Kafka cluster and create the data source:
+
+[tabs]
+====
+Data source configuration::
++
+--
+[.wrap,json]
+----
+    {
+        "broker":"localhost:30002",
+        "kafka_config":
+            {
+                "group.id": "tigergraph"
+            }
+    }
+----
+--
+Create data source::
++
+--
+Run the following command in GSQL and replace `<path_to_datasource_file` with the absolute path to your data source file to create the data source.
+[.wrap,gsql]
+----
+CREATE DATA_SOURCE KAFKA k1=<path_to_datasource_file>
+----
+--
+====
+
+Then we create a topic-partition configuration file, and then write the loading job.
+In the `LOAD` statement, map the JSON line fields to the corresponding attributes of the vertex types:
+
+[tabs]
+====
+Topic-partition configuration file::
++
+--
+[.wrap,json]
+----
+{
+    "topic": "Hello.avro-with-registry-topic",
+    "default_start_offset": -2
+}
+----
+--
+Loading job::
++
+--
+[.wrap,gsql]
+----
+CREATE LOADING JOB load_company FOR GRAPH Company_Graph {
+    DEFINE FILENAME f1 = "$k1:<path_to_topic_partition_configuration>}";
+    LOAD f1 TO VERTEX company VALUES ($"company", $"employee_num") USING JSON_FILE="true";
+}
+----
+--
+====
+
+Once the loading job is created, run the loading job to load data into the graph:
+
+[.wrap,gsql]
+----
+RUN LOADING JOB -noprint load_company USING EOF="true"
+----
+
+
+
+
 
 == Manage connectors
 
