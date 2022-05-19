@@ -171,6 +171,8 @@ A `DEFINE FILENAME` statement should be used to assign a `FILENAME` variable to 
 In addition, the filename can be specified in the `RUN LOADING JOB` statement with the `USING` clause.
 The filename value set by a `RUN` statement overrides the value set in the `CREATE LOADING JOB`.
 
+NOTE: If you are loading JSON data, the data needs to be in the https://jsonlines.org/[JSON lines] format instead of regular JSON.
+
 ==== Syntax
 
 In the syntax, `$DATA_SOURCE_NAME` is the Kafka data source name, and the path points to a configuration file with topic and partition information of the Kafka server.
