@@ -25,8 +25,12 @@ $ kubectl tg create --cluster-name <cluster_name> --namespace <your_namespace> -
 
 You can specify pod CPU, memory, and TigerGraph version etc. through command-line options.
 Run `kubectl tg help` to view all options available.
+If you do not specify the options, the command uses the default values for each of the options.
+You can view the default values for each options in the help text as well.
 
-If you do not specify the options,
+NOTE: The `--ha` flag specifies the xref:ha:ha-cluster.adoc[replication factor] (HA factor) of the cluster, which is the total number of instances of your data.
+If you create a 6-node cluster with the `--ha 2` flag, your cluster has two instances of data that are divided int 3 partitions.
+
 
 [#_list_tigergraph_clusters]
 == List TigerGraph clusters
@@ -42,7 +46,7 @@ If you want to limit the scope to a specific namespace, change `all` to the name
 [#_check_cluster_status]
 == Check cluster status
 Run the following command to check the status of a cluster.
-Replace `<cluster_name>` with the name of the cluster, and `<your_namespace>` with the name space where the cluster is provisioned::
+Replace `<cluster_name>` with the name of the cluster, and `<your_namespace>` with the name space where the cluster is provisioned:
 
 [.wrap,console]
 ----

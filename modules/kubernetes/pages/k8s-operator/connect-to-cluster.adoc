@@ -5,6 +5,34 @@ This page describes the steps to connect to a TigerGraph cluster created by the 
 
 == Establish an SSH connection to the cluster
 
+To gain shell access to your cluster, run the following command:
+
+[.wrap,console]
+----
+$ kubrctl tg connect --cluster-name <cluster_name> --namespace <namespace_name>
+----
+
 == Access GraphStudio
+To access GraphStudio, make sure port 14240 on your cluster is accessible.
+Run the following command to retrieve the IP address of the GUI service.
+This is the service that powers GraphStudio.
+
+[.wrap,console]
+----
+$ kubectl get services --namespace <namespace_name>
+----
+
+In the output, under the external-IP column, you can find the external IP of the service.
+Visit port 14240 the IP to access GraphStudio.
 
 == Access REST endpoints
+To access TigerGraph's xref:tigergraph-server:API:index.adoc[REST endpoints], make sure port 9000 on your cluster is accessible.
+Run the following command to retrieve the IP address of the REST external service.
+
+[.wrap,console]
+----
+$ kubectl get services --namespace <namespace_name>
+----
+
+In the output, under the external-IP column, you can find the external IP of the service.
+You can make HTTP requests to port 9000 of the IP address to access the REST endpoints.
