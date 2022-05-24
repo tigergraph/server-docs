@@ -167,7 +167,7 @@ The below configurations are required:
 |1
 
 |`file.uris`
-|The path(s) to the data files on Google Cloud Filestore.
+|The path(s) to the data files on Google Cloud Storage.
 The URI may point to a CSV file, a zip file, a gzip file, or a directory
 |None.
 Must be provided by the user.
@@ -348,13 +348,174 @@ Before you begin, make sure the following prerequisites are met:
 * Your TigerGraph instance has access to your external Kafka cluster
 
 === Specify connector configurations
+Before creating the connector, you must provide certain connector configurations.
 
 The data streaming connector for external Kafka data is based on Apache Kafka MirrorMaker and shares many configurations as MirrorMaker.
 
-TO DO: explain what the important configurations are? What are the mandatory ones and what are the ones that users can usually go with the default values
+==== Basic configurations
 
-=== Specify SSL/SASL configurations (optional)
-If the source cluster has configured SSL or SASL protocols, you need to provide SSL/SASL configurations to the connector in order to communicate with the source connector. 
+The configurations in this subsection specify basic characteristics of the connector such as connector class, the addresses of the source and target clusters, as well as the converters used to covert Kafka Connect format and the serialized form that is written to Kafka.
+
+The following configurations are *required*:
+
+|===
+|Field |Description |Example value
+
+|`connector.class`
+|Must be set to `org.apache.kafka.connect.mirror.MirrorSourceConnector`.
+This class of connectors connect a source Kafka cluster to a target Kafka cluster.
+|`connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector`
+
+|`source.cluster.alias`
+|Alias of source Kafka cluster in string format
+|`source.cluster.alias=source-cluster`
+
+|`target.cluster.alias`
+|Alias of target Kafka cluster in string format
+|`target.cluster.alias=tg-cluster`
+
+|`source.cluster.bootstrap.servers`
+|Address of the external source Kafka cluster
+|`source.cluster.bootstrap.servers=localhost:9092`
+
+|`target.cluster.bootstrap.servers`
+|Address of destination Kafka cluster, which is the Kafka component inside TigerGraph. The ip address can be fetched via gmyip, and default port is 30002.
+|`target.cluster.bootstrap.servers=localhost:30002`
+
+|`source->target.enabled`
+|Enables source-to-target mirroring.
+This field must be set to `true`.
+|`source->target.enabled=true`
+
+|`topics`
+|Topic names to be loaded into TigerGraph, split by comma `,`
+|`topics=test-topic`
+
+|`key.converter`
+|Converter class used to convert between Kafka Connect format and the serialized form that is written to Kafka.
+This controls the format of the keys in messages written to or read from Kafka,
+Must be set to `org.apache.kafka.connect.converters.ByteArrayConverter`.
+
+|`key.converter=org.apache.kafka.connect.converters.ByteArrayConverter`
+
+|`header.converter`
+|Converter class used to convert between Kafka Connect format and the serialized form that is written to Kafka.
+This controls the format of the headers in messages written to or read from Kafka.
+Must be set to `org.apache.kafka.connect.converters.ByteArrayConverter`.
+|`header.converter=org.apache.kafka.connect.converters.ByteArrayConverter`
+
+|`value.converter`
+a|Converter class used to convert between Kafka Connect format and the serialized form that is written to Kafka.
+This controls the format of the values in messages written to or read from Kafka.
+
+* If records are in Avro format with Schema Registry service, this field should be `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter`.
+
+* If records are in Avro format without using Schema Registry service, this field should be `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverterWithoutSchemaRegistry`.
+
+* If records are in plaintext or JSON format, this field should be `org.apache.kafka.connect.converters.ByteArrayConverter`.
+|`value.converter=com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter`
+|===
+
+Other configuration options are available to fine-tune the connector.
+You can find all configuration options in https://kafka.apache.org/documentation/#georeplication-mirrormaker[Kafka MirrorMaker Configurations].
+
+==== SSL/SASL configurations (optional)
+If the source cluster has configured SSL or SASL protocols, you need to provide SSL/SASL configurations to the connector in order to communicate with the source cluster.
+
+You need to upload the following credential files to your TigerGraph cluster:
+
+* If the source cluster uses SASL, you need to upload the keytab of each Kerberos principal to every node of your TigerGraph cluster at the same absolute path.
+* If the source cluster uses SSL, you need to upload the trust store and key store to every node of your TigerGraph cluster.
+Each file must be at the same absolute path on all nodes.
+* If the source cluster uses SASL and SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster.
+Each file must be at the same absolute path on all nodes.
+
+The following configurations are required for admin, producer and consumer.
+To supply the configuration for the corresponding component, replace `<prefix>` with `admin`, `producer`, or `consumer`.
+For example, to specify `GSSAPI` as the SASL mechanism for producer, put `producer.sasl.mecahnism=GSSAPI`:
+
+|===
+|Field |Description
+
+|`<prefix>.security.protocol`
+|Protocol used to communicate with brokers. Valid values are: `PLAINTEXT`, `SSL`, `SASL_PLAINTEXT`, `SASL_SSL`.
+
+
+|`<prefix>.sasl.mechanism`
+|SASL mechanism used for client connections. This may be any mechanism for which a security provider is available. GSSAPI is the default mechanism
+
+
+|`<prefix>.sasl.kerberos.service.name`
+|The Kerberos principal name that Kafka runs as. This can be defined either in Kafka's JAAS config or in Kafka's config.
+
+
+
+|`<prefix>.sasl.jaas.config`
+|JAAS login context parameters for SASL connections in the format used by JAAS configuration files.
+See link:https://docs.oracle.com/javase/8/docs/technotes/guides/security/jgss/tutorials/LoginConfigFile.html[JAAS Login Configuration File] for
+
+
+|`<prefix>.ssl.endpoint.identification.algorithm`
+|
+The endpoint identification algorithm to validate server hostname using server certificate. Default is https. Disable server host name verification by setting `ssl.endpoint.identification.algorithm` to an empty string
+
+
+|`<prefix>.ssl.keystore.location`
+|The location of the key store file.
+
+
+|`<prefix>.ssl.keystore.password`
+|The password of the key store file.
+
+
+|`<prefix>.ssl.key.password`
+|The password of the private key in the key store file or the PEM key specified in `ssl.keystore.key`.
+
+
+|`<prefix>.ssl.truststore.location`
+|The location of the trust store file.
+
+|`<prefix>.ssl.truststore.password`
+|The password for the trust store file.
+
+|===
+
+==== Subsection configurations
+The subsection configurations come after the other configurations, and specify the names of the connectors you want to create using the provided configurations before the subsections, as well as the maximum number of tasks that can be created for the connector.
+
+You can create one or more connectors from one configuration file by providing a subsection for each connector you want to create.
+In the case of the MirrorMaker connector class used in this procedure, *we suggest you only create one connector from each file*, due to limited available configurations in the subsection.
+If you create multiple connectors, they will have almost identical properties.
+
+Start a subsection with a section title enclosed in square brackets.
+This title has no effect on the connector to be created, but the titles need to be unique in the configuration file.
+
+The following subsection configurations are available:
+
+
+|===
+|Field |Description
+
+|`name`
+|Name of the connector.
+
+|`tasks.max`
+|
+The maximum number of tasks that to be created for this connector. The connector may create fewer tasks if it cannot achieve this level of parallelism.
+The value for this configuration should not be larger than the number of partitions of the topic(s) in source Kafka.
+The default value is 1.
+|===
+
+
+==== Example
+The following is an example configuration file:
+
+[,text]
+----
+include::example$config-avro[]
+----
+
+The file in the example creates a connector named `avro-test-without-registry` with all configurations specified in the file.
 
 include::partial$create-connector.adoc[]
 
@@ -452,6 +613,7 @@ Once the loading job is created, run the loading job to load data into the graph
 ----
 RUN LOADING JOB -noprint load_company USING EOF="true"
 ----
+
 
 
 
