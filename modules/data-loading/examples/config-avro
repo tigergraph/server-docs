@@ -1,6 +1,6 @@
 connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector
-source.cluster.alias=Hello
-target.cluster.alias=World
+source.cluster.alias=hello
+target.cluster.alias=world
 source.cluster.bootstrap.servers=source.kafka.server:9092
 target.cluster.bootstrap.servers=localhost:30002
 source->target.enabled=true
@@ -14,7 +14,7 @@ offset.storage.replication.factor=1
 status.storage.replication.factor=1
 config.storage.replication.factor=1
 emit.heartbeats.interval.seconds=5
-secondary.scheduled.rebalance.max.delay.ms=35000
+world.scheduled.rebalance.max.delay.ms=35000
 key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
 header.converter=org.apache.kafka.connect.converters.ByteArrayConverter
 value.converter=com.tigergraph.kafka.connect.converters.TigerGraphAvroConverterWithoutSchemaRegistry

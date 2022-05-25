@@ -339,9 +339,9 @@ To load updates to the data source after you've created the connectors, you need
 In the future, the streaming data connector will support automatically scanning for updates and stream data to TigerGraph.
 
 == Stream data from an external Kafka cluster
-You can create a data connector between an external Kafka cluster (source cluster) and TigerGraph’s internal Kafka server (destination cluster) to stream data from the source cluster.
-The connector streams the Avro data to TigerGraph's internal Kafka server, and transforms the data into JSON format.
-You can then create and run a loading job to load data from Kafka into the graph store using the Kafka loader.
+You can create a data connector stream data from an external Kafka cluster (source cluster) to a destination cluster, which is often TigerGraph's internal Kafka cluster.
+If the data from the source cluster is in the AVRO format, the connector can transform the data into JSON format.
+You can then create and run a loading job to load data from the destination cluster into the graph store using the Kafka loader.
 
 Before you begin, make sure the following prerequisites are met:
 
@@ -431,7 +431,7 @@ Each file must be at the same absolute path on all nodes.
 Each file must be at the same absolute path on all nodes.
 
 The following configurations are required for admin, producer and consumer.
-To supply the configuration for the corresponding component, replace `<prefix>` with `admin`, `producer`, or `consumer`.
+To supply the configuration for the corresponding component, replace `<prefix>` with `source.admin`, `producer`, or `consumer`.
 For example, to specify `GSSAPI` as the SASL mechanism for producer, put `producer.sasl.mecahnism=GSSAPI`:
 
 |===
@@ -524,7 +524,7 @@ include::partial$create-data-source.adoc[]
 include::partial$create-loading-job-kafka.adoc[]
 
 For example, suppose we have the following graph schema with only one vertex type
- and the following JSON line data in Kafka:
+ and the following JSON line data in the destination Kafka:
 
 [tabs]
 ====
@@ -597,11 +597,13 @@ Topic-partition configuration file::
 Loading job::
 +
 --
-[.wrap,gsql]
+[,gsql]
 ----
 CREATE LOADING JOB load_company FOR GRAPH Company_Graph {
-    DEFINE FILENAME f1 = "$k1:<path_to_topic_partition_configuration>}";
-    LOAD f1 TO VERTEX company VALUES ($"company", $"employee_num") USING JSON_FILE="true";
+    DEFINE FILENAME f1 =
+      "$k1:<path_to_topic_partition_configuration>}";
+    LOAD f1 TO VERTEX company VALUES ($"company", $"employee_num")
+      USING JSON_FILE="true";
 }
 ----
 --
