@@ -339,8 +339,8 @@ To load updates to the data source after you've created the connectors, you need
 In the future, the streaming data connector will support automatically scanning for updates and stream data to TigerGraph.
 
 == Stream data from an external Kafka cluster
-You can create a data connector stream data from an external Kafka cluster (source cluster) to a destination cluster, which is often TigerGraph's internal Kafka cluster.
-If the data from the source cluster is in the AVRO format, the connector can transform the data into JSON format.
+You can create a data connector to stream data from an external Kafka cluster (source cluster) to a destination cluster, which is often TigerGraph's internal Kafka cluster.
+If the data from the source cluster is in AVRO format, the connector can transform the data into JSON format.
 You can then create and run a loading job to load data from the destination cluster into the graph store using the Kafka loader.
 
 Before you begin, make sure the following prerequisites are met:
@@ -348,10 +348,12 @@ Before you begin, make sure the following prerequisites are met:
 * Your TigerGraph instance has access to your external Kafka cluster
 
 === Specify connector configurations
-Before creating the connector, you must provide certain connector configurations.
+Before creating the connector, you must provide the required connector configurations.
+This includes <<_basic_configurations, basic configurations>> and <<_subsection_configurations, subsection configurations>>.
 
 The data streaming connector for external Kafka data is based on Apache Kafka MirrorMaker and shares many configurations as MirrorMaker.
 
+[#_basic_configurations]
 ==== Basic configurations
 
 The configurations in this subsection specify basic characteristics of the connector such as connector class, the addresses of the source and target clusters, as well as the converters used to covert Kafka Connect format and the serialized form that is written to Kafka.
@@ -480,6 +482,7 @@ The endpoint identification algorithm to validate server hostname using server c
 
 |===
 
+[#_subsection_configurations]
 ==== Subsection configurations
 The subsection configurations come after the other configurations, and specify the names of the connectors you want to create using the provided configurations before the subsections, as well as the maximum number of tasks that can be created for the connector.
 
@@ -616,9 +619,9 @@ Once the loading job is created, run the loading job to load data into the graph
 RUN LOADING JOB -noprint load_company USING EOF="true"
 ----
 
-
-
-
+There are two modes for the Kafka Loader: streaming mode and EOF mode.
+The default mode is streaming mode. In streaming mode, loading never stops until the job is aborted.
+In EOF mode, loading stops after consuming the current Kafka messages.
 
 
 == Manage connectors
