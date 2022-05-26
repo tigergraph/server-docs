@@ -341,7 +341,7 @@ In the future, the streaming data connector will support automatically scanning 
 == Stream data from an external Kafka cluster
 You can create a data connector to stream data from an external Kafka cluster (source cluster) to a destination cluster, which is often TigerGraph's internal Kafka cluster.
 If the data from the source cluster is in AVRO format, the connector can transform the data into JSON format.
-You can then create and run a loading job to load data from the destination cluster into the graph store using the Kafka loader.
+You can then create and run a loading job to load data from the destination cluster into graphs in your database using the xref:kafka-loader/index.adoc[Kafka loader].
 
 Before you begin, make sure the following prerequisites are met:
 
@@ -356,7 +356,7 @@ The data streaming connector for external Kafka data is based on Apache Kafka Mi
 [#_basic_configurations]
 ==== Basic configurations
 
-The configurations in this subsection specify basic characteristics of the connector such as connector class, the addresses of the source and target clusters, as well as the converters used to covert Kafka Connect format and the serialized form that is written to Kafka.
+The configurations in this subsection specify basic characteristics of the connector such as connector class, the addresses of the source and destination clusters, as well as the converters used to covert Kafka Connect format and the serialized form that is written to Kafka.
 
 The following configurations are *required*:
 
@@ -365,7 +365,7 @@ The following configurations are *required*:
 
 |`connector.class`
 |Must be set to `org.apache.kafka.connect.mirror.MirrorSourceConnector`.
-This class of connectors connect a source Kafka cluster to a target Kafka cluster.
+This class of connectors connect a source Kafka cluster to a destination Kafka cluster.
 |`connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector`
 
 |`source.cluster.alias`
@@ -373,7 +373,7 @@ This class of connectors connect a source Kafka cluster to a target Kafka cluste
 |`source.cluster.alias=source-cluster`
 
 |`target.cluster.alias`
-|Alias of target Kafka cluster in string format
+|Alias of destination Kafka cluster in string format
 |`target.cluster.alias=tg-cluster`
 
 |`source.cluster.bootstrap.servers`
