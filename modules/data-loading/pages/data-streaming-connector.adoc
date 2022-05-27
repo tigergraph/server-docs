@@ -620,8 +620,10 @@ RUN LOADING JOB -noprint load_company USING EOF="true"
 ----
 
 There are two modes for the Kafka Loader: streaming mode and EOF mode.
-The default mode is streaming mode. In streaming mode, loading never stops until the job is aborted.
+The default mode is streaming mode.
+In streaming mode, loading never stops until the job is aborted.
 In EOF mode, loading stops after consuming the current Kafka messages.
+
 
 
 == Manage connectors
@@ -668,3 +670,14 @@ To delete a connector,  run the below command and replace `<connector_name>` wit
 ----
 $ gadmin connector delete <connector_name>
 ----
+
+== Known issues
+Messages in TigerGraph's internal Kafka cluster are automatically removed from the topics at regular intervals.
+There are several known issues with this process:
+
+* Messages are only removed if the loading job is actively running.
+If the loading job finishes much sooner before the interval is reached, the messages are not removed.
+* If loading job uses EOF mode, meaning the loading job will terminate as soon as it finishes, it is likely some partial data will be left in the topic.
+* If a topic is deleted and recreated while a loading job on the topic is running, the data in the topic may get removed.
+
+Automatic message removal is an alpha feature and may be subject to change.
