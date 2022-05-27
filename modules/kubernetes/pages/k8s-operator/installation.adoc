@@ -4,21 +4,22 @@
 
 This page describes the steps to install TigerGraph Kubernetes Operator on your Kubernetes cluster.
 
-The Operator only needs to be installed once for each cluster.
-If you run into the CRD
+NOTE: The Operator only needs to be installed once for each cluster.
+If you run into errors saying that Custom Resource Definition (CRD) already exists, it is likely that someone else who has access to your cluster has already installed the operator.
+Therefore, you can safely ignore the error and skip installation.
 
 == Prerequisites
 * You have configured the `kubectl` command-line tool for access to your running Kubernetes cluster.
 * Helm is installed on your local machine.
 * https://cert-manager.io/docs/installation/kubectl/[cert-manager is installed on your Kubernetes cluster].
 * If you are pulling from a private registry, configure your cluster for access to the registry.
-You can do this by https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret[creating a Secret] and https://kubernetes.io/docs/concepts/configuration/secret/#use-case-as-container-environment-variables[use it as a container environment variable].
+You can do this by https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret[creating a Secret] and https://kubernetes.io/docs/concepts/configuration/secret/#use-case-as-container-environment-variables[using it as a container environment variable].
 
 == Procedure
 
 [#_install_the_tigergraph_kubectl_plugin]
 === Install the TigerGraph `kubectl` plugin
-Run the command below to install TigerGraph plugin for the `kubectl` commandline tool:
+Run the command below to install the TigerGraph plugin for the `kubectl` command-line tool:
 
 [.wrap,console]
 ----
@@ -40,4 +41,6 @@ If you are using a private helm repository, replace `http://docker.tigergraph.co
 ----
 $ kubectl tg init --helm-repo <private_repo_url> -p <secret_name>
 ----
+
+
 
