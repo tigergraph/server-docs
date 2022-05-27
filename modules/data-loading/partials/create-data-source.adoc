@@ -1,0 +1,33 @@
+=== Create data source
+Now that the connector has started loading data into TigerGraph's internal Kafka cluster, you can create a data source and point it to the Kafka cluster:
+
+. Create a data source configuration file.
+The only required field is the address of the broker.
+The broker's IP and hostname is the private IP of your TigerGraph server and port of TigerGraph's internal Kafka server:
++
+--
+* If you don't know your private IP, you can retrieve it by running `gmyip` in the bash terminal.
+* To retrieve the port of your Kafka cluster, run `gadmin config get Kafka.Port` to retrieve the port number.
+The default port is 30002.
+--
++
+In the `kafka.config` field, you can provide additionally configurations from Kafka's https://kafka.apache.org/documentation/#consumerconfigs[consumer configurations].
+For example, you can specify `group.id` to be `tigergraph` to specify  the group that this consumer belongs to:
+:
++
+[.wrap,json]
+----
+{
+    "broker":"localhost:30002",
+    "kafka_config":
+        {
+            "group.id": "tigergraph"
+        }
+}
+----
+. Run `CREATE DATA SOURCE` to create the data source:
++
+[,gsql]
+----
+CREATE DATA_SOURCE KAFKA datasource_name FOR GRAPH Graph_Name
+----
