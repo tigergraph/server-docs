@@ -1,126 +1,53 @@
 = Release Notes
-:description: Release notes for TigerGraph 3.5.
+:description: Release notes for TigerGraph {page-component-version}.
 :page-aliases: change-log.adoc, release-notes.adoc
 
-TigerGraph Server 3.5.0 was released on Feb 8th, 2022.
-
-
-== Patch releases
-
-=== 3.5.1
-
-TigerGraph 3.5.1 was released on March 31st, 2022.
-
-NOTE: TigerGraph Server 3.5.1 is available on TigerGraph Cloud.
-
-Issues fixed:
-
-* Resolved https://nvd.nist.gov/vuln/detail/CVE-2022-23302[CVE-2022-23302] and https://nvd.nist.gov/vuln/detail/CVE-2022-23305[CVE-2022-23305] by removing JDBCappender and JMSsink classes from ZK and Kafka log4j jar.
-* Fixed an issue that caused GraphStudio to issue too many expensive requests if the user stays on the Load Data page.
-* Fixed an issue that in rare cases prevented the Graph Processing Engine (GPE) process from restarting after being terminated.
-* Fixed an issue that in rare cases caused data upsert operations to cause queries to time out.
-* Fixed an issue that impacted upsert performance when upserting data to `STRING COMPRESS` data type.
-* Fixed an issue that in rare cases prevented a TigerGraph cluster from recovering from a Kafka failure.
-* Resolved SQL injection risks in GraphStudio.
-* Added an error message when a query written in syntax V2 uses the xref:gsql-ref:querying:select-statement/index.adoc#_sample_clause[`SAMPLE` clause] of a `SELECT` statement.
-`SAMPLE` clauses are currently not supported in syntax V2.
-* Fixed an issue that impacted performance when a query writes results to a file.
-* Fixed an issue that prevented loading jobs from loading data from other disks in a file system.
-* Fixed an issue that in some cases prevented GraphStudio from displaying the entire query if the query is too long.
-
-Improvements:
-
-* Added support for generic vertices in xref:gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT INTO <edge_type>` statements].
-
-'''
-
-The rest of this page provides the 3.5.0 release notes.
+TigerGraph Server {page-component-version}.0 was released on June 6th, 2022.
 
 == New Features
 
-Below is a list of new features and improvements in TigerGraph 3.5.0:
+Below is a list of new features and improvements:
 
 === Elasticity
-* Added support for provisioning xref:ha:elastic-cluster.adoc[Elastic Read-only (ER) clusters] to provide computation on demand.
+* Added support for provisioning xref:ha:elastic-cluster.adoc[Elastic Read-only (ER) clusters] with different partitions than the primary cluster.
 ** Note: This feature is currently in the preview stage only available for enterprise TigerGraph Cloud customers.
 If you are a paid TigerGraph Cloud enterprise customer and want to set up an ER cluster for your environment, please contact mailto:support@tigergraph.com[].
 
 === Manageability
-* Added support for xref:ha:remove-failed-node.adoc[removing one or more failed nodes] from a cluster.
-After removal, users can xref:cluster-resizing:expand-a-cluster.adoc[expand the cluster] back to its original size.
-* Added support for backup and restore to xref:kubernetes:index.adoc[TigerGraph deployments on Kubernetes].
-* Added xref:reference:configuration-parameters.adoc#_kafkastreamll[`gadmin configuration` parameter] `KafkaStreamLL.MaxPartitionFetchBytes` to adjust Kafka Stream max partition fetch size.
+
 
 === Security
-* Added xref:user-access:access-control-model.adoc#_access_control_lists[Access Control Lists] to queries for fine-grain access control.
-* Added xref:data-loading:kafka-loader/kafka-ssl-sasl.adoc[SSL/SASL support for Kafka loader].
-* Masked secrets and user credentials in RESTPP logs.
+
 
 === Ecosystem integration
-* Introduced the xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector] with Google Cloud Storage data streaming support.
+* Added the ability to stream data in formats such as AVRO and JSON from external Kafka clusters to xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector].
 
 === Observability
-* Improved error messaging when the maximum graph size allowed by license is reached.
+
 
 === Reliability
-* Added the `gsql-atomic-level` header to the endpoint xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[`POST /graph/\{graph_name}`] to allow users to set atomicity levels in upsert requests.
+
 
 
 === Query Language Enhancement
-* Changed default GSQL syntax to syntax V2.
-See xref:gsql-ref:querying:syntax-versions.adoc[] for a summary of the differences between V1 and V2.
-* Added V2 support for single-hop `UPDATE` and `DELETE` statements.
-* Added support for xref:gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_tuple_variable[local tuple variables].
-* Added support for multiple `POST-ACCUM` clauses in `SELECT` statements in syntax V1.
-* Added 10 methods to xref:gsql-ref:querying:accumulators.adoc#_bitwiseandaccum_bitwiseoraccum[`BitwiseAndAccum` and `BitwiseOrAccum`] and increased their length limit.
+
 
 === GraphStudio Enhancement
-* Added pagination support to AdminPortal metric charts.
+
 
 === Other tools
-* Added xref:API:built-in-endpoints.adoc#_install_a_query[`POST /gsql/queries/install` endpoint] to install queries.
-* Added xref:API:built-in-endpoints.adoc#_check_query_installation_status[`GET /gsql/queries/install/\{request_id}` endpoint] to check the status of query installation requests.
+
 
 
 [#_fixed_issues]
 == Fixed issues
-* Fixed an issue where the installer did not check `AllowerUser` on all nodes for installation on OEL8.
-* Fixed an issue that in rare cases led to GPE crash when the database is empty.
-* Fixed an issue that caused large parallel loading to trigger race conditions.
-* Fixed an issue that threw out-of-range errors when a 64-bit `BitwiseAccum` flips all bits with its `flip()` method.
-* Fixed an issue where `PRINT` statements printed vertex accumulators declared after the `PRINT` statement.
-* Improved the error message of the `/requesttoken` endpoint.
-* Fixed an issue where in rare cases clusters with over 10 partitions fail to elect a GSE leader.
-* Fixed an issue that caused connection refused errors when connecting to a TigerGraph cluster behind a load balancer through a remote GSQL client.
-* Fixed an issue that caused the `getAttr()` function of vertices and edges to invalidate a clause even if it doesn't get called.
-* Fixed an issue that caused the `edgeAttribute()` method of a vertex to erroneously throw type check errors in syntax V2.
-* Fixed an issue in GraphStudio query editor that produced inconsistent indentation when indents are autogenerated.
-* Fixed an issue in GraphStudio where some metadata of a graph isn't deleted after the graph is dropped
+
 
 
 
 
 == Known Issues
 
-=== Applications
-
-* *GraphStudio*
- ** xref:gui:graphstudio:known-issues.adoc[Known Issues for GraphStudio]
- ** The No-Code Data Migration feature is in Alpha release. Your feedback would be appreciated.
- ** The No-Code Visual Query Builder is in Beta release. Your feedback would be appreciated.
-* *Admin Portal*
- ** xref:gui:admin-portal:known-issues.adoc[Known Issues for AdminPortal]
-
-=== *GSQL*
-
-* *Multiple (Conjunctive) Path Patterns*:
- ** There are no known functional problems, but the performance has not been optimized. Your feedback would be appreciated.
-* *DML type check error in V2 Syntax:*
- ** GSQL will report a wrong type check error for Query block with multiple POST-ACCUM clauses and Delete/Update attribute operation.
-* *Turn on GSQL HA manually when upgrading from 3.0.x*
- ** Users who are upgrading from 3.0.X need to manually start GSQL HA service. Please reach out to support for help with the process documented in: https://tigergraph.freshdesk.com/a/solutions/articles/5000865072
-* *Stale data visible after Deletes using index*
- ** Queries that use secondary index may still see the vertices being deleted until after the snapshots are fully rebuilt.
 
 == Release notes for previous versions
 * xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]

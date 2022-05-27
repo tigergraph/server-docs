@@ -1,0 +1,35 @@
+=== Create loading job
+Create a loading job to load data from the data source:
+
+. Create a topic-partition configuration for each topic.
++
+[,javascript]
+----
+{
+  "topic": <topic_name>, <1>
+  "partition_list": [ <2>
+    {
+      "start_offset": <offset_value>, <3>
+      "partition": <partition_number> <4>
+    },
+    {
+      "start_offset": <offset_value>, <3>
+      "partition": <partition_number> <4>
+    }
+    ...
+  ]
+}
+----
+<1> Replace `<topic_name>` with the name of the topic this configuration applies to.
+<2> List of partitions you want to stream from.
+For each partition, you can set a start offset.
+If this list is empty, or `partition_list` isn't included, all partitions are used with the default offset.
+<3> Replace `<offset_value>` with the offset value you want.
+The default offset for loading is `-1`, which means you will load data from the most recent message in the topic.
+If you want to load from the beginning of a topic, the `start_offset` value should be `-2`.
+<4> Replace `<partition_number>` with the partition number if you want to configure.
+. Create a loading job and map data to graph.
+See xref:kafka-loader/index.adoc#_2_create_a_loading_job[Kafka loader guide] for how to map data from a Kafka data source to the graph.
+See xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_loading_json_data[Loading JSON data] on how to create a loading job for JSON data.
+
+WARNING: Known bug: to use the `-1` value for offset, delete the `start_offset` key instead of setting it to `-1`.

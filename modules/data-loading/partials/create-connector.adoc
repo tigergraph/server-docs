@@ -1,0 +1,20 @@
+=== Create connector
+Once you have prepared the configuration file, run command `gadmin connector create` and specify the configuration file to create the connector:
+
+[.wrap,console]
+----
+gadmin connector create --c <config_file>
+----
+
+The connectors start streaming from the data source immediately after creation if the configurations are valid.
+You can run `gadmin connector status` to verify the status of the connectors.
+If the configurations are valid, the connectors should be in `RUNNING` status.
+Data streamed from the source stays in the destination cluster Kafka topics.
+
+If the destination cluster is TigerGraph's internal Kafka cluster, the messages are removed as they are loaded in to the graph during the course of the loading job at regular intervals.
+
+[WARNING]
+====
+Automatic removal of loaded Kafka messages is an alpha feature and may be subject to change.
+====
+
