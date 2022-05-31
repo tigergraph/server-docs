@@ -13,8 +13,14 @@ To create a TigerGraph cluster, run the following command:
 
 [.wrap,console]
 ----
-$ kubectl tg create --cluster-name <cluster_name> --namespace <your_namespace>
+$ kubectl tg create --cluster-name <cluster_name>  --storage-class <storage_class>  --namespace <your_namespace>
 ----
+
+Each cluster is provisioned with https://kubernetes.io/docs/concepts/storage/persistent-volumes/[persistent volumes] for each node by default.
+When you create a cluster with persistent volumes, you must specify a https://kubernetes.io/docs/concepts/storage/storage-classes/[storage class].
+
+If you create a cluster in a specific namespace, the namespace must already exist.
+The command does not create a namespace for you.
 
 If you have cloned TigerGraph images for a self-hosted registry, specify the registry with the `--docker-registry` option:
 
@@ -22,6 +28,9 @@ If you have cloned TigerGraph images for a self-hosted registry, specify the reg
 ----
 $ kubectl tg create --cluster-name <cluster_name> --namespace <your_namespace> --docker-registry <your_registry>
 ----
+
+If your registry is private, you also need to provide a https://kubernetes.io/docs/concepts/configuration/secret/[Secret] that allows you to access to the private registry.
+Make sure the Secret exists in the same namespace as the one where you are creating the cluster.
 
 You can specify pod CPU, memory, and TigerGraph version etc. through command-line options.
 Run `kubectl tg help` to view all options available.
@@ -63,3 +72,5 @@ Replace `<cluster_name>` with the name of the cluster, and `<your_namespace>` wi
 ----
 $ kubectl tg delete --cluster-name <cluster_name> --namespace <your_namespace>
 ----
+
+Deleting a cluster does not delete the persistent volume that provisioned when you create the cluster. 
