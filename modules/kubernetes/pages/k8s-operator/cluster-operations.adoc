@@ -13,7 +13,7 @@ To create a TigerGraph cluster, run the following command:
 
 [.wrap,console]
 ----
-$ kubectl tg create --cluster-name <cluster_name>  --storage-class <storage_class>  --namespace <your_namespace>
+$ kubectl tg create --cluster-name <cluster_name>  --storage-class <storage_class>  --namespace <namespace_name>
 ----
 
 Each cluster is provisioned with https://kubernetes.io/docs/concepts/storage/persistent-volumes/[persistent volumes] for each node by default.
@@ -26,7 +26,7 @@ If you have cloned TigerGraph images for a self-hosted registry, specify the reg
 
 [.wrap,console]
 ----
-$ kubectl tg create --cluster-name <cluster_name> --namespace <your_namespace> --docker-registry <your_registry>
+$ kubectl tg create --cluster-name <cluster_name> --namespace <namespace_name> --docker-registry <your_registry>
 ----
 
 If your registry is private, you also need to provide a https://kubernetes.io/docs/concepts/configuration/secret/[Secret] that allows you to access to the private registry.
@@ -55,22 +55,29 @@ If you want to limit the scope to a specific namespace, change `all` to the name
 [#_check_cluster_status]
 == Check cluster status
 Run the following command to check the status of a cluster.
-Replace `<cluster_name>` with the name of the cluster, and `<your_namespace>` with the namespace where the cluster is provisioned:
+Replace `<cluster_name>` with the name of the cluster, and `<namespace_name>` with the namespace where the cluster is provisioned:
 
 [.wrap,console]
 ----
-$ kubectl tg status --cluster-name <cluster_name> --namespace <your_namespace>
+$ kubectl tg status --cluster-name <cluster_name> --namespace <namespace_name>
 ----
 
 
 [#_delete_tigergraph_clusters]
 == Delete TigerGraph clusters
 Run the following command to delete a cluster.
-Replace `<cluster_name>` with the name of the cluster, and `<your_namespace>` with the namespace where the cluster is provisioned:
+Replace `<cluster_name>` with the name of the cluster, and `<namespace_name>` with the namespace where the cluster is provisioned:
 
 [.wrap,console]
 ----
-$ kubectl tg delete --cluster-name <cluster_name> --namespace <your_namespace>
+$ kubectl tg delete --cluster-name <cluster_name> --namespace <namespace_name>
 ----
 
-Deleting a cluster does not delete the persistent volume that provisioned when you create the cluster. 
+To protect your data, deleting a cluster does not delete the Persistent Volume Claims (PVC) provisioned when you create the cluster.
+
+To delete the PVCs created with a cluster, run the following command:
+
+[.wrap,console]
+----
+$ kubectl delete pvc  -l app=<cluster_name> -n <namespace_name>
+----
