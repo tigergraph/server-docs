@@ -1,0 +1,19 @@
+= Uninstallation
+:description: Instructions on how to uninstall the TigerGraph Kubernetes Operator from a Kubernetes cluster.
+
+This page describes the steps to uninstall the TigerGraph Kubernetes Operator from a Kubernetes cluster.
+
+== Prerequisites
+* You have xref:k8s-operator/installation.adoc#_install_the_tigergraph_kubectl_plugin[installed the TigerGraph plugin] for the `kubectl` command-line tool.
+* You have configured `kubectl` for access to your Kubernetes cluster.
+
+== Procedure
+Run the following command to uninstall the Operator:
+
+[.wrap,console]
+----
+$ kubectl tg uninstall
+----
+
+This command only uninstalls the Operator.
+The clusters created by the Operator and the Custom Resource Definitions (CRD) defined when you first installed the Operator are not deleted by this command. 
