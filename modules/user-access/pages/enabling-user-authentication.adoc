@@ -3,7 +3,11 @@
 
 Enabling user authentication on TigerGraph enforces access control, requiring users to identify themselves and ensuring that users can only perform actions allowed by their roles.
 
-When the TigerGraph platform is first installed, user authentication is disabled. The installation process creates a gsql superuser who has the name `tigergraph` and password `tigergraph`. As long as this user's password is `tigergraph`, GSQL authentication remains disabled.
+When the TigerGraph platform is first installed, user authentication is disabled. The installation process creates a gsql superuser who has the name `tigergraph` and password `tigergraph`.
+As long as this user's password is `tigergraph`, GSQL authentication remains disabled.
+
+WARNING: It is strongly suggested that you at least change the default user password to enable GSQL user authentication.
+Not enabling GSQL authentication has the potential to give unauthorized users broad control over your database and the underlying system.
 
 Because there are two ways to access the TigerGraph system, either through the GSQL shell or through REST{pp} requests, there are two steps needed to secure your system with authentication enabled for both points of entry:
 
