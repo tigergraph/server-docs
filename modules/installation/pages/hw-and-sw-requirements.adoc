@@ -74,14 +74,15 @@ Please use a bash shell for the installation process.
 
 Before offline installation, the TigerGraph system needs a few basic software packages to be present:
 
-* `tar`
-* `curl`
 * `crontab`
+* `curl`
 * `ip`
-* `ssh`/`sshd` (Only required for cluster installation)
 * `more`
+* `netcat`
 * `netstat`
+* `ssh`/`sshd` (Only required for cluster installation)
 * `sshpass`
+* `tar`
  ** if you intend to use password login method (P method) instead of ssh key login method (K method) to install the TigerGraph platform.
 
 If they are not present, contact your system administrator to have them installed on your target system. For example, they can be installed with one of the following commands.
@@ -89,13 +90,13 @@ If they are not present, contact your system administrator to have them installe
 [source,console]
 ----
 # Centos or RedHat:
-sudo yum install tar curl cronie iproute util-linux-ng net-tools coreutils openssh-clients openssh-server sshpass
+sudo yum install tar curl cronie iproute util-linux-ng net-tools nc coreutils openssh-clients openssh-server sshpass
 
 # Ubuntu or Debian (Except Ver 18.04):
-sudo apt install tar curl cron iproute util-linux net-tools coreutils openssh-client openssh-server sshpass
+sudo apt install tar curl cron iproute util-linux net-tools netcat coreutils openssh-client openssh-server sshpass
 
 # Ubuntu or Debian (Ver. 18.04):
-sudo apt install tar curl cron iproute2 util-linux net-tools coreutils openssh-client openssh-server sshpass
+sudo apt install tar curl cron iproute2 util-linux net-tools netcat coreutils openssh-client openssh-server sshpass
 ----
 
 === NTP
