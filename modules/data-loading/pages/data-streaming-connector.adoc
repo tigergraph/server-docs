@@ -116,7 +116,14 @@ This parameter does not affect JSON files.
 |`1000`
 
 |`file.reader.text.eol`
-|End of line character.
+a|End of line character.
+
+To use double-quote``"`` as the end-of-line character, it needs to be escaped with a backslash: `file.reader.text.eol=\"`.
+
+Other characters such as `'`, `/`, `\t`, and `\n`, do not need to be espaced.
+
+You cannot use a backslash character as the end-of-line character, since it cannot be escaped.
+
 |`\n`
 
 |`file.reader.text.header`
