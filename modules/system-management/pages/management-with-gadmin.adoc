@@ -1,4 +1,4 @@
-= Management with gadmin
+= Guide to management with gadmin
 :description: Managing TigerGraph Servers with gadmin.
 :page-aliases: gadmin:management-with-gadmin.adoc
 
@@ -18,6 +18,16 @@ This is the first step when running a new TigerGraph instance.
 If you are using Docker, for example, you must run `gadmin start all` after starting the Docker container before you can use GSQL.
 
 Use `gadmin stop`, `gadmin start` or `gadmin restart` with individual services such as GSQL, Kafka, or RESTPP to control them separate from the others.
+
+The `restart` and `stop` commands prompt you for confirmation each time they are run. To avoid this, run the commands with the `-y` flag to bypass the confirmation.
+
+.Bypass confirmation with -y
+[source.wrap, bash]
+----
+gadmin restart gpe -y
+gadmin stop all -y
+gadmin start all
+----
 
 === Check service status
 
