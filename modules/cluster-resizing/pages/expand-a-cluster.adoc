@@ -19,7 +19,9 @@ WARNING: If your TigerGraph cluster uses a seeded license, please https://tigerg
 
 [WARNING]
 ====
-If you ever deleted a vertex attribute, cluster expansion might lead to data corruption.
+Known issue:
+
+If you have ever run a schema change job to delete a vertex attribute or edge attribute, cluster expansion may lead to issues reading attributes of that vertex or edge type.
 Prior to expansion, run the following command as the TigerGraph Linux user on your instance to check if you can proceed safely.
 Make sure all TigerGraph services are running when you run the script:
 
