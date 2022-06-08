@@ -9,10 +9,10 @@ TigerGraph 3.4.0 includes a security patch for Log4j CVE-2021-45105.
 See <<Fixed issues>> for details.
 
 == New - TigerGraph GraphQL Service
-Along with TigerGraph Server 3.4.0, we are proudly introducing xref:graphql::intro.adoc[TigerGraph GraphQL Service].
+Along with TigerGraph Server 3.4.0, we are proudly introducing xref:graphql::index.adoc[TigerGraph GraphQL Service].
 
 TigerGraph GraphQL Service allows you to make GraphQL requests to access graph data in TigerGraph.
-To learn more, please see xref:graphql::intro.adoc[TigerGraph GraphQL Service].
+To learn more, please see xref:graphql::index.adoc[TigerGraph GraphQL Service].
 
 == New Features
 
@@ -94,6 +94,12 @@ Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-
 
 
 == Known Issues
+
+=== Cluster expansion
+
+If you have ever deleted a vertex or edge attribute before conducting an expansion,  cluster expansion may lead to issues reading attributes of that vertex or edge type.
+
+For details, see xref:cluster-resizing:expand-a-cluster.adoc[].
 
 === Applications
 
