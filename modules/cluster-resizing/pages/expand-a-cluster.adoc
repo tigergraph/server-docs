@@ -17,6 +17,23 @@ WARNING: If your TigerGraph cluster uses a seeded license, please https://tigerg
 * Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the expansion completes.
 * If the original cluster is a single node installation, make sure the IP used is not a https://en.wikipedia.org/wiki/Localhost[local loopback address] such as 127.0.0.1.
 
+[WARNING]
+====
+Known issue:
+
+If you have ever run a schema change job to delete a vertex attribute or edge attribute, cluster expansion may lead to issues reading attributes of that vertex or edge type.
+Prior to expansion, run the following command as the TigerGraph Linux user on your instance to check if you can proceed safely.
+Make sure all TigerGraph services are running when you run the script:
+
+[.wrap,console]
+----
+$ if grep "AttributeName: .*_deleted" $(gadmin config get System.DataRoot)/gstore/0/part/config.yaml > /dev/null; then printf "\nContact support\n\n"; else printf "\nProceed with expansion\n\n"; fi
+----
+
+If the script returns "Proceed with expansion", you can proceed with cluster expansion.
+If you see "Contact support", *do not* proceed with the expansion, and https://tigergraph.zendesk.com/hc/en-us/[contact TigerGraph support] to for assistance.
+====
+
 
 == Procedure
 
