@@ -14,13 +14,16 @@ You can edit the `kustimization.yaml` file in the `{cloud-code}` folder to chang
 The default namespace is `default`. No need to edit the files if no changes are needed.
 
 Next, run the `./tg` script in the `k8s` directory to generate the deployment manifest for a single-server deployment.
+You must specify the size of your cluster and the version of TigerGraph to be installed on your cluster.
+In the case of a single-server instance, the cluster sizer is 1.
+
 You can use the `--prefix` option to specify a prefix for your pods.
 The default prefix is `tigergraph`.
-A `deploy` directory will be created automatically, and you should find the manifest named `tigergraph-{cloud-code}-default.yaml` in the directory.
+A `deploy` directory is created automatically, and you should find the manifest named `tigergraph-{cloud-code}-default.yaml` in the directory.
 
-[source,console,subs="attributes+"]
+[source.wrap,console,subs="attributes+"]
 ----
-$ ./tg {cloud-code} kustomize -s 1
+$ ./tg {cloud-code} kustomize -s <cluster_size> -v <tigergraph_version>
 ----
 
 ==== Deploy manifest
@@ -106,9 +109,13 @@ $ cd ecosys/k8s
 You can customize your deployment by editing the `kustomize.yaml` file in the `{cloud-code}` directory. The `tg` script in the `k8s` folder offers a convenient way to make common customizations such as namespace, TigerGraph version, as well as cluster size. Run `./tg -h` to view the help text on how to use the script.
 
 Use the `tg` script in the `k8s` directory of the repo to create a Kubernetes manifest.
-Use `-s` or `--size` to indicate the number of nodes in the cluster. Use the `--ha` option to indicate the replication factor of the cluster, and the partitioning factor will be the number of nodes divided by the replication factor.
+Use `-s` or `--size` to indicate the number of nodes in the cluster.
+Use the `--version` flag to indicate the TigerGraph version to be installed in your cluster.
+Size and TigerGraph version are required to generate a deployment manifest.
 
-For example, the following command will create a manifest that will deploy a 3*2 cluster with a replication factor of 2 and a partitioning factor of 3.
+Use the `--ha` option to indicate the replication factor of the cluster, and the partitioning factor is the number of nodes divided by the replication factor.
+
+For example, the following command creates a manifest that deploys a 3*2 cluster with a replication factor of 2 and a partitioning factor of 3.
 
 [source,console,subs="attributes+"]
 ----
