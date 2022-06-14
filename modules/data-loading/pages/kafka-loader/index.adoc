@@ -17,9 +17,9 @@ image::kafka-loading-architecture.png[Kafka Data Loader Architecture]
 
 == Prerequisites
 
-* Your TigerGraph instances has access to a running external Kafka cluster.
+* Your TigerGraph instance has access to a running external Kafka cluster.
 
-* Once you have the external Kafka cluster setup, you need to prepare the following two configuration files and place them in your desired location in the TigerGraph system:
+* Once you have the external Kafka cluster set up, prepare the following two configuration files and place them in your desired location in the TigerGraph system:
 ** <<_kafka_data_source_configuration_file>>
 ** <<_kafka_topic_and_partition_configuration_file>>
 
@@ -108,7 +108,7 @@ For example,
   "default_start_offset": 0 <2>
 }
 ----
-<1> All partition will be used if the config file doesn't provide `partition_list` or if the partition list is empty.
+<1> All partitions will be used if the config file doesn't provide `partition_list` or if the partition list is empty.
 <2> This overwrites the default start offset to 0.
 
 == Configure and use the Kafka loader
@@ -158,7 +158,7 @@ GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "{\"broker\":\"broker.full.do
 [TIP]
 ====
 The above simplified statement is useful for using Kafka Data Loader in TigerGraph Cloud.
-In TigerGraph Cloud, you can use GSQL web shell to define and create Kafka data sources, without creating the Kafka data source configuration file in filesystem.
+In TigerGraph Cloud, you can use the GSQL web shell to define and create Kafka data sources without creating the Kafka data source configuration file in the filesystem.
 ====
 
 
@@ -236,6 +236,9 @@ RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
 ----
 
 To learn about each option and parameter of the `RUN LOADING JOB` command, see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_options[Loading job options].
+
+The xref:reference:configuration-parameters.adoc#_kafkaloader[Kafka Loader parameter] `KafkaLoader.ReplicaNumber` controls the number of Kafka Loader replicas per node.
+The default is `1`, which means only one loading job can be run at a time. To run multiple loading jobs at the same time, increase this parameter.
 
 == Examples
 
