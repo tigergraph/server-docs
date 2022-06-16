@@ -55,7 +55,8 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 * Fixed an issue where if a Kafka topic only has one message, it cannot be consumed.
 * Fixed an issue with Graph Storage Engine (GSE) leader election that caused GSE dysfunction.
 * Fixed an issue that prevented GraphStudio from accepting a `SET<VERTEX>` type parameter if the size of the parameter is greater than 10.
-* Fixed an issue that could cause a query written in syntax V2 that uses a `POST-ACCUM` clause without an `ACCUM` clause to produce wrong results in rare cases.
+* Fixed an issue that could cause a query written in GSQL syntax V2 that uses a `POST-ACCUM` clause without an `ACCUM` clause to produce wrong results in rare cases.
+* Fixed an issue that could cause a query written in GSQL syntax v2 that uses multiple `POST-ACCUM` clauses that refer to the source vertex alias to produce wrong results in rare cases.
 * Fixed an issue that resulted in `SHOW LOADING STATUS ALL` command showing inaccurate loading job status when an instance has multiple graphs.
 * Fixed an issue that caused KAFKACONN out-of-memory (OOM) issue when loading large datasets through the data streaming connector.
 * Fixed an issue that affected the high availability (HA) of the application server on Elastic Kubernetes Service (EKS).
