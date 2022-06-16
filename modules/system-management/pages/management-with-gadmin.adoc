@@ -6,72 +6,20 @@ TigerGraph Graph Administrator (gadmin) is a tool for managing TigerGraph server
 
 To see a listing of all the options or commands available for gadmin, see the xref:management-commands.adoc[] page.
 
-== Manage TigerGraph services
-
-Although the end user accesses TigerGraph by running GSQL or accessing the GraphStudio GUI, TigerGraph is actually built on many more services than just those two alone.
-Each has its own function and can be started or stopped individually in the case of a problem with one part, though several services rely on one another.
-
-=== Start, stop or restart a service
-
-Use the command `gadmin start all` to start all of the TigerGraph services.
-This is the first step when running a new TigerGraph instance.
-If you are using Docker, for example, you must run `gadmin start all` after starting the Docker container before you can use GSQL.
-
-Use `gadmin stop`, `gadmin start` or `gadmin restart` with individual services such as GSQL, Kafka, or RESTPP to control them separate from the others.
-
-The `restart` and `stop` commands prompt you for confirmation each time they are run. To avoid this, run the commands with the `-y` flag to bypass the confirmation.
-
-.Bypass confirmation with -y
-[source.wrap, bash]
-----
-gadmin restart gpe -y
-gadmin stop all -y
-gadmin start all
-----
-
-=== Check service status
-
-Use `gadmin status all` or `gadmin status` with an individual service to check its state.
-See xref:management-commands.adoc#_service_status_definitions[Service status definitions] for detailed information on the returned results.
+* xref:manage-services.adoc[TigerGraph service management]
+* xref:memory-management.adoc[]
+* xref:security-management.adoc[]
 
 == Manage licenses
 
-See xref:installation:license.adoc[] for a complete guide to activating or renewing a TigerGraph license.
+To add a new license key, use the command `gadmin license set`. You can either paste the license key in the terminal directly, or use the `@` symbol to point to a specific file path.
+
+* `gadmin license set <new_license_key>`
+* `gadmin license set @<path_to_license_file>`
 
 To simply check the status of the license on the current solution, use the command `gadmin license status`.
 
-== Manage memory usage
-
-The Graph Processing Engine (GPE) has two environment variables that control the behavior of GSQL based on the amount of memory available in the system.
-
-`SysAlertFreePct` sets a memory usage threshold where the system will start throttling queries to allow long-running queries to finish and release the memory.
-
-`SysMinFreePct` sets a memory usage threshold where queries will start aborting automatically to prevent GPE crashes and system instability.
-
-To change these variables, use the command `gadmin config entry GPE.BasicConfig.Env` to open the environment variable list.
-This displays all current environment variables and allows you to add new ones directly.
-The variables are separated with the semicolon `;`, so type `;` and then add the variable you wish to modify.
-
-Spaces have been added to the below example for readability.
-
-[source.wrap, bash]
-----
-> gadmin config entry GPE.BasicConfig.Env
-
-GPE.BasicConfig.Env [ LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu...(too long to show the full content, please use 'gadmin config get GPE.BasicConfig.Env' to get it) ]:
-
-The runtime environment variables, separated by ';'
-
-✔ New: LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=12; MALLOC_CONF=prof:true,prof_active:false
-
-; SysMinFreePct=20;SysAlertFreePct=30 <1>
-----
-
-<1> In this example, the user has set `SysMinFreePct` to `20`, meaning that queries will start aborting automatically for stability when 20% of system memory is free (80% utilization).
-The user has also set `SysAlertFreePct` to `30`, so queries will start being throttled at 30% free memory (70% utilization).
-
-After making a change, run `gadmin config apply` to apply the changes and `gadmin restart gpe` to restart the GPE service.
-Changes will take effect after the restart.
+See xref:installation:license.adoc[] for a complete guide to activating or renewing a TigerGraph license.
 
 == Manage system configurations
 
