@@ -67,6 +67,47 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 == Known Issues
 
 
+|===
+|In version |Description |Status
+
+|3.6.0
+|If a graph on an instance contains a loading job that uses `gsql_split_by_space()` token function, exporting the graph might lead to GPE dysfunction.
+|Unresolved
+
+|3.6.0
+|Accumulating a `DATETIME` object returned from the `to_datetime()` function to a BagAccum inside an ArrayAccum causes GPE dysfunction.
+|Unresolved
+
+|3.6.0
+|Calling `vertex.edgeAttribute()` function with `STRING COMPRESS` data type causes GPE crash
+|Unresolved
+
+|3.6.0
+|Interpreting a query that uses bitwise accumulators causes GPE dysfunction.
+|Unresolved
+
+|3.6.0
+|When vertices are automatically created during edge loading, the primary key of the of vertices created are not written to vertex attributes, even if the vertex definition has `primary_key_as_attribute` set to true.
+|Unresolved
+
+
+|3.6.0
+|Running a query with `edgeAttribute()` or `neighborAttribute()` function when accumulator containing universal vertex types is referenced in the same statement cause GPE dysfunction.
+|Unresolved
+
+
+|3.6.0
+|Calling the `setAttr()` function in an interpreted query causes GPE dysfunction.
+|Unresolved
+
+|3.6.0
+|High-frequency schema changes can cause GPE dysfunction in rare cases.
+|Unresolved
+|===
+
+For a list of known issues for GraphStudio and Admin portal, please see xref:gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
+
+
 == Release notes for previous versions
 * xref:3.5@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.5]
 * xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
