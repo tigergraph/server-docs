@@ -1,6 +1,7 @@
 = Release Notes
 :description: Release notes for TigerGraph {page-component-version}.
 :page-aliases: change-log.adoc, release-notes.adoc
+:fn-preview: footnote:preview[Features in the preview stage should not be used for production purposes. General Availability (GA) versions of the feature will be available in a later release.]
 
 TigerGraph Server {page-component-version}.0 was released on June 17th, 2022.
 
@@ -9,40 +10,102 @@ TigerGraph Server {page-component-version}.0 was released on June 17th, 2022.
 Below is a list of new features and improvements:
 
 === Elasticity
-* Added support for provisioning xref:ha:elastic-cluster.adoc[Elastic Read-only (ER) clusters] with different partitions than the primary cluster.
+* Added support for provisioning xref:ha:elastic-cluster.adoc[Elastic Read-only (ER) clusters (Preview)]{fn-preview} with different partitions than the primary cluster.
 ** Note: This feature is currently in the preview stage only available for enterprise TigerGraph Cloud customers.
 If you are a paid TigerGraph Cloud enterprise customer and want to set up an ER cluster for your environment, please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
 
 === Manageability
-* Introduced TigerGraph xref:kubernetes:k8s-operator/index.adoc[].
+* Introduced TigerGraph xref:kubernetes:k8s-operator/index.adoc[Kubernetes Operator (Preview)] {fn-preview}.
 TigerGraph Kubernetes Operator allows you to automate operations such as the creation, status checking and deletion of TigerGraph clusters.
+
 
 === Security
 * Sensitive data such as user credentials in log and configuration files are now encrypted.
 
 === Ecosystem integration
-* Added the ability to stream data in formats such as AVRO and JSON from external Kafka clusters to xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector].
+* Added the ability to stream data from external Kafka clusters to xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector].
+* Added the ability to stream AVRO data for all supported sources with xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector].
 
 === Performance
 * Improved data loading speed and reliability.
 * Improved the speed and reliability of database catalog operations such as vertex and edge definition, schema changes, and query installation.
 
+=== Observability
+* Improved GSQL log debuggability by ensuring all metadata and data update operations share a common prefix.
+* Improved engine log debuggability by including the ID of the original request from RESTPP.
+* Added more detail to several error messages.
+
+=== Data API service
+* Added two parameters `target_vertex_must_exist` and `source_vertex_must_exist` to xref:tigergraph-server:API:built-in-endpoints.adoc#_upsert_data_to_graph[the REST endpoint to upsert data].
+
 === Query Language Enhancement
 * Reducer function `add()` now accumulates values when loading to a `MAP` attribute.
 
-=== GraphStudio Enhancement
+=== GraphStudio and Admin Portal Enhancement
 * Added the ability to xref:gui:graphstudio:write-queries.adoc#_graph_data_science_library_queries[one-click install built-in Graph Data Science Library algorithms].
 * Added the ability to xref:gui:graphstudio:map-data-to-graph.adoc#_create_a_gcs_data_source[load data from Google Cloud Storage] through GraphStudio UI.
-
-
+* Added Japanese language support for GraphStudio and Admin Portal.
 
 [#_fixed_issues]
 == Fixed issues
-
-
+* Fixed a bug that caused issues reading the attributes of a vertex after cluster expansion if the vertex type had deleted attributes.
+* Fixed an issue that caused Graph Processing Engine (GPE) dysfunction in rare cases during concurrent read and write operations on the same vertex and its connected edges during data loading.
+* Fixed an issue that delayed the display of loading status on Load Data page in GraphStudio.
+* Fixed an issue where `v.getAttr()` function could cause GPE dysfunction if it is provided the wrong type.
+* Fixed an issue where if a Kafka topic only has one message, it cannot be consumed.
+* Fixed an issue with Graph Storage Engine (GSE) leader election that caused GSE dysfunction.
+* Fixed an issue that prevented GraphStudio from accepting a `SET<VERTEX>` type parameter if the size of the parameter is greater than 10.
+* Fixed an issue that could cause a query written in GSQL syntax V2 that uses a `POST-ACCUM` clause without an `ACCUM` clause to produce wrong results in rare cases.
+* Fixed an issue that could cause a query written in GSQL syntax v2 that uses multiple `POST-ACCUM` clauses that refer to the source vertex alias to produce wrong results in rare cases.
+* Fixed an issue that resulted in `SHOW LOADING STATUS ALL` command showing inaccurate loading job status when an instance has multiple graphs.
+* Fixed an issue that caused KAFKACONN out-of-memory (OOM) issue when loading large datasets through the data streaming connector.
+* Fixed an issue that affected the high availability (HA) of the application server on Elastic Kubernetes Service (EKS).
+* Removed inaccurate loading metrics from the Load Data page in GraphStudio.
+* When a user tries to edit an inferred vertex from returned edges in GraphStudio's visualized query results, they will now see a warning to modify their queries to return the vertices to be able to edit the vertices.
 
 
 == Known Issues
+
+
+|===
+|In version |Description |Status
+
+|3.6.0
+|If a graph on an instance contains a loading job that uses `gsql_split_by_space()` token function, exporting the graph might lead to GPE dysfunction.
+|Unresolved
+
+|3.6.0
+|Accumulating a `DATETIME` object returned from the `to_datetime()` function to a BagAccum inside an ArrayAccum causes GPE dysfunction.
+|Unresolved
+
+|3.6.0
+|Calling `vertex.edgeAttribute()` function with `STRING COMPRESS` data type causes GPE crash
+|Unresolved
+
+|3.6.0
+|Interpreting a query that uses bitwise accumulators causes GPE dysfunction.
+|Unresolved
+
+|3.6.0
+|When vertices are automatically created during edge loading, the primary key of the vertices created are not written to vertex attributes.
+|Unresolved
+
+
+|3.6.0
+|Running a query with `edgeAttribute()` or `neighborAttribute()` function when accumulator containing universal vertex types is referenced in the same statement may cause GPE dysfunction.
+|Unresolved
+
+
+|3.6.0
+|Calling the `setAttr()` function in an interpreted query causes GPE dysfunction.
+|Unresolved
+
+|3.6.0
+|High-frequency schema changes can cause GPE dysfunction in rare cases.
+|Unresolved
+|===
+
+For a list of known issues for GraphStudio and Admin Portal, please see xref:gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
 
 
 == Release notes for previous versions
