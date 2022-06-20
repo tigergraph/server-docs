@@ -27,33 +27,33 @@ image:elastic-cluster.png[]
 
 The ER clusters are able to process memory-intensive OLAP queries in an isolated environment with no impact to the primary cluster.
 After the queries finish, the ER cluster should be shut down.
-The next time when there is a demand for a memory-intensive OLAP query, you can set up a new ER cluster to meet the demand.
+The next time there is a demand for a memory-intensive OLAP query, you can set up a new ER cluster to meet the demand.
 
 == Use cases
 If your workload involves online analytical processing (OLAP) queries that access large amounts of data and are very time-consuming, you can benefit from using ER clusters for your OLAP queries.
 
 === ER cluster for scaling up
 
-For example, supposed you have an application powered by a 6-node TigerGraph OLTP cluster with a total memory of 192 GB, and the regular workload of the cluster uses up 120 GB of memory.
+For example, suppose you have an application powered by a 6-node TigerGraph online transactional processing (OLTP) cluster with a total memory of 192 GB, and the regular workload of the cluster uses 120 GB of memory.
 However, for your quarterly business review, you need to run an OLAP query that will require the processing machines to have 300 GB of memory.
 
 In this case, you cannot have your primary cluster process this workload, since it does not have enough memory, and you also do not want your regular workload to be affected.
 Upgrading your primary cluster would be expensive as it would add to your regular operating expenses.
 At the same time, the excess computing power would not be utilized efficiently since your regular workload does not require so much memory.
 
-Instead, you can provision an ER cluster that meets the memory requirement, and run the OLAP query on the ER cluster.
+Instead, you can provision an ER cluster that meets the memory requirement and run the OLAP query on the ER cluster.
 After the query has finished processing, you shut down the cluster.
 This allows you to process your OLAP queries as well as save costs.
 
 === ER cluster for compute isolation
 
-You can still benefit from using ER clusters even if your existing hardware is able to handle the OLAP workload.
+Even if your existing hardware is able to handle the OLAP workload, ER can still benefit your workload by preserving your cluster's regular functions without disruption.
 
-For example, supposed you have an application powered by a 6-node TigerGraph OLTP cluster with a total memory of 192 GB, and the regular workload of the cluster uses up 120 GB of memory.
+For example, suppose you have an application powered by a 6-node TigerGraph OLTP cluster with a total memory of 192 GB, and the regular workload of the cluster uses 120 GB of memory.
 Every week, you also want to run an OLAP query to analyze user activities for the week that will use up 150 GB of memory.
 
 In this case, even though your existing hardware is able to handle the OLAP workload, running the query will still disrupt your regular workload.
 
-Instead, you can provision an ER cluster that meets the memory requirement, and run the OLAP query on the ER cluster.
+Instead, you can provision an ER cluster that meets the memory requirement and run the OLAP query on the ER cluster.
 After the query has finished processing, you shut down the cluster.
 This allows you to process your OLAP queries as well as avoid disruptions to your regular workload.
