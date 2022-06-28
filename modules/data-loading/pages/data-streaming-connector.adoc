@@ -28,6 +28,7 @@ The connector configurations provide the following information:
 * Your GCP service account credentials
 * Information on how to parse the source data
 * Mapping between connector and source file
+* (Optional) Other Kafka connector configurations
 
 ==== Specify connector class
 The connector class indicates what type of connector the configuration file is used to create.
@@ -213,6 +214,13 @@ tasks.max=10
 topic=friend-demo-104
 file.uris=gs://example/f.csv
 ----
+
+==== Other Kafka configurations
+The data streaming connector is a https://docs.confluent.io/home/connect/self-managed/kafka_connectors.html[Kafka connector], for which you can provide additional connector configurations for creating your connector.
+For a full list of available Kafka connector configurations, see https://kafka.apache.org/25/documentation.html#connectconfigs[Kafka Connect configs].
+
+In addition to the connector itself, you can also provide additional configurations for the producer.
+For example, if you want to control `buffer.memory` when producing messages into Kafka, specify `producer.buffer.memory=<value>` in the connector config file.
 
 include::partial$create-connector.adoc[]
 
