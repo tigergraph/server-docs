@@ -4,7 +4,9 @@
 
 This page describes the REST API endpoints accessible on a TigerGraph server.
 
-==== Note for users of TigerGraph Cloud
+[NOTE]
+====
+*Note for users of TigerGraph Cloud*
 
 For all TigerGraph Cloud solutions created on or after June 20, 2022, ports 14240 and 9000 are no longer exposed.
 This also applies to previously created cloud solutions that are resized on or after June 20, 2022. Use port 443 instead for API endpoint connectivity on cloud solutions:
@@ -14,6 +16,7 @@ This also applies to previously created cloud solutions that are resized on or a
 ** Use API endpoint `443/<endpoint>` for endpoints that were on port 14240
 
 For all TigerGraph Server solutions not on TigerGraph Cloud, or for TigerGraph Cloud solutions created before June 20, 2022, ports 9000 and 14240 remain correct.
+====
 
 == System Utilities
 
@@ -2756,7 +2759,9 @@ If you install all queries and receive a state of `SUCCESS` for one or more quer
 
 `+GET /query/{graph_name}/{query_name}+`
 
-Each time a new TigerGraph query is installed, a dynamic endpoint is generated. This new endpoint enables the user to run the new TigerGraph query through HTTP requests and giving the parameters in URL or in a data payload. In the case of a `GET` request, parameters should be passed in through the query string.
+Each time a new TigerGraph query is installed, a dynamic endpoint is generated.
+This new endpoint enables the user to run the new TigerGraph query through HTTP requests and giving the parameters in URL or in a data payload.
+In the case of a `GET` request, parameters should be passed in through the query string.
 
 ==== Parameters
 
@@ -2765,72 +2770,122 @@ Each time a new TigerGraph query is installed, a dynamic endpoint is generated. 
 
 | `read_committed`
 | No
-| Boolean value that indicates whether to use https://en.wikipedia.org/wiki/Isolation_(database_systems)#Read_committed[read-committed isolation level] for the query. At the read committed level, it is guaranteed that any data read is committed at the moment it is read. By default, it is off.
+| Boolean value that indicates whether to use https://en.wikipedia.org/wiki/Isolation_(database_systems)#Read_committed[read-committed isolation level] for the query.
+At the read committed level, it is guaranteed that any data read is committed at the moment it is read.
+By default, it is off.
 |===
 
 ==== Query parameter passing
 
 When using a `GET` request to run an installed query, the query parameters are xref:API:index.adoc#_query_string_parameters[passed in through the query string of the URL].
-[width="100%",cols="28%,36%,36%",options="header",]
+[width="100%",cols="28%,36%a,36%",options="header",]
 |===
 |Parameter type |Query string format |Example
-|Set or bag of primitives |Assign multiple values to the same parameter
-name. |A set `p1` of integers: `**p1=1&p1=5&p1=10**`
 
-|`VERTEX<type>` |Use the ID of the vertex: `parameterName=vertex_id` |A
-vertex with parameter name `vp` and an ID of person2: `**vp=person2**`
+|Set or bag of primitives
+|Assign multiple values to the same parameter
+name.
+|A set `p1` of integers: `p1=1&p1=5&p1=10`
 
-|`VERTEX` (type not pre-specified) |Use two query string
-parameters**:** `parameterName=vertex_id\'\'parameterName.type=vertex_type`
+|`VERTEX<type>`
+|Use the ID of the vertex: `parameterName=vertex_id`
+|A vertex with parameter name `vp` and an ID of person2: `vp=person2`
+
+|`VERTEX` (type not pre-specified)
+|Use two query string
+parameters:
+
+* `parameterName=vertex_id`
+* `parameterName.type=vertex_type`
 |A vertex with parameter name `va` , type `person` and ID
-`person1`:`va=person1&va.type=person`
+`person1`:
 
-|Set or bag of `VERTEX<type>` |Assign multiple vertex IDs to the same
-`SET` or `BAG` parameter name. |A set parameter named `vp` of vertices
-of type person:`vp=person3&vp=person4`
+`va=person1&va.type=person`
 
-|Set or bag of `VERTEX` (type not pre-specified) |The `SET` or `BAG` must
+|Set or bag of `VERTEX<type>`
+|Assign multiple vertex IDs to the same
+`SET` or `BAG` parameter name.
+|A set parameter named `vp` of vertices
+of type person:
+
+`vp=person3&vp=person4`
+
+|Set or bag of `VERTEX` (type not pre-specified)
+|The `SET` or `BAG` must
 be treated as an array. A vertex ID and type must be provided for the
-vertex element at each index. |A set parameter named `vp` of
-vertices:`vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
+vertex element at each index.
+|A set parameter named `vp` of
+vertices:
+
+`vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
 |===
 
 ==== Specify replica
 
-If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range `[1, (cluster replication factor)]`. If you supply an invalid value for the header, the request will return an error.
+If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`.
+The value of the header needs to be an integer within the range `[1, (cluster replication factor)]`.
+If you supply an invalid value for the header, the request will return an error.
 
 ==== Specify thread limit
 
-When running a query through RESTPP, you can specify a limit on the number of threads that the query is allowed to use on each node through the HTTP header `GSQL-THREAD-LIMIT`. The number of threads used by a query means the number of vCPUs used by the query. By default, a query will use all threads that are available on a machine.
+When running a query through RESTPP, you can specify a limit on the number of threads that the query is allowed to use on each node through the HTTP header `GSQL-THREAD-LIMIT`.
+The number of threads used by a query means the number of vCPUs used by the query. By default, a query will use all threads that are available on a machine.
 
-For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default. By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
+For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default.
+By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
 
-==== Sample request:
+==== Sample requests
+
+To run a query that takes a parameter of a set of strings (`str`), a vertex parameter(v), and a parameter of a set of vertices:
+
+[tabs]
+====
+Query::
++
+--
+[source.wrap,gsql]
+----
+CREATE QUERY print_params(SET<STRING> str, VERTEX v, SET<VERTEX> party)
+FOR GRAPH Social {
+  PRINT str, v, party;
+}
+----
+--
+Request::
++
+--
+To pass in the value for a set parameter, enter the values of all set elements to the name of the parameter multiple times.
+If the type of a vertex is not specified, specify it by adding a parameter `<typeName>.type` and specify the type:
+
+[source.wrap,console]
+----
+$ curl -X GET "http://localhost:9000/query/social/print_params?str=hello&str=world&v=Mary&party=Tobias&party=Jenny&party.type=person&v.type=person"
+----
+--
+====
 
 To run query `hello` on a graph named `social`, and the query parameter is of type `VERTEX<person>` whose ID is `"Tom"`
 
 .Running a query via HTTP request
-
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET "http://localhost:9000/query/social/hello?p=Tom"
 ----
 .Limiting the query to use under 4 threads
-[source,bash]
+[source.wrap,bash]
 ----
 curl -x GET -H "GSQL-THREAD-LIMIT: 4" "http://localhost:9000/query/social/hello?p=Tom"
 ----
 .Specifying the query to run on the first replica
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET -H "GSQL-REPLICA: 2" "http://localhost:9000/query/social/hello?p=Tom"
 ----
 .Specifying the query to run on the primary cluster
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom"
 ----
-
 
 
 [#_run_an_installed_query_post]
@@ -2838,7 +2893,8 @@ curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom
 
 `+POST /query/{graph_name}/{query_name}+`
 
-Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON format. This is especially helpful when the query takes complex parameters.
+Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON format.
+This is especially helpful when the query takes complex parameters.
 
 ==== Format of file in JSON format
 
@@ -2865,7 +2921,8 @@ curl -X POST --data-binary @./<sample_file> "http://localhost:9000/query/<sample
 
 | `read_committed`
 | No
-| Boolean value that indicates whether to use https://en.wikipedia.org/wiki/Isolation_(database_systems)#Read_committed[read-committed isolation level] for the query. At the read committed level, it is guaranteed that any data read is committed at the moment it is read. By default, it is off.
+| Boolean value that indicates whether to use https://en.wikipedia.org/wiki/Isolation_(database_systems)#Read_committed[read-committed isolation level] for the query.
+At the read committed level, it is guaranteed that any data read is committed at the moment it is read. By default, it is off.
 |===
 
 ==== Query parameter Passing
@@ -2876,25 +2933,35 @@ The formatting rules for the JSON payload are the same as xref:gsql-ref:querying
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
 |Parameter type |Syntax |Example
-|`DATETIME` |Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
+
+|`DATETIME`
+|Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
 |`"2019-02-19 19:19:19"`
 
-|Set or bag of primitives |Use a JSON array containing the primitive
-values |`["a", "list", "of", "args"]`
+|Set or bag of primitives
+|Use a JSON array containing the primitive
+values
+|`["a", "list", "of", "args"]`
 
-|`VERTEX<type>` |Use a JSON object containing a field `"id"` for the
+|`VERTEX<type>`
+|Use a JSON object containing a field `"id"` for the
 vertex ID and a field `"type"` for the type of the vertex
-|`{"id": "person1",\'\'"type": "person"}`
+|`{"id": "person1", "type": "person"}`
 
-|`VERTEX` (type not specified) |Use a JSON object containing a field
-`"id"` for the vertex ID |`{"id": "person1"}`
+|`VERTEX` (type not specified)
+|Use a JSON object containing a field
+`"id"` for the vertex ID
+|`{"id": "person1"}`
 
-|Set or bag of `VERTEX<type>` |Use a JSON array containing a list of
-JSON `VERTEX<type>` object |`[{"id": "person1"}, {"id": "person2"}]`
+|Set or bag of `VERTEX<type>`
+|Use a JSON array containing a list of
+JSON `VERTEX<type>` object
+|`[{"id": "person1"}, {"id": "person2"}]`
 
-|Set or bag of vertices of unspecified types |Use a JSON array
+|Set or bag of vertices of unspecified types
+|Use a JSON array
 containing a list of JSON `VERTEX`
-|`[{"id": "person1",\'\'"type": "person"},{"id": "person2",\'\'"type": "person"}]`
+|`[{"id": "person1","type": "person"},{"id": "person2","type": "person"}]`
 |===
 
 ==== Specify replica
@@ -2903,11 +2970,58 @@ If you have a TigerGraph HA cluster, you can specify a query to run on a particu
 
 ==== Specify thread limit
 
-When running a query through RESTPP,  you can specify a limit on the number of threads that the query is allowed to use on each node through the HTTP header `GSQL-THREAD-LIMIT`. The number of threads used by a query means the number of vCPUs used by the query. By default, a query will use all threads that are available on a machine.
+When running a query through RESTPP,  you can specify a limit on the number of threads that the query is allowed to use on each node through the HTTP header `GSQL-THREAD-LIMIT`.
+The number of threads used by a query means the number of vCPUs used by the query.
+By default, a query will use all threads that are available on a machine.
 
-For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default. By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
+For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default.
+By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
 
 ==== Sample request
+
+To run a query that takes a parameter of a set of strings (`str`), a vertex parameter(v), and a parameter of a set of vertices (`party`):
+
+[tabs]
+====
+Query::
++
+--
+[source.wrap,console]
+----
+CREATE QUERY print_params(SET<STRING> str, VERTEX v, SET<VERTEX<Person>> party) FOR GRAPH Social {
+  PRINT str, v, party;
+}
+----
+--
+Request::
++
+--
+[source.wrap,console]
+----
+$ curl -X POST -d @<path_to_request_body> ""http://localhost:9000/query/Social/print_params"
+----
+--
+Request body::
++
+--
+[source.wrap,console]
+----
+{
+	"v": {"id": "Jenny", "type": "Person"}, <1>
+	"str": ["hello", "world"], <2>
+	"party": [
+		{"id": "Mary"},
+		{"id": "Tobias}
+	] <3>
+}
+----
+<1> Provides the value for parameter `v`, which is a `Person` type vertex with ID `Jenny`.
+The `type` field is required because the original query definition does not specify vertex type.
+<2> Provides the value for parameter `str`, which is a set of strings with two elements `"hello"` and `"world"`.
+<3> Provides the value for parameter `party`, which is a set of `Person` type vertices.
+The `type` field is optional for the vertex elements in the set because the original query definition specifies vertex type.
+--
+====
 
 The query in this sample request takes a parameter of type `VERTEX<person>`:
 
@@ -2936,7 +3050,10 @@ curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "
 
 [NOTE]
 ====
-Installed queries can run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The xref:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
+Installed queries can run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode].
+To do this, use the ``GSQL-ASYNC``header and set its value to `true`.
+
+The xref:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
 ====
 
 === Run an interpreted query
