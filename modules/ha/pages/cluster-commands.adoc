@@ -1,6 +1,7 @@
 = Cluster Commands
 
-This page documents a list of advanced Linux commands that simplify platform operations that are performed often during debugging, especially on high availability (HA) clusters.Only the TigerGraph platform owner - the Linux user created during installation has access to the commands on this page.
+This page documents a list of advanced Linux commands that simplify platform operations that are performed often during debugging, especially on high availability (HA) clusters.
+Only the TigerGraph platform owner (the Linux user created during installation) has access to the commands on this page.
 
 [NOTE]
 ====
@@ -39,7 +40,9 @@ Last login: Fri Apr 23 18:24:27 2021
 $ gscp <all|component_name|node_list> <source_path> <target_dir>
 ----
 
-This command allows you to copy files from the current node to target folders on multiple nodes at the same time. The file or directory on the current node specified by the source path will be copied into the target folder on every node. If the target folder does not exist at the path given, the target folder will be created automatically. You can also specify multiple source files or directories, in which case, the source paths need to be absolute paths, put in quotes, and separated by space.
+This command allows you to copy files from the current node to target folders on multiple nodes at the same time. The file or directory on the current node specified by the source path will be copied into the target folder on every node.
+
+If the target folder does not exist at the path given, the target folder will be created automatically. You can also specify multiple source files or directories, in which case, the source paths need to be absolute paths, put in quotes, and separated by a space.
 
 You can specify the nodes where you want the copy operation to occur in the following ways:
 
@@ -231,7 +234,9 @@ hello world
 $ grun_p <all|component_name|node_list> '<command>'
 ----
 
-This command allows you to run commands on a specified list of nodes in your cluster in parallel, and the output will be visible to the terminal where the `grun_p` command was run. You can specify the nodes to run commands on in the following ways:
+This command allows you to run commands on a specified list of nodes in your cluster in parallel.
+The output will be visible to the terminal where the `grun_p` command was run.
+You can specify the nodes to run commands on in the following ways:
 
 * `grun_p all '<command>'` will execute the command on all nodes
 * `grun_p <component_name> '<command>'` will execute the command on nodes where the component you specified is running
@@ -373,7 +378,10 @@ m1 ADMIN#1 admin#1 CTRL#1 ctrl#1 DICT#1 dict#1 ETCD#1 etcd#1 EXE_1 exe_1 GPE_1#1
 $ gssh
 ----
 
-The `gssh` command, when used without arguments, outputs information about server deployments in your cluster.The output contains the names and IP addresses of every node.For each node, the output shows the full list of servers that are running on the node.For each server, the output shows the full list of the nodes that the server is running on.
+The `gssh` command, when used without arguments, outputs information about server deployments in your cluster.
+The output contains the names and IP addresses of every node.
+For each node, the output shows the full list of servers that are running on the node.
+For each server, the output shows the full list of the nodes that the server is running on.
 
 ==== Example
 
@@ -427,7 +435,8 @@ Host m3 ADMIN#3 admin#3 CTRL#3 ctrl#3 DICT#3 dict#3 ETCD#3 etcd#3 EXE_3 exe_3 GP
 $ gstatusgraph
 ----
 
-This command returns the size of your data, the number of existing vertices and edges, as well as the number of deleted and skipped vertices on every node in your cluster. If you are running TigerGraph on a single node, it will return the same information that one node.
+This command returns the size of your data, the number of existing vertices and edges, and the number of deleted and skipped vertices on every node in your cluster.
+If you are running TigerGraph on a single node, it will return the same information for that one node.
 
 ==== Single-node example
 

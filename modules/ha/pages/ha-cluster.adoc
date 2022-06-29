@@ -1,4 +1,4 @@
-= HA Cluster Configuration
+= High Availability Cluster Configuration
 :description: An overview of HA concepts in TigerGraph and how to configure an HA cluster.
 :stem: latexmath
 :partition: partition
@@ -18,8 +18,8 @@ cluster size:: Total number of machines in the cluster.
 If an HA cluster has a replication factor of 2, the cluster maintains two instances of the data, stored on separate machines.
 If an HA cluster has a partitioning factor of 2, each instance of the data is distributed across two machines.
 
-If an HA cluster has a replication factor of 2 and a partitioning factor of two, the cluster has a total of 4 machines.
-With the 4 machines, the cluster maintains two instances of the data, each distributed across two machines.
+If an HA cluster has both a replication factor of 2 and a partitioning factor of 2, the cluster has a total of four machines.
+With the four machines, the cluster maintains two instances of the data, each distributed across two machines.
 
 Replication and distribution both increase query throughput and improve system resiliency.
 There is no upper limit for either partitioning factor or replication factor.
@@ -47,8 +47,9 @@ There are two ways of configuring HA settings for a cluster:
 Configuring a HA cluster is part of platform xref:installation:install.adoc[installation].
 
 During TigerGraph platform installation, specify the replication factor.
-The default value for replication factor is 1, which means there is no HA setup for the cluster.
-The user does not explicitly set the partitioning factor. Instead, the TigerGraph system will set the partitioning factor through the following formula:
+The default value for replication factor is 1, which means high availability is not set up for the cluster.
+
+You do not explicitly set the partitioning factor. Instead, the TigerGraph system will set the partitioning factor through the following formula:
 
 `partitioning factor = (number of machines / replication factor)`
 
@@ -130,6 +131,7 @@ The number of buckets equals 2 to the power of the value of the parameter `GPE.N
 
 The default value of `GPE.NumberOfHashBucketInBit` is 5.
 Therefore, a cluster has stem:[2^5 = 32] buckets by default.
+
 This means that data skew happens when you have a partition number that cannot evenly divide 32.
 Data skew is more significant when the modulus stem:[M = N_{bucket} \bmod N_{partition}] is closer to half of stem:[N_{partition}], where stem:[N_{bucket}] is the number of buckets, and stem:[N_{partition}] is the number of partitions.
 
@@ -201,16 +203,17 @@ For example, if each instance of your data has 9 partitions, the 32 buckets are 
 |
 |===
 
-Partitions #1 to #5 each has 4 buckets, while partitions 6 to 9 only have 3 buckets.
+Partitions #1 to #5 each have 4 buckets, while partitions #6 to #9 only have 3 buckets.
 This means that each partition between #1 to #5 has 33% more data than a partition between #6 and #9.
 Therefore, partitions #1 to #5 altogether end up storing 20 / 32 = 62.5% percent of the data, when they should only store 5 / 9 = 55.5%.
 
-To reduce data skew in this scenario, change `GPE.NumberOfHashBucketInBit` to 6 by running the following command:
+To reduce data skew in this scenario, the number of partitions should divide more evenly into the number of buckets.
+Change `GPE.NumberOfHashBucketInBit` to `6` by running the following command:
 
 [,console]
 ----
 $ gadmin config set GPE.NumberOfHashBucketInBit 6
 ----
 
-This leaves the cluster with stem:[2^6=64] buckets instead.
+This leaves the cluster with stem:[2^6=64] buckets.
 Each partition has 7 buckets, and only partition 1 has one extra bucket.

@@ -199,7 +199,7 @@ This endpoint does not take any parameters.
 
 === Monitor system metrics
 
-`GET /ts3/api/datapoints:14240`
+`GET /ts3/api/datapoints`
 
 TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events.
 Many TigerGraph components report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals.
@@ -871,7 +871,7 @@ With secret::
 [source.wrap,bash]
 ----
 curl -X POST http://localhost:9000/requesttoken \
-     -d '{"secret": "jiokmfqqfu2f95qs6ug85o89rpkneib3", "lifetime": "100000"}'
+     -d '{"secret":"jiokmfqqfu2f95qs6ug85o89rpkneib3", "graph":"MyGraph", "lifetime":"100000"}'
 ----
 --
 Response::

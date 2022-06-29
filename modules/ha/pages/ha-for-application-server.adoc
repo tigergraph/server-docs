@@ -6,21 +6,23 @@ The application server follows the active-active architecture, and runs on the *
 If one server falls offline, you can use the other servers without any loss of functionality.
 
 When you deploy TigerGraph in a cluster with multiple replicas, it is ideal to set up load balancing to distribute network traffic evenly across the different servers.
-This page discusses what to do when a server dies when you haven't set up load balancing, and the steps needed to set up load balancing for the application server.
+This page discusses what to do when a server fails when you haven't set up load balancing, and the steps needed to set up load balancing for the application server.
 
 
-== When a server dies
+== When a server fails
 
-When a server dies, users can proceed to the next available server within the cluster to resume the operations. For example, assuming the TigerGraph cluster has Application Server on m1 and m2. If the server on m1 dies, users can access m2 to use GraphStudio and Admin Portal.
+When a server fails, users can proceed to the next available server within the cluster to resume the operations.
+
+For example, assume the TigerGraph cluster has Application Server on nodes m1 and m2. If the server on m1 fails, users can access m2 to use GraphStudio and Admin Portal.
 
 To find out which node hosts the application server, run xref:cluster-commands.adoc#_show_deployment_information[the `gssh` command] in the bash terminal of any active node in the cluster.
 The output will show you which nodes are hosting a GUI server.
 
-Keep in mind that any long-running operation that is currently in process when the server dies will be lost.
+Keep in mind that any long-running operation in progress when the server fails will be lost.
 
 == Configuring HA for the application server
 The application server (`gui`) runs on the first three nodes in a cluster by default.
-However, you can increase the number of servers through the `GUI.BasicConfig.Nodes` configuration parameter.
+You can increase the number of servers through the `GUI.BasicConfig.Nodes` configuration parameter.
 
 The value of `GUI.BasicConfig.Nodes` is a list of nodes that run an application server:
 
@@ -34,10 +36,10 @@ To configure the number of servers, add an JSON object to the list:
 
 * `HostID` is the name of the node the server runs on.
 * `Partition` must be 0.
-* Replica number is the number of application server that this server would be.
+* `Replica` is the number in the application server sequence that this server would be.
 For example, if you are adding a fourth server, then `Replica` should be 4.
 
-For example, to add two more servers, add two JSON objects to the list, and use `gadmin config set` to set the new value.
+To add two more servers, add two JSON objects to the list, and use `gadmin config set` to set the new value.
 Afterwards, apply the change and restart the `gui` service:
 
 [,console]
@@ -91,7 +93,8 @@ Here is an example Nginx configuration for the upstream and server directives:
     }
 ----
 
-The server directives should specify your nodes' addresses which you want to load balance. Since TigerGraph requires session persistence, the load balancing methods will be limited to _ip_hash_ or _hash_, unless you have access to Nginx Plus, which then means any load balancing method may be used with session persistence setup: https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/#sticky
+The server directives should specify your nodes' addresses which you want to load balance.
+Since TigerGraph requires session persistence, the load balancing methods will be limited to _ip_hash_ or _hash_, unless you have access to Nginx Plus, which then means any load balancing method may be used with session persistence setup: https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/#sticky
 
 An active health check can be set on the following endpoint if using Nginx Plus:
 
@@ -101,9 +104,9 @@ Otherwise, only a passive health check is available. See Nginx documentation for
 
 === Set up AWS Elastic Load Balancer
 
-If your applications are provisioned on AWS, another choice for load balancing is through the use of an https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html[Application Load Balancer].
+If your applications are provisioned on AWS, another choice for load balancing is through the use of an link:https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html[Application Load Balancer].
 
-To create an application load balancer, follow AWS's guide to https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-application-load-balancer.html[create an application load balancer]. The following configurations apply as you follow the guide:
+To create an application load balancer, follow AWS's guide to link:https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-application-load-balancer.html[create an application load balancer]. The following configurations apply as you follow the guide:
 
 ==== Configure a security group
 
@@ -115,7 +118,7 @@ In Step 4, set the health check URL to `/api/ping`
 
 ==== Configure targets for the target group
 
-In Step 5, enter 14240 for the port of your instances.
+In Step 5, enter `14240` for the port of your instances.
 
 ==== Enable sticky sessions
 
@@ -127,17 +130,17 @@ After successfully creating your load balancer, you should now be able to access
 
 If your instances are provisioned on Azure, you can set up an https://docs.microsoft.com/en-us/azure/application-gateway/overview[Application Gateway].
 
-Follow the steps for setting up an Application Gateway outlined here:https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal[Quickstart: Direct web traffic using the portal - Azure Application Gateway]
+Follow the steps for setting up an Application Gateway outlined here: link:https://docs.microsoft.com/en-us/azure/application-gateway/quick-create-portal[Quickstart: Direct web traffic using the portal - Azure Application Gateway]
 
 Some different TigerGraph specific settings are required during Application Gateway setup:
 
-* Under the section "`Configuration Tab`"
- ** For step 5, where it states to use port 80 for the backend port, use port 14240 instead.
+* Under the section "Configuration Tab"
+ ** Step 5 states to use port 80 for the backend port. Use port `14240` instead.
  ** In the same window, enable "`Cookie-based affinity`".
 
 ==== Create a custom probe for Application Gateway
 
-After the Application Gateway is complete, we need to create a custom health probe in order to check the health/status of our Application Servers. You can follow the following steps outlined here:https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-create-probe-portal[Create a custom probe using the portal - Azure Application Gateway]
+After the Application Gateway is complete, we need to create a custom health probe in order to check the health/status of our Application Servers. You can follow the following steps outlined here: link:https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-create-probe-portal[Create a custom probe using the portal - Azure Application Gateway]
 
 When filling out the health probe information, the fields below should have the following values:
 
@@ -151,17 +154,17 @@ After successfully creating the Application Gateway, you should now be able to a
 
 === Set up GCP External HTTP(s) Load Balancer
 
-If your instances are provisioned on Google Cloud, you can set up an https://cloud.google.com/load-balancing/docs/https[External HTTP(s) Load Balancer]:
+If your instances are provisioned on Google Cloud Platform (GCP), you can set up an https://cloud.google.com/load-balancing/docs/https[External HTTP(s) Load Balancer]:
 
 You can follow Google's provided steps in their documentation for setup here: https://cloud.google.com/iap/docs/load-balancer-howto[Setting up an external HTTPS load balancer  |  Identity-Aware Proxy]
 
 When https://cloud.google.com/iap/docs/load-balancer-howto#mig[creating the instance group]:
 
-* Click "`Specify port name mapping`", and use 14240 for the port
+* Click "`Specify port name mapping`", and use `14240` for the port
 
 When https://cloud.google.com/load-balancing/docs/health-checks[setting up the health check]:
 
-* For the port, use 14240.
+* For the port, use `14240`.
 * For the path, use `/api/ping`.
 
 Lastly, we need to set up session affinity for our load balancer. This is outlined in GCP documentation here: https://cloud.google.com/load-balancing/docs/https#session_affinity[External HTTP(S) Load Balancing overview  |  Google Cloud]

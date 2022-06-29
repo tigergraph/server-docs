@@ -8,11 +8,11 @@ This included building solutions using non-TigerGraph components.
 
 TigerGraph supports native HA functionality for user-facing applications as well.
 This simplifies and streamlines HA deployment for users completely.
-For Operations personnel, this will reduce the operational overhead while enhancing the availability for end users.
+For Operations personnel, this reduces the operational overhead while enhancing the availability for end users.
 
 == Design overview
 
-The first five nodes in a TigerGraph cluster each runs a GSQL server.
+The first five nodes in a TigerGraph cluster each run a GSQL server.
 One of the GSQL servers is the primary server, while other servers are standby servers that provide high availability for client connections.
 
 image::gsql-ha.png[]
@@ -26,7 +26,7 @@ The primary GSQL server performs the following tasks:
 * Process user management requests
 
 When the primary server fails, a standby server becomes the new primary server.
-When the old Primary server is restored, it becomes a GSQL standby server.
+When the old primary server is restored, it becomes a GSQL standby server.
 
 === Role of standby GSQL servers
 
@@ -49,11 +49,11 @@ To configure the number of servers, add an JSON object to the list:
 
 * `HostID` is the name of the node the server runs on.
 * `Partition` must be 0.
-* Replica number is the number of GSQL server that this server would be.
+* `Replica` is the number in the GSQL server sequence that this server would be.
 For example, if you are adding a fourth server, then `Replica` should be 4.
 
 For example, to add two more servers, add two JSON objects to the list, and use `gadmin config set` to set the new value.
-Afterwards, apply the change and restart the `gui` service:
+Afterwards, apply the change and restart the `gsql` service:
 
 [,console]
 ----
@@ -66,7 +66,7 @@ $ gadmin restart gsql
 
 === UDF and token function maintenance
 
-Users store the following data on m1 node that is needed for query execution.
+Users store the following data on node m1 that is needed for query execution.
 This is part of the user source code that TigerGraph system uses to compile.:
 
 * GSQL loader's Token functions
@@ -81,7 +81,8 @@ GSQL server will retrieve the User source code files in the following priority o
 
 ==== User source code in GitHub code repository
 
-This requires public network access, or GitHub enterprise server access. User need to provide the following gadmin configuration:
+This requires public network access or GitHub enterprise server access.
+Provide the following gadmin configuration:
 
 [source,text]
 ----
@@ -104,7 +105,7 @@ gadmin config apply
 ----
 
 When GSQL server needs to compile the files, it will retrieve them from GitHub if the GitHub access is configured as above.
-It will retry 3 times, with timeout=5s for each time.
+It will retry 3 times, with a five-second timeout each time.
 If the connection fails, it will go to the next priority level method, i.e. file uploaded via `PUT` commands.
 
 ==== User Source code maintenance for local files in the cluster
@@ -158,13 +159,13 @@ eval gsql 'GET ExprFunctions TO \"$temp_ExprFunctions2\"'
 eval gsql 'GET ExprUtil TO \"$temp_ExprUtil2\"'
 ----
 
-The uploaded files will be saved to all nodes. Users will need to have either '`superuser`' and '`global_designer`' roles to have the sufficient privileges to run the PUT/GET commands.
+The uploaded files will be saved to all nodes. Users need to have the `READ_FILE` privilege to run `GET` and the `WRITE_FILE` privilege to run `PUT`. 
 
-When calling GET command, the user can download the corresponding file from the Primary node, to a local directory at the current cluster node.
+With the GET command, the user can download the corresponding file from the primary node to a local directory at the current cluster node.
 
-When calling PUT command, the local file will be copied to all cluster nodes, including itself.
+With the PUT command, the local file will be copied to all cluster nodes, including itself.
 
-*Example usage scenario to update of the files is as follows:*
+*Example usage scenario to update the files:*
 
 [source,text]
 ----
@@ -188,7 +189,7 @@ ExprFunctions.hpp and ExprUtil.hpp files are stored at:
  $(gadmin config get System.DataRoot)/gsql/udf/
 ----
 
-Full path should be provided including the file name for PUT/GET, eg:
+The full path should be provided including the file name for PUT/GET, eg:
 
 [source,text]
 ----
@@ -196,34 +197,32 @@ put ExprFunctions from "/home/path/tmp/ExprFunc.hpp"
 get TokenBank to "doc/path/tmp/myTB.cpp"
 ----
 
-Notice that in the first command, we use absolute path, while in the second command, we use relative path. Both are supported. But "`~`" is not supported (eg: "`~/tmp/x.hpp`").
+In the first command, we used the absolute path, while in the second command, we used the relative path. 
+Both are supported, however, `~` is not supported (such as in `~/tmp/x.hpp`).
 
-Additionally, users can also use the commands in the following manner as well:
-
-* Use a folder name, and automatically default name will be added. For example:
+If you use a folder name, the default file name will be used.
 
 [source,text]
 ----
 put ExprFunctions from "/home/path/tmp"
 ----
 
-It will use ExprFunctions.hpp under the directory "/home/path/tmp" for PUT.
+This will use an ExprFunctions.hpp file under the server directory "/home/path/tmp" for PUT.
 
 [source,text]
 ----
 get TokenBank to "home/path/tmp/"
 ----
 
-It will create/overwrite the file "home/path/tmp/TokenBank.cpp".
+This will create/overwrite the file "home/path/tmp/TokenBank.cpp".
 
-If the file name is given in the path, its file extension must be consistent with the corresponding file. For example:
+If the file name is given in the path, its file extension must match the file type expected. 
 
 [source,text]
 ----
 put ExprFunctions from "/home/path/tmp/test1.gsql"
 ----
-
-is not allowed, since PUT/GET ExprFunctions must use "`.hpp`" as file extension.
+This is not allowed, since PUT/GET ExprFunctions must use `.hpp` as the file extension.
 
 ==== Default file shipped with TigerGraph package
 
@@ -238,13 +237,16 @@ $(gadmin config get System.AppRoot)/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp
 
 === File Path Configuration
 
-In Pre-3.1 release design, the file path used in loading jobs refers to the file in m1, unless the user specifies machine name before the path (ALL, ANY, m1, m2,...). In the new HA design, the Primary server can be running on any machine, and can be switched. This means GSQL server may or may not find the file. To be back-compatible we prefix a machine name if the client is in TigerGraph cluster.
+Before TigerGraph version 3.1, the file path used in loading jobs referred to the file in m1, unless the user specified the machine name before the path `(ALL, ANY, m1, m2,...)`. 
+Now, the primary server can be running on any machine, and can be switched. 
+This means the GSQL server may or may not find the file. To be backwards-compatible with previous versions of TigerGraph, prefix a machine name if the client is in TigerGraph cluster.
 
-Users can specify the node ID before the path using: ALL, ANY, m1, m2 and so forth. Declaring ALL or ANY as host ID will load files from every cluster node.
+Users can specify the node ID before the path using `ALL, ANY, m1, m2` and so on. 
+Declaring ALL or ANY as host ID will load files from every cluster node.
 
-User can use form like "`m1|m3|m4`" to declare the combination of several nodes.
+Use the syntax `m1|m3|m4` to declare the combination of several nodes.
 
-If the hosts are not specified, it will look for the host ID of the current node that is running the loading job, (through searching the nodes in $(gadmin config get GSQL.BasicConfig.Nodes)). If not found, it will use node "`m1`" by default.
+If the hosts are not specified, it will look for the host ID of the current node that is running the loading job, (through searching the nodes in $(gadmin config get GSQL.BasicConfig.Nodes)). If not found, it will use node `m1` by default.
 
 [source,text]
 ----
@@ -254,7 +256,7 @@ LOAD "ALL:/path/to/csv" TO VERTEX vt VALUES($0)
 LOAD "m1|m2:/path/to/csv" TO VERTEX vt VALUES($0)
 ----
 
-Data source can be created and used with a file path or a JSON string, same as above.
+A data source can be created and used with a file path or a JSON string.
 
 [source,text]
 ----
@@ -272,39 +274,40 @@ CREATE LOADING JOB load_kafka FOR GRAPH poc_graph {
 
 === GSQL Client connection setup
 
-GSQL client can connect to GSQL server in the different ways with the following priority order:
+The GSQL client can connect to GSQL server in the different ways with the following priority order:
 
 ==== Using IP address
 
-Users can specify the ip and port when calling GSQL client using "`gsql -i`" or "`gsql -ip`". For example:
+Users can specify the ip and port when calling the GSQL client using `gsql -i` or `gsql -ip`. For example:
 
 [source,text]
 ----
 gsql -ip 192.168.11.32:14240,192.168.11.34:14240,192.168.11.36
 ----
 
-GSQL clients will try these IPs and ports one by one. Notice the port is optional, it will use 14240 by default, which is the default port for GSQL server.
+The GSQL clients will try these IPs and ports one by one. The port is optional. Port `14240`, the default port for GSQL server, will be used if no port is specified.
 
 ==== Using GSQL IP Configuration
 
-If "`gsql -i`" or "`gsql -ip`" are not used, GSQL client will search the file gsql_server_ip_config where the user runs the GSQL client. The file gsql_server_ip_config should be a one-line file such as shown below. GSQL client will traverse the ips and ports in the file in its order.
+If `gsql -i` or `gsql -ip` are not used, the GSQL client will search the file `gsql_server_ip_config` where the user runs the GSQL client. The file gsql_server_ip_config should be a one-line file such as shown below. GSQL client will traverse the ips and ports in the file in its order.
 
 [source,text]
 ----
 172.18.0.101,172.18.0.102:14240,172.18.0.103:14240
 ----
 
-Similarly, the port number is also optional, using 14240 by default.
+The port number is also optional here, using `14240` by default.
 
 ==== Using default local server
 
-If  "`gsql -i`" or "`gsql -ip`" are not used, and the file gsql_server_ip_config does not exist where "`gsql`" is called, GSQL client will try to connect to the local server (127.0.0.1:8123).
+If  `gsql -i` or `gsql -ip` are not used, and the file `gsql_server_ip_config` does not exist where `gsql` is called, the GSQL client will try to connect to the local server at `127.0.0.1:8123`.
 
 === Setting GSQL HA Configuration
 
-Use gadmin config to get/set the following configurations related to GSQL High Availability.
+Use the `gadmin config` command to get/set the following configurations related to GSQL High Availability.
 
-The first is the heartbeat interval in milliseconds. The second ("`max misses`") is the total timeout for switching to the Primary server which will measure the number of heartbeat intervals. It must be at least 2 to allow 1 heartbeat miss.
+The first is the heartbeat interval in milliseconds. The second (`max misses`) is the total timeout for switching to the primary server which will measure the number of heartbeat intervals.
+It must be at least 2 to allow 1 heartbeat miss.
 
 [source,text]
 ----
@@ -312,5 +315,5 @@ Controller.LeaderElectionHeartBeatIntervalMS = 2000
 Controller.LeaderElectionHeartBeatMaxMiss = 4
 ----
 
-For example, if we use `IntervalMS = 2000` and `max misses = 4` as shown above, then the total timeout is 2s×4 = 8 seconds.
-So the current Primary server will be switched if its heartbeat has stopped for more than 8 seconds.
+For example, if we use `IntervalMS = 2000` and `max misses = 4` as shown above, then the total timeout is 2 × 4 = 8 seconds.
+In this case, the current primary server will be switched if its heartbeat has stopped for more than 8 seconds.
