@@ -1,15 +1,23 @@
 = File Output Policy
+:description: How TigerGraph's file output policy works.
 
-GSQL restricts where a query can produce output to files through a file output policy. The policy consists of a _whitelist_ and a _blacklist_.
+GSQL restricts where a query can produce output to files through a file output policy.
+The policy consists of a _whitelist_ and a _blacklist_.
 
 * GSQL queries must only output to the directories and their descendants or the files indicated by paths in the whitelist.
-* GSQL queries _cannot_ output to the directories and their descendants or the files indicated by paths in the blacklist. The blacklist takes precedence over the whitelist.
+* GSQL queries _cannot_ output to the directories and their descendants or the files indicated by paths in the blacklist.
+The blacklist takes precedence over the whitelist.
 
-By default, the file output policy allows outputs to all files.
+By default, the file output policy of an on-prem installation of TigerGraph Server allows outputs to all files.
+
+WARNING: On TigerGraph Cloud, you cannot output files outside the directory at path `/home/tigergraph/gsql_output`.
 
 == `GSQL.FileOutputPolicy`
 
-The file output policy is implemented through the system configuration parameter``GSQL.FileOutputPolicy``, which is a JSON array of strings that represents a list of paths. If there is an exclamation mark (`!`) preceding a path, the path is on the blacklist. If there is no exclamation mark preceding a path, the path is on the whitelist.
+The file output policy is implemented through the system configuration parameter``GSQL.FileOutputPolicy``, which is a JSON array of strings that represents a list of paths:
+
+* If there is an exclamation mark (`!`) preceding a path, the path is on the blacklist.
+* If there is no exclamation mark preceding a path, the path is on the whitelist.
 
 === Example
 
