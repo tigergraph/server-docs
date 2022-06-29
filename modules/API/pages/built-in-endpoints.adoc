@@ -2423,7 +2423,7 @@ Response::
 
 === Retrieve edge by source, target, and edge type
 
-[source,bash]
+[source.wrap,bash]
 ----
 GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
@@ -2488,7 +2488,7 @@ Response::
 
 === Delete an edge
 
-[source,bash]
+[source.wrap,bash]
 ----
 DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
@@ -2817,7 +2817,7 @@ When running a query through RESTPP, you can specify a limit on the number of th
 
 For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default. By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
 
-==== Sample request:
+==== Sample request
 
 To run query `hello` on a graph named `social`, and the query parameter is of type `VERTEX<person>` whose ID is `"Tom"`
 
