@@ -3144,7 +3144,7 @@ This endpoint safely aborts a selected query by ID or all queries of an endpoint
 
 If you are running a TigerGraph cluster, this endpoint only allows you to abort a query sent to the requested node, not any query in the cluster.
 
-==== Sample request:
+==== Sample request
 [tabs]
 ====
 Request::
@@ -3187,7 +3187,7 @@ Response::
 ----
 --
 ====
-==== Parameters:
+==== Parameters
 
 |===
 | Name | Required | Description
@@ -3209,7 +3209,25 @@ This endpoint allows you to check the status of a query run in xref:gsql-ref:que
 
 If you are running a TigerGraph cluster, this endpoint only allows you to check the status of a query running on the node to which the request is sent, not all nodes on the cluster.
 
-==== Sample request:
+==== Parameters
+
+|===
+|Parameter | Required |Description
+
+|`requestid`
+|No
+|String ID of the request.
+The parameter can have the value `all`, in which case the endpoint returns one status report for each running request.
+If not specified, the value of the parameter defaults to `all`.
+
+|`graph_name`
+|No
+|The name of the graph whose running  queries to report on.
+If not specified, the endpoint returns queries running on the first created graph on the node to which the request is sent.
+|===
+
+
+==== Sample request
 [tabs]
 ====
 Request::
@@ -3223,7 +3241,7 @@ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&requesti
 Response::
 +
 --
-[source,json]
+[source,javascript]
 ----
 {
   "version": {
@@ -3234,65 +3252,36 @@ Response::
   "error": false,
   "message": "",
   "results": [{
-    "requestid": "4.RESTPP_1_1.1599672031541.N",
-    "startTime": "2020-09-09 10:20:31.541",
-    "expirationTime": "2020-09-09 10:20:47.541",
-    "url": "/query/ldbc_snb/countIndirectFriends?pid=21990232555889",
-    "elapsedTime": 19,
-    "status": "success"
+    "requestid": "4.RESTPP_1_1.1599672031541.N", <1>
+    "startTime": "2020-09-09 10:20:31.541", <2>
+    "expirationTime": "2020-09-09 10:20:47.541", <3>
+    "url": "/query/ldbc_snb/countIndirectFriends?pid=21990232555889", <4>
+    "elapsedTime": 19, <5>
+    "status": "success" <6>
   }]
 }
 ----
---
-====
-|===
-| *Field* | *Description*
-
-| `url`
-| URL of the given query.
-
-| `status`
-| The status of the given query. Possible values are `“success”`, `“timeout”`, `“aborted”`, or `“running”`.
-
-| `startTime`
-| The timestamp for the start time of the given query.
-
-| `requestid`
-| The query ID associated with the given query status JSON object.
-
-| `expirationTime`
-| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the xref:index.adoc#_gsql_query_timeout[GSQL-TIMEOUT] header.
-
-| `elapsedTime`
-| Elapsed real time of the given query measured in milliseconds. For completed queries, the value shows the total runtime of the request. For ongoing queries, it shows the amount of time taken so far.
-|===
-
-If one or more of the provided query IDs (`requestid`) are invalid, the return JSON will include an `unknown_requestid` field containing all the invalid query IDs. If a query ID is marked as unknown, it means either the query does not exist or that it was not run in Detached Mode.
-
-==== Parameters
-[width="100%",cols="22%,78%",options="header",]
-|===
-|*Field* |*Description*
-|`url` |URL of the given query.
-
-|`status` |The status of the given query. Possible values are
-`“success”`, `“timeout”`, `“aborted”`, or `“running”`.
-
-|`startTime` |The timestamp for the start time of the given query.
-
-|`requestid` |The query ID associated with the given query status JSON
+<1> The query ID associated with the given query status JSON
 object.
-
-|`expirationTime` |The timestamp for when the given query times out. The
+<2> The timestamp for the start time of the given query.
+<3> The timestamp for when the given query times out. The
 default timeout limit is 16 seconds and can be set using
 the xref:index.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`]
 header.
-
-|`elapsedTime` |Elapsed real time of the given query measured in
+<4> URL of the given query.
+<5> Elapsed real time of the given query measured in
 milliseconds. For completed queries, the value shows the total runtime
 of the request. For ongoing queries, it shows the amount of time taken
 so far.
-|===
+<6> The status of the given query. Possible values are
+`“success”`, `“timeout”`, `“aborted”`, or `“running”`.
+
+--
+====
+
+If one or more of the provided query IDs (`requestid`) are invalid, the return JSON will include an `unknown_requestid` field containing all the invalid query IDs.
+If a query ID is marked as unknown, it means either the query does not exist or that it was not run in Detached Mode.
+
 
 === Check query results (Detached Mode)
 
@@ -3302,7 +3291,7 @@ This endpoint allows you to check the results of queries run in Detached Mode if
 
 This endpoint only allows you to check the results of a query sent to the requested node, not any query in the graph.
 
-==== Sample request:
+==== Sample request
 [tabs]
 ====
 Request::
@@ -3335,7 +3324,7 @@ Response::
 ----
 --
 ====
-==== Parameters:
+==== Parameters
 
 |===
 | Name | Required | Description
