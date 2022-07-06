@@ -1,112 +1,151 @@
 === V3.0 Removal of Previously Deprecated Features
 
-TigerGraph 2.x contained some features which were labeled as deprecated. These features are no longer necessary because they have been superseded already by improved approaches for using the TigerGraph platform. The new approaches were developed because they use more consistent grammar, are more extensible,  or offer higher performance. Therefore, TigerGraph 3.0 has streamlined the product by removing support for some of these deprecated features, listed below:
+TigerGraph 2.x contained some features which were labeled as deprecated.
+These features are no longer necessary because they have been superseded already by improved approaches for using the TigerGraph platform.
+
+The new approaches were developed because they use more consistent grammar, are more extensible,  or offer higher performance.
+Therefore, TigerGraph 3.0 and above has streamlined the product by removing support for some of these deprecated features, listed below:
 
 ==== Data Types
 
-See xref:3.2@gsql-ref:querying:data-types.adoc[Data Types in GSQL Language Reference]
-
 |===
-| Deprecated Type | Alternate Approach
+| Deprecated type | Alternate approach
 
-| REAL
-| Use FLOAT or DOUBLE
+| `REAL`
+| Use `FLOAT` or `DOUBLE`
 
-| INT_SET
-| Use SET<INT>
+| `INT_SET`
+| Use `SET<INT>`
 
-| INT_LIST
-| Use LIST<INT>
+| `INT_LIST`
+| Use `LIST<INT>`
 
-| STRING_SET_COMPRESS
-| Use SET<STRING COMPRESS>
+| `STRING_SET_COMPRESS`
+| Use `SET<STRING COMPRESS>`
 
-| STRING_LIST_CONPRESS
-| Use LIST<STRING COMPRESS>
+| `STRING_LIST_CONPRESS`
+| Use `LIST<STRING COMPRESS>`
 
-| UINT_SET
-| Use SET<INT>
+| `UINT_SET`
+| Use `SET<INT>`
 
-| UINT32_UINT32_KV_LIST
-| Use MAP<UINT, UINT>
+| `UINT32_UINT32_KV_LIST`
+| Use `MAP<UINT, UINT>`
 
-| INT32_INT32_KV_LIST
-| Use MAP<INT, INT>
+| `INT32_INT32_KV_LIST`
+| Use `MAP<INT, INT>`
 
-| UINT32_UDT_KV_LIST
-| Use MAP<UINT, UDT_type>, where UDT_type is a user-defined tuple type
+| `UINT32_UDT_KV_LIST`
+| Use `MAP<UINT, UDT_type>`, where `UDT_type` is a user-defined tuple type
 
-| INT32_UDT_KV_LIST
-| Use MAP<INT, UDT_type>, where UDT_type is a user-defined tuple type
+| `INT32_UDT_KV_LIST`
+| Use `MAP<INT, UDT_type>`, where `UDT_type` is a user-defined tuple type
 |===
 
 ==== Syntax for Control Flow Statements
 
-See xref:3.2@gsql-ref:querying:control-flow-statements.adoc[Control Flow Statements in GSQL Language Reference]
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Statement+++</th>+++
-      +++<th style="text-align:left">+++Alternate Statement+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++FOREACH \... DO \... DONE+++</td>+++
-      +++<td style="text-align:left">+++FOREACH\... DO\... END+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++FOREACH (condition) {
-        +++<br>++++++</br>+++body
-        +++<br>++++++</br>+++}+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++FOREACH condition DO+++</p>+++
-        +++<p>+++body+++</p>+++
-        +++<p>+++END+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++IF (condition) {+++</p>+++
-        +++<p>+++body1+++</p>+++
-        +++<p>+++} else {+++</p>+++
-        +++<p>+++body2+++</p>+++
-        +++<p>+++}+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++IF condition THEN+++</p>+++
-        +++<p>+++body1+++</p>+++
-        +++<p>+++ELSE+++</p>+++
-        +++<p>+++body2+++</p>+++
-        +++<p>+++END+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">++++++<p>+++WHILE (condition) {+++</p>+++
-        +++<p>+++body+++</p>+++
-        +++<p>+++}+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++WHILE condition DO+++</p>+++
-        +++<p>+++body+++</p>+++
-        +++<p>+++END+++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
 
 
-==== Vertex Set Variable Declaration
+|===
+|Deprecated statement |Alternate statement
 
-See xref:gsql-ref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variable_declaration_and_assignment[Vertex Set Variable Declaration and Assignment]
+|`FOREACH ... DO ... DONE`
+|`FOREACH... DO... END`
+
+a|
+----
+FOREACH (condition) {
+    body
+}
+----
+a|
+----
+FOREACH condition DO
+    body
+END
+----
+
+a|
+----
+IF (condition) {
+    body1
+}
+else {
+    body2
+}
+----
+a|
+----
+IF condition THEN
+    body1
+ELSE
+    body2
+END
+----
+a|
+----
+WHILE (condition) {
+    body
+}
+----
+a|
+----
+WHILE condition DO
+    body
+END
+----
+|===
+
+
+
+==== Vertex set variable declaration
+
+See xref:gsql-ref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variables[Vertex Set Variable Declaration and Assignment]
 
 If a vertex type is specified, the vertex type must be within parentheses.
 
 |===
 | Deprecated Statement | Alternate Statement
 
-| MySet Person = ...
-| MySet (Person) = ...
+| `MySet Person = ...`
+| `MySet (Person) = ...`
 |===
 
 
 ==== Query, Job, and Token Management
 
 
-+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Operation+++</th>+++
-      +++<th style="text-align:left">+++Alternate Operation+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">+++CREATE JOB [loading job definition]+++</td>+++
-      +++<td style="text-align:left">+++CREATE LOADING JOB [loading job definition]+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++RUN JOB [for loading and schema change jobs]+++</td>+++
-      +++<td style="text-align:left">++++++<p>+++Specify the job type:+++</p>+++
-        +++<p>+++RUN LOADING JOB+++</p>+++
-        +++<p>+++RUN SCHEMA_CHANGE JOB+++</p>+++
-        +++<p>+++RUN GLOBAL SCHEMA_CHANGE JOB+++</p>++++++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++CREATE / SHOW/ REFRESH TOKEN+++</td>+++
-      +++<td style="text-align:left">+++To create a token, use the REST endpoint GET /requesttoken+++</td>++++++</tr>+++
-    +++<tr>++++++<td style="text-align:left">+++offline2online+++</td>+++
-      +++<td style="text-align:left">+++The offline loading job mode was discontinued in v2.0. Do not write loading
-        jobs using this syntax.+++</td>++++++</tr>++++++</tbody>++++++</table>+++
+
+|===
+|Deprecated operation |Header 2
+
+|`CREATE JOB`
+a|Job types need to be specified:
+
+* `CREATE LOADING JOB`
+* `CREATE SCHEMA_CHANGE JOB`
+* `CREATE GLOBAL SCHEMA_CHANGE JOB`
+
+|`RUN JOB`
+a|Job types need to be specified:
+
+* `RUN LOADING JOB`
+* `RUN SCHEMA_CHANGE JOB`
+* `RUN GLOBAL SCHEMA_CHANGE JOB`
+
+|`CREATE / SHOW/ REFRESH TOKEN`
+|To create a token, use the xref:tigergraph-server:API:built-in-endpoints.adoc#_request_a_token[REST endpoint GET /requesttoken].
+
+|`offline2online`
+|The offline loading job mode was discontinued in v2.0.
+Do not write loading jobs using this syntax.
+|===
+
 
 
 ==== Output
 
-See xref:gsql-ref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[PRINT Statement in 'Output Statements and File Objects']
+See xref:gsql-ref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[PRINT Statement]
 
 |===
 | Deprecated Syntax | Alternate Syntax
@@ -114,19 +153,24 @@ See xref:gsql-ref:querying:output-statements-and-file-objects.adoc#_print_statem
 | JSON API v1
 | v2 has been the default JSON format since TigerGraph 1.1. No alternate JSON version will be available.
 
-| PRINT ... TO_CSV [filepath]
-| Define a file object, then PRINT ... TO_CSV [file_object]
+| `PRINT ... TO_CSV [filepath]`
+| Define a file object, then `PRINT ... TO_CSV [file_object]`
 |===
 
 
 ==== Built-in Queries
 
-[Run Built-in Queries in 'GSQL 101']+++<table>++++++<thead>++++++<tr>++++++<th style="text-align:left">+++Deprecated Statement+++</th>+++
-      +++<th style="text-align:left">+++Alternate Statement+++</th>++++++</tr>++++++</thead>+++
-  +++<tbody>++++++<tr>++++++<td style="text-align:left">++++++<p>+++SELECT count() FROM \...+++</p>+++
-        +++<p>+++// count may be out of date+++</p>++++++</td>+++
-      +++<td style="text-align:left">++++++<p>+++SELECT approx_count(\*) FROM \...+++</p>+++
-        +++<p>+++// same behavior as count(); may not include all the latest data updates
-          +++<br>++++++</br>++++++</p>+++
-        +++<p>+++SELECT count(*) FROM \...+++</p>+++
-        +++<p>+++// exact, but slower than approx_count(*)+++</p>++++++</td>++++++</tr>++++++</tbody>++++++</table>+++
+[Run Built-in Queries in 'GSQL 101']
+
+
+|===
+|Deprecated statement |Alternate statement
+
+|`SELECT count() FROM ...`
+a|
+* `SELECT approx_count(*) FROM ...`
+** May not include all the latest data updates
+* `SELECT count(*) FROM ...`
+** exact, but slower than `approx_count(*)`
+|===
+
