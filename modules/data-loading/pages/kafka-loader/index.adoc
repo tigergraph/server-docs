@@ -143,27 +143,29 @@ Each time when the config file is updated, you must run `SET example_data_source
 
 [source,gsql]
 ----
-GSQL > SET example_data_source = "/path/to/kafka.config" <1>
+GSQL > SET example_data_source = "/path/to/kafka.conf" <1>
 ----
-<1> If you have a TigerGraph cluster, the configuration file must be on machine m1, where the GSQL server and GSQL client both reside,  and it must be in JSON format. If the configuration file uses a relative path, the path should be relative to the GSQL client working directory.
+<1> If you have a TigerGraph cluster, the configuration file must be on machine m1, where the GSQL server and GSQL client both reside,  and it must be in JSON format.
+If the configuration file uses a relative path, the path should be relative to the GSQL client working directory.
 
 For simplicity, you can merge the `CREATE DATA_SOURCE` and `SET` statements:
 
 [source.wrap,gsql]
 ----
-GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "/path/to/kafka.config"
+GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "/path/to/kafka.conf"
 ----
 
 To further simplify, instead of specifying the Kafka data source config file path, you can also directly provide the Kafka data source configuration as a string argument, as shown below:
 
-[source,gsql]
+[.wrap,gsql]
 ----
 GSQL > CREATE DATA_SOURCE KAFKA data_source_name = "{\"broker\":\"broker.full.domain.name:9092\"}"
 ----
 
 [TIP]
 ====
-The above simplified statement is useful for using Kafka Data Loader in TigerGraph Cloud. In TigerGraph Cloud (tgcloud.io), you can use GSQL web shell to define and create Kafka data sources, without creating the Kafka data source configuration file in filesystem.
+The above simplified statement is useful for using Kafka Data Loader in TigerGraph Cloud.
+In TigerGraph Cloud (tgcloud.io), you can use GSQL web shell to define and create Kafka data sources, without creating the Kafka data source configuration file in filesystem.
 ====
 
 
@@ -188,11 +190,11 @@ DEFINE FILENAME filevar "=" [filepath_string | data_source_string];
 data_source_string = $DATA_SOURCE_NAME":"<path_to_configfile>
 ----
 
-Example: Load a Kafka data source `k1`, where the path to the topic-partition configuration file is `"~/topic_partition1_conf.json"`:
+Example: Load a Kafka data source `k1`, where the path to the topic-partition configuration file is `"~/topic_partition_conf.json"`:
 
 [source,gsql]
 ----
-DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
+DEFINE FILENAME f1 = "$k1:~/topic_partition_conf.json";
 ----
 
 Instead of specifying the config file path, you can also provide the topic-partition configuration as a string argument, as shown below:
@@ -303,11 +305,11 @@ GSQL > DROP DATA_SOURCE ALL
 
 The `SHOW DATA_SOURCE` command will display a summary of all existing data sources for which the user has privilege:
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 GSQL > SHOW DATA_SOURCE *
 
-# the sample output
+// The sample output
 Data Source:
   - KAFKA k1 ("127.0.0.1:9092")
 The global data source will be shown in global scope. The graph scope will only show the data source it has access to.
@@ -341,17 +343,17 @@ See https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-j
 
 Here is an example code for loading data through Kafka Loader:
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 USE GRAPH test_graph
 DROP JOB load_person
 DROP DATA_SOURCE k1
 
-#create data_source kafka k1 = "kafka_config.json" for graph test_graph
+// Create data_source kafka k1 = "kafka_config.json" for graph test_graph
 CREATE DATA_SOURCE KAFKA k1 FOR GRAPH test_graph
 SET k1 = "kafka_config.json"
 
-# define the loading jobs
+// Define the loading jobs
 CREATE LOADING JOB load_person FOR GRAPH test_graph {
   DEFINE FILENAME f1 = "$k1:topic_partition_config.json";
   LOAD f1
@@ -360,6 +362,6 @@ CREATE LOADING JOB load_person FOR GRAPH test_graph {
       USING SEPARATOR=",";
 }
 
-# load the data
+// Load the data
 RUN LOADING JOB load_person
 ----
