@@ -51,7 +51,7 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 == Fixed issues
 
 === Fixed in 3.6.1
-TigerGraph Server 3.6.1 was released on July 5th, 2022.
+TigerGraph Server 3.6.1 was released on July 7th, 2022.
 
 * Fixed an issue where high-frequency schema changes can cause GPE dysfunction in rare cases.
 * Fixed an issue in GraphStudio that caused the data mapping arrow between the file icon and an edge type to disappear in some cases.
@@ -74,6 +74,9 @@ TigerGraph Server 3.6.1 was released on July 5th, 2022.
 * Removed inaccurate loading metrics from the Load Data page in GraphStudio.
 * When a user tries to edit an inferred vertex from returned edges in GraphStudio's visualized query results, they will now see a warning to modify their queries to return the vertices to be able to edit the vertices.
 
+
+== Deprecation warnings
+* The `-OPTIMIZE` flag for `INSTALL QUERY` is deprecated and is planned to be dropped in the 3.7 release.
 
 == Known Issues
 
@@ -155,7 +158,8 @@ Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to
 
 *Query and API compatibility*:
 
-* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.  Please see xref:gadmin:management-with-gadmin.adoc[Managing with gadmin].
+* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.
+Please see xref:system-management:management-with-gadmin.adoc[Managing with gadmin].
 * Some features which were previously deprecated have been dropped. Please see xref:release-notes:v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
 
 include::v3.0-removal-of-previously-deprecated-features.adoc[]
