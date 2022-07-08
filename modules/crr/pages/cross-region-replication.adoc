@@ -50,12 +50,13 @@ See <<Sync an outdated DR cluster>> on how to bring an outdated DR cluster back 
 
 * Install TigerGraph 3.2 or higher on both the primary cluster and the DR cluster *in the same version*.
 * Make sure that your DR cluster has the same number of partitions as the primary cluster.
-* If you choose to enable CRR and your DR cluster is in a different VPC than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
+* Make sure the username and password of the TigerGraph database user created on the DR cluster during installation matches one of the users on the primary cluster who have the `superuser` role.  
+* If you choose to enable CRR and your DR cluster is in a different Virtual Private Cloud (VPC) than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
 ** If you xref:installation:install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
 ** If you xref:installation:install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
 * Make sure TigerGraph is not installed with a local loopback IP such as 127.0.0.1
 
-== *Setup*
+== Setup
 
 The following setup is needed in order to perform a failover in the event of a disaster.
 
@@ -78,25 +79,27 @@ Copy the backup files from every node to every node on the new cluster.  xref:ba
 
 Run the following commands on the DR cluster to enable CRR on the DR cluster.
 
-[source,console]
+[source.wrap,console]
 ----
 # Enable Kafka Mirrormaker
-gadmin config set System.CrossRegionReplication.Enabled true
+$ gadmin config set System.CrossRegionReplication.Enabled true
 
 # Kafka mirrormaker primary cluster's IPs, separator by ','
-gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
 
 # Kafka mirrormaker primary cluster's KafkaPort
-gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
 
 # The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
-gadmin config set System.CrossRegionReplication.TopicPrefix Primary
+$ gadmin config set System.CrossRegionReplication.TopicPrefix Primary
 
 # Apply the config changes, init Kafka, and restart
-gadmin config apply -y
-gadmin init kafka -y
-gadmin restart all -y
+$ gadmin config apply -y
+$ gadmin init kafka -y
+$ gadmin restart all -y
 ----
+
+
 
 === Step 4: Force install queries on primary
 
