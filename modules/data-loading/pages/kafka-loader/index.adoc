@@ -6,13 +6,6 @@ Kafka is a popular pub-sub system in enterprise IT, offering a distributed and f
 The Kafka Loader lets you integrate TigerGraph with a Kafka cluster and speed up your real-time data ingestion.
 The Kafka Loader is easily extensible using the many plugins available in the Kafka ecosystem.
 
-
-[NOTE]
-====
-Currently, the supported format of the messages consumed from Kafka topic is CSV. 
-If the Kafka loader fails to parse messages due to formatting issues, the Kafka Loader will skip the messages the fail to be parsed. 
-====
-
 The Kafka Loader consumes data in a Kafka cluster and loads data into the TigerGraph system.
 
 == Architecture
@@ -20,6 +13,13 @@ The Kafka Loader consumes data in a Kafka cluster and loads data into the TigerG
 From a high level, a user provides instructions to the TigerGraph system through GSQL, and the external Kafka cluster loads data into TigerGraph's RESTPP server. The following diagram demonstrates the Kafka Loader data architecture.
 
 image::kafka-loading-architecture.png[Kafka Data Loader Architecture]
+
+== Supported file formats
+* Avro
+* CSV
+* JSON
+
+If the Kafka loader fails to parse messages due to formatting issues, the Kafka Loader skips the messages the fail to be parsed.
 
 == Prerequisites
 
