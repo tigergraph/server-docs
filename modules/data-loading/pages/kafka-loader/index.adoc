@@ -15,6 +15,13 @@ From a high level, a user provides instructions to the TigerGraph system through
 
 image::kafka-loading-architecture.png[Kafka Data Loader Architecture]
 
+== Supported file formats
+* Avro
+* CSV
+* JSON
+
+If the Kafka loader fails to parse messages due to formatting issues, the Kafka Loader skips the messages the fail to be parsed.
+
 == Prerequisites
 
 * Your TigerGraph instance has access to a running external Kafka cluster.
