@@ -23,6 +23,33 @@ Before you can install the TigerGraph system, you need the following:
  ** If you do not yet have a TigerGraph system package, you can https://www.tigergraph.com/get-tigergraph/[request one].
 * If you are installing a cluster, ensure that every machine has the same SSH port and the port stays open during installation
 
+=== Oracle Linux Server 8
+
+If you install on Oracle Linux Server 8, there are a few additional prerequisites.
+
+. For each node, create an OS user and password.
++
+[source,bash]
+----
+sudo useradd NEW-USER
+sudo passwd NEW-USER
+----
+. Add the new user to the AllowUsers row in the `/etc/ssh/sshd_config` file.
++
+[source, bash]
+----
+AllowUsers OLD-USER NEW-USER
+----
+. Restart sshd.
++
+[source, bash]
+----
+/sbin/service sshd restart
+----
+
+This adds firewall rules to allow TCP communication between nodes in the cluster.
+The installation process will prompt you for these steps. If you have already completed them, ignore and continue.
+
 == Installation
 
 TigerGraph's installation script supports both single-node and cluster installation, and the user can choose to install interactively or non-interactively.
