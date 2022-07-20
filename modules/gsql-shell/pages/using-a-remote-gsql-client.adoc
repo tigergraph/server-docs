@@ -3,20 +3,27 @@
 
 You can use the GSQL client to access a GSQL server on a different machine, including on a TigerGraph Cloud instance.
 
+* xref:#_connect_to_a_remote_server[]
+
+* xref:#_connect_to_tigergraph_cloud_instance[]
+
 == Prerequisites
 * The machine running the GSQL client needs to have Java 7.0 or later.
 * The server machine allows the client machine to access port 14240.
+* OpenSSL is needed on the client machine to get an SSL certificate from a TigerGraph Cloud solution.
 
-== Download the GSQL client
+== Connect to a remote server
 
-To download the GSQL client, you can do any of the following:
+=== Download the GSQL client
 
-* xref:attachment$gsql_client_server36.jar[Download the GSQL client for a local (TigerGraph Server) solution version {page-component-version} directly from this page].
-* xref:attachment$gsql_client_cloud36.jar[Download the GSQL client for a TigerGraph Cloud solution {page-component-version} directly from this page].
-* Copy the file `gsql_client.jar` from an existing installation to the client machine.
+link:https://dl.tigergraph.com/download.html[Download the GSQL client for a TigerGraph solution version directly from this page].
+
+As an alternative to downloading, you can also copy the file `gsql_client.jar` from an existing installation to the client machine.
 The client is packaged as a Java jar file, `gsql_client.jar` located in the folder `<TigerGraph_root_dir>/app/<VERSION_NUM>/dev/gdk/gsql/lib/` on an existing TigerGraph installation.
 
-== Connect to remote server
+=== Connect to the server
+
+
 To connect to a remote server, your must provide the following to the GSQL client:
 
 * The IP address of the GSQL server.
@@ -27,17 +34,18 @@ To connect to a remote server, your must provide the following to the GSQL clien
 Run the following command to connect to the remote server:
 [.wrap,console]
 ----
-java -jar gsql_client.jar \
-  [--cacert <path_to_certificate>|--ssl] \ <1>
-  --ip <ip_address> \ <2>
-  -u <username> -p <password> <3>
+java -jar <path_to_client> \ <1>
+  [--cacert <path_to_certificate>|--ssl] \ <2>
+  --ip <ip_address> \ <3>
+  -u <username> -p <password> <4>
 ----
-<1> If you have the SSL certificate of the remote server, you can replace `<path_to_certificate>` with the path to your SSL certificate (most common).
+<1> Replace `<path_to_client>` with the file path to the GSQL client.
+<2> If you have the SSL certificate of the remote server, you can replace `<path_to_certificate>` with the path to your SSL certificate (most common).
 Otherwise, you can use `--ssl` instead to use the default certificate. Note that `--ssl` will be overridden by `--cacert` option.
 If the remote server doesn't have SSL/TLS encryption enabled, you can omit these flags.
-<2> Replace `<ip_address>` with the IP address of your remote server.
+<3> Replace `<ip_address>` with the IP address of your remote server.
 You can also <<_specify_server_ip_address_in_file, specify the IP address in a file and omit this flag>>.
-<3> Replace `<username>` and `<password>` with the username and password of the TigerGraph user you want to be logged in as.
+<4> Replace `<username>` and `<password>` with the username and password of the TigerGraph user you want to be logged in as.
 If you don't provide a `<username>`, the client uses the default user `tigergraph`.
 
 
@@ -45,15 +53,7 @@ If you don't provide a `<username>`, the client uses the default user `tigergrap
 === Obtain SSL certificate from remote server
 To obtain the SSL certificate from the remote server, you can copy it from the path: `$(gadmin config get System.DataRoot)/configs/nginx/conf/ssl.cert`.
 
-=== Obtain SSL certificate from a TigerGraph Cloud instance
-To obtain the SSL certificate from a TigerGraph Cloud instance, run the following command, and replace `<ip_address>` with the IP address of your Cloud instance and replace `<path_to_certificate>` with the path to place the certificate file.
 
-You need to install link:https://www.openssl.org/[`openssl`] on your client machine to run this command.
-
-[.wrap,console]
-----
-echo | openssl s_client  -connect <ip_address>:443 |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <path_to_certificate>
-----
 
 [#_specify_server_ip_address_in_file]
 === Specify server IP address in file
@@ -72,6 +72,46 @@ alias gsql="java -jar <path_to_gsql_client>"
 ----
 
 After defining the preceding alias, running `gsql` is equivalent to running `java -jar <path_to_gsql_client>`.
+
+== Connect to TigerGraph Cloud instance
+
+Since TigerGraph Cloud uses a different xref:master@cloud:security:manage-database-users.adoc[authentication scheme] from TigerGraph Server, the steps for using the GSQL client for a cloud solution are slightly different.
+
+=== Download the GSQL client
+
+link:https://dl.tigergraph.com/download.html[Download the GSQL client for a TigerGraph solution version directly from this page].
+
+=== Obtain SSL certificate
+Run the following command, replacing `<domain>` with the domain of your Cloud solution and replace `<path_to_certificate>` with the local path to place the certificate file.
+
+Find the domain of a Cloud solution by clicking on it in the solution view under "My Solutions."
+
+You need to install link:https://www.openssl.org/[`openssl`] on your client machine to run this command.
+
+[.wrap,console]
+----
+echo | openssl s_client  -connect <domain>:443 |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <path_to_certificate>
+----
+
+=== Generate a secret
+
+Use Admin Portal to generate a secret for your user account: xref:gui:admin-portal:management/user-management.adoc[]
+
+=== Connect to the cloud instance
+
+Modify and run this command to connect to the TigerGraph Cloud instance:
+[.wrap,console]
+----
+java -jar <path_to_client> \ <1>
+  --cacert <path_to_certificate> \ <2>
+  --ip <domain> \ <3>
+  -u __GSQL__secret -p <secret> <4>
+----
+<1> Replace `<path_to_client>` with the file path to the GSQL client.
+<2> Replace `<path_to_certificate>` with the file path to the local SSL certificate that you downloaded.
+<3> Replace `<domain>` with the domain of your Cloud solution.
+<4> Replace `<secret>` with the generated secret from the Admin Portal.
+
 
 == Filepath semantics
 
