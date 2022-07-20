@@ -58,7 +58,7 @@ Some key cluster design considerations:
 
 === Continuous Availability - Data Operations
 
-TigerGraph services are based on distributed masterless architecture - all replicas are equal and can service both read and write requests.
+TigerGraph services are based on distributed leaderless architecture - all replicas are equal and can service both read and write requests.
 This is a key differentiation that ensures that no single node can be Single Point of Failure.
 
 * Write Operations: In order to keep all replicas in sync for full consistency of all data sets, all write operations are sent to all replicas synchronously by default. A write operation is considered complete only if all the replicas acknowledge that the writes are successful.
