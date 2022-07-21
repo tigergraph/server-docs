@@ -1,0 +1,92 @@
+= Glossary
+
+|===
+| Name | Refers to
+
+| *DDL*
+| Data Definition Language - a generic term for a set of commands used to define a database schema. The GSQL Language includes DDL commands. In GraphStudio, the Design Schema function.
+
+| *Dictionary (DICT)*
+| The shared storage space for storing metadata about the graph store's configuration and state, including the catalog (graph schema, loading jobs, and queries).
+
+| *DML*
+| Data Manipulation Language - a generic term for a set of commands used to add, modify, and delete data from a database. Query commands are often considered a part of DML, even a pure query statement does not manipulate (change) the data. The GSQL Language includes full DML capability for query, add (insert), delete, and modify (update) commands.
+
+| *gadmin*
+| The system utility for configuring and managing the TigerGraph System. Analogous to mysqladmin.
+
+| *gbar*
+| Graph Backup and Restore. TigerGraph's utility program for backing up and restoring system data.
+
+| *GPE*
+| Graph Processing Engine. The server component which accepts requests from the REST{pp} server for querying and updating the graph store and which returns data.
+
+| *Graph Store*
+| The component which logically and physically stores the graph data and provides access to the data in a fast and memory-efficient way. We use the term graph store to distinguish it from conventional graph databases.
+
+| *GraphStudio UI*
+| The browser-based interface that enables intuitive visual interaction with the TigerGraph system as an alternative to the GSQL Shell. The GraphStudio UI includes the following components: Schema Designer, Data Mapper, Data Loader, Graph Explorer, and Query Editor.
+
+| *GSE*
+| Graph Storage Engine. The processing component which manages the Graph Store.
+
+| *GSQL*
+a| The user program which interprets and executes graph processing operations, including
+
+* schema definition
+* data loading
+* data updates
+* data queries.
+
+| *GSQL Language*
+| The language used to instruct and communicate with the GSQL program.
+
+| *GSQL Shell*
+| The interactive command shell which may be used when running the GSQL program.
+
+| *HA*
+| High Availability - a generic term describing a computer system which has been architected to a higher level of operational performance (e.g., throughput and uptime) than would be expected from a traditional single server node.
+
+| *IDS*
+| ID Service. A subcomponent of the GSE which translates between user (external) IDs for data objects and graph store (internal) IDs.
+
+| *Kafka*
+| A free and open-source "high-throughput distributed messaging system" from the Apache Software Foundation. Our distributed system architecture is based on message passing/queuing. Kafka is automatically included during TigerGraph system installation as one implementation of messaging passing.
+
+See link:https://kafka.apache.org/[kafka.apache.org].
+
+| *MultiGraph*
+| A graph architecture and feature set which enables one global graph to be viewed as multiple logical subgraphs, each with its own set of user privileges. The subgraphs can overlap, meaning each subgraph can support both shared and private data.
+
+| *Native Parallel Graph*
+| An architecture and technology which provides for inherently highly-parallel and highly-scalable graph data storage and analytics. The use of vertex-level data+compute functionality is a key component of Native Parallel Graph design.
+
+| *Nginx*
+| A free, open-source, high-performance HTTP server and reverse proxy. Nginx is automatically included during TigerGraph system installation.
+
+See link:https://nginx.org/en/[nginx.org].
+
+| *REST{pp}* or  *RESTPP*
+| A server component which accepts RESTful requests from clients, validates the requests, invokes the GPE, and sends responses back to the client.
+
+Additionally, REST{pp} provides a zero-code interface for users to define RESTful endpoints. REST{pp} offers easy-to-use APIs for customizing the logic of handling requests and processing responses.
+
+| *Single Sign-On (SSO)*
+| A user authentication service that permits a user to use one set of login credentials to access multiple applications.
+
+| *TigerGraph  Platform*
+| The TigerGraph real-time graph data analytics software system. The TigerGraph Platform offers complete functionality for creating and managing a graph database and for performing data queries and analyses.
+
+The platform includes the Graph Store and GSE, GPE, REST{pp}, GSQL and GraphStudio, plus some third-party components such as Apache Kafka and Zookeeper.
+
+| *TigerGraph System*
+| The TigerGraph platform and its languages. Based on context, the term may also include additional optional TigerGraph components which have been installed.
+
+| *TS3*
+| TigerGraph System Service State (TS3) is a TigerGraph sub-system which helps monitor the TigerGraph system. It serves as the backend to the TigerGraph Admin Portal.
+
+| *Zookeeper*
+| A free and open-source program from the Apache Software Foundation, providing "a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services." Used for running the TigerGraph system on a cluster or other distributed system. Zookeeper is automatically included during TigerGraph system installation.
+
+See link:https://zookeeper.apache.org/[zookeeper.apache.org].
+|===

@@ -1,11 +1,11 @@
-= Memory Management
-:description: How to management memory usage in TigerGraph.
+= Memory management
+:description: How to manage memory usage in TigerGraph.
 
 This page explains the key factors that affect memory usage in TigerGraph, as well as how to:
 
 * Monitor memory usage
-* Manage query workload distribution
 * Configure memory thresholds
+* Manage query workload distribution
 
 == Memory usage key factors
 Below are the major factors that impact memory usage in TigerGraph:
@@ -22,7 +22,7 @@ See xref:gsql-ref:querying:distributed-query-mode.adoc[].
 You can monitor memory usage by query and by machine.
 
 === Monitor query memory usage
-GPE records memory usage by query at different stages of the query and saves it to `$(gadmin config get System.LogRoot)/gpe/log.INFO`.
+TigerGraph's Graph Processing Engine (GPE) records memory usage by query at different stages of the query and saves it to `$(gadmin config get System.LogRoot)/gpe/log.INFO`.
 You can monitor how much memory a query is using by searching the log file for the request ID and filter for lines that contain `"QueryMem"`:
 
 [source,console]
@@ -73,13 +73,13 @@ The following is a list of Linux commands to measure system memory and check for
 <1> If you see a line that says something invoked oom-killer, it means the node ran out of memory.
 
 == Memory state thresholds
-TigerGraph's Graph Processing Engine (GPE) has memory protection to prevent out-of-memory issues.
+GPE has memory protection to prevent out-of-memory issues.
 There are three memory states:
 
 Healthy:: There is a healthy amount of free memory.
 All system operations run normally for best performance.
 Alert:: There is a shortage of free memory.
-TigerGraph's Graph Processing Engine (GPE) starts to slow down processing new requests to allow long-running queries to finish and release memory.
+TigerGraph's GPE starts to slow down processing new requests to allow long-running queries to finish and release memory.
 Critical:: There is a critical shortage of free memory.
 TigerGraph's GPE starts to abort queries to ensure system stability.
 
@@ -103,17 +103,34 @@ $ gadmin config entry GPE.BasicConfig.Env
 ✔ New: LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=12; MALLOC_CONF=prof:true,prof_active:false▐
 ----
 Add your desired memory threshold configuration after the existing environment values.
-Separate the different environment variables by semicolon `;`:
+Use a semicolon `;` to separate the different environment variables:
 [.wrap,console]
 ----
 ✔ New: LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=12; MALLOC_CONF=prof:true,prof_active:false;SysMinFreePct=5;SysAlertFreePct=25; <1>
 ----
 <1> This sets the critical threshold to 5 percent and the alert threshold to 25 percent.
 
-After entering the new values, run `gadmin config apply` and restart the GPE to have the new configurations take effect.
+Spaces have been added to the following full example for readability.
 
-WARNING: Before modifying the values for the thresholds, please consult https://tigergraph.zendesk.com/hc/en-us/[TigerGraph support].
+[source.wrap, bash]
+----
+> gadmin config entry GPE.BasicConfig.Env
 
+GPE.BasicConfig.Env [ LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu...(too long to show the full content, please use 'gadmin config get GPE.BasicConfig.Env' to get it) ]:
+
+The runtime environment variables, separated by ';'
+
+✔ New: LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=12; MALLOC_CONF=prof:true,prof_active:false
+
+; SysMinFreePct=20;SysAlertFreePct=30 <1>
+----
+
+<1> In this example, the user has set `SysMinFreePct` to `20`, meaning that queries will start aborting automatically for stability when 20% of system memory is free (80% utilization).
+The user has also set `SysAlertFreePct` to `30`, so queries will start being throttled at 30% free memory (70% utilization).
+
+
+After making a change, run `gadmin config apply` to apply the changes and `gadmin restart gpe` to restart the GPE service.
+Changes will take effect after the restart.
 
 == Manage query workload
 On a distributed cluster, you can specify on which nodes you want a query to be run through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
