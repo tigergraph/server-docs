@@ -1,0 +1,29 @@
+= Manage TigerGraph services
+
+Although the end user accesses TigerGraph by running GSQL or accessing the GraphStudio GUI, TigerGraph is actually built on many more services than just those two alone.
+Each has its own function and can be started or stopped individually in the case of a problem with one part, though several services rely on one another.
+
+Consult the xref:reference:glossary.adoc[] for definitions of the TigerGraph services.
+
+== Start, stop or restart a service
+
+Use the command `gadmin start all` to start all of the TigerGraph services.
+This is the first step when running a new TigerGraph instance.
+If you are using Docker, for example, you must run `gadmin start all` after starting the Docker container before you can use GSQL.
+
+Use `gadmin stop`, `gadmin start` or `gadmin restart` with individual services such as GSQL, Kafka, or RESTPP to control them separate from the others.
+
+The `restart` and `stop` commands prompt you for confirmation each time they are run. To avoid this, run the commands with the `-y` flag to bypass the confirmation.
+
+.Bypass confirmation with -y
+[source.wrap, bash]
+----
+gadmin restart gpe -y
+gadmin stop all -y
+gadmin start all
+----
+
+== Check service status
+
+Use `gadmin status all` or `gadmin status` with an individual service to check its state.
+See xref:management-commands.adoc#_service_status_definitions[Service status definitions] for detailed information on the returned results.
