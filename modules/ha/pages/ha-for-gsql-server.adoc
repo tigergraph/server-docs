@@ -15,7 +15,8 @@ For Operations personnel, this reduces the operational overhead while enhancing 
 The first five nodes in a TigerGraph cluster each run a GSQL server.
 One of the GSQL servers is the primary server, while other servers are standby servers that provide high availability for client connections.
 
-image::gsql-ha.png[]
+.A TigerGraph cluster contains local clients and GSQL servers, one of which is the primary GSQL server. The standby servers send redirect requests to the primary server.
+image::gsql-ha.png[Diagram visualizing the architecture of a TigerGraph cluster with high availability.]
 
 === Role of primary GSQL server
 

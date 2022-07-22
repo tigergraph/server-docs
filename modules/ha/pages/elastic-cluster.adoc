@@ -23,7 +23,7 @@ When the ER cluster is set up, it reads from the shared storage to retrieve all 
 After setup, it no longer receives updates from the primary cluster.
 
 .Architectural diagram for ER cluster
-image:elastic-cluster.png[]
+image::elastic-cluster.png[Diagram of an ER cluster. A primary production cluster has a two-way arrow connecting it to a shared storage area. The shared storage area has one-way arrows leading from itself to two on-demand read-only clusters for OLAP.]
 
 The ER clusters are able to process memory-intensive OLAP queries in an isolated environment with no impact to the primary cluster.
 After the queries finish, the ER cluster should be shut down.
