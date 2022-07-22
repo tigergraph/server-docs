@@ -4,7 +4,8 @@ Vertex-level Access Control (VLAC) allows database administrators to control dat
 
 Figure 1 below illustrates two tag-based graphs built upon a base graph. The base graph contains vertices of `person` type, and vertices of `post` type. Two tags (A and B) are used to tag them. For example, vertex 1 and vertex 9 both have tag A. Vertex 3 and vertex 11 both have tag A and B. A tag-based graph named `tagA` will only present to its users those base graph vertices that have tag A (the bottom-left graph). The other tag-based graph named `tagB` will only present to its users those base graph vertices that have tag B (the bottom-right graph).
 
-image::vlac-graphs-figure.png[Figure 1. Tag-based graphs as subgraphs of a Base graph]
+.Tag-based graphs as subgraphs of a base graph
+image::vlac-graphs-figure.png[Diagram explaining the composition of a base graph and a tag-based graph. The tag-based graphs reference the vertices in the base graph.]
 
 For users operating on a tag-based graph, tags are an invisible aspect that silently filters how they load and query data. A tag-based graph defines its view, and all data outside its view is invisible to it.
 

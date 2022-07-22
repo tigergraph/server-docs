@@ -231,7 +231,7 @@ Angle brackets <...> are used to mark placeholders which you should replace with
 
 === *Prerequisites*
 
-Make sure you have installed and configured https://aws.amazon.com/cli/[AWS CLI]with keys locally.
+Make sure you have installed and configured https://aws.amazon.com/cli/[AWS CLI] with keys locally.
 
 === *Create an S3 Bucket*
 
@@ -281,13 +281,13 @@ The preceding policy grants read access to the bucket where the encrypted passwo
 
 If you don't have a KMS key, you can create it first:
 
-. From the https://console.aws.amazon.com/iam/home[IAM console], choose Encryption keys from the navigation pane.
+. From the link:https://console.aws.amazon.com/iam/home[IAM console], choose Encryption keys from the navigation pane.
 . Select Create Key , and type in <your-key-alias> _**_
-. For Step 2 and Step 3 , see https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.htmlfor advice.
+. For Step 2 and Step 3 , see link:https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html[] for advice.
 . In Step 4 : Define Key Usage Permissions , select <your-role-name>
 . The role now has permission to use the key.
 
-image::screen-shot-2018-10-01-at-11.20.59-pm.png[Step 2. Create Key]
+image::screen-shot-2018-10-01-at-11.20.59-pm.png["Screenshot of the AWS console: Create Alias and Description"]
 
 === Encrypt a secret password with KMS and store it in the S3 bucket
 
@@ -317,9 +317,9 @@ In this section, you launch a new EC2 instance with the new IAM role and a boots
 The script in this section requires root permission, and it cannot be run manually through an ssh tunnel or by an unprivileged user.
 ====
 
-image::13.2.png[]
+image::13.2.png["Screenshot of AWS console. The IAM role section is highlighted, showing the words 'poc-data-at-rest-role'. The Advanced Details section is expanded and highlighted with the 'As Text' radio button selected."]
 
-. In the https://console.aws.amazon.com/ec2/v2/home[EC2 console], launch a new instance (see http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/launching-instance.html[this tutorial]for more details). Amazon Linux AMI 2017.09.1 (HVM), SSD Volume Type (If NOT using Amazon Linux AMI, a script the installs python, pip and AWS CLI needs to be added in the beginning).
+. In the link:https://console.aws.amazon.com/ec2/v2/home[EC2 console], launch a new instance (see link:http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/launching-instance.html[this tutorial] for more details). Amazon Linux AMI 2017.09.1 (HVM), SSD Volume Type (If NOT using Amazon Linux AMI, a script the installs python, pip and AWS CLI needs to be added in the beginning).
 . In Step 3: Configure Instance Details
  .. In IAM role , choose <your-role-name>
  .. In User Data , paste the following code block after replacing the placeholders with your values and appending TigerGraph installation script
