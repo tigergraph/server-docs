@@ -72,19 +72,19 @@ You will need to enter the following information when following Auth0's guide:
 . Log in to https://aad.portal.azure.com/[Azure Active Directory Admin Center] as an Admin user.
 In the left menu, select menu:Enterprise applications[New Application].
 +
-image::azure-new-application.png[]
+image::azure-new-application.png[Screenshot of Azure Active Directory with the New Application option highlighted]
 . In the top left corner, click btn:[Create your own application].
 +
-image::azure-create-app.png[]
+image::azure-create-app.png[Screenshot of the Create your own application button in Azure]
 +
 In the form that appears on the right side of the page, fill in the name of your application and choose btn:[Integrate any other application you don't find in the gallery (Non-gallery)].
 This creates the application and takes you to the application page.
 . Click btn:[Users and groups] on the left pane, add the users or groups you want to give access to TigerGraph, choose the appropriate role, and click btn:[Assign].
 +
-image::azure-sso-user-group.png[]
+image::azure-sso-user-group.png[Screenshot highlighting the Add user/group option]
 . After adding users and groups, click btn:[Single sign-on] and choose btn:[SAML].
 +
-image::azure-saml.png[]
+image::azure-saml.png[Screenshot highlighting the SAML option]
 This takes you to a page titled "Set up single sign-on with SAML".
 . Fill in *Identifier (Entity ID)* and *Reply URL* with the information below.
 Replace `<tigergraph-machine-hostname>` with the host name of your TigerGraph instance:
@@ -316,7 +316,7 @@ Role "queryreader" is successfully granted to user(s): HrDepartment
 To test if single sign-on is working, visit the GraphStudio UI in your browser.
 You should see a btn:[Login with SSO] button:
 
-image::11.25.png[]
+image::11.25.png[GraphStudio login web page with a button reading 'Login with SSO'.]
 
 Click the button to navigate to your identity provider's login portal:
 

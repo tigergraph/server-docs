@@ -12,7 +12,8 @@ The Kafka Loader consumes data in a Kafka cluster and loads data into the TigerG
 
 From a high level, a user provides instructions to the TigerGraph system through GSQL, and the external Kafka cluster loads data into TigerGraph's RESTPP server. The following diagram demonstrates the Kafka Loader data architecture.
 
-image::kafka-loading-architecture.png[Kafka Data Loader Architecture]
+.User input feeds into the RESTPP server via a GSQL server. A Kafka cluster feeds directly into the RESTPP server.
+image::kafka-loading-architecture.png["Diagram of the Kafka Loader showing User Input going through a GSQL server into a RESTPP Server. A Kafka cluster data source is also shown connected to the RestPP server. Both servers are labeled as the TigerGraph System."]
 
 == Supported file formats
 * Avro
