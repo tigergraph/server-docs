@@ -10,23 +10,30 @@ The TigerGraph system is optimized to take advantage of multiple cores.
 Performance is optimal when the memory is large enough to store the full graph and to perform computations.
 
 |===
-| Component | Minimum | Recommended
+| Component | Minimum | Recommended | Notes
 
 | CPU*
-| 4 cores for <500MB data, 8 cores for >500MB data (64-bit processor)
-| 16+ cores (64-bit processor)
+a| * 4 cores for <500MB data
+* 8 cores for >500MB data
+| 16+ cores
+a|Supported CPU architectures:
+
+* x86-64
 
 | Memory*
 | 8 GB
 | ≥ 64GB
+| Performance is optimal when the memory is large enough to store the full graph and to perform computations.
 
 | Storage*
 | 20 GB
-| ≥ 1TB, RAID10 volumes for better I/O throughput.  SSD storage is recommended.
+| ≥ 1TB, RAID10 volumes for better I/O throughput.
+| SSD storage is recommended.
 
 | Network
 | 1 Gigabit Ethernet adapter
-| 10Gigabit Ethernet adapter for inter-node communication
+| 10 Gigabit Ethernet adapter for inter-node communication
+|
 |===
 
 *Actual needs (CPU, memory, storage) depend on data size and application requirements.
