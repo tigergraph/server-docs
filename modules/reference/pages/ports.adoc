@@ -1,121 +1,122 @@
 = List of Ports
 :description: List of all ports on TigerGraph.
 
+This page lists all ports that TigerGraph uses.
 
-.List of ports
+TigerGraph requires three external ports to be exposed: 22, 9000, and 14240. All other ports are used for internal communication within a cluster.
+
 [options="header"]
 |===
 |Port Description |Port |Note
-|SSH port
 |22
-|
-|Serving port for Executor
-|9177
-|
-|Executor file transfer port
-|9178
-|
-|gRPC server port for Informant
-|9166
-|
-|RESTful server port for Informant
-|9167
-|
-|Serving port for Controller
-|9188
-|
-|ID request serving port of GSE
-|6500
-|
-|Serving port of GSE RLS
-|8900
-|
-|GPE port for receiving id response from GSE
-|7500
-|
-|GPE port for receiving requests
-|7502
-|
-|GPE port for receiving response back from other GPEs
-|7501
-|
-|Port of RESTPP to accept upstream Nginx requests
-|9000
-|External use only
-|Port of RESTPP to accept GPE response
-|5400
-|
-|Port of RESTPP to accept GSE response
-|5500
-|
-|RESTPP's http server port
-|10000
-|
-|Port of FileLoader to accept GPE response
-|8400-8401
-|
-|Port of FileLoader to accept GSE response
-|8500-8501
-|
-|Port of KafkaLoader to accept GPE response
-|9400-9401
-|
-|Port of KafkaLoader to accept GSE response
-|9500-9501
-|
-|Serving port for Nginx
-|14240
-|External use only
-|The serving port for Kafka
-|30002
-|
-|Port used for Kafka stream LoadingLog
-|30004
-|
-|Port used for Kafka connect
-|30003
-|
-|Serving port for GraphStudio Websocket communication
-|14242
-|
-|GUI Admin Portal websocket port
-|14243
-|
-|GUI GraphStudio websocket port
-|14241
-|
-|Serving port for Zookeeper
-|19999
-|
-|Port for Zookeeper to do peer communication
+|SSH port
+|Internal and external use
 |2888-2892
+|Port for Zookeeper to do peer communication
 |Max 5 Zookeeper servers
-|The port for Zookeeper to do leader election
 |3888-3892
+|Port for Zookeeper to do leader election
 |Max 5 Zookeeper servers
-|The port of ETCD to listen for client traffic
-|20000
+|5400
+|Port of RESTPP to accept GPE response
 |
-|Port of ETCD to listen for peer traffic
-|20001
+|5500
+|Port of RESTPP to accept GSE response
 |
-|Server port for GSQL
+|6500
+|ID request serving port of GSE
+|
+|7500
+|GPE port for receiving id response from GSE
+|
+|7501
+|GPE port for receiving response back from other GPEs
+|
+|7502
+|GPE port for receiving requests
+|
 |8123-8124
+|Server port for GSQL
 |
-|RESTful API port for TS3Server
-|19000
+|8400-8401
+|FileLoader ports to accept GPE response
 |
-|gRPC API port for TS3Server
-|19001
+|8500-8501
+|FileLoader ports to accept GSE response
 |
-|Port for Dict
-|17797
+|8900
+|Serving port for GSE RLS
 |
-|Port for Admin
+|9000
+|Port of RESTPP to accept upstream Nginx requests
+|External use only
+|9166
+|gRPC server port for Informant
+|
+|9167
+|RESTful server port for Informant
+|
+|9177
+|Serving port for Executor
+|
+|9178
+|File transfer port for Executor
+|
+|9188
+|Serving port for Controller
+|
+|9400-9401
+|Port of KafkaLoader to accept GPE response
+|
+|9500-9501
+|Port of KafkaLoader to accept GSE response
+|
+|10000
+|RESTPP's http server port
+|
 |12471
+|Port for Admin
 |
-
-|Dynamic ports
+|14240
+|Serving port for Nginx
+|External use only
+|14241
+|GUI GraphStudio websocket port
+|
+|14242
+|Serving port for GraphStudio Websocket communication
+|
+|14243
+|GUI Admin Portal websocket port
+|
+|17797
+|Port for Dict
+|
+|19000
+|RESTful API port for TS3Server
+|
+|19001
+|gRPC API port for TS3Server
+|
+|19999
+|Serving port for Zookeeper
+|
+|20000
+|The port of ETCD to listen for client traffic
+|
+|20001
+|Port of ETCD to listen for peer traffic
+|
+|30002
+|The serving port for Kafka
+|
+|30004
+|Port used for Kafka stream LoadingLog
+|
+|30003
+|Port used for Kafka connect
+|
 |49152 - 65535
+|Dynamic ports
 |Required for backup and restore as well as communication between TigerGraph services.
 |===
