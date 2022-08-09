@@ -25,23 +25,32 @@ Before you can install the TigerGraph system, you need the following:
 
 === Oracle Linux Server 8
 
-If you install on Oracle Linux Server 8, there are a few additional prerequisites.
+If you install on Oracle Linux Server 8, you need to add authorized users to the `/etc/ssh/sshd_config` file to enable SSH connections to your machines on these users' accounts.
 
-. For each node, create an OS user and password.
+During TigerGraph installation, you'll be asked to specify a user to be the TigerGraph Linux user.
+This user will have access to xref:system-management:management-with-gadmin.adoc[gadmin commands to] manage TigerGraph services.
+For installation on OEL 8, it's important to allow SSH connections using the TigerGraph Linux user, along with the Linux user with superuser privileges that you are using to install TigerGraph.
+
+. For each node, create a Linux OS user with the same username and password.
+This is the TigerGraph Linux user that you'll supply during installation.
 +
 [source,bash]
 ----
 sudo useradd NEW-USER
 sudo passwd NEW-USER
 ----
-. Add the new user to the AllowUsers row in the `/etc/ssh/sshd_config` file.
++
+You may skip this step, and specify a username during installation to have the installer create the user for you.
+In that case, you must decide on the username now, and add it to the `sshd_config` file in the next step.
+. Add the TigerGraph Linux user as well as any other user you want to allow SSH connections to the AllowUsers row in the `/etc/ssh/sshd_config` file.
 +
 WARNING: Make sure *all users* you want to give access to the SSH server are listed in the AllowUsers row, and ensure that you don't mistype the usernames.
 If a user is not listed, no SSH connections are permitted to access their account.
+#Errors could result in you losing remote access to your machine entirely.#
 +
 [source, bash]
 ----
-AllowUsers OLD-USER NEW-USER
+AllowUsers <tigergrpah_linux_user> <root_user>
 ----
 . Restart sshd.
 +
@@ -130,7 +139,7 @@ NOTE: In TigerGraph 3.x, the installation machine can be within or outside the c
 
 After all the questions are answered, the script will proceed to installation as shown in this screenshot:
 
-image::image (76).png[Screenshot of installation process]
+image::install-script.png[Screenshot of installation process]
 
 ==== *Step 4*: Verify installation
 
@@ -143,9 +152,9 @@ $ su <username>  # default username: tigergraph
 
 At the prompt, enter the password that was set in Step 2.
 
-After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin.adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE and GPE will show `"Warmup"`.
+After switching to the correct user, you now have access to xref:system-management:management-with-gadmin.adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE and GPE will show `"Warmup"`.
 
-image::image (77).png[Status of all components upon successful installation]
+image::gadmin-status.png[Status of all components upon successful installation]
 
 === Non-interactive installation
 
