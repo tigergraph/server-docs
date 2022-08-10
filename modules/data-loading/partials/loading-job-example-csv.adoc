@@ -1,0 +1,99 @@
+For example, suppose we have the following two CSV files and schema:
+
+[tabs]
+====
+Schema::
++
+--
+[,gsql]
+----
+CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
+CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
+CREATE GRAPH social (person, friendship)
+----
+--
+p.csv::
++
+--
+[,csv]
+----
+name,gender,age,state
+Tom,male,40,ca
+Dan,male,34,ny
+Jenny,female,25,tx
+Kevin,male,28,az
+Amily,female,22,ca
+Nancy,female,20,ky
+Jack,male,26,fl
+A,male,29,ca
+----
+--
+f.csv::
++
+--
+[,csv]
+----
+person1,person2,date
+Tom,Dan,2017-06-03
+Tom,Jenny,2015-01-01
+Dan,Jenny,2016-08-03
+Jenny,Amily,2015-06-08
+Dan,Nancy,2016-01-03
+Nancy,Jack,2017-03-02
+Dan,Kevin,2015-12-30
+Amily,Dan,1990-1-1
+----
+--
+====
+
+
+The following topic-partition configurations and loading job will load the two CSV files into the graph:
+
+[tabs]
+====
+topic_person.json::
++
+--
+[,json]
+----
+{
+  "topic": "person-demo-104",
+  "partition_list": [
+    {
+      "start_offset": -2,
+      "partition": 0
+    }
+  ]
+}
+----
+--
+topic_friend.json::
++
+--
+[,json]
+----
+{
+  "topic": "friend-demo-104",
+  "partition_list": [
+    {
+      "start_offset": -2,
+      "partition": 0
+    }
+  ]
+}
+----
+--
+Loading job::
++
+--
+[.wrap,gsql]
+----
+CREATE LOADING JOB load_person FOR GRAPH social {
+    DEFINE FILENAME f1 = "$k1:/home/mydata/topic_person.json";
+    DEFINE FILENAME f2 = "$k1:/home/mydata/topic_friend.json";
+    LOAD f1 TO VERTEX person VALUES ($0, $0, $2, $1, $3) USING separator=",";
+    LOAD f2 TO EDGE friendship VALUES ($0, $1, $2)  USING separator=",";
+}
+----
+--
+====

@@ -1,0 +1,71 @@
+= Stream data from AWS S3
+:sectnums:
+
+You can create a data connector between TigerGraph's internal Kafka server and your AWS S3 bucket with a specified topic.
+The connector will stream data from the data source in your S3 buckets to TigerGraph's internal Kafka cluster.
+You can then create and run a loading job to load data from Kafka into the graph store using the xref:kafka-loader/index.adoc[Kafka loader].
+
+== Prerequisites
+
+Before you begin, make sure the following prerequisites are met:
+
+== Procedure
+
+=== Specify connector configurations
+
+The connector configurations provide the following information:
+
+* Connector class
+* Your AWS account credentials
+* Information on how to parse the source data
+* Mapping between connector and source file
+
+==== Connector class
+
+[.wrap,text]
+----
+connector.class=com.tigergraph.kafka.connect.filesystem.aws.S3SourceConnector
+----
+
+The connector class indicates what type of connector the configuration file is used to create.
+Connector class is specified by the `connector.class` key.
+For connecting to AWS S3, its value is
+`com.tigergraph.kafka.connect.filesystem.aws.S3SourceConnector`.
+
+==== Provide AWS credentials
+Except when interacting with public S3 buckets, the S3A client needs the credentials needed to interact with buckets.
+
+The connector uses the standard simple credential provider and uses your https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html[access key] for authentication.
+
+[.wrap,text]
+----
+file.reader.settings.fs.s3a.aws.credentials.provider=org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
+file.reader.settings.fs.s3a.access.key=A2V************J
+file.reader.settings.fs.s3a.secret.key=wEV************************************8
+----
+
+==== Other configurations
+The connector uses Hadoop S3A to connect to S3 buckets.
+The configurations below are required along with our recommended values:
+----
+file.reader.settings.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+file.reader.settings.fs.AbstractFileSystem.s3a.impl=org.apache.hadoop.fs.s3a.S3A
+file.reader.settings.fs.s3a.threads.max=1000
+file.reader.settings.fs.s3a.connection.maximum=1000
+----
+
+The other available configuration items can be found at link:https://hadoop.apache.org/docs/stable/hadoop-aws/tools/hadoop-aws/index.html#General_S3A_Client_configuration[Apache Hadoop Amazon Web Services support – Hadoop-AWS module: Integration with Amazon Web Services].
+You can adopt them in your connector config files with prefix `file.reader.settings`.
+
+include::partial$parsing-rules.adoc[]
+
+include::partial$create-connector.adoc[]
+
+include::partial$create-data-source.adoc[]
+
+include::partial$create-loading-job-kafka.adoc[]
+
+include::partial$loading-job-example-csv.adoc[]
+
+
+

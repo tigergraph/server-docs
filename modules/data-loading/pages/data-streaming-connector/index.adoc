@@ -1,0 +1,69 @@
+= Data Streaming Connector
+:description: A guide to TigerGraph's Streaming Data Connector.
+:sectnums:
+
+TigerGraph Data Streaming Connector is a link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and other data systems.
+
+== Supported data systems
+The data streaming connector supports the following data systems:
+
+* xref:data-streaming-connector/gcp.adoc[Google Cloud Storage (GCS)]
+* xref:data-streaming-connector/kafka.adoc[Apache Kafka]
+* xref:data-streaming-connector/aws-s3.adoc[AWS S3]
+
+
+== Manage connectors
+
+After creating a connector, you can choose to delete it or pause it.
+You can also use `gadmin` commands to view status of all existing connectors.
+
+=== List connectors
+You can list all running connectors or view detailed configuration of a specific connector.
+
+To view a list of all connectors, run `gadmin connector list` from your bash terminal as the TigerGraph Linux user.
+
+To view configuration details of a specific connector, run `gadmin connector list <name_of_connector>` and replace `<name_of_connector>` with the name of the connector you want to inspect.
+
+=== Pause a connector
+Pausing a connector stops the connector from streaming data from the data source.
+The data that has been streamed to TigerGraph's internal Kafka can still be loaded into the graph store via a loading job.
+
+To pause a connector, run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector pause <connector_name>
+----
+
+=== Resume a connector
+Resuming a connector resumes streaming for a paused connector.
+
+To resume a connector, run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector resume <connector_name>
+----
+
+=== Delete a connector
+Deleting a connector removes a connector.
+It stops the connector from streaming, but the data that has been streamed to Kafka can still be ingested by a loading job.
+This action cannot be undone and a removed connector cannot be resumed.
+
+To delete a connector,  run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector delete <connector_name>
+----
+
+== Known issues
+Messages in TigerGraph's internal Kafka cluster are automatically removed from the topics at regular intervals.
+There are several known issues with this process:
+
+* Messages are only removed if the loading job is actively running.
+If the loading job finishes much sooner before the interval is reached, the messages are not removed.
+* If loading job uses EOF mode, meaning the loading job will terminate as soon as it finishes, it is likely some partial data will be left in the topic.
+* If a topic is deleted and recreated while a loading job on the topic is running, the data in the topic may get removed.
+
+Automatic message removal is an alpha feature and may be subject to change.
