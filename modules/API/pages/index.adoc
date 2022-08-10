@@ -297,7 +297,7 @@ curl -X <GET/POST> -H "GSQL-TIMEOUT: <timeout value in ms>" '<request_URL>'
 ----
 
 The longest supported timeout is 2147483647 or stem:[2^31-1] seconds (68 years).
-If a larger timeout value is entered, the value will fall back to the default of 16 seconds.
+If a larger timeout value is entered, the timeout length will fall back to the value specified in the `RESTPP.Factory.DefaultQueryTimeoutSec` parameter (See xref:reference:configuration-parameters.adoc[]).
 
 === Response Size
 
