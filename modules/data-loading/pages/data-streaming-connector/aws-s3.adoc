@@ -2,12 +2,14 @@
 :sectnums:
 
 You can create a data connector between TigerGraph's internal Kafka server and your AWS S3 bucket with a specified topic.
-The connector will stream data from the data source in your S3 buckets to TigerGraph's internal Kafka cluster.
+The connector streams data from the data source in your S3 buckets to TigerGraph's internal Kafka cluster.
 You can then create and run a loading job to load data from Kafka into the graph store using the xref:kafka-loader/index.adoc[Kafka loader].
 
 == Prerequisites
 
 Before you begin, make sure the following prerequisites are met:
+
+* You have an access key corresponding to an AWS IAM user who has access to the S3 bucket you are loading data from.
 
 == Procedure
 
@@ -33,9 +35,15 @@ For connecting to AWS S3, its value is
 `com.tigergraph.kafka.connect.filesystem.aws.S3SourceConnector`.
 
 ==== Provide AWS credentials
-Except when interacting with public S3 buckets, the S3A client needs the credentials needed to interact with buckets.
-
 The connector uses the standard simple credential provider and uses your https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html[access key] for authentication.
+
+The following fields are required for authentication:
+
+* `file.reader.settings.fs.s3a.aws.credentials.provider`: Comma-separated class names of credential provider classes which implement
+`com.amazonaws.auth.AWSCredentialsProvider`.
+** This field should be set to `org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider`.
+* `file.reader.settings.fs.s3a.access.key`: AWS access key ID.
+* `file.reader.settings.fs.s3a.secret.key`: AWS access key secret.
 
 [.wrap,text]
 ----
@@ -47,6 +55,7 @@ file.reader.settings.fs.s3a.secret.key=wEV************************************8
 ==== Other configurations
 The connector uses Hadoop S3A to connect to S3 buckets.
 The configurations below are required along with our recommended values:
+
 ----
 file.reader.settings.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
 file.reader.settings.fs.AbstractFileSystem.s3a.impl=org.apache.hadoop.fs.s3a.S3A
@@ -59,6 +68,84 @@ You can adopt them in your connector config files with prefix `file.reader.setti
 
 include::partial$parsing-rules.adoc[]
 
+include::partial$map-source-to-connector.adoc[]
+
+==== Example
+
+The following is an example configuration file:
+
+----
+connector.class=com.tigergraph.kafka.connect.filesystem.aws.S3SourceConnector
+file.reader.settings.fs.s3a.aws.credentials.provider=org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
+file.reader.settings.fs.s3a.access.key=A2V************J
+file.reader.settings.fs.s3a.secret.key=wEV************************************8
+file.reader.settings.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+file.reader.settings.fs.AbstractFileSystem.s3a.impl=org.apache.hadoop.fs.s3a.S3A
+file.reader.settings.fs.s3a.threads.max=1000
+file.reader.settings.fs.s3a.connection.maximum=1000
+
+mode=eof
+file.regexp=".*"
+file.recursive=true
+file.reader.type=text
+file.reader.batch.size=10000
+file.reader.text.eol="\\n"
+file.reader.text.header=true
+file.reader.text.archive.type=auto
+file.reader.text.archive.extensions.tar=tar
+file.reader.text.archive.extensions.zip=zip
+file.reader.text.archive.extensions.gzip=tar.gz,tgz
+
+[s3_connector_person_csv]
+name=s3-person-csv
+file.reader.batch.size=100
+tasks.max=10
+topic=s3-person-csv-topic
+file.uris=s3a://my-bucket/p.csv
+
+[s3_connector_friend_csv]
+name=s3-friend-csv
+tasks.max=10
+topic=s3-friend-csv-topic
+file.uris=s3a://my-bucket/f.csv
+
+[s3_connector_person_tar]
+name=s3-person-tar
+tasks.max=10
+topic=s3-person-tar-topic
+file.uris=s3a://my-bucket/p.tar
+
+[s3_connector_friend_tar]
+name=s3-friend-tar
+tasks.max=10
+topic=s3-friend-tar-topic
+file.uris=s3a://my-bucket/f.tar
+
+[s3_connector_person_tgz]
+name=s3-person-tgz
+tasks.max=10
+topic=s3-person-tgz-topic
+file.uris=s3a://my-bucket/p.tgz
+
+[s3_connector_friend_tgz]
+name=s3-friend-tgz
+tasks.max=10
+topic=s3-friend-tgz-topic
+file.uris=s3a://my-bucket/f.tgz
+
+[s3_connector_person_zip]
+name=s3-person-zip
+tasks.max=10
+topic=s3-person-zip-topic
+file.uris=s3a://my-bucket/p.zip
+
+[s3_connector_friend_zip]
+name=s3-friend-zip
+tasks.max=10
+topic=s3-friend-zip-topic
+file.uris=s3a://my-bucket/f.zip
+----
+
 include::partial$create-connector.adoc[]
 
 include::partial$create-data-source.adoc[]
@@ -66,6 +153,14 @@ include::partial$create-data-source.adoc[]
 include::partial$create-loading-job-kafka.adoc[]
 
 include::partial$loading-job-example-csv.adoc[]
+
+include::partial$run-loading-job.adoc[]
+
+=== Stream data source updates
+
+To load updates to the data source after you've created the connectors, you need to delete the connector and recreate another connector.
+
+In the future, the streaming data connector will support automatically scanning for updates and stream data to TigerGraph.
 
 
 
