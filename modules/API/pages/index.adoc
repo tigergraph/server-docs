@@ -4,7 +4,8 @@
 :page-aliases: API:intro.adoc, api:intro.adoc
 
 TigerGraph's REST API endpoints exist on the REST{pp} and the GSQL server. REST{pp} (or RESTPP) is the TigerGraph customized https://en.wikipedia.org/wiki/Representational_state_transfer[REST] server.
-Our API accepts URL-encoded query string parameters, https://www.json.org/json-en.html[JSON]-encoded request bodies and returns JSON encoded responses.
+
+Our API accepts URL-encoded query string parameters and https://www.json.org/json-en.html[JSON]-encoded request bodies. It returns JSON-encoded responses.
 
 This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while the subsequent sections describe in detail each endpoint and its input and output.
 
@@ -145,8 +146,8 @@ is the type of the vertex.
 and `valueList`, each containing the keys and the values of the
 map respectively.
 
-The order of items in the valueList should correspond to the
-order of items in the keyList.
+The order of items in the `valueList` should correspond to the
+order of items in the `keyList`.
 |A map of nations and their capitals:
 
 `{"keyList": ["England", "Germany"],` +
@@ -161,7 +162,7 @@ tuple, and the `valueList` array contains the values of the fields.
 The order of items in the `keyList` should correspond to the order
 of the fields as specified in the definition of the tuple/UDT, and
 the order of values in the `valueList` should correspond to the order of
-items in the keyList.
+items in the `keyList`.
 |Tuple schema definition:
 
 `TYPEDEF TUPLE <name STRING, age INT> person`
@@ -281,19 +282,24 @@ The maximum size for a request body, including the payload file, is set by the s
 
 [source,console]
 ----
-gadmin config set Nginx.ClientMaxBodySize NNN
+gadmin config set Nginx.ClientMaxBodySize <new maximum size>
 ----
 
 The upper limit of this setting is 1024 MB. Raising the size limit for the data payload buffer reduces the memory available for other operations, so be cautious about increasing this limit.
 
 === GSQL Query Timeout
 
-By default, an HTTP request in the TigerGraph system times out after 16 seconds.  to customize this timeout limit for a particular query instance, you can set the GSQL-TIMEOUT parameter in the request header. If you are using curl to submit your RESTPP request, the syntax would be the following:
+By default, an HTTP request in the TigerGraph system times out after 16 seconds.
+To customize this timeout limit for a particular query instance, set the `GSQL-TIMEOUT` parameter in the request header.
+If you are using `curl` to submit your RESTPP request, the syntax would be the following:
 
 [source,bash]
 ----
 curl -X <GET/POST> -H "GSQL-TIMEOUT: <timeout value in ms>" '<request_URL>'
 ----
+
+The longest supported timeout is 2147483647 or stem:[2^31-1] seconds (68 years).
+If a larger timeout value is entered, the value will fall back to the default of 16 seconds.
 
 === Response Size
 
@@ -322,7 +328,7 @@ Request examples in this guide are made using https://curl.se/docs/manpage.html[
 
 * `-d <data>`
  ** Sends the specified data in a `POST` request to the HTTP server in the same way that a browser does when a user has filled in an HTML form and presses the submit button. This will cause curl to pass the data to the server using the content-type `application/x-www-form-urlencoded`.
- ** If you start the data with the character `@`, the rest should be a filepath from which to read the data. The command `curl -d @foobar` will read data from a file named `foobar`.
+ ** If you start the data with the character `@`, the rest should be a filepath from which to read the data. The command `curl -d @filename` will read data from a file named `filename`.
 * `--data-binary <data>`
  ** Sends data with a `POST` request exactly as specified with no extra processing.
 * `--fail`
@@ -334,6 +340,6 @@ Request examples in this guide are made using https://curl.se/docs/manpage.html[
 * `-s`
  ** Silent or quiet mode. Don't show a progress meter or error messages. It will still output the data you ask for, potentially even to the terminal/stdout unless you redirect it.
 * `-u <user:password>`
- ** Submits the specified user name and password for server authentication.
+ ** Submits the specified username and password for server authentication.
 * `-X <request_method>`
  ** Specifies a custom request method to use when communicating with the HTTP server. If this option is not used, curl will make a `GET` request by default.
