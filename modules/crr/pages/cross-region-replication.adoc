@@ -1,7 +1,7 @@
 = Cross-Region Replication
 
 TigerGraph's Cross-Region Replication (CRR) feature allows users to keep two or more TigerGraph clusters in different data centers or regions in sync.
-One cluster is the primary cluster, where users perform all normal database operations, while the other is a read-only Disaster Recovery(CR) cluster that syncs with the primary cluster.
+One cluster is the primary cluster, where users perform all normal database operations, while the other is a read-only Disaster Recovery (DR) cluster that syncs with the primary cluster.
 CRR includes complete native support for syncing all data and metadata including automated schema, user, and query changes.
 
 
@@ -36,7 +36,11 @@ The following information and commands are *not* synced to the DR cluster:
 * Loading jobs
 ** This refers to the loading job definitions only.
 Data loaded through a loading job is still replicated from the primary to the DR cluster.
-* `gadmin` configurations
+* `gadmin` configurations (e.g. `gadmin config set GSQL.BasicConfig.LogConfig.LogLevel DEBUG`)
+
+The following commands/actions and will *stop* syncing to the DR cluster:
+
+* `gbar restore` while the cross-region replication is enabled.
 * `gsql --reset` command
 * The following GSQL commands:
  ** `EXPORT` and `IMPORT` commands
@@ -57,11 +61,39 @@ See <<Sync an outdated DR cluster>> on how to bring an outdated DR cluster back 
 * If you choose to enable CRR and your DR cluster is in a different Virtual Private Cloud (VPC) than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
 ** If you xref:installation:install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
 ** If you xref:installation:install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
-* Make sure TigerGraph is not installed with a local loopback IP such as 127.0.0.1
+
+[WARNING]
+====
+Make sure TigerGraph is *not* installed with a local loopback IP such as 127.0.0.1. You can verify if you are using loopback IP with `gadmin config get System.HostList` if this returns 127.0.0.1 then it means you have insatlled TigerGraph with loopback IP
+====
+
+== Cross Region Replication Logic 
+
+The following diagram is a simplified illustration of the key components and logic behind the Cross Region Replication feature
+
+image::crr.jpg["Diagram of the Cross Region Replication feature"]
+
+The Cross Region Replication logic is divided in two layers:
+
+* Kafka Topic replication via Kafka MirrorMaker from primary Kafka to DR Kafka. This is called the Infrastructure layer
+* GSQL replaying replicas on DR from Kafka topic. This is called the GSQL layer
+
+[NOTE]
+====
+A "replica" in Kafka topic context is the commited operation of a write transaction (e.g. `CREATE VETEX Person`) that happened succesfully on the primary. Every replica has a unique identification which is consistent between primary and DR.
+Kafka MirrorMaker is a stand-alone tool (out-of-the-box from TigerGraph) for copying data between two Kafka, in this specific case between primary Kafka and DR Kafka.
+====
+
+This following is the flow of replication done by Cross Region Replication feature:
+
+. Application sends a write transaction on the primary (e.g. `CREATE VERTEX PERSON`). In the above diagram this is reported as point 1
+. This transaction is committed succesfully and stored in Kafka Metadata. In the above diagram this is reported as point 2
+. Kafka MirrorMaker replicates the Metadata from primary Kafka to DR kafka maintaining the same unique idetification. In the above diagram this is reported as point 3
+. GSQL on DR will reply this replica from DR Kafka Metadata and commit the change. In the above diagram this is reported as point 4
 
 == Setup
 
-The following setup is needed in order to perform a failover in the event of a disaster.
+The following setup is needed in order to enable Cross Region Replication.
 
 [NOTE]
 ====
@@ -88,7 +120,7 @@ Run the following commands on the DR cluster to enable CRR on the DR cluster.
 $ gadmin config set System.CrossRegionReplication.Enabled true
 
 # Kafka mirrormaker primary cluster's IPs, separator by ','
-$ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs <PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3>
 
 # Kafka mirrormaker primary cluster's KafkaPort
 $ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
@@ -149,21 +181,21 @@ To set up a new DR cluster over the upgraded primary cluster:
 [source,console]
 ----
 # Enable Kafka Mirrormaker
-gadmin config set System.CrossRegionReplication.Enabled true
+$ gadmin config set System.CrossRegionReplication.Enabled true
 
 # Kafka mirrormaker primary cluster's IPs, separator by ','
-gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
 
 # Kafka mirrormaker primary cluster's KafkaPort
-gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
 
 # The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
-gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
+$ gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
 
 # Apply the config changes, init Kafka, and restart
-gadmin config apply -y
-gadmin init kafka -y
-gadmin restart all -y
+$ gadmin config apply -y
+$ gadmin init kafka -y
+$ gadmin restart all -y
 ----
 
 There is no limit on the number of times a cluster can fail over to another cluster. When designating a new DR cluster, make sure that you set the `System.CrossRegionReplication.TopicPrefix` parameter correctly by adding an additional `.Primary` .
@@ -175,3 +207,225 @@ For example, if your original cluster fails over once, and the current cluster's
 When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
 
 To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the link:#_setup[setup steps] again. However, you can skip Step 3: Enable CRR on the DR cluster, because CRR will have already been enabled.
+
+== *How-to debug issues*
+
+[NOTE]
+====
+The following debugging guide does cover debugging most frequent issues related to Cross Region Replication, of course there might other issues where this debugging guide would not be helpful, in that case please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
+====
+
+In case you are noticing something wrong with the Cross Region Replication like data is not getting syncronized correctely you can do the following debugging:
+
+=== Step 1: Check data consistency between primary and DR
+
+Fist make sure that the vertex and edge count is matching between primary and DR. You can check that in different ways:
+
+* Run a count query to check the count of veritces and edges and compare them between primary and DR. If you don't have a count query handy you can use the built-in endpoint reported xref:API:built-in-endpoints.adoc#_list_vertices[here] to list a specific vertex count 
+* Check output of `gstatusgraph` command vertex count should match between primary and DR
+  
+If you see inconsistencies that it's likely you are facing some issues with Cross Region Replication. Note that if you do this check while loading data, it expected that vertex and edge count will not match as DR will be catching up in the meantime. If that's your case, you can run multiple times the above query, API or command on DR and see if they are increasing, if that's the case then there is no issue.  
+
+Another way to validate data intergrity between primary and DR is to check`lastSeqId` which is the last replayed replica by GSQL from Kafka Metadata topic. If no data loading is happening on primary the `lastSeqId` on primary and DR must match. To check that run `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql/replication`
+
+=== Step 2: Isolate the issue to a specific layer
+
+Assuming the above steps are showing data mismatch between primary and DR, the next step is to understand on which layer is the issue (refer to link:#_cross_region_replication_logic[Cross Region Replication Logic]paragraph)
+
+Firstly we need to make sure that Kafka MirrorMaker has correctly done his job in replicating Kafka Metadata from primary to DR to check that we need to run the following commands on both primary and DR:
+
+[source,console]
+----
+# cd to kafka bin path
+$ cd $(gadmin config get System.AppRoot)/kafka/bin/
+
+# Add JAVA to your path, JAVA is already provided by TigerGraph
+$ JAVA_HOME=$(dirname `find $(gadmin config get System.AppRoot)/.syspre -name java -type f`)
+$ PATH=$PATH:$JAVA_HOME
+
+# Run kafka-console-consumer to read from the Metadata topic
+$ bash kafka-console-consumer.sh --bootstrap-server $(gmyip):30002 --topic Metadata --from-beginning
+
+# When running the above command make sure you are passing the right name for the --topic flag. On primary it will be Metadata and on DR it will be Primary.Metadata
+# The output of the above command might be verbose, it's suggested to redirect the output ot a file for ease of usage
+----
+
+Below is a snippet of the above output:
+
+[source,console]
+----
+[...]
+
+{"@type":"type.googleapis.com/google.protobuf.Value","value":{"254":"{\"method\":\"POST\",\"uri\":\"/gsql/file\",\"headers\":\"{\\\"Cookie\\\":\\\"{\\\\\\\"sessionId\\\\\\\":\\\\\\\"00000000561\\\\\\\",\\\\\\\"serverId\\\\\\\":\\\\\\\"8_1659614329898\\\\\\\",\\\\\\\"graph\\\\\\\":\\\\\\\"Social\\\\\\\",\\\\\\\"gShellTest\\\\\\\":false,\\\\\\\"terminalWidth\\\\\\\":80,\\\\\\\"compileThread\\\\\\\":0,\\\\\\\"clientPath\\\\\\\":\\\\\\\"/home/tigergraph/3.6.1/bin/gui\\\\\\\",\\\\\\\"fromGraphStudio\\\\\\\":true,\\\\\\\"fromGsqlClient\\\\\\\":true,\\\\\\\"fromGsqlServer\\\\\\\":false,\\\\\\\"clientCommit\\\\\\\":\\\\\\\"6edbf23d9750ab4451g341f605e58e9421dc7a\\\\\\\",\\\\\\\"sessionParameters\\\\\\\":{},\\\\\\\"sessionAborted\\\\\\\":false,\\\\\\\"loadingProgressAborted\\\\\\\":false,\\\\\\\"auth\\\\\\\":\\\\\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXX\\\\\\\\u003d\\\\\\\",\\\\\\\"metadataUpdateSeqId\\\\\\\":0}\\\",\\\"Authorization\\\":\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=\\\"}\",\"body\":\"CREATE QUERY FindFriendship(/* Parameters here */) FOR GRAPH Social { \\n  /* Write query logic here */ \\n  PRINT \\\"Found Friends!\\\"; \\n}\"}"}}
+
+
+{"@type":"type.googleapis.com/google.protobuf.Value","value":{"255":"{\"method\":\"POST\",\"uri\":\"/gsql/file\",\"headers\":\"{\\\"Cookie\\\":\\\"{\\\\\\\"sessionId\\\\\\\":\\\\\\\"00000000563\\\\\\\",\\\\\\\"serverId\\\\\\\":\\\\\\\"8_1659614329898\\\\\\\",\\\\\\\"graph\\\\\\\":\\\\\\\"Social\\\\\\\",\\\\\\\"gShellTest\\\\\\\":false,\\\\\\\"terminalWidth\\\\\\\":80,\\\\\\\"compileThread\\\\\\\":0,\\\\\\\"clientPath\\\\\\\":\\\\\\\"/home/tigergraph/app/3.6.1/bin/gui\\\\\\\",\\\\\\\"fromGraphStudio\\\\\\\":true,\\\\\\\"fromGsqlClient\\\\\\\":true,\\\\\\\"fromGsqlServer\\\\\\\":true,\\\\\\\"clientCommit\\\\\\\":\\\\\\\"6edbf23d9750ab4451g341f605e58e9421dc7a\\\\\\\",\\\\\\\"sessionParameters\\\\\\\":{},\\\\\\\"sessionAborted\\\\\\\":false,\\\\\\\"loadingProgressAborted\\\\\\\":false,\\\\\\\"auth\\\\\\\":\\\\\\\"Basic XXXXXXXXXXXXXXXXXXXXXX\\\\\\\\u003d\\\\\\\",\\\\\\\"metadataUpdateSeqId\\\\\\\":0}\\\",\\\"Authorization\\\":\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=\\\"}\",\"body\":\"INSTALL QUERY FindFriendship\"}"}}
+
+ 
+{"@type":"type.googleapis.com/google.protobuf.Value","value":{"256":"{\"method\":\"POST\",\"uri\":\"/gsql/file\",\"headers\":\"{\\\"Cookie\\\":\\\"{\\\\\\\"sessionId\\\\\\\":\\\\\\\"00000000585\\\\\\\",\\\\\\\"serverId\\\\\\\":\\\\\\\"8_1659614329898\\\\\\\",\\\\\\\"gShellTest\\\\\\\":false,\\\\\\\"terminalWidth\\\\\\\":0,\\\\\\\"compileThread\\\\\\\":0,\\\\\\\"fromGraphStudio\\\\\\\":false,\\\\\\\"fromGsqlClient\\\\\\\":false,\\\\\\\"fromGsqlServer\\\\\\\":false,\\\\\\\"sessionAborted\\\\\\\":false,\\\\\\\"loadingProgressAborted\\\\\\\":false,\\\\\\\"auth\\\\\\\":\\\\\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\\\\\\\\u003d\\\\\\\",\\\\\\\"metadataUpdateSeqId\\\\\\\":0}\\\",\\\"Authorization\\\":\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=\\\"}\",\"body\":\"IMPORT SECRET (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, AUTO_GENERATED_ALIAS_jf2a021) TO USER foo FOR GRAPH Social\"}"}}
+----
+
+As you can see each line above is a replica that has been copied from primary Kafka Metadata to DR Kafka Primary.Metatada via Kafka MirrorMaker. Each replica has a unique and consistent (accross primary and DR) ID which is (based on the above example) `"value:{"256":...` and each replica ID maps to a single GSQL WRITE operation which in this example is `"IMPORT SECRET (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, AUTO_GENERATED_ALIAS_jf2a021) TO USER foo FOR GRAPH Social\"`. Also the replica ID must be sequential and increamental (+1) and there should *not* be any gaps (e.g. 254, 255, 256).
+
+The last replica ID must be the same of the `lastSeqId` returned on each of the primary and DR. In this example the last replica ID is `256` and the output of `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql/replication` is:
+
+[source,console]
+----
+$ curl -u tigergraph:tigergraph  localhost:8123/gsql/replication | jq
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100    61    0    61    0     0   3812      0 --:--:-- --:--:-- --:--:--  3812
+{
+  "numChangesToBeReplicated": 0,
+  "lastSeqId": 256,
+  "error": false
+}
+----
+
+The are two condition that must be satisfied here:
+
+. All and each of the above replicas must be consistent between the primary and DR Kafka Metadata. 
+. All and each of the above replicas will be replayed by GSQL on DR and all of them must succeed. 
+
+If the former condition is not statified then it's an Infrastructure layer issue, if the latter condition is not satisfied (meanwhile the former one it is) then it is a GSQL layer issue.
+
+==== Step 2.1: Debugging Infrastructure layer issue
+
+In case the replicas in Kafka Metadata topic are not consistent between primary and DR, then there could be multiple possibilities that are:
+
+* Kafka MirrorMaker is not RUNNING
+* Network connectivity issue between primary and DR
+* Port 30002 and 30003 are not open
+* DR is replicating from the wrong Kafka Metadata topic
+
+*Kafka MirrorMaker is not working*
+
+To check this run `gadmin connector status` on DR:
+
+[source,console]
+----
+# Run this command on DR
+$ gadmin connector status
++----------------+---------------------+------------------+---------+-------------+---------------------+
+| CONNECTOR NAME |  CONNECTOR WORKID   | CONNECTOR STATUS | TASK ID | TASK STATUS |     TASK WORKID     |
++----------------+---------------------+------------------+---------+-------------+---------------------+
+| infr_mm        | aa.bbb.cc.ddd:30003 | RUNNING          | 0       | RUNNING     | aa.bbb.cc.ddd:30003 |
++----------------+---------------------+------------------+---------+-------------+---------------------+
+----
+
+[NOTE]
+====
+You might have additional entries in the above table output that are related to loading job (file loader, s3, Kafka loader) that are not related to Cross Region Replication. Make sure you identify the right connectore name which is `infr_mm` which is related to this case.
+====
+
+If the above table is empty then Kafka MirrorMaker is not running and you need to check the network connectivity between DR and primary by running `nc -zv <primary_internal_IP> 30002` and this should return a succeed message, if not then you fix the network issues between primary and DR.
+
+In case you have already setup a new DR cluster after failover following the steps link:#_fail_over_to_the_dr_cluster[here] and the above table is returning a RUNNING state for the Kafka MirrorMaker and you still see discrepancy between the replicas reported in Kafka Metadata on primary and DR it could be that you did not run correctly the `gadmin config set System.CrossRegionReplication.TopicPrefix` command with the right value. In fact it could be that you omitted the additional `.Primary` for that command and by doing so, now the new DR is replicating from the wrong Kafka Metadata topic. 
+
+To check if this is the case try from DR:
+
+[source,console]
+----
+# cd to kafka bin path
+$ cd $(gadmin config get System.AppRoot)/kafka/bin/
+
+# Add JAVA to your path, JAVA is already provided by TigerGraph
+$ JAVA_HOME=$(dirname `find $(gadmin config get System.AppRoot)/.syspre -name java -type f`)
+$ PATH=$PATH:$JAVA_HOME
+
+# Run kafka-console-consumer to read from the Primary.Primary.Metadata topic
+$ bash kafka-console-consumer.sh --bootstrap-server $(gmyip):30002 --topic Primary.Primary.Metadata --from-beginning
+----
+
+If the output is now matching the same output of your primary then this is the issue and to solve it you need to do:
+
+[source,console]
+----
+# Disable Kafka Mirrormaker
+$ gadmin config set System.CrossRegionReplication.Enabled false
+
+# Make sure Kafka MirrorMaker is stopped, there should be no infr_mm entry
+$ gadmin connector status
+
+# Add the additional .Primary to the TopicPrefix.
+$ gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
+
+# Apply the config changes, init Kafka, and restart
+$ gadmin config apply -y
+$ gadmin init kafka -y
+$ gadmin restart all -y
+
+# Make sure Kafka MirrorMaker is running, there should be infr_mm entry
+$ gadmin connector status
+----
+
+Once done check the lastSeqId and it should match the primary lastSeqId (it might take sometime to catch up with the primary one in case there are many replicas that needs to be replayed).
+
+==== Step 2.2: Debugging GSQL layer issue
+
+In case the replicas in Kafka Metadata topic are consistent between primary and DR, but data is not consistent between primary and DR (e.g. DR is missing data that is avaialble in primary) then then we need to check the GSQL logs and understand what is going wrong.
+
+Find the GSQL leader with `gsql --leader` and open its logs, a quick way to do that is `vi $(gadmin config get System.LogRoot)/gsql/log.INFO` at this point you should see this pattern in the logs:
+
+[source,console]
+----
+# Starting to replay replica 123
+I@20220811 07:04:21.382  (ReplicaReplayer.java:48) Try to replay Replica 123 (0)
+
+# Information about the Replica operation that will be executed
+[...]
+I@20220811 07:04:21.386 foo|127.0.0.1:40672|00000000017 (FileHandler.java:44) IMPORT SECRET (abc****def, AUTO_GENERATED_ALIAS_sd23fse) TO USER foo FOR GRAPH Social
+
+# Error showing faliure in executing the operation
+[...]
+E@20220811 07:04:21.391 foo|127.0.0.1:40672|00000000017 (MetadataUpdateOperation.java:151) Failed executeInMemory for CreateSecretOperation
+
+# Error reporting that GSQL failed to replay replica 123
+[...]
+E@20220811 07:04:21.396  (ReplicaReplayer.java:59) Failed to replay Replica 123: 212
+----
+
+GSQL will always retries to replay until it succeeds because it is supposed to be successful as the equivalent command already happened in the primary. In this case there is something wrong happening on DR and need to be checked (could be GSQL, GPE or GSE related), for this please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
+
+== *FAQ*
+
+=== *Q:  How can I check if data is replicated between primary and DR?*
+
+A: You can check the output of `gstatusgraph` on both primary and DR. The count for vertices and edges should match. Note that in case there are running loading job DR might be having lower count, in that case check again when the loading job is done.
+
+
+=== *Q: Why I'm not seeing any loading job declared in DR?*
+
+A: Loading jobs are not replicated over DR, however the data loaded by these loading jobs is replicaed over DR. 
+
+=== *Q: I've run a `DROP ALL` on primary and now new added data is not replicated in DR*
+
+A: `DROP ALL` command will stop Cross Region Replication, you will need to restore re-establish the feature again. Below is a list of all commands and operation that will stop Cross Region Replication:
+
+* `gsql drop all` which clears all data and schema
+* `gsql clear graph store` which clears only data
+* `gsql --reset` which clears all data, schema and users even reset the password of the default tigergraph. 
+* `gsql import graph`
+* `gsql export graph`
+* `gbar restore` 
+
+=== *Q: GSQL is failing to replay a replica and it's reporting UNAUTHORIZED error?*
+
+A: It's most likely that primary and DR have different password for the same tigergraph user and this could be due to the fact that you enabled Cross Region Replication without restoring the gbar backup in DR (since you did not have any data) but DR was installed with a different password than primary. Make sure DR and primary have the same tigergraph password before enabling Cross Region Replication.
+
+=== *Q: What happens if DR is down, unavalable or under scheduled mainteinance (e.g. VM Motion)?*
+
+A: Nothig will happen, as soon as DR is back online Kafka MirrorMaker will replicate the Kafka Topic and GSQL will will start replaying the replicas from where it left. Of course DR cannot be unavalable for an indefinite time, it order to automatically recover it has to be down within the Kafka Topic retention hours which by default is set to 168hrs (7 days). You can tune this parameter based on your need by running `gadmin config set Kafka.RetentionHours <value_in_hrs>`
+
+=== *Q: Can I have multiple DRs?*
+
+A: Yes, just enable Cross Region Replication on the other DR you may want to have as you did with your first DR. There is limitation in numbers of DRs that you can have.
+
+=== *Q: Is failover to DR automatic?*
+
+A: No, failover to DR is a manual operation as reported link:#_fail_over_to_the_dr_cluster[here].
+
+=== *Q: How will my application write to the new primary after DR failover?*
+
+A: It's suggested that you handle this with an application load balancer where you can configure the DR IP hosts list (e.g. if you are using NGINX you can add the DR hosts list in the upstream section). When the Load Balancer will fail the health check on the current primary it will re-route the traffic to the DR host list. Of course you should handle also the manual failover to DR.
+
