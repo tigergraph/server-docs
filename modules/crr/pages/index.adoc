@@ -1,0 +1,91 @@
+= Cross-Region Replication
+
+TigerGraph's Cross-Region Replication (CRR) feature allows users to keep two or more TigerGraph clusters in different data centers or regions in sync.
+One cluster is the primary cluster, where users perform all normal database operations, while the other is a read-only Disaster Recovery (DR) cluster that syncs with the primary cluster.
+CRR includes complete native support for syncing all data and metadata including automated schema, user, and query changes.
+
+
+For users of TigerGraph, cross-region replication helps deliver on the following business goals:
+
+* *Disaster Recovery*: Support Disaster Recovery functionality with the use of a dedicated remote cluster
+* *Enhanced Availability*: Enhance inter-cluster data availability by synchronizing data using Read Replicas across two clusters
+* *Enhanced Performance*: If the customer application is spread over different regions, CRR can take advantage of data locality to avoid network latency.
+* *Improved System Load Balancing*: CRR allows you to distribute computation load evenly across two clusters if the same data sets are accessed in both clusters.
+* *Data Residency Compliance*: Cross-Region replication allows you to replicate data between different data centers or regions to satisfy compliance requirements.
+Additionally, this feature can be used to set up clusters in the same region to satisfy more stringent data sovereignty or localization business requirements.
+* Besides providing disaster recovery and enhanced business continuity, CRR also allows you to set up the clusters as part of Blue/Green deployment purposes for agile upgrades.
+
+This page describes the procedure to set up a DR cluster, and the steps to perform a failover in the event of a disaster.
+
+== What is included
+
+The following information is automatically synced from the primary cluster to the DR cluster:
+
+* All data in every graph
+* All graph schemas, including tag-based graphs
+* All schema change jobs
+* All users and roles
+* All queries in every graph. Queries that are installed in the primary cluster are automatically installed in the DR cluster.
+
+== Exclusions
+
+The following information and commands are *not* synced to the DR cluster:
+
+* GraphStudio metadata
+ ** This includes graph layout data and user icons for GraphStudio.
+* Loading jobs
+** This refers to the loading job definitions only.
+Data loaded through a loading job is still replicated from the primary to the DR cluster.
+* `gadmin` configurations (e.g. `gadmin config set GSQL.BasicConfig.LogConfig.LogLevel DEBUG`)
+
+The following commands/actions and will *stop* syncing to the DR cluster:
+
+* `gbar restore` while the cross-region replication is enabled.
+* `gsql --reset` command
+* The following GSQL commands:
+ ** `EXPORT` and `IMPORT` commands
+ ** `DROP ALL` and `CLEAR GRAPH STORE`
+
+[WARNING]
+====
+When the primary cluster executes an `IMPORT` , `DROP ALL`, or``CLEAR GRAPH STORE`` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
+
+See <<Sync an outdated DR cluster>> on how to bring an outdated DR cluster back in sync.
+====
+
+
+
+== Cross Region Replication Logic 
+
+The following diagram is a simplified illustration of the key components and logic behind the Cross Region Replication feature
+
+image::crr.jpg["Diagram of the Cross Region Replication feature"]
+
+The Cross Region Replication logic is divided in two layers:
+
+* Kafka Topic replication via Kafka MirrorMaker from primary Kafka to DR Kafka. This is called the Infrastructure layer
+* GSQL replaying replicas on DR from Kafka topic. This is called the GSQL layer
+
+[NOTE]
+====
+A "replica" in Kafka topic context is the commited operation of a write transaction (e.g. `CREATE VETEX Person`) that happened succesfully on the primary. Every replica has a unique identification which is consistent between primary and DR.
+Kafka MirrorMaker is a stand-alone tool (out-of-the-box from TigerGraph) for copying data between two Kafka, in this specific case between primary Kafka and DR Kafka.
+====
+
+This following is the flow of replication done by Cross Region Replication feature:
+
+. Application sends a write transaction on the primary (e.g. `CREATE VERTEX PERSON`). In the above diagram this is reported as point 1
+. This transaction is committed succesfully and stored in Kafka Metadata. In the above diagram this is reported as point 2
+. Kafka MirrorMaker replicates the Metadata from primary Kafka to DR kafka maintaining the same unique idetification. In the above diagram this is reported as point 3
+. GSQL on DR will reply this replica from DR Kafka Metadata and commit the change. In the above diagram this is reported as point 4
+
+
+
+
+
+
+
+
+
+
+
