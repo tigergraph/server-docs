@@ -32,7 +32,7 @@ The following information is automatically synced from the primary cluster to th
 The following information and commands are *not* synced to the DR cluster:
 
 * GraphStudio metadata
- ** This includes graph layout data and user icons for GraphStudio.
+** This includes graph layout data and user icons for GraphStudio.
 * Loading jobs
 ** This refers to the loading job definitions only.
 Data loaded through a loading job is still replicated from the primary to the DR cluster.
@@ -50,33 +50,34 @@ The following commands/actions and will *stop* syncing to the DR cluster:
 ====
 When the primary cluster executes an `IMPORT` , `DROP ALL`, or``CLEAR GRAPH STORE`` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
 
-See <<Sync an outdated DR cluster>> on how to bring an outdated DR cluster back in sync.
+See xref:set-up-crr.adoc#_sync_an_outdated_dr_cluster[Sync an outdated cluster] on how to bring an outdated DR cluster back in sync.
 ====
 
 
 
-== Cross Region Replication Logic 
+[#_crr_logic]
+== CRR logic
 
-The following diagram is a simplified illustration of the key components and logic behind the Cross Region Replication feature
+The following diagram is a simplified illustration of the key components and logic behind CRR:
 
 image::crr.jpg["Diagram of the Cross Region Replication feature"]
 
-The Cross Region Replication logic is divided in two layers:
+CRR logic is divided into two layers:
 
-* Kafka Topic replication via Kafka MirrorMaker from primary Kafka to DR Kafka. This is called the Infrastructure layer
-* GSQL replaying replicas on DR from Kafka topic. This is called the GSQL layer
+* Kafka Topic replication via Kafka MirrorMaker from primary Kafka to DR Kafka.This is called the Infrastructure layer
+* GSQL replaying replicas on DR from Kafka topic.This is called the GSQL layer
 
 [NOTE]
 ====
-A "replica" in Kafka topic context is the commited operation of a write transaction (e.g. `CREATE VETEX Person`) that happened succesfully on the primary. Every replica has a unique identification which is consistent between primary and DR.
+A "replica" in Kafka topic context is the committed operation of a write transaction (e.g. `CREATE VETEX Person`) that happened successfully on the primary. Every replica has a unique identification which is consistent between primary and DR.
 Kafka MirrorMaker is a stand-alone tool (out-of-the-box from TigerGraph) for copying data between two Kafka, in this specific case between primary Kafka and DR Kafka.
 ====
 
 This following is the flow of replication done by Cross Region Replication feature:
 
 . Application sends a write transaction on the primary (e.g. `CREATE VERTEX PERSON`). In the above diagram this is reported as point 1
-. This transaction is committed succesfully and stored in Kafka Metadata. In the above diagram this is reported as point 2
-. Kafka MirrorMaker replicates the Metadata from primary Kafka to DR kafka maintaining the same unique idetification. In the above diagram this is reported as point 3
+. This transaction is committed successfully and stored in Kafka Metadata. In the above diagram this is reported as point 2
+. Kafka MirrorMaker replicates the Metadata from primary Kafka to DR kafka maintaining the same unique identification. In the above diagram this is reported as point 3
 . GSQL on DR will reply this replica from DR Kafka Metadata and commit the change. In the above diagram this is reported as point 4
 
 
