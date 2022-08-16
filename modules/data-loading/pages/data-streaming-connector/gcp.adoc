@@ -71,6 +71,8 @@ The URI may point to a CSV file, a zip file, a gzip file, or a directory
 Must be provided by the user.
 |===
 
+==== Example
+
 Below is an example configuration:
 
 [,text]
@@ -118,22 +120,9 @@ include::partial$create-data-source.adoc[]
 
 include::partial$create-loading-job-kafka.adoc[]
 
-
 include::partial$loading-job-example-csv.adoc[]
 
 
-
-==== Run loading job
-Run the loading job created in the last step will load the streamed data into the graph.
-If you make changes to the topic-partition configuration file, you can overwrite the values for the filename variables with xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_run_loading_job[the `USING` clause].
-
-[,gsql]
-----
-GSQL > RUN LOADING JOB load_person
-----
-
-By default, loading jobs that use Kafka data sources run in streaming mode and do not stop until manually aborted.
-As data is streamed from the data source, the running loading job will continuously ingest the streamed data into the graph store.
 
 === Stream data source updates
 
