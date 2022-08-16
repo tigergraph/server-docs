@@ -17,6 +17,16 @@ WARNING: If your TigerGraph cluster uses a seeded license, please contact mailto
 * Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the expansion completes.
 * If the original cluster is a single node installation, make sure the IP used is not a https://en.wikipedia.org/wiki/Localhost[local loopback address] such as 127.0.0.1.
 
+[NOTE] 
+You can check the IP address of your original cluster using `gadmin config get System.HostList`. 
+If it is a loopback IP, you can update it to be the internal IP using the following script:
+[source, console]
+----
+gadmin config set System.HostList '[{"Hostname":"'$(ip a | grep "inet " | awk 'FNR == 2 {print $2}' | awk -F "/" '{print $1}')'","ID":"m1","Region":""}]'
+gadmin config apply -y
+gadmin restart all -y
+----
+
 == Procedure
 
 === Identify new cluster replication and partition
