@@ -50,6 +50,20 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 [#_fixed_issues]
 == Fixed issues
 
+=== Fixed in 3.6.2
+TigerGraph Server 3.6.2 was released on August 16th, 2022.
+
+* Improved query installation error handling during GBAR restore.
+* Fixed an issue that could cause timeout errors when running queries in rare cases.
+* Fixed an issue that caused cross-region replication to stop syncing when the primary cluster drops a loading job.
+* Fixed an issue where S3 loaders created in GraphStudio do not self-delete after loading sample data.
+* Fixed an issue where `/requesttoken` generates invalid tokens if the RESTPP service is down on a node in a cluster.
+* Fixed an issue where GBAR restore would cause GPE config file permissions to change in rare cases.
+* Fixed an issue where the built-in queries such as `searchvertex` could cause out-of-memory issues.
+* Fixed an issue in GraphStudio where adding a data mapping with a filter could delete all previously established mappings.
+* Increased restrictiveness of file permissions for snapshot files.
+* Fixed an issue where requests to GSQL endpoints would return an error if the request also included setting cookies.
+
 === Fixed in 3.6.1
 TigerGraph Server 3.6.1 was released on July 7th, 2022.
 
