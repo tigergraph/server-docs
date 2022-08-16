@@ -1,0 +1,47 @@
+= Fail over to the DR cluster
+
+In the event of catastrophic failure that has impacted the full cluster due to Data Center or Region failure, the user can initiate the failover to the DR cluster.
+This is a manual process.
+
+Run the following commands to make configuration changes on the DR cluster to upgrade it to the primary cluster.
+
+[source,console]
+----
+gadmin config set System.CrossRegionReplication.Enabled false
+gadmin config apply -y
+gadmin restart -y
+----
+
+== Set up a new DR cluster after failover
+
+After you fail over to your DR cluster, your DR cluster is now the primary cluster. You may want to set up a new DR cluster to still be able to recover your services in the event of another disaster.
+
+To set up a new DR cluster over the upgraded primary cluster:
+
+. Make a backup of the upgraded primary cluster
+. Run the following command on the new cluster. The commands are the mostly same as setting up the first DR cluster, except that in the fourth command, the value for `System.CrossRegionReplication.TopicPrefix` becomes `Primary.Primary` instead of `Primary`
+. On the new DR cluster, restore from the backup of the upgraded primary cluster
+
+[source,console]
+----
+# Enable Kafka Mirrormaker
+$ gadmin config set System.CrossRegionReplication.Enabled true
+
+# Kafka mirrormaker primary cluster's IPs, separator by ','
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
+
+# Kafka mirrormaker primary cluster's KafkaPort
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
+
+# The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+$ gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
+
+# Apply the config changes, init Kafka, and restart
+$ gadmin config apply -y
+$ gadmin init kafka -y
+$ gadmin restart all -y
+----
+
+There is no limit on the number of times a cluster can fail over to another cluster. When designating a new DR cluster, make sure that you set the `System.CrossRegionReplication.TopicPrefix` parameter correctly by adding an additional `.Primary` .
+
+For example, if your original cluster fails over once, and the current cluster's `TopicPrefix` is `Primary`, then the new DR cluster needs to have its `TopicPrefix` be `Primary.Primary`. If it needs to fail over again, the new DR cluster needs to have its `TopicPrefix` be set to `Primary.Primary.Primary`.
