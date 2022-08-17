@@ -21,7 +21,7 @@ CREATE ROLE <role_name> (, <role_name>)* [ON GRAPH <graph_name>]
 
 `WRITE_ROLE`
 
-=== Procedure
+=== Example
 
 . To create a local role, run the `CREATE ROLE` command like below. If you choose not to specify a graph in the command, the current scope will be used as the scope of the role:
 +
@@ -38,6 +38,7 @@ Successfully created local roles for graph 'example_graph': [role1, role2].
 ----
 
 == Create a global role
+You can create a global role with the `CREATE ROLE` command.
 
 === Syntax
 
@@ -50,7 +51,7 @@ CREATE ROLE <role_name> (, <role_name>)* ON GLOBAL
 
 `WRITE_ROLE` on the global scope
 
-=== Procedure
+=== Example
 
 . To create a global role, run the `CREATE ROLE` command like below. Replace `role1` with the name of the role you are creating.
 
@@ -81,7 +82,7 @@ SHOW PRIVILEGE ON ROLE <role_name> (, <role_name2>)*
 
 `READ_ROLE`
 
-=== Procedure
+=== Example
 
 . To view the privileges of a role, run the `SHOW PRIVILEGE ON ROLE` command, and replace `role1, role2` with the names of the roles whose privileges you want to view:
 
@@ -165,7 +166,7 @@ SHOW ROLE
 
 `READ_ROLE`
 
-=== Procedure
+=== Example
 
 . To list all existing roles, first ensure that you are in the correct scope. Run `USE <graph_name>` or `USE GLOBAL` to switch to your desired scope.
 . Run the `SHOW ROLE` command:
@@ -210,7 +211,7 @@ GRANT PRIVILEGE <privilege_name1> (, privilege_name2)*
 
 `WRITE_ROLE`
 
-=== Procedure
+=== Example
 
 . To grant privileges to a role, run the `GRANT PRIVILEGE` command from the GSQL shell:
 +
@@ -284,7 +285,7 @@ REVOKE PRIVILEGE <privilege_name1> (, privilege_name2)*
 
 `WRITE_ROLE`
 
-=== Procedure
+=== Example
 
 . To revoke privileges from a role, run the `REVOKE PRIVILEGE` command from the GSQL shell:
 +
@@ -334,7 +335,7 @@ REVOKE PRIVILEGE privilege_name1 , privilege_name2... ON VERTEX/EDGE <graph_name
 === Example
 The following command revokes `CREATE_DATA` and `UPDATE_DATA` on the `startdata` attribute from `role1` and `role2`.
 
-If the user doesn't have these privileges, they are not able create new edges of type `Friendship`.
+If the user doesn't have these privileges, they are not able to create new edges of type `Friendship`.
 
 [source.wrap,gsql]
 REVOKE PRIVILEGE CREATE_DATA, UPDATE_DATA ON EDGE Social.Friendship (startdata) FROM role1, role2
@@ -352,7 +353,7 @@ DROP ROLE <role_name> (, <role_name2>)*
 
 `WRITE_ROLE`
 
-=== Procedure
+=== Example
 
 . To drop a role, run the `DROP ROLE` command from the GSQL shell:
 +

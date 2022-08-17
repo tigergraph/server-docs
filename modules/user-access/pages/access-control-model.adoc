@@ -35,16 +35,17 @@ Graph-level privileges only apply on the graph they belong to.
 Type-level privileges only apply to specific vertex or edge types on a graph.
 Attribute-level privileges only apply to specific attributes of a vertex or edge type.
 
-Most privileges are global or graph-level.
-Only privileges pertaining to graph data (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) can be granted on a type level or attribute level.
-
 A privilege on a larger scope includes the privilege on a lower scope encompassed by the larger scope.
 If you have a privilege on the graph level, you also have that privilege on the type level and attribute level for all types and attributes in that graph.
 If you have a privilege on the global scope, you have that privilege across all graphs, types and attributes.
 
+Most privileges are global or graph-level.
+Only privileges pertaining to graph data (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) can be granted on a type level or attribute level.
+
+
 For example:
 
-* A role with `WRITE_QUERY` on graph `social` can only create queries on graph `social`, but not on other graphs.
+* A role with `WRITE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
 In contrast, a role with `WRITE_QUERY` on the global scope can create queries on all graphs.
 * A role with `UPDATE_DATA` on the `age` attribute of the `person` vertex on graph `social` are allowed to run queries that update the value of the `age` attribute of `person` vertices.
 * A role with `READ_DATA` on the global scope can run queries that read graph data on any graph, any type, or any attribute.
@@ -55,6 +56,11 @@ They do not need to have privileges specifically for those graphs, types, or att
 
 Data CRUD privileges (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) are special in that they can be granted on the type level and attribute level.
 
+NOTE: Data CRUD privileges only govern data access through queries and REST endpoints.
+Users with the `EXECUTE_LOADINGJOB` privilege do not need additional privileges in order to run a loading job that inserts or deletes vertices and edges.
+
+The privileges govern specific ways in which a user can access and modify data.
+Even regarding a single REST endpoint, whether a request is authorized depends on the information that the request is accessing or modifying.
 
 |===
 |Privilege |Type level |Attribute level
@@ -70,6 +76,9 @@ a|* If granted on a vertex type attribute, it gives permission to create vertice
 |Permission to access all data of the type where the privilege is granted.
 |Permission to access the attribute value where the privilege is granted.
 
+To grant  `READ_DATA` to a specific attribute of a type, you must grant `READ_DATA` to the primary key of the type first or in the same command.
+For edges, you must grant `READ_DATA` to the primary key of the `FROM` and `TO`
+vertex types before granting `READ_DATA` to other attributes of the edge type.
 |`UPDATE_DATA`
 |Permission to update all data of the type where the privilege is granted.
 |Permission to update the attribute value where the privilege is granted.
@@ -81,9 +90,46 @@ a|* If granted on a vertex type attribute, it gives permission to create vertice
 This privilege is not applicable on the attribute level.
 |===
 
-The data CRUD privileges affect queries and REST requests only.
-They do not 
+==== Examples
 
+Suppose we have a graph with schema as below:
+
+----
+CREATE VERTEX Person(id UINT PRIMARY KEY, name STRING, INT age)
+CREATE VERTEX City(id UINT PRIMARY KEY, name STRING)
+CREATE GRAPH Example_Graph(Person, City)
+----
+
+If a user were to run the following query:
+
+[.wrap,]
+----
+CREATE QUERY example_query() {
+  Seed = {City.*}; <1>
+  vSet = SELECT s FROM Seed:s
+         POST-ACCUM
+            s.name = s.name + ".post"; <2>
+}
+----
+<1> This action requires `READ_DATA` on type `City`.
+<2> This action requires `UPDATE_DATA` on attribute `name` of type `City`.
+
+Running the query would at a minimum require `READ_DATA` on type `City` and `UPDATE_DATA` on attribute `name` of type `City`.
+
+// Two requests from a single REST endpoint
+
+If a user were to make the following REST request:
+
+[source.wrap,console]
+curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1"
+
+The request requires that the user has at least `READ_DATA` on type `Person`, or all attributes of type `Person`.
+However, if the user specify the attributes for the request to return:
+
+[source.wrap,console]
+curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1?select=age"
+
+The request would no longer require `READ_DATA` on the attribute `name` and only require `READ_DATA` on `id` and `name`.
 
 === Roles
 
