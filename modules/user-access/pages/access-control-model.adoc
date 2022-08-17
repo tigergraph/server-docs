@@ -50,6 +50,7 @@ In contrast, a role with `WRITE_QUERY` on the global scope can create queries on
 * A role with `READ_DATA` on the global scope can run queries that read graph data on any graph, any type, or any attribute.
 They do not need to have privileges specifically for those graphs, types, or attributes.
 
+[#_data_crud_privileges]
 === Data CRUD privileges
 
 Data CRUD privileges (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) are special in that they can be granted on the type level and attribute level.
@@ -79,6 +80,9 @@ a|* If granted on a vertex type attribute, it gives permission to create vertice
 |N/A.
 This privilege is not applicable on the attribute level.
 |===
+
+The data CRUD privileges affect queries and REST requests only.
+They do not 
 
 
 === Roles

@@ -1485,6 +1485,9 @@ curl -u tigergraph:tigergraph \
 This endpoint upserts vertices and/or edges into a graph.
 To upsert means that if a vertex or edge does not exist, it is inserted, and if it does exist, it is updated.
 
+Upserting vertices or edges require the user to have sufficient privileges.
+See xref:user-access:access-control-model.adoc[].
+
 ==== Atomic upsert transaction
 
 By default, the `POST /graph/\{graph_name}` endpoint is not atomic. If something goes wrong during the process of the request, the request data can be partially consumed by the database.
@@ -1867,9 +1870,13 @@ To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_da
 
 `+GET /graph/{graph_name}/vertices/{vertex_type}+`
 
-This endpoint returns all vertices having the type _`vertex_type`_ in a graph.
+This endpoint returns all vertices having the type `vertex_type` in a graph.
 
-==== Sample request:
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the vertex type.
+
+
+==== Sample request
+
 [tabs]
 ====
 Request::
@@ -1941,11 +1948,12 @@ Response::
 
 === Retrieve a vertex
 
-`+GET /graph/{graph_name}/vertices/{vertex_type}/{vertex_id}+`
+`GET /graph/{graph_name}/vertices/{vertex_type}/{vertex_id}`
 
-This endpoint will return a single vertex by its vertex ID.
+This endpoint returns a single vertex by its vertex ID.
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the vertex type.
 
-==== Sample request:
+==== Sample request
 [tabs]
 ====
 Request::
@@ -1979,7 +1987,7 @@ Response::
 ----
 --
 ====
-==== Parameters:
+==== Parameters
 
 |===
 | Name | Required | Description
@@ -1997,9 +2005,13 @@ Response::
 
 `+DELETE /graph/{graph_name}/vertices/{vertex_type}+`
 
-This endpoint deletes vertices by their vertex type. The delete operation is a cascading deletion. If a vertex is deleted, then all edges connected to it are automatically deleted as well.
+This endpoint deletes vertices by their vertex type.
+The delete operation is a cascading deletion.
+If a vertex is deleted, then all edges connected to it are automatically deleted as well.
 
-==== Sample request:
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] on the vertex type.
+
+==== Sample request
 The response object will contain a `"deleted_vertices"` field that indicates the number of vertices that were deleted.
 [tabs]
 Request::
@@ -2066,18 +2078,19 @@ the system-wide endpoint timeout setting is applied.
 
 === Delete vertices by type
 
-`+DELETE /graph/{graph_name}/delete_by_type/vertices/{vertex_type}+`
+`DELETE /graph/{graph_name}/delete_by_type/vertices/{vertex_type}`
 
 This endpoint deletes all vertices of the given vertex type in a graph.
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] on the vertex type.
 
-==== Sample request:
+==== Sample request
 
-[source,bash]
+[source.wrap,bash]
 ----
 curl -X DELETE "http://localhost:9000/graph/poc_graph/delete_by_type/vertices/person"
 ----
 
-==== Parameters:
+==== Parameters
 
 |===
 | Name | Required | Description
@@ -2095,7 +2108,9 @@ curl -X DELETE "http://localhost:9000/graph/poc_graph/delete_by_type/vertices/pe
 
 `+DELETE /graph/{graph_name}/vertices/{vertex_type}/{vertex_id}+`
 
-==== Sample request:
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] on the vertex type.
+
+==== Sample request
 [tabs]
 ====
 Request::
@@ -2147,9 +2162,12 @@ To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_da
 
 `+GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}+`
 
-This endpoint returns all edges which are connected to a given vertex ID in the graph
+This endpoint returns all edges which are connected to a given vertex ID in the graph.
 
-==== Sample request:
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
+
+==== Sample request
+
 [tabs]
 ====
 Request::
@@ -2237,9 +2255,11 @@ Response::
 
 `+GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}+`
 
-This endpoint lists all the edges of a specified type connected to a given vertex ID in the graph
+This endpoint lists all the edges of a specified type connected to a given vertex ID in the graph.
 
-==== Sample request:
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
+
+==== Sample request
 
 [source,bash]
 ----
@@ -2313,19 +2333,21 @@ curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video?li
 
 === List edges of a vertex by edge type and target type
 
-[source,bash]
+[source.wrap,bash]
 ----
 GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}
 ----
 
-This endpoint lists edges connected to a given vertex by edge type and target vertex type
+This endpoint lists edges connected to a given vertex by edge type and target vertex type.
+
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
 
 [NOTE]
 ====
 Use `"_"` for `edge_type` in the URL to permit any edge type.
 ====
 
-==== Sample request:
+==== Sample request
 [tabs]
 ====
 Request::
@@ -2378,7 +2400,7 @@ Response::
 ----
 --
 ====
-==== Parameters:
+==== Parameters
 
 |===
 | Name | Required | Description
@@ -2414,14 +2436,16 @@ Response::
 
 === Retrieve edge by source, target, and edge type
 
-[source,bash]
+[source.wrap,bash]
 ----
 GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
 
 This endpoint returns the edge of a specified type between a source vertex and a target vertex.
 
-==== Sample request:
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
+
+==== Sample request
 [tabs]
 ====
 Request::
@@ -2463,7 +2487,7 @@ Response::
 --
 ====
 
-==== Parameters:
+==== Parameters
 
 |===
 | Name | Required | Description
@@ -2485,6 +2509,8 @@ DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_t
 ----
 
 Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
+
+This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] and `READ_DATA` on the types or attributes being queried.
 
 ==== Sample request
 [tabs]
@@ -2521,7 +2547,7 @@ Response::
 --
 ====
 
-==== Parameters:
+==== Parameters
 
 |===
 | Name | Required | Description
@@ -2539,7 +2565,7 @@ Response::
 
 Returns metadata details about a query. In particular, it lists the input parameters in the same order as they exist in the query (in the form of a JSON array of JSON objects) and outputs `PRINT` statement syntax. *This endpoint exists on port 14240 and requests are sent to the GSQL server.* Therefore, you should provide authentication credentials in the request.
 
-==== Sample request:
+==== Sample request
 [tabs]
 ====
 Request::
