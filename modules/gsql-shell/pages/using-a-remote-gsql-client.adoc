@@ -75,7 +75,7 @@ After defining the preceding alias, running `gsql` is equivalent to running `jav
 
 == Connect to TigerGraph Cloud instance
 
-Since TigerGraph Cloud uses a different xref:master@cloud:security:manage-database-users.adoc[authentication scheme] from TigerGraph Server, the steps for using the GSQL client for a cloud solution are slightly different.
+TigerGraph Cloud uses a different port for the GSQL client connection.
 
 === Download the GSQL client
 
@@ -93,9 +93,12 @@ You need to install link:https://www.openssl.org/[`openssl`] on your client mach
 echo | openssl s_client  -connect <domain>:443 |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <path_to_certificate>
 ----
 
-=== Generate a secret
+=== Generate a database username-password pair
 
-Use Admin Portal to generate a secret for your user account: xref:gui:admin-portal:management/user-management.adoc[]
+If you have the Organization Admin role for your TigerGraph Cloud organization, xref:cloud:security:manage-database-users.adoc[generate a database username-password pair] to use as credentials for your connection.
+
+If you do not have the Organization Admin role, ask for your organization admin to create a pair for you.
+
 
 === Connect to the cloud instance
 
@@ -105,12 +108,12 @@ Modify and run this command to connect to the TigerGraph Cloud instance:
 java -jar <path_to_client> \ <1>
   --cacert <path_to_certificate> \ <2>
   --ip <domain>:443 \ <3>
-  -u __GSQL__secret -p <secret> <4>
+  -u <username> -p <password> <4>
 ----
 <1> Replace `<path_to_client>` with the file path to the GSQL client.
 <2> Replace `<path_to_certificate>` with the file path to the local SSL certificate that you downloaded.
 <3> Replace `<domain>` with the domain of your Cloud solution.
-<4> Replace `<secret>` with the generated secret from the Admin Portal.
+<4> Replace `<username>` and `<password>` with the username and password of the TigerGraph user you want to be logged in as.
 
 
 == Filepath semantics
@@ -127,7 +130,7 @@ It is strongly recommended that GSQL commands use absolute paths only when run r
 
 For example, if the data file `cf_data.csv` is in the folder `/home/tigergraph/example/cf/`, then the command to run the loading job might look like the following:
 
-[,console]
+[.wrap,console]
 ----
 java -jar gsql_client.jar 'RUN JOB load_cf USING FILENAME="/home/tigergraph/example/cf/cf_data.csv", SEPARATOR=",", EOL="\n"
 ----
