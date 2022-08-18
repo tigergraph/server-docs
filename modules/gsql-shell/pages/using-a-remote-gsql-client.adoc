@@ -99,6 +99,9 @@ If you have the Organization Admin role for your TigerGraph Cloud organization, 
 
 If you do not have the Organization Admin role, ask for your organization admin to create a pair for you.
 
+If your TigerGraph Cloud solution is created before August 18th, 2022, you won't be able to create username/password pairs.
+Instead you should Use Admin Portal to xref:gui:admin-portal:management/user-management.adoc[generate a secret] for your user account.
+
 
 === Connect to the cloud instance
 
@@ -114,6 +117,7 @@ java -jar <path_to_client> \ <1>
 <2> Replace `<path_to_certificate>` with the file path to the local SSL certificate that you downloaded.
 <3> Replace `<domain>` with the domain of your Cloud solution.
 <4> Replace `<username>` and `<password>` with the username and password of the TigerGraph user you want to be logged in as.
+If your solution was created before August 18th, 2022, replace `<username>` with `\__GSQL__secret`, and replace `<password>` with your secret. 
 
 
 == Filepath semantics
