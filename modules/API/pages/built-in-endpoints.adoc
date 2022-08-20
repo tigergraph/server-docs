@@ -1202,7 +1202,7 @@ The maximum size of data you can upload via this endpoint is controlled by the x
 
 This endpoint runs a set of built-in functions and returns relevant statistics about a graph.
 
-==== Request body:
+==== Request body
 
 This endpoint expects a data payload in the request body that specifies which function to run on the graph. Depending on the function being run, different fields may also be expected in the request body.
 
@@ -1233,7 +1233,7 @@ Here is a list of functions supported by this endpoint and their corresponding d
 *** `"from_type"`: Optional. The source vertex type of the edges to report on.
 *** `"to_type"`: Optional. The target vertex type of the edges to report on.
 
-==== Sample requests:
+==== Sample requests
 
 Below is an example request running `stat_vertex_attr` on `socialNet` and its output. The vertex type `"Person"` has a `uint` attribute `"age"`.
 
@@ -1345,9 +1345,16 @@ curl -X POST "http://localhost:9000/builtins/socialNet" \
 }
 ----
 
-==== Parameters:
+==== Parameters
 
-No parameters.
+|===
+| Name | Required | Default value | Description
+
+| `realtime`
+| No
+| False
+| Force built-in functions to rerun queries instead of using cached data, which is resource-intensive but more accurate if the graph is frequently updated.
+|===
 
 === Show graph schema metadata
 
