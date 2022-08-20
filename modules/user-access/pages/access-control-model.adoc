@@ -30,8 +30,8 @@ There are four different scopes for a privilege:
 
 * Global
 * Graph-level
-* Type-level
-* Attribute-level
+* Type-level (Only applicable to <<_data_crud_privileges>>)
+* Attribute-level (Only applicable to <<_data_crud_privileges>>)
 
 Global privileges apply to all graphs and global objects.
 Graph-level privileges only apply on the graph they belong to.
@@ -119,7 +119,7 @@ CREATE QUERY example_query() {
 ----
 <1> This action requires `READ_DATA` on type `City`.
 <2> This action requires `UPDATE_DATA` on attribute `name` of type `City`.
-<3> This action requires `UPDATE_DATA` on all attributes of type `Person` and `CREATE_DATA` on attribute `id` and `name`. 
+<3> This action requires `UPDATE_DATA` on all attributes of type `Person` and `CREATE_DATA` on attribute `id` and `name`.
 
 Running the query would at a minimum require `READ_DATA` on type `City` and `UPDATE_DATA` on attribute `name` of type `City`.
 
