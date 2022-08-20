@@ -67,40 +67,53 @@ This will create a role named `role1` on the global scope. By default, this role
 Successfully created global roles: [role1].
 ----
 
-== View RBAC privileges of a role
+== View privileges of a role
 
-Users with the `READ_ROLE` privilege in a scope can view the RBAC privileges on the roles in that scope.
+Users with the `READ_ROLE` privilege in a scope can view the privileges on the roles in that scope.
+
+`SHOW GRANTS TO ROLE` shows both the RBAC and ACL privileges of a role.
+`SHOW PRVILEGE ON ROLE` shows only the `RBAC` privileges of a role.
 
 === Syntax
 
 [source,gsql]
 ----
-SHOW PRIVILEGE ON ROLE <role_name> (, <role_name2>)*
+SHOW PRIVILEGE ON ROLE <role_name>, <role_name2> ...
 ----
+
+[source.wrap,gsql]
+SHOW GRANTS TO ROLE <role_name1>, <role_name2> ...
 
 === Required privilege
 
-`READ_ROLE`
+`READ_ROLE` on the global scope
 
 === Example
 
-. To view the privileges of a role, run the `SHOW PRIVILEGE ON ROLE` command, and replace `role1, role2` with the names of the roles whose privileges you want to view:
+The following command shows all privileges of the role `moderator`:
+
+[source.wrap,text]
+----
+GSQL > USE GLOBAL
+GSQL > SHOW GRANTS TO ROLE moderator
+RBAC privileges of Role: "moderator"
+- Global Privileges:
+READ_DATA
+- Graph 'Social' Privileges:
+- Type 'Person' Privileges:
+CREATE_DATA
+- Attribute 'locationIP' Privileges:
+UPDATE_DATA
+
+ACL privileges of Role: "moderator"
+No ACL privileges.
+----
+
+The following command shows all privileges of the roles `role1` and `role2`:
 
 [source,gsql]
 ----
 GSQL > SHOW PRIVILEGE ON ROLE role1 , role2
-----
-
-This will show the privileges of the role `role1` and `role2:`
-
-[source,text]
-----
-Role: "role1"
-  - Graph 'tpc_graph' Privileges:
-    WRITE_QUERY
-
-Role: "role2"
-This role has no privilege.
 ----
 
 To view the ACL privileges of a role, see xref:acl-management.adoc#_view_acl_privileges_of_a_role[View ACL privileges of a role].
@@ -121,37 +134,6 @@ The following command shows all users with the role `moderator`:
 GSQL > SHOW GRANTS OF ROLE moderator
 Users with role moderator:
   tigergraph
-
-== View privileges (RBAC and ACL) of a role
-You can run a single command to view both the RBAC and ACL privileges of a role on all scopes.
-
-=== Syntax
-
-[source.wrap,gsql]
-SHOW GRANTS TO ROLE <role_name1>, <role_name2> ...
-
-=== Required privileges
-`READ_ROLE` on global scope.
-
-=== Example
-The following command shows all privileges of the role `moderator`:
-
-[source.wrap,text]
-----
-GSQL > USE GLOBAL
-GSQL > SHOW GRANTS TO ROLE moderator
-RBAC privileges of Role: "moderator"
-- Global Privileges:
-READ_DATA
-- Graph 'Social' Privileges:
-- Type 'Person' Privileges:
-CREATE_DATA
-- Attribute 'locationIP' Privileges:
-UPDATE_DATA
-
-ACL privileges of Role: "moderator"
-No ACL privileges.
-----
 
 == List all existing roles
 

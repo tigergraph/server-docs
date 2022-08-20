@@ -6,6 +6,9 @@ TigerGraph supports both role-based access control (RBAC) and access control lis
 RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
 ACLs let you grant fine-grained access to a specific query.
 
+CAUTION: All access control is only in effect when xref:enabling-user-authentication.adoc[user authentication is enabled].
+
+
 == Role-based access control
 TigerGraph uses role-based access control (RBAC) to manage authorization.
 On every graph, privileges to perform actions are assigned to roles, and roles are granted to users.
@@ -62,6 +65,7 @@ Users with the `EXECUTE_LOADINGJOB` privilege do not need additional privileges 
 The privileges govern specific ways in which a user can access and modify data.
 Even regarding a single REST endpoint, whether a request is authorized depends on the information that the request is accessing or modifying.
 
+[.test-class]
 |===
 |Privilege |Type level |Attribute level
 
@@ -110,10 +114,12 @@ CREATE QUERY example_query() {
   vSet = SELECT s FROM Seed:s
          POST-ACCUM
             s.name = s.name + ".post"; <2>
+  INSERT INTO Person VALUES ("id3", "Tom", _) <3>
 }
 ----
 <1> This action requires `READ_DATA` on type `City`.
 <2> This action requires `UPDATE_DATA` on attribute `name` of type `City`.
+<3> This action requires `UPDATE_DATA` on all attributes of type `Person` and `CREATE_DATA` on attribute `id` and `name`. 
 
 Running the query would at a minimum require `READ_DATA` on type `City` and `UPDATE_DATA` on attribute `name` of type `City`.
 
@@ -130,7 +136,7 @@ However, if the user specify the attributes for the request to return:
 [source.wrap,console]
 $ curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1?select=age"
 
-The request would no longer require `READ_DATA` on the attribute `name` and only require `READ_DATA` on `id` and `name`.
+The request would no longer require `READ_DATA` on the attribute `name` and only require `READ_DATA` on `id` and `age`.
 
 === Roles
 
