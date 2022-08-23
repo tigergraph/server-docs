@@ -1874,24 +1874,69 @@ To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_da
 
 === List vertices
 
-`+GET /graph/{graph_name}/vertices/{vertex_type}+`
+`GET /graph/{graph_name}/vertices/{vertex_type}`
 
-This endpoint returns all vertices having the type _`vertex_type`_ in a graph.
+This endpoint returns all vertices and their attribute values with a specified type in a graph.
 
-==== Sample request:
+==== Parameters
+
+|===
+| Name | Required | Description
+
+| `count_only`
+| No
+| Takes a boolean value.
+If the value is true, the endpoint only returns of the number of selected vertices.
+Default is `false`.
+
+| `select`
+| No
+| Attributes of the selected vertices to return.
+The parameter takes a list, which is represented by a string of comma-separated values, and only returns the attributes that are provided.
+
+| `filter`
+| No
+| Conditions used to filter the returned vertices.
+The parameter takes a list of conditions, which is represented by a string of comma-separated values.
+If any filter conditions are provided, the endpoint only returns the vertices that satisfy the conditions.
+Six comparison operators are supported for this parameter: `=`, `!=`, `>`, `>=`, `<` and `+<=+`.
+If the value on the right side of an operator is a string literal, it must be enclosed in double-quotes.
+
+| `limit`
+| No
+| Integer value that specifies the total number of vertices to return.
+
+| `sort`
+| No
+| Attributes to sort the results by.
+The parameter takes a list, which is represented by a string of comma-separated values, and sorts the returned vertices based on the attributes provided in the list in order.
+Add `-` in front of the attribute to sort in descending order.
+
+| `timeout`
+| No
+| Integer that specifies the number of seconds after which the query will time out.
+If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
+|===
+
+==== Sample request
 [tabs]
 ====
 Request::
 +
 --
+The following request returns all `User` vertices in the graph `socialNet`.
+The request uses the `select` parameter to tell the endpoint only to return the attributes `age` and `height`:
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:9000/graph/socialNet/vertices/User"
+curl -X GET "http://localhost:9000/graph/socialNet/vertices/User?select=age,height"
 ----
 --
 Response::
 +
 --
+In the returned JSON, we can see there are two vertices, `id1` and `id2` of type `User` in the graph `socialNet`.
+The returned JSON results only contained values for attribute `age` and `height`, as specified in the `select` parameter of the request.
+
 [source,javascript]
 ----
 {
@@ -1903,50 +1948,27 @@ Response::
   "message": "",
   "results": [
     {
-      "v_id": "id1",
+      "v_id": "Tom",
       "v_type": "User",
-      "attributes": {}
+      "attributes": {
+        "age": 16,
+        "height": 178
+        }
     },
     {
-      "v_id": "id2",
+      "v_id": "Emily",
       "v_type": "User",
-      "attributes": {}
+      "attributes": {
+        "age": 25,
+        "height": 165
+        }
     }
-    // ... all vertices in graph socialNet of type User
   ]
 }
 ----
 --
 ====
-==== Parameters
 
-|===
-| Name | Required | Description
-
-| `count_only`
-| No
-| Takes a boolean value. If the value is true, the `results` field will only contain the count of how many vertices were selected. Default is `false`.
-
-| `select`
-| No
-| Attributes of the selected vertices to return. The parameter takes a list, which is a string of comma-separated values, and will only return the attributes that are provided.
-
-| `filter`
-| No
-| Conditions used to filter the returned vertices. The parameter takes a list of conditions, which is a string of comma-separated values. If any filter conditions are provided, the endpoint will only return the vertices that satisfy the conditions. Six comparison operators are supported for this parameter: `=`, `!=`, `>`, `>=`, `<` and `+<=+`. If the value on the right side of an operator is a string literal, it should be enclosed in double-quotes.
-
-| `limit`
-| No
-| Integer value that specifies the total number of vertices to return
-
-| `sort`
-| No
-| Attributes to sort the results by. The parameter takes a list, which is a string of comma-separated values, and will sort the returned vertices based on the attributes provided in the list in order. Add "-" in front of the attribute to sort in descending order.
-
-| `timeout`
-| No
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
-|===
 
 === Retrieve a vertex
 
