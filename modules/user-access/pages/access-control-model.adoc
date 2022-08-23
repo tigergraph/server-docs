@@ -6,7 +6,8 @@ TigerGraph supports both role-based access control (RBAC) and access control lis
 RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
 ACLs let you grant fine-grained access to a specific query.
 
-CAUTION: All access control is only in effect when xref:enabling-user-authentication.adoc[user authentication is enabled].
+CAUTION: All access control is only in effect when user authentication is enabled.
+Authentication is not enabled by default and xref:enabling-user-authentication.adoc[must be enabled manually].
 
 
 == Role-based access control
@@ -38,19 +39,19 @@ Graph-level privileges only apply on the graph they belong to.
 Type-level privileges only apply to specific vertex or edge types on a graph.
 Attribute-level privileges only apply to specific attributes of a vertex or edge type.
 
-A privilege on a larger scope includes the privilege on a lower scope encompassed by the larger scope.
+A privilege on a large scope applies to the entire scope, including all lower scopes encompassed by that scope.
 If you have a privilege on the graph level, you also have that privilege on the type level and attribute level for all types and attributes in that graph.
 If you have a privilege on the global scope, you have that privilege across all graphs, types and attributes.
 
 Most privileges are global or graph-level.
-Only privileges pertaining to graph data (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) can be granted on a type level or attribute level.
+Only privileges pertaining to graph data (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) can be granted on the type level or attribute level.
 
 
 For example:
 
 * A role with `WRITE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
 In contrast, a role with `WRITE_QUERY` on the global scope can create queries on all graphs.
-* A role with `UPDATE_DATA` on the `age` attribute of the `person` vertex on graph `social` are allowed to run queries that update the value of the `age` attribute of `person` vertices.
+* A role with `UPDATE_DATA` on the `age` attribute of the `Person` vertex on graph `Social` are allowed to run queries that update the value of the `age` attribute of `Person` vertices.
 * A role with `READ_DATA` on the global scope can run queries that read graph data on any graph, any type, or any attribute.
 They do not need to have privileges specifically for those graphs, types, or attributes.
 
@@ -81,6 +82,7 @@ a|* If granted on a vertex type attribute, it gives permission to create vertice
 |Permission to access the attribute value where the privilege is granted.
 
 To grant  `READ_DATA` to a specific attribute of a type, you must grant `READ_DATA` to the primary key of the type first or in the same command.
+
 For edges, you must grant `READ_DATA` to the primary key of the `FROM` and `TO`
 vertex types before granting `READ_DATA` to other attributes of the edge type.
 |`UPDATE_DATA`
@@ -162,7 +164,7 @@ It cannot be granted global privileges.
 
 === Built-in roles
 
-GSQL offers 5 built-in local roles and 2 built-in global roles.
+GSQL offers five built-in local roles and two built-in global roles.
 The built-in roles cannot be dropped.
 The following table details the built-in roles and their corresponding set of privileges.
 
