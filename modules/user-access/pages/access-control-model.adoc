@@ -2,9 +2,10 @@
 :description: A brief explanation of TigerGraph's access control model.
 :page-aliases: roles-and-privileges.adoc
 
-TigerGraph supports both role-based access control (RBAC) and access control lists (ACL).
-RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
-ACLs let you grant fine-grained access to a specific query.
+TigerGraph supports both role-based access control (RBAC) and access control lists (ACL):
+
+* RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph or a type, such as allowing a role to read data on all vertices of a specified type.
+* ACLs are only relevant for governing access to xref:gsql-ref:querying:query-operations.adoc[queries], and let you grant access to specific queries.
 
 == Role-based access control
 TigerGraph uses role-based access control (RBAC) to manage authorization.
@@ -15,44 +16,53 @@ Outside the permissions granted by their roles, a user has no access to the syst
 
 A privilege is permission to perform an action in a given scope.
 When a privilege is assigned to a role, it allows users with the role to perform the specified action in the specified scope.
-For example, the privilege `READ_SCHEMA` on graph `social` gives a user read permission to the schema of the graph `social`.
-This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph.
+For example, the privilege `READ_SCHEMA` on graph `Social` gives a user read permission to the schema of the graph `Social`.
+This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph `Social`.
 
 To view a complete list of privileges available in TigerGraph and the commands they enable a user to run, see xref:reference:list-of-privileges.adoc[List of Privileges].
 
 === Global vs local privileges
 
-The scope of a privilege can be global or local. Global privileges apply to all graphs and global objects. Local privileges only apply on the graph they belong to.
+The scope of a privilege can be global or local.
+Global privileges apply to all graphs and global objects.
+Local privileges only apply on the graph they belong to.
 
-For example, a role with `WRITE_QUERY` on graph `social` can only create queries on graph `social`, but not on other graphs. In contrast, a role with `WRITE_QUERY` on the global scope can create queries on all graphs.
+For example, a role with `WRITE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
+In contrast, a role with `WRITE_QUERY` on the global scope can create queries on all graphs.
 
 Local roles can only be granted local privileges, while global roles can be granted both local and global privileges.
 
-*Global-only privileges*
+==== Global-only privileges
 
-Some privileges can only be global by nature. For example, since users are global objects, any user-related privileges are global only. To see which privileges are global-only, see xref:reference:list-of-privileges.adoc[List of Privileges].
+Some privileges can only be global by nature.
+For example, since users are global objects, any user-related privileges are global only.
+To see which privileges are global-only, see xref:reference:list-of-privileges.adoc[List of Privileges].
 
 === Roles
 
-A role is a collection of privileges you can assign to users to grant them permission to perform actions on specific resources.
+A role is a collection of privileges that are assigned to users to grant them permission to perform actions on specific resources.
 
 === Global vs local roles
 
-Roles can be global or local. Local roles can only be granted local privileges, while global roles can be granted both local and global privileges.
+Roles can be global or local.
+Local roles can only be granted local privileges, while global roles can be granted both local and global privileges.
 
-For example, if a user creates a role `manager` on the graph `social`:
+For example, if a user creates a role `manager` on the graph `Social`:
 
 [source,text]
 ----
-GSQL > CREATE ROLE manager ON GRAPH social
+GSQL > CREATE ROLE manager ON GRAPH Social
 Successfully created roles: [manager].
 ----
 
-This role can only be granted privileges on the graph `social`. It cannot be granted global privileges.
+This role can only be granted privileges on the graph `Social`.
+It cannot be granted global privileges.
 
 === Built-in roles
 
-GSQL offers 5 built-in local roles and 2 built-in global roles. The built-in roles cannot be dropped. Below is a table of the built-in roles and their corresponding set of privileges.
+GSQL offers five built-in local roles and two built-in global roles.
+The built-in roles cannot be dropped.
+The following table summarizes the built-in roles and their corresponding set of privileges:
 
 |===
 | *Name* | *Global or Local* | *Privilege List*
@@ -89,7 +99,7 @@ GSQL offers 5 built-in local roles and 2 built-in global roles. The built-in rol
 === User-defined roles
 
 Users can define roles with their own list of privileges they want to grant to the role.
-To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
+To learn how to manage user-defined roles and privileges for the roles, see xref:role-management.adoc[Role Management].
 
 
 [#_access_control_lists]
@@ -97,29 +107,30 @@ To learn how to create/drop user-defined roles and manage privileges for the rol
 ACLs give you the ability to apply finer-grained access control to a GSQL query by specifying who can read or execute the query.
 ACLs are bound to queries.
 
-An ACL contains two entries - `READ` and `EXECUTE` - for read privilege and execute (run) privilege on a given query, respectively.
-Both entries have a permission list that contains roles.
-Users with roles on the list have the permission to either read or execute the query.
+Each query has two ACLs - a read list and an execute list - for read privilege and execute (run) privilege on a given query, respectively.
+Each list consists of a set of roles.
+Users with roles on the ACLs of a query have the permission to either read or execute the query.
 
 [#_acl_entry_status]
-=== ACL entry status
-In the ACL of a query, each type of privilege's entry (`READ`/`EXECUTE`) has three statuses:
+=== ACL status
+ACLs of a query have three statuses:
 
 Unspecified:: Default status.
-When an ACL privilege is unspecified, RBAC governs the access for that privilege
+When an ACL is unspecified, RBAC governs the access for that privilege.
 
 Specified Roles:: Only the users with specified roles have the ACL privilege.
-Any roles (local/global, built-in/user-defined) can be a grantee of an ACL privilege.
+Any roles (local/global, built-in/user-defined) can be added to an ACL.
 
-Nobody:: No one, not even the owner, can access the query, even with corresponding RBAC privileges.
+Nobody:: No one, not even <<_query_owner, the owner>> of the query, can access the query, even with the corresponding RBAC privileges.
 
+[#_query_owner]
 === Query owner
 Every query has one and only one owner.
 Only the owner of a query can:
 
-* run ACL management commands to modify the ACL of query.
+* run ACL management commands to modify the ACLs of query.
 * run `CREATE OR REPLACE` to update a query.
-When the query owner runs `CREATE OR REPLACE` to update a query, the ACL on the query remains unchanged.
+When the query owner runs `CREATE OR REPLACE` to update a query, the ACLs on the query remains unchanged.
 
 When a query is created, the creator of the query is assigned to be the owner automatically.
 When a user is the owner of a query, the user cannot be dropped unless the query is dropped or if the owner of the query is changed.
@@ -130,7 +141,7 @@ Users with `WRITE_ROLE` privilege on the graph or on the global scope can assign
 [#_acl_password]
 === ACL password
 Users have the option of xref:acl-management.adoc#_set_acl_password[setting an ACL password].
-When a user has an ACL password, operations that modify ACL privileges of queries owned by the user requires the ACL password.
+When a user has an ACL password, operations that modify ACL privileges of queries owned by that user require their ACL password.
 These operations include:
 
 * Changing the owner of a query
@@ -139,14 +150,14 @@ These operations include:
 [#_acl_examples]
 === Examples
 
-==== Using `NOBODY` entry status to hide query from everyone
+==== Using `NOBODY` ACL status to hide query from everyone
 
-In the following example, `user1` protects their query `q1` from being seen by anyone including users with `superuser` roles, by setting the status of the `READ` entry of their query's ACL to `NOBODY`.
+In the following example, `user1` protects their query `q1` from being seen by anyone, including users with the `superuser` roles, by setting the status of the `READ` list of their query's ACL to `NOBODY`.
 
 Even though no one can see the content of the query, but since the `EXECUTE` entry is unspecified, users with sufficient RBAC privileges can still execute the query.
-This allows you to protect the content of a sensitive query, but still allows people to run it.
+This allows `user1` to protect the content of a sensitive query, but still allow people to run it.
 
-The following GSQL command are performed by `user1`.
+The following GSQL command are performed by `user1`:
 
 [source.wrap, gsql]
 ----
@@ -165,8 +176,8 @@ CREATE QUERY q1 () {
 GSQL > ALTER ACL PASSWORD SET XXXXXX <4>
 ----
 <1> This command forbids anyone to read the query, even the owner.
-See <<_acl_entry_status, ACL entry status: `NOBODY`>>.
-<2> Use the `SHOW ACL PRIVILEGE ON QUERY` command to verify the `NOBODY` status of the `READ` entry.
+See <<_acl_entry_status, ACL status: `NOBODY`>>.
+<2> Use the `SHOW ACL PRIVILEGE ON QUERY` command to verify the `NOBODY` status of the `READ` list.
 <3> Query content cannot be seen by any user, including the owner.
 <4> If user `user1` does not have an <<_acl_password,ACL password>>, it is important to set one.
 Otherwise, other users with the `WRITE_ROLE` privilege can xref:acl-management.adoc#_change_query_owner[change the owner of the query].
@@ -224,18 +235,18 @@ ACLs only apply to queries.
 
 When it comes to evaluating permissions for operations on queries, ACLs are evaluated first:
 
-* When the ACL entry is _unspecified_, RBAC governs the access control of the resource.
-By default, both ACL entries (`READ` and `EXECUTE`) for a query are _unspecified_.
+* When an ACL is _unspecified_, RBAC governs the access of the resource.
+By default, both ACLs (`READ` and `EXECUTE`) for a query are _unspecified_.
 * If the ACL entry is specified, ACL replaces RBAC to govern access for the query.
-** Even if a user does not have the `READ_QUERY` permission on a graph, they can read a query if they are on the `READ` ACL entry permission list of the query.
-** Even if a user has the `READ_QUERY` permission on a graph, they cannot read a query if the `READ` ACL entry for the query is specified and the user is not on the list.
+** Even if a user does not have the `READ_QUERY` permission on a graph, they can read a query if they are on the `READ` list of the query.
+** Even if a user has the `READ_QUERY` permission on a graph, they cannot read a query if the `READ` list for the query is specified and the user is not on the list.
 
 .How permission is evaluated for a query operation
 image::acl-query-flow.png[Visualization of the hierarchy of permission evaluation for a query evaluation.]
 
 == Importing and exporting
 
-When exporting graphs, ACLs are only exported when both queries and users are exported.
+When xref:import-export:database-import-export.adoc[exporting graphs], ACLs are only exported when both queries and users are exported.
 
 * When you export graphs without queries, there is no ACL on the exported graphs because there are no queries.
 * When you export graphs with queries but without users, the ACL entries on the exported are reset to the _unspecified_ status.
