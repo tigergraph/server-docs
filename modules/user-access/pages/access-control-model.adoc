@@ -6,10 +6,15 @@ TigerGraph supports both role-based access control (RBAC) and access control lis
 RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
 ACLs let you grant fine-grained access to a specific query.
 
+CAUTION: All access control is only in effect when user authentication is enabled.
+Authentication is not enabled by default and xref:enabling-user-authentication.adoc[must be enabled manually].
+
+
 == Role-based access control
 TigerGraph uses role-based access control (RBAC) to manage authorization.
 On every graph, privileges to perform actions are assigned to roles, and roles are granted to users.
 Outside the permissions granted by their roles, a user has no access to the system.
+
 
 === Privileges
 
@@ -20,17 +25,120 @@ This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph
 
 To view a complete list of privileges available in TigerGraph and the commands they enable a user to run, see xref:reference:list-of-privileges.adoc[List of Privileges].
 
-=== Global vs local privileges
+=== Privilege scopes
 
-The scope of a privilege can be global or local. Global privileges apply to all graphs and global objects. Local privileges only apply on the graph they belong to.
+There are four different scopes for a privilege:
 
-For example, a role with `WRITE_QUERY` on graph `social` can only create queries on graph `social`, but not on other graphs. In contrast, a role with `WRITE_QUERY` on the global scope can create queries on all graphs.
+* Global
+* Graph-level
+* Type-level (Only applicable to <<_data_crud_privileges>>)
+* Attribute-level (Only applicable to <<_data_crud_privileges>>)
 
-Local roles can only be granted local privileges, while global roles can be granted both local and global privileges.
+Global privileges apply to all graphs and global objects.
+Graph-level privileges only apply on the graph they belong to.
+Type-level privileges only apply to specific vertex or edge types on a graph.
+Attribute-level privileges only apply to specific attributes of a vertex or edge type.
 
-*Global-only privileges*
+A privilege on a large scope applies to the entire scope, including all lower scopes encompassed by that scope.
+If you have a privilege on the graph level, you also have that privilege on the type level and attribute level for all types and attributes in that graph.
+If you have a privilege on the global scope, you have that privilege across all graphs, types and attributes.
 
-Some privileges can only be global by nature. For example, since users are global objects, any user-related privileges are global only. To see which privileges are global-only, see xref:reference:list-of-privileges.adoc[List of Privileges].
+Most privileges are global or graph-level.
+Only privileges pertaining to graph data (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) can be granted on the type level or attribute level.
+
+
+For example:
+
+* A role with `WRITE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
+In contrast, a role with `WRITE_QUERY` on the global scope can create queries on all graphs.
+* A role with `UPDATE_DATA` on the `age` attribute of the `Person` vertex on graph `Social` are allowed to run queries that update the value of the `age` attribute of `Person` vertices.
+* A role with `READ_DATA` on the global scope can run queries that read graph data on any graph, any type, or any attribute.
+They do not need to have privileges specifically for those graphs, types, or attributes.
+
+[#_data_crud_privileges]
+=== Data CRUD privileges
+
+Data CRUD privileges (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) are special in that they can be granted on the type level and attribute level.
+
+NOTE: Data CRUD privileges only govern data access through queries and REST endpoints.
+Users with the `EXECUTE_LOADINGJOB` privilege do not need additional privileges in order to run a loading job that inserts or deletes vertices and edges.
+
+The privileges govern specific ways in which a user can access and modify data.
+Even regarding a single REST endpoint, whether a request is authorized depends on the information that the request is accessing or modifying.
+
+[.test-class]
+|===
+|Privilege |Type level |Attribute level
+
+|`CREATE_DATA`
+|Permission to create vertices and edges, and specify values for all attributes for the type where the privilege is granted.
+a|* If granted on a vertex type attribute, it gives permission to create vertices, but only specify values for attributes where the user has `CREATE_DATA` privilege if the user also has `UPDATE_DATA` privilege on all attributes of that type.
+** The user must have `CREATE_DATA` privilege on the primary ID of the vertex type to be able to create vertices.
+* If granted on an edge type attribute, it gives permission to create edges, but only specify values for attributes where the user has `CREATE_DATA` privilege if the user also has `UPDATE_DATA` privilege on all attributes of that type.
+* For attributes where the user doesn't have privilege, they must use wildcards(`_`) to use the default value for vertices/edges created by the xref:gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT INTO` statements].
+
+|`READ_DATA`
+|Permission to access all data of the type where the privilege is granted.
+|Permission to access the attribute value where the privilege is granted.
+
+To grant  `READ_DATA` to a specific attribute of a type, you must grant `READ_DATA` to the primary key of the type first or in the same command.
+
+For edges, you must grant `READ_DATA` to the primary key of the `FROM` and `TO`
+vertex types before granting `READ_DATA` to other attributes of the edge type.
+|`UPDATE_DATA`
+|Permission to update all data of the type where the privilege is granted.
+|Permission to update the attribute value where the privilege is granted.
+`UPDATE_DATA` on all attributes is also required for creating new vertices and edges.
+
+|`DELETE_DATA`
+|Permission to delete data of the type where the privilege is granted.
+|N/A.
+This privilege is not applicable on the attribute level.
+|===
+
+==== Examples
+
+Suppose we have a graph with schema as below:
+
+[.wrap,gsql]
+----
+CREATE VERTEX Person(id UINT PRIMARY KEY, name STRING, INT age)
+CREATE VERTEX City(id UINT PRIMARY KEY, name STRING)
+CREATE GRAPH Example_Graph(Person, City)
+----
+
+If a user were to run the following query:
+
+[.wrap,gsql]
+----
+CREATE QUERY example_query() {
+  Seed = {City.*}; <1>
+  vSet = SELECT s FROM Seed:s
+         POST-ACCUM
+            s.name = s.name + ".post"; <2>
+  INSERT INTO Person VALUES ("id3", "Tom", _) <3>
+}
+----
+<1> This action requires `READ_DATA` on type `City`.
+<2> This action requires `UPDATE_DATA` on attribute `name` of type `City`.
+<3> This action requires `UPDATE_DATA` on all attributes of type `Person` and `CREATE_DATA` on attribute `id` and `name`.
+
+Running the query would at a minimum require `READ_DATA` on type `City` and `UPDATE_DATA` on attribute `name` of type `City`.
+
+// Two requests from a single REST endpoint
+
+If a user were to make the following REST request:
+
+[source.wrap,console]
+$ curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1"
+
+The request requires that the user has at least `READ_DATA` on type `Person`, or all attributes of type `Person`.
+However, if the user specify the attributes for the request to return:
+
+[source.wrap,console]
+$ curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1?select=age"
+
+The request would no longer require `READ_DATA` on the attribute `name` and only require `READ_DATA` on `id` and `age`.
 
 === Roles
 
@@ -38,7 +146,10 @@ A role is a collection of privileges you can assign to users to grant them permi
 
 === Global vs local roles
 
-Roles can be global or local. Local roles can only be granted local privileges, while global roles can be granted both local and global privileges.
+WARNING: Local roles are deprecated, and will be dropped in a future version.
+
+Roles can be global or local.
+Local roles can only be granted graph-level privileges, while global roles can be granted privileges at every level.
 
 For example, if a user creates a role `manager` on the graph `social`:
 
@@ -48,11 +159,14 @@ GSQL > CREATE ROLE manager ON GRAPH social
 Successfully created roles: [manager].
 ----
 
-This role can only be granted privileges on the graph `social`. It cannot be granted global privileges.
+This role can only be granted privileges on the graph `social`.
+It cannot be granted global privileges.
 
 === Built-in roles
 
-GSQL offers 5 built-in local roles and 2 built-in global roles. The built-in roles cannot be dropped. Below is a table of the built-in roles and their corresponding set of privileges.
+GSQL offers five built-in local roles and two built-in global roles.
+The built-in roles cannot be dropped.
+The following table details the built-in roles and their corresponding set of privileges.
 
 |===
 | *Name* | *Global or Local* | *Privilege List*
@@ -67,15 +181,15 @@ GSQL offers 5 built-in local roles and 2 built-in global roles. The built-in rol
 
 | `querywriter`
 | Local
-| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `WRITE_QUERY, WRITE_DATA`
+| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `WRITE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`
 
 | `designer`
 | Local
-| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `WRITE_QUERY, WRITE_DATA`,  `WRITE_SCHEMA`, `WRITE_LOADINGJOB`, `ACCESS_TAG`
+| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `WRITE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`,  `WRITE_SCHEMA`, `WRITE_LOADINGJOB`, `ACCESS_TAG`
 
 | `admin`
 | Local
-| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `WRITE_QUERY, WRITE_DATA`,  `WRITE_SCHEMA`, `WRITE_LOADINGJOB`, `ACCESS_TAG` `WRITE_ROLE`, `WRITE_DATASOURCE`, `READ_ROLE`, `READ_USER`, `READ_PROXYGROUP`
+| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `WRITE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`,  `WRITE_SCHEMA`, `WRITE_LOADINGJOB`, `ACCESS_TAG` `WRITE_ROLE`, `WRITE_DATASOURCE`, `READ_ROLE`, `READ_USER`, `READ_PROXYGROUP`
 
 | `globaldesigner`
 | Global
