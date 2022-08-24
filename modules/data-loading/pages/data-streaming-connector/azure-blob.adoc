@@ -1,0 +1,153 @@
+= Stream Data from Azure Blob Storage
+:description: Instructions on how to stream data from Azure Blob Storage from the Data Streaming Connector.
+:sectnums:
+
+You can create a data connector between TigerGraph's internal Kafka server and your Azure Blob Storage (ABS) with a specified topic.
+The connector streams data from data sources in your ABS containers to TigerGraph's internal Kafka cluster.
+
+You can then create and run a loading job to load data from Kafka into the graph store using the xref:kafka-loader/index.adoc[Kafka loader].
+
+== Prerequisites
+
+* Your have an link:https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview[Azure storage account] with access to the files you are streaming from.
+
+== Procedure
+
+=== Specify connector configurations
+
+The connector configurations provide the following information:
+
+* Connector class
+* Your Azure Blob Storage account credentials
+* Information on how to parse the source data
+* Mapping between connector and source file
+
+==== Connector class
+
+[.wrap,text]
+----
+connector.class=com.tigergraph.kafka.connect.filesystem.azure.AzureBlobSourceConnector
+----
+
+The connector class indicates what type of connector the configuration file is used to create.
+Connector class is specified by the `connector.class` key.
+For connecting to ABS, its value is
+`connector.class=com.tigergraph.kafka.connect.filesystem.azure.AzureBlobSourceConnector`.
+
+==== Storage account credentials
+
+You have two options when providing credentials:
+
+[tabs]
+====
+Shared key authentication::
++
+--
+Shared key authentication requires you to provide your storage account name and account key.
+
+You can find both the account name and account key on the Access Key tab of your storage account:
+
+.Azure storage account page Access Keys tab
+image::azure-storage-account.png[Azure storage account page Access Keys tab]
+
+To specify the account name and key, use the following configuration.
+Replace `<account_name>` with your account name and replace `<account_key>` with your account key:
+
+[.wrap,text]
+----
+file.reader.settings.fs.azure.account.key.<account_name>.dfs.core.windows.net="<account_key>"
+----
+
+--
+Service principal authentication::
++
+--
+To use service principal authentication, you must first register your TigerGraph instance as an application and grant it access to your storage account.
+
+Once the application is registered, you'll need the following credentials:
+
+* `CLIENT_ID`
+* `CLIENT_SECRET`
+* `TENANT_ID`
+
+Provide the credentials using the following configs:
+
+[.wrap]
+----
+file.reader.settings.fs.azure.account.oauth2.client.id="4a3d45fa-8974-48e6-af97-2614b1a24be8" <1>
+file.reader.settings.fs.azure.account.oauth2.client.secret="Ydt7Q~TRfxvuMxEDgn4mwGKg9TLhaKywkGjwn" <2>
+file.reader.settings.fs.azure.account.oauth2.client.endpoint="https://login.microsoftonline.com/718f143b-b1ef-468b-a3a8-c95651fdd511/oauth2/token"<3>
+----
+<1> Client ID.
+<2> Client secret.
+<3> Tenant ID.
+--
+====
+
+==== Other credentials
+The connector uses Hadoop to connect to the Azure File system.
+The configurations below are required along with our recommended values:
+
+----
+file.reader.settings.fs.abfs.impl="org.apache.hadoop.fs.azurebfs.AzureBlobFileSystem"
+file.reader.settings.fs.abfss.impl="org.apache.hadoop.fs.azurebfs.SecureAzureBlobFileSystem"
+file.reader.settings.fs.AbstractFileSystem.abfs.impl="org.apache.hadoop.fs.azurebfs.Abfs"
+file.reader.settings.fs.AbstractFileSystem.abfss.impl="org.apache.hadoop.fs.azurebfs.Abfss"
+----
+
+include::partial$parsing-rules.adoc[]
+
+include::partial$map-source-to-connector.adoc[]
+
+URIs for files must be configured in the following way:
+
+`<protocol: abfss | abfs>://<container name>@<accountname>.dfs.core.windows.net/<path to the file>`
+
+For example:
+
+`abfss://person@yandblobstorage.dfs.core.windows.net/persondata.csv`
+
+==== Example
+
+The following is an example configuration file:
+
+[.wrap]
+----
+connector.class=com.tigergraph.kafka.connect.filesystem.azure.AzureBlobSourceConnector
+file.reader.settings.fs.defaultFS="abfss://example_container@example_account.dfs.core.windows.net/"
+
+file.reader.settings.fs.azure.account.auth.type="OAuth"
+file.reader.settings.fs.azure.account.oauth.provider.type="org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+file.reader.settings.fs.azure.account.oauth2.client.id="examplefa-8974-48e6-af97-2614b1a24be8"
+file.reader.settings.fs.azure.account.oauth2.client.secret="example~TRfxvuMxEDgn4mwGKg9TLhaKywkGjwn"
+file.reader.settings.fs.azure.account.oauth2.client.endpoint="https://login.microsoftonline.com/exampleb-b1ef-468b-a3a8-c95651fdd511/oauth2/token"
+
+file.reader.settings.fs.abfs.impl="org.apache.hadoop.fs.azurebfs.AzureBlobFileSystem"
+file.reader.settings.fs.abfss.impl="org.apache.hadoop.fs.azurebfs.SecureAzureBlobFileSystem"
+file.reader.settings.fs.AbstractFileSystem.abfs.impl=""org.apache.hadoop.fs.azurebfs.Abfs
+file.reader.settings.fs.AbstractFileSystem.abfss.impl="org.apache.hadoop.fs.azurebfs.Abfss"
+
+mode=eof
+file.regexp=".*"
+file.recursive=true
+file.reader.type=text
+file.reader.batch.size=10000
+file.reader.text.eol="\\n"
+file.reader.text.header=true
+file.reader.text.archive.type=auto
+file.reader.text.archive.extensions.tar=tar
+file.reader.text.archive.extensions.zip=zip
+file.reader.text.archive.extensions.gzip=tar.gz,tgz
+
+[azure_connector_person]
+name = azure-fs-person-demo-104
+tasks.max=10
+topic=azure-fs-person-demo-104
+file.uris=abfss://example_container@example_account.dfs.core.windows.net/persondata.csv
+----
+
+=== Stream data source updates
+
+To load updates to the data source after you've created the connectors, you need to delete the connector and recreate another connector.
+
+In the future, the streaming data connector will support automatically scanning for updates and stream data to TigerGraph.
