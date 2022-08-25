@@ -3,49 +3,38 @@
 :page-aliases: change-log.adoc, release-notes.adoc
 :fn-preview: footnote:preview[Features in the preview stage should not be used for production purposes. General Availability (GA) versions of the feature will be available in a later release.]
 
-TigerGraph Server {page-component-version}.0 was released on June 17th, 2022.
+TigerGraph Server {page-component-version}.0 was released on Aug 31st, 2022.
 
 == New Features
 
-Below is a list of new features and improvements:
+The following is a list of new features and improvements:
 
 === Elasticity
-* Added support for provisioning xref:ha:elastic-cluster.adoc[Elastic Read-only (ER) clusters (Preview)]{fn-preview} with different partitions than the primary cluster.
-** Note: This feature is currently in the preview stage only available for enterprise TigerGraph Cloud customers.
-If you are a paid TigerGraph Cloud enterprise customer and want to set up an ER cluster for your environment, please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
+
 
 === Manageability
-* Introduced TigerGraph xref:kubernetes:k8s-operator/index.adoc[Kubernetes Operator (Preview)] {fn-preview}.
-TigerGraph Kubernetes Operator allows you to automate operations such as the creation, status checking and deletion of TigerGraph clusters.
 
 
 === Security
-* Sensitive data such as user credentials in log and configuration files are now encrypted.
+* Enhanced the xref:user-access:access-control-model.adoc#_role_based_access_control[role-based access control] system to allow data CRUD privileges to be granted at the type and attribute level.
 
 === Ecosystem integration
-* Added the ability to stream data from external Kafka clusters to xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
-* Added the ability to stream AVRO data for all supported sources with xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
+* Added the ability to xref:data-loading:data-streaming-connector/azure-blob.adoc[stream data from Azure Blob Storage] to xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
+* Added the ability to xref:data-loading:data-streaming-connector/aws-s3.adoc[stream data from ]for all supported sources with xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
 
 === Performance
-* Improved data loading speed and reliability.
-* Improved the speed and reliability of database catalog operations such as vertex and edge definition, schema changes, and query installation.
-* Optimized query compilation during schema changes to greatly enhance schema change performance.
+* Introduced the cost-based query optimizer (Preview), which has the potential to significantly reduce query execution time.
 
 === Observability
-* Improved GSQL log debuggability by ensuring all metadata and data update operations share a common prefix.
-* Improved engine log debuggability by including the ID of the original request from RESTPP.
-* Added more detail to several error messages.
+
 
 === Data API service
-* Added two parameters `target_vertex_must_exist` and `source_vertex_must_exist` to xref:tigergraph-server:API:built-in-endpoints.adoc#_upsert_data_to_graph[the REST endpoint to upsert data].
+
 
 === Query Language Enhancement
-* Reducer function `add()` now accumulates values when loading to a `MAP` attribute.
 
 === GraphStudio and Admin Portal Enhancement
-* Added the ability to xref:gui:graphstudio:write-queries.adoc#_graph_data_science_library_queries[one-click install built-in Graph Data Science Library algorithms].
-* Added the ability to xref:gui:graphstudio:map-data-to-graph.adoc#_create_a_gcs_data_source[load data from Google Cloud Storage] through GraphStudio UI.
-* Added Japanese language support for GraphStudio and Admin Portal.
+
 
 [#_fixed_issues]
 == Fixed issues
