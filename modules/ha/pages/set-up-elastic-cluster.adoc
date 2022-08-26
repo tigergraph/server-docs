@@ -2,6 +2,7 @@
 :description: Instructions on how to set up an elastic cluster for an on-prem TigerGraph instance.
 
 This page walks you through setting up an elastic cluster for an on-prem TigerGraph instance.
+This is a preview feature and should not be used for production purposes.
 
 == Before you begin
 * Ensure you have two running TigerGraph clusters - a primary cluster and a cluster to be set up as the elastic cluster.
@@ -25,6 +26,10 @@ This operation empties the graph as it changes the data storage location.
 Define schema and load data into the primary cluster.
 Perform your normal workloads on the primary cluster until you need to launch an elastic cluster to support computation-intensive workload.
 
+WARNING: Launching a elastic cluster requires that the primary cluster cannot be empty.
+Ensure your primary cluster has data in it before launching an elastic cluster.
+
+
 
 == Launch elastic cluster
 
@@ -33,7 +38,8 @@ Whenever you need to run a resource-intensive online analytical processing (OLAP
 === Export primary cluster schema
 
 Run the following the command on the primary cluster to export the primary cluster's schema.
-The schema folder must be on the shared storage accessible by the elastic cluster:
+The schema folder must be accessible by the elastic cluster.
+It is recommended that the schema folder also be on the shared storage between the elastic cluster and the primary cluster:
 
 [.wrap,console]
 ----
