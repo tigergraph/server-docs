@@ -47,7 +47,8 @@ $ gadmin connector resume <connector_name>
 
 === Delete a connector
 Deleting a connector removes a connector.
-It stops the connector from streaming, but the data that has been streamed to Kafka can still be ingested by a loading job.
+It stops the connector from streaming, as well as deletes the data that has been streamed to the corresponding topics Kafka that hasn't been ingested by a loading job.
+This does not delete the topics themselves; they remain reusable since all data is deleted from the topics.
 This action cannot be undone and a removed connector cannot be resumed.
 
 To delete a connector,  run the below command and replace `<connector_name>` with the name of the connector:
