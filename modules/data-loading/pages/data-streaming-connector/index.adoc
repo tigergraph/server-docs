@@ -47,9 +47,15 @@ $ gadmin connector resume <connector_name>
 
 === Delete a connector
 Deleting a connector removes a connector.
-It stops the connector from streaming, as well as deletes the data that has been streamed to the corresponding topics Kafka that hasn't been ingested by a loading job.
+It stops the connector from streaming, as well as deletes the data that has been streamed to the corresponding topics in Kafka that haven't been ingested by a loading job.
 This does not delete the topics themselves; they remain reusable since all data is deleted from the topics.
+When you create the same connector, with the same connector name and configurations, the connector loads all data from the source again to the same topics.
 This action cannot be undone and a removed connector cannot be resumed.
+
+CAUTION: There is a known issue for deleting connectors with created with folder URIs.
+Deleting the connector does not delete the connect offsets for topics that are mapped to a folder URI.
+If you create the same connector, with the same name and same URI to a folder, the connector only loads from where it left off before.
+A workaround for this issue is to create a connector with the same configurations, but with a different name.
 
 To delete a connector,  run the below command and replace `<connector_name>` with the name of the connector:
 
@@ -66,5 +72,6 @@ There are several known issues with this process:
 If the loading job finishes much sooner before the interval is reached, the messages are not removed.
 * If loading job uses EOF mode, meaning the loading job will terminate as soon as it finishes, it is likely some partial data will be left in the topic.
 * If a topic is deleted and recreated while a loading job on the topic is running, the data in the topic may get removed.
+* Deleting the connector does not delete the connect offsets for topics that are mapped to a folder URI.
 
 Automatic message removal is an alpha feature and may be subject to change.
