@@ -1,18 +1,18 @@
-= Built-in Endpoints
+= 組み込みエンドポイント
 :pp: {plus}{plus}
-:description: All built-in REST API endpoints in TigerGraph server.
+:description: TigerGraphサーバーに組み込まれているすべてのREST APIエンドポイント。
 
-== System Utilities
+== システムユーティリティ
 
 === Echo
 
-`GET /echo` and `POST /echo`
+`GET /echo` と `POST /echo`
 
-These endpoints are simple diagnostic utilities, which respond with the following message if the RESTPP server is up and running.
+これらのエンドポイントはシンプルな診断ユーティリティであり、RESTPPサーバーが稼働している場合、以下のメッセージを返します。
 
-==== Sample request:
+==== リクエストサンプル:
 
-.GET echo/ Request and Response
+.GET echo/ リクエストと応答
 
 [source,console]
 ----
@@ -25,27 +25,27 @@ curl -X GET "http://localhost:9000/echo"
 
 
 
-`POST /echo` has the same response as `GET /echo`.
+`POST/echo` の応答は `GET/echo` と同じです。
 
-==== Parameters
+==== パラメーター
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `sleep`
-| No
-| Integer that indicates the number of seconds for which the response will be delayed.
+| いいえ
+| 応答が遅延する秒数を表す整数。
 |===
 
-=== Health check (public)
+=== ヘルスチェック(パブリック)
 
-This endpoint performs a simple server health check. It listens on port 14240 and does not require authentication. If you ping it and the server is running, it will respond with the message "pong".
+このエンドポイントは、シンプルなサーバーのヘルスチェックを実行します。ポート14240でリッスンし、認証は必要としません。pingを実行し、サーバーが実行されている場合は、"pong"というメッセージで応答します。
 
-==== Endpoint:
+==== エンドポイント:
 
 `GET /api/ping`
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,text]
 ----
@@ -58,23 +58,23 @@ $ curl 'http://localhost:14240/api/ping'
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
-No parameters.
+パラメーターはありません。
 
-=== List all endpoints
+=== すべてのエンドポイントのリスト
 
 `+GET /endpoints/{graph_name}+`
 
-This endpoint returns a list of the installed endpoints and their parameters. There are three types of endpoints:
+このエンドポイントは、インストールされているエンドポイントとそのパラメーターのリストを返します。エンドポイントには以下の3つのタイプがあります。
 
-* _Built-in endpoints_ which are preinstalled in the TigerGraph system
-* _Dynamic endpoints_ which are generated when compiling GSQL queries
-* _Static endpoints_ which are user-installed endpoints
+* __組み込みエンドポイント__ : TigerGraphシステムにプレインストールされているエンドポイント。
+* __動的エンドポイント__ : GSQLクエリーのコンパイル時に生成されるエンドポイント。
+* __静的エンドポイント__ : ユーザーがインストールしたエンドポイント。
 
-To include one or more of the endpoint types in the output, include the endpoint type in the parameter query string and set its value to `true`. If no type parameters are provided, all endpoints are returned.
+1つ以上のエンドポイントタイプを出力に含めるには、エンドポイントタイプをパラメータークエリ文字列に含め、値を `true` に設定します。タイプパラメーターを指定しない場合、すべてのエンドポイントが返されます。
 
-.Example: Report on all built-in endpoints
+.例: すべての組み込みエンドポイントのレポート
 
 [source,console]
 ----
@@ -83,11 +83,11 @@ curl -X GET "http://localhost:9000/endpoints?builtin=true" | jq .
 
 
 
-==== Response
+==== 応答
 
-There are over a dozen built-in endpoints, and some have several parameters, so the formatted JSON output of all built-in endpoints is over 300 lines long. It is listed in full in Appendix A. Below is a small excerpt of the output:
+組み込みのエンドポイントは10以上あり、その中の一部は複数のパラメーターを持つため、すべての組み込みエンドポイントのフォーマットされたJSON出力は300行を超えます。完全なリストは、付録Aでご覧ください。以下は出力の抜粋です。
 
-.Subset of GET /endpoints output
+.GETのサブセット / エンドポイントの出力
 
 [source,console]
 ----
@@ -117,31 +117,31 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
 
 
 
-==== Parameters
+==== パラメーター
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `builtin`
-| No
-| Takes a boolean value. Returns built-in endpoints if true.
+| いいえ
+| ブール値を取ります。 `true` の場合、組み込みのエンドポイントを返します。
 
 | `dynamic`
-| No
-| Takes a boolean value. Returns dynamic endpoints if true.
+| いいえ
+| ブール値を取ります。 `true` の場合、動的エンドポイントを返します。
 
 | `static`
-| No
-| Takes a boolean value. Returns user-installed endpoints if true.
+| いいえ
+| ブール値を取ります。 `true` の場合、ユーザーがインストールしたエンドポイントを返します。
 |===
 
-=== Show component versions
+=== コンポーネントのバージョンの表示
 
 `GET /version`
 
-This endpoint returns the GIT versions of all components of the system.
+このエンドポイントは、システムのすべてのコンポーネントのGITバージョンを返します。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,console]
 ----
@@ -169,62 +169,62 @@ blue_commons         release_2.6.0_05-09-2020 432763afc49bf986aed4731e50254243d3
 "}
 ----
 
-==== Parameters
+==== パラメーター
 
-This endpoint does not take any parameters.
+このエンドポイントはパラメーターを取りません。
 
-=== Monitor system metrics
+=== システムメトリックのモニター
 
 `POST /ts3/api/datapoints`
 
-TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events. Many TigerGraph components will report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals. You can use this endpoint to read from TS3,  filtering for the data points you need by time (`when`, `from`, and `to`), component(`who`), metric(`what`) and location(`where`). Visualization of such metrics are available in Admin Portal - Dashboard - xref:3.2@gui:admin-portal:dashboard.adoc[Cluster Monitoring].
+TigerGraph System State Service(TS3)は、システムメトリックおよびイベント収集を行うTigerGraphのマネージドモニタリングサービスです。多くのTigerGraphコンポーネントは、CPU使用率、メモリー使用率、ディスク使用率、ネットワークトラフィックなどのメトリックをTS3に定期的にレポートします。このエンドポイントを使用して、時間(`when` 、`from` 、 `to` )、コンポーネント( `who` )、メトリック( `what` )、ロケーション( `where` )でフィルタリングして、必要なデータポイントをTS3から読み込みます。このようなメトリックをビジュアルでの確認には、管理ポータル - ダッシュボード - xref:3.2@gui:admin-portal:dashboard.adoc[クラスターのモニタリング]で行うことができます。
 
-On a TigerGraph cluster, this endpoint is only present on the `m1` node.
+TigerGraphクラスターでは、このエンドポイントは `m1` ノードにのみ存在します。
 
-==== Parameters
+==== パラメーター
 [width="100%",cols="12%,10%,78%",options="header",]
 |===
-|Name |Required |Description
-|`+from+` |No |Epoch timestamp that indicates the start of the time
-filter. Only data points reported after the timestamp will be included
-in the return results.
+|名称 |必須 |説明
+|`+from+` |いいえ |タイムフィルター開始を示すエポックタイムスタンプ。
+タイムスタンプの後にレポートされたデータポイントのみが
+結果に含まれます。
 
-|`+to+` |No |Epoch timestamp that indicates the end of the time filter.
-Only data points reported before the timestamp will be included in the
-return results.
+|`+to+` |いいえ |タイムフィルター開始を示すエポックタイムスタンプ。
+タイムスタンプの前にレポートされたデータポイントのみが
+結果に含まれます。
 
-|`+latest+` |No |Number of latest data points to return. If provided,
-the endpoint will return the latest data points that satisfy the
-`+what+`, `+who+` and `+where+` filters and ignore other time-related
-filters.
+|`+latest+` |いいえ |返される最新のデータポイント数。提供された場合、
+エンドポイントは、 `+what+` 、 `+who+` 、および `+where+` フィルターを
+満たす最新のデータポイントを返し、他の時間関連フィルターは
+無視されます。
 
-|`+what+` |No a|Name of the metric to filter for. Possible values are:
+|`+what+` |いいえ |フィルターするメトリック名。可能な値は以下の通りです。
 
-* `+cpu+`: Percentage of CPU usage by component
-* `+mem+`: Memory usage in megabytes by component
-* `+diskspace+`: Disk usage in megabytes by
-directory
-* `+network+`: Network traffic in bytes since the service
-started
-* `+qps+`: Number of requests per second by
-endpoint
-* `+servicestate+`: Whether or not the service is online. A value of `+0+` indicates that the service is offline while a value of `+1+` means the service is online`+connection+`: Number of open TCP connections.
+* `+cpu+`: コンポーネントによるCPU使用パーセンテージ
+* `+mem+`: コンポーネントによるメモリー使用量(MB)
+* `+diskspace+`: ディクショナリーによるディスク
+使用量(MB)
+* `+network+`: サービス開始以降のネットワーク
+トラフィック(byte)
+* `+qps+`: エンドポイントによる毎秒の
+リクエスト数
+*  `+servicestate+`: サービスがオンラインであるかどうか。 `+0+` の場合はオフライン、`+1+` の場合はオンライン。`+connection+` はTCP接続の数を示します。
 
-|`+who+` |No |Name of the component that reported the datapoint
+|`+who+` |いいえ |データポイントをレポートしたコンポーネントの名前
 
-|`+where+` |No |Name of the node that the datapoint is reported for
+|`+where+` |いいえ |データポイントがレポートされるノードの名前
 |===
 
-==== Sample requests
+==== リクエストサンプル:
 
-In the sample request below, the filters in the query string include a timeframe starting at `1618957536` and ending at `1619023346`, and specifying that the response should only include CPU information:
+以下のリクエストサンプルでは、クエリー文字列のフィルターに、 `1618957536` で始まり `1619023346` で終わるタイムフレームが含まれ、応答にはCPU情報のみを含めるように指定しています。
 
 [source,console]
 ----
 $ curl -X GET
 "https://crunch.i.tgcloud.io:14240/ts3/api/datapoints?from=1618957536&to=1619023346&what=cpu"
 
-# Three data points returned
+# 3つのデータポイントが返されました
 [
   {
     "detail": 0,  # GPE is using 0 percent CPU
@@ -250,7 +250,7 @@ $ curl -X GET
 ]
 ----
 
-In the below example, the request asks for the 10 latest data points regarding memory usage:
+以下の例では、リクエストはメモリー使用量に関する最新10個のデータポイントを要求しています。
 
 [source,console]
 ----
@@ -331,20 +331,20 @@ $ curl -X GET
 ]
 ----
 
-=== Show query performance
+=== クエリーパフォーマンスの表示
 
 `+GET /statistics/{graph_name}+`
 
-This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` __**__parameter.The `seconds` parameter must be a positive integer less than or equal to 60.
+このエンドポイントは、 `seconds` パラメーターで指定されているように、指定された期間のリアルタイムのクエリーパフォーマンス統計値を返します。 `seconds` パラメーターは、60以下の正の整数である必要があります。
 
-==== Sample request:
+==== リクエストサンプル:
 
-The return object is a hash of the endpoints and their performance data:
+リターンオブジェクトは、エンドポイントとそのパフォーマンスデータのハッシュ値です。
 
 [source,console]
 ----
-# The example shows two endpoints (/graph/vertex and
-# /statistics) called during the past 60 seconds.
+# この例では、過去60秒間に呼び出された2つのエンドポイント
+# (/graph/vertexと/statistics)を示しています。
 curl -X GET "http://localhost:9000/statistics/poc_graph?seconds=60" | jq '.'
 
 {
@@ -391,43 +391,43 @@ curl -X GET "http://localhost:9000/statistics/poc_graph?seconds=60" | jq '.'
 }
 ----
 
-Each endpoint has the following attributes:
+エンドポイントはそれぞれ以下の属性を持ちます。
 
-* `CompletedRequests` - the number of completed requests.
-* `QPS` - query per second.
-* `TimeoutRequests` - the number of requests not returning before the system-configured timeout limit. Timeout requests are not included in the calculation of QPS.
-* `AverageLatency` - the average latency of completed requests.
-* `MaxLatency` - the maximum latency of completed requests.
-* `MinLatency` - the minimum latency of completed requests.
-* `LatencyPercentile` - The latency distribution. The number of elements in this array depends on the `segments` ****parameter of this endpoint whose default value is 10, meaning the percentile range 0-100% will be divided into ten equal segments: 0%-10%, 11%-20%, etc.`Segments` ****must be [1, 100].
+* `CompletedRequests` - 完了したリクエスト数。
+* `QPS` - 1秒ごとのクエリー数。
+* `TimeoutRequests` - システム設定されたタイムアウト制限の前に返されないリクエストの数。タイムアウトリクエストはQPSの計算には含まれません。
+* `AverageLatency` - 完了したリクエストの平均レイテンシー。
+* `MaxLatency` - 完了したリクエストの最大レイテンシー。
+* `MinLatency` - 完了したリクエストの最小レイテンシー。
+* `LatencyPercentile` - レイテンシーの分布。この配列の要素数は、このエンドポイントの `segments` パラメーターによって異なり、デフォルト値は10です。つまり、パーセンタイルの範囲0～100%は、0%～10%、11%～20%…の10個の等しいセグメントに分割され、 `segments` は [1, 100]となる必要があります。
 
-If there is no query sent in the past given seconds, an empty json will be returned.
+過去の指定された秒数に送信されたクエリーがない場合、空のJSONが返されます。
 
-==== Parameters
+==== パラメーター
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `seconds`
-| Yes
-| Positive integer less than 60 that indicates how many seconds back from the current time the statistics report will cover.
+| はい
+| 統計レポートがカバーする現在の時刻から何秒前に戻ったかを示す60未満の正の整数。
 
 | `segments`
-| No
-| Integer that indicates the number of segments that `LatencyPercentile` array in the response will be split into.The value for this endpoint must be between 1 and 100 and has a default value of 10.
+| いいえ
+| 応答の `LatencyPercentile` 配列が分割されるセグメントの数を示す整数。このエンドポイントの値は1〜100である必要があります。デフォルト値は10です。
 |===
 
 [#_show_service_status]
-=== Show service status
+=== サービスステータスの表示
 `POST :14240/current-service-status`
 
-This endpoint returns the status of the TigerGraph services specified in the request.
+このエンドポイントは、リクエストで指定されたTigerGraphサービスのステータスを返します。
 
-==== Parameters
-No URL parameters.
+==== パラメーター
+URLパラメーターはありません。
 
-==== Request body
-The endpoint requires a request body in the following format:
+==== リクエスト本文
+エンドポイントでは、以下の形式のリクエストの本文が必要です。
 
 [source,javascript]
 ----
@@ -442,11 +442,11 @@ The endpoint requires a request body in the following format:
     ]
 }
 ----
-<1> `ServiceDescriptors` is a required field.
-It is a list of objects with keys `ServiceName`, and optionally `Partition` and `Replica`.
-<2> Required field.
-The name of the service to return status on.
-Below are the accepted values for the field and their corresponding services
+<1> `ServiceDescriptors` は必須項目です。
+これは、`ServiceName` をキーとし、オプションで `Partition` と `Replica` を持つオブジェクトのリストです。
+<2> 必須フィールドです。
+ステータスを返すサービスの名前です。
+以下は、このフィールドに指定できる値と、それに対応するサービス名です。
 * `"GPE"`:     GPE
 * `"GSE"`:     GSE
 * `"RESTPP"`:  RESTPP
@@ -462,18 +462,18 @@ Below are the accepted values for the field and their corresponding services
 * `"TS3SERV"`: TS3SERV
 * `"DICT"`:    DICT
 * `"ADMIN"`:   ADMIN
-<3> Optional.
-Number of the partition to request service status on.
-If not provided, the response will contain service status on all partitions.
-<4> Optional.
-Number of the replica to request service status on.
-If not provided, the response will contain service status on all replicas.
-<5> You can supply more than one service descriptor.
-The response from the endpoint will contain all service status requested.
+<3> 任意項目です。
+サービスステータスを要求するパーティションの番号。
+提供されない場合、応答はすべてのパーティションのサービスステータスを含む。
+<4> 任意項目です。
+サービスステータスを要求するレプリカの番号です。
+指定しない場合、すべてのレプリカのサービス状況が応答されます。
+<5> 複数のサービスディスクリプタを指定できます。
+エンドポイントからの応答には、要求されたすべてのサービスステータスが含まれます。
 
-==== Return value
-The return value contains the status for every service descriptor in the request.
-The most important information is in the `ServiceStatus` and `ProcessState` fields:
+==== 戻り値
+戻り値には、リクエストに含まれる各サービスディスクリプタのステータスが含まれます。
+最も重要な情報は `ServiceStatus` フィールドと `ProcessState` フィールドにあります。
 [source,javascript]
 ----
 {
@@ -505,17 +505,17 @@ The most important information is in the `ServiceStatus` and `ProcessState` fiel
   ]
 }
 ----
-<1> The service descriptor for the status being returned.
-<2> The last recorded status of the service.
-<3> The last recorded state of Linux process behind the service.
-It's possible for a process to be running, but is not being served, and the service cannot respond to requests.
-For example, when TigerGraph is starting up, GPE is in the "Warmup" state and cannot respond to requests, but the process is still running.
+<1> 返されるステータスのサービス説明。
+<2> 最後に記録されたサービスの状態。
+<3> サービスの背後にあるLinuxプロセスの最後に記録された状態。
+プロセスが動作していても、サービスが提供されておらず、サービスがリクエストに応答できないこともありえます。
+例えば、TigerGraphが起動しているとき、GPEは "Warmup" 状態であり、リクエストに応答できませんが、プロセスはまだ実行されています。
 
 
-==== Example
+==== 例
 [tabs]
 ====
-Request::
+リクエスト::
 +
 --
 [source.wrap,console]
@@ -523,7 +523,7 @@ Request::
 $ curl -X POST http://localhost:14240/informant/current-service-status -d '{ "ServiceDescriptors":  [{ "ServiceName": "gpe","Partition": 2, "Replica": 1}]}' | jq
 ----
 --
-Response::
+応答::
 +
 --
 [source,json]
@@ -560,44 +560,44 @@ Response::
 --
 ====
 
-=== Rebuild graph engine
+=== グラフエンジンの再構築
 
 `+GET /rebuildnow/{graph_name}+` or `+POST /rebuildnow/{graph_name}+`
 
-In TigerGraph, when new data is being loaded into the graph (such as new vertices or edges), data is first stored in memory before it is saved to disk permanently. TigerGraph runs a rebuild of the Graph Processing Engine (GPE) to commit the data in memory to disk every 30 seconds, but you can also call this endpoint to trigger a rebuild immediately.
+TigerGraphでは、新しいデータ(新しい頂点やエッジなど)がグラフに読み込まれると、データはまずメモリーに保存されてから、ディスクに永続的に保存されます。TigerGraphは、グラフ処理エンジン(Graph Processing Engine: GPE)の再構築を実行し、メモリー内のデータを30秒ごとにディスクにコミットしますが、このエンドポイントを呼び出して、直ちに再構築をトリガーすることも可能です。
 
-==== Parameters
+==== パラメーター
 
 [width="100%",cols="15%,10%,75%",options="header",]
 |===
-|Name |Required |Description
-|`+threadnum+` |No |Number of threads used to execute the rebuild. If
-not specified, the number specified in line 185 of the `+.tg.cfg+` file
-(`+"RebuildThreadNumber"+`) in the home directory of the server on which
-TigerGraph is running will be used; it is set to 3 by default. The
-maximum value for this parameter is the number of vCPUs per node in your
-distributed system. If you are running a single-node server, the maximum
-is the number of vCPUs on that node. You can run `+lscpu+` in the
-command line of your Linux server and look in the `+CPU(s)+` column to
-view the number of vCPUs.
+|名称 |必須 |説明
+|`+threadnum+` |いいえ |再構築を実行するために使用するスレッド数。
+指定しない場合、TigerGraphを実行しているサーバーのホームディレクトリー内の
+`+.tg.cfg+` file (`+"RebuildThreadNumber"+`)の185行目で指定された数が
+使用されます。デフォルトは3に設定されています。
+このパラメーターの最大値は、分散システムのノード当たりのvCPUの数です。
+シングルノードサーバーの場合、最大値はそのノード上のvCPUの数です。
+Linuxサーバーのコマンドラインで `+lscpu+` を実行し、
+c`+CPU(s)+` 列を調べることで、
+vCPUの数の確認ができます。
 
-|`+vertextype+` |No |Vertex type to perform the rebuild for. If not provided, the rebuild will be run for all the vertex types.
+|`+vertextype+` |いいえ |再構築を実行する頂点タイプ。指定しない場合、再構築はすべての頂点タイプに対して行なわれます。
 
-|`+segid+` |No |Segment ID of the segments to rebuild. If not provided, all segments will be rebuilt. In general, it is recommended not to provide this parameter and rebuild all segments.
+|`+segid+` |いいえ |再構築するセグメントのセグメントID。指定しない場合、すべてのセグメントが再構築されます。通常、このパラメーターは指定せずに、すべてのセグメントを再構築することが推奨されます。
 
-|`+path+` |No |Path to save the summary of the rebuild to. If not provided, the default path is `+/tmp/rebuildnow+`
+|`+path+` |いいえ |再構築のサマリーを保存するパス。指定しない場合のデフォルトのパスは `+/tmp/rebuildnow+` です。
 
-|`+force+` |No |Boolean value that indicates whether to perform rebuilds for segments for which there are no records of new data. Normally, a rebuild would skip such segments, but if `+force+` is set true, the
-segments will not be skipped.
+|`+force+` |いいえ |新しいデータのレコードがないセグメントに対して再構築を実行するかどうかを指示するブール値。通常、再構築ではこうしたセグメントをスキップしますが、 `+force+` がtrueに設定されていると、
+セグメントはスキップされません。
 |===
 
-==== Example
+==== 例
 
 [source,console]
 ----
 $ curl -X GET 'http://localhost:9000/rebuildnow/social'
 
-# JSON response
+# JSONの応答
 {
   "version": {
     "edition": "enterprise",
@@ -610,57 +610,57 @@ $ curl -X GET 'http://localhost:9000/rebuildnow/social'
   "code": "REST-0000"
 }
 
-# Example summary file
+# 概要ファイル例
 $ cat finished.summary.txt
 
 [SELECTED]	Segment id: 106, vertextype: 0, vertexsubtypeid: 0, vertexcount: 187732, edgecount: 563196, deletevertexcount: 0, postqueue_pos: 16344, transaction id: 16344, rebuild ts: 1573106412990
 [SKIPPED]	Segment id: 6, vertextype: 0, vertexsubtypeid: 0, vertexcount: 85732, edgecount: 3106, deletevertexcount: 0, postqueue_pos: 16344, transaction id: 16344, rebuild ts: 1573106412900
 ----
 
-=== Check deleted vertices
+=== 削除された頂点のチェック
 
 [.line-through]#`GET /deleted_vertex_check`#
 
-In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Storage Engine (GSE) might be out of sync on vertex deletion information. When this happens, some vertices might exist on one of the components, but not the other. Even though these errors are exceedingly rare, TigerGraph provides an endpoint that allows you to check the deleted vertices on GSE and GPE and see if they out of sync.
+まれなことですが、TigerGraphのグラフ処理エンジン(Graph Processing Engine: GPE)とグラフストレージエンジン(Graph Storage Engine: GSE)の頂点削除情報が同期されていない場合があります。これが発生すると、一部の頂点がコンポーネントの1つに存在するにも関わらず、他のコンポーネントには存在しないということが起こる可能性があります。こうしたエラーは非常にまれですが、TigerGraphでは、GSEおよびGPEで削除された頂点をチェックし、同期していない部分がないかどうかを確認できるエンドポイントを提供しています。
 
-The check passes if there are no discrepancies between the GSE and GPE in terms of deleted vertices. If there is a discrepancy, the check fails and the return result will contain the IDs of the deleted vertices that are not synced properly. If you are running TigerGraph on a distributed cluster, the check will be performed on each node of the cluster, and the endpoint will return a list containing the results of the check for every node.
+削除された頂点について、GSEとGPEの間に不一致がなければ、チェックは合格です。不一致がある場合、チェックは失敗となり、正しく同期されていなかった、削除された頂点のIDが結果として返されます。分散クラスターでTigerGraphを実行している場合、チェックはクラスターの各ノードで実行されます。エンドポイントはすべてのノードのチェック結果のリストを返します。
 
-==== Parameters
+==== パラメーター
 [width="100%",cols="15%,10%,75%",options="header",]
 |===
-|Name |Required |Description
-|`threadnum` |No |Integer that indicates the number of threads used to
-execute the deleted vertex check jobs. This parameter is optional and
-the default value is 6 if none is provided
+|名称 |必須 |説明
+|`threadnum` |いいえ |削除された頂点チェックジョブを実行するために
+使用するスレッド数を示す整数。このパラメーターはオプションです。
+指定されない場合のデフォルト値は6です。
 
-|`segid` |No |IDs of segments to perform the deleted vertex check for.
-If none is provided, the check will be performed on all segments.
+|`segid` |いいえ |削除された頂点チェックを実行するセグメントのID。
+指定されない場合、すべてのセグメントがチェックされます。
 
-|`vertextype` |No |Vertex types to perform the deleted vertex check for.
-If none is provided, the check will be performed on all vertex types.
+|`vertextype` |いいえ |削除された頂点チェックを行なう頂点タイプ。
+指定されない場合、チェックはすべての頂点タイプで実行されます。
 
-|`verbose` |No |Integer that indicates the level of detail in the return
-results. Here is a list of accepted values and their corresponding level
-of detail:`0` (default) : Only return whether the check passed and the
-list of unsynced vertex IDs`1`: In addition to the previous level, also
-return vertex count information `2`: In addition to the previous level,
-return vertex count information for every segment`4`: In addition to the
-previous level, also return the IDs of deleted vertices for every
-segment
+|`verbose` |いいえ |返される結果の詳細レベルを示す整数。
+受け入れ可能な値とそれに対応するレベルは次のとおりです。
+`0` (デフォルト) : チェックに合格したかどうかと、
+同期されていない頂点IDのリストを返します。 
+`1` : レベル0に加えて、頂点カウント情報も返します。
+`2` : レベル1に加えて、すべてのセグメントの頂点カウント情報を返します。 
+`4` : レベル2に加えて、すべてのセグメントの削除された頂点のIDを
+返します。
 
-|`log` |No |Integer that indicates the log level of the deleted vertex
-check. This log is not returned in the endpoint’s HTTP response, but is
-printed to the logs of the GPE component at
-`/tigergraph/log/gpe/log.INFO`:`0` (default): Report brief log for the
-check as a whole`1`: Report logs for each segment`2`: Report additional
-logs on the obtained deleted ID list
+|`log` |いいえ |削除された頂点チェックのログレベルを示す整数。
+このログはエンドポイントのHTTP応答では返されませんが、
+`/tigergraph/log/gpe/log.INFO` のGPEコンポーネントのログに出力されます。
+`0` (デフォルト): チェックの全体的な簡単なログをレポートします。 
+`1` : 各セグメントのログをレポートします。 `2` : 取得した削除済みID
+リストの追加のログをレポートします。
 |===
 
-==== Example:
+==== 例:
 
 [source,bash]
 ----
-# Passing check performed on a single-node database
+# シングルノードデータベースで実行された合格チェック
 $ curl -X GET "http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0" |jq .
 
 {
@@ -681,7 +681,7 @@ $ curl -X GET "http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0
   "code": "REST-0000"
 }
 
-# Failed check performed on a distributed cluster
+# 分散クラスターで実行された失敗チェック
 
 $ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0&vertextype=region' |jq .
 {
@@ -737,20 +737,20 @@ $ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0
 }
 ----
 
-== Authentication
+== 認証
 
-The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server. *These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
+このサブセクションのエンドポイントを使用すると、REST{pp}サーバーに対して行われたリクエストの認証トークンの作成、更新、削除ができます。**これらのエンドポイントは、RESTPPエンドポイントで xref:user-access:enabling-user-authentication.adoc[ユーザー認証が有効になっている]場合のみ存在します。**
 
-=== Request a token (`GET`)
+=== トークンのリクエスト (`GET`)
 
 `GET /requesttoken`
 
-If authentication is enabled on RESTPP endpoints, a token needs to be included in the request header for all requests sent to the RESTPP server. A user can generate a token using either
+RESTPPエンドポイントで認証が有効になっている場合、RESTPPサーバーに送信されるすべてのリクエストのリクエストヘッダーにトークンが含まれる必要があります。次のいずれかを使用してトークンを生成できます。
 
-* A secret, which is a random string generated in GSQL (see xref:user-access:managing-credentials.adoc[Managing User Privileges and Authentication])
-* Their username and password in their request header as well as specifying the graph
+* シークレット: GSQLで生成されたランダムな文字列(xref:user-access:managing-credentials.adoc[ユーザー権限と認証の管理]を参照)
+* リクエストヘッダーのユーザー名とパスワード、グラフの指定
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -766,33 +766,33 @@ curl -X GET "http://localhost:9000/requesttoken?secret=jiokmfqqfu2f95qs6ug85o89r
 curl --user example_username:example_password -X GET "localhost:9000/requesttoken?graph=example_graph"
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `secret`
-| Yes if `graph` is not supplied
-| User's secret to generate the token.
+| はい(`graph` が指定されていない場合)
+| トークンを生成するためのユーザーのシークレット。
 
 | `lifetime`
-| No
-| Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
+| いいえ
+| トークンの有効期間(秒)。デフォルト値は約260万(約1カ月)です。
 
 | `graph`
-| Yes if `secret` is not supplied
-| Name of the graph that the token will be valid for.
+| はい(`secret` が指定されていない場合)
+| トークンが有効になるグラフの名前。
 |===
 
-Users can use either `secret` or their username and password to generate a token. If the user does not supply a secret and chooses to use their username and password instead, then the parameter `graph` becomes required.
+`secret` またはユーザー名とパスワードのいずれかを使用してトークンを生成できます。シークレットを提供せず、ユーザー名とパスワードを使用することを選択した場合は、パラメーター `graph` が必須になります。
 
-=== Request a token (`POST`)
+=== トークンのリクエスト (`POST`)
 
 `POST /requesttoken`
 
-You may also use a `POST` request to generate your token. This allows you to avoid exposing your secret in the query string.
+`POST` リクエストを使ってトークンを生成することもできます。これによって、クエリー文字列でシークレットが公開されてしまうことを回避できます。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -807,43 +807,43 @@ curl -d <path_to_secret> -X POST \
 }
 ----
 
-Replace `path_to_secret` with the path to the file containing your secret. The file should only include a single line, which is your secret.
+`path_to_secret` を、シークレットを含むファイルへのパスに置き換えてください。ファイルには、1行のシークレットのみを含める必要があります。
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `lifetime`
-| No
-| Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
+| いいえ
+| トークンの有効期間(秒)。デフォルト値は約260万(約1カ月)です。
 |===
 
-=== Refresh a token
+=== トークンのリフレッシュ
 
 `PUT /requesttoken`
 
-This endpoint takes a token and its associated secret and refreshes the lifetime of the token. The token itself remains unchanged.
+このエンドポイントは、トークンとそれに関するシークレットを取得し、トークンの有効期間をリフレッシュします。トークンそのものは変更されません。
 
-*Parameters:*
+*パラメーター:*
 
 |===
-| *Name* | Required | Description
+| **名称** | 必須 | 説明
 
 | `token`
-| Yes
-| Token to refresh.
+| はい
+| リフレッシュするトークン。
 
 | `secret`
-| Yes
-| User's secret used to generate the token.
+| はい
+| トークンを生成するために使用されるユーザーのシークレット。
 
 | `lifetime`
-| Yes
-| Period of time for which the token is valid measured in seconds.
+| はい
+| トークンの有効期間(秒)。
 |===
 
-==== Sample request
+==== リクエストサンプル
 
 [source,bash]
 ----
@@ -859,54 +859,54 @@ curl -X PUT "http://localhost:9000/requesttoken?lifetime=15&secret=ksdoilrvpl0r0
 
 [CAUTION]
 ====
-*Known bug*: The output shows the lifetime instead of the expiration time.
+**既知のバグ**: 出力には、有効期限ではなく有効期間が表示されます。
 ====
 
-=== Delete a token
+=== トークンの削除
 
 `DELETE /requesttoken`
 
-This endpoint takes a token and its associated secret, and deletes the token.
+このエンドポイントは、トークンとそれに関するシークレットを取得し、トークンを削除します。
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `token`
-| Yes
-| Token to delete.
+| はい
+| 削除するトークン。
 
 | `secret`
-| Yes
-| User's secret used to generate the token.
+| はい
+| トークンを生成するために使用されるユーザーのシークレット。
 |===
 
-== Loading jobs
+== 読み込みジョブ
 
-=== Run a Loading Job
+=== 読み込みジョブの実行
 
 `+POST /ddl/{graph_name}+`
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:3.2@gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+このエンドポイントは、データをグラフに読み込むためのものです。データをHTTPリクエストペイロードとして送信し、DDLローダーによってグラフにロードします。データペイロードは、汎用CSVまたはJSONとしてフォーマット可能です。これについての詳細は、xref:3.2@gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL言語リファレンス Part 1 - グラフの定義とデータのロード]を参照してください。
 
-If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename varibale at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.  To provide data for a filename variable, put the data in the request body and use the `filename` parameter (explained in the parameter table below) to match the variable name defined in the loading job.
+読み込みジョブが複数のファイルを参照する場合、これを完了するには、複数のHTTPリクエストが必要です。これは、ファイル名変数のデータを、一度に1つしか提供できないためです。読み込みジョブは、リクエストでデータを提供していないファイル名変数を参照する `LOAD` ステートメントをスキップします。ファイル名変数のデータを提供するには、データをリクエスト本文に入れ、 `filename` パラメーター(以下のパラメーター表で説明しています)を使用して、読み込みジョブで定義された変数名と一致させてください。
 
-==== Request body:
+==== リクエスト本文:
 
-The request body is the data to be loaded (either in CSV or JSON format).
+リクエストの本文は、読み込まれるデータです(CSV形式またはJSON形式)。
 
-Curl allows you to read the data from an input file by using the @ symbol:
+Curlによって、@記号を使用して入力ファイルからデータを読み取ることができます。
 
 `curl -X POST --data-binary @./company.csv "http://…"`
 
-==== Sample request:
+==== リクエストサンプル:
 
-In this example, the loading job is dependent on three filename variables (`f1` and `f3`) and one filepath string. Therefore, three HTTP requests are needed to complete the loading job.
+この例では、読み込みジョブは3つのファイル名変数( `f1` と `f3` )と1つのファイルパス文字列に依存しています。そのため、読み込みジョブを完了するには、3つのHTTP要求が必要です。
 
 [source,bash]
 ----
-# Loading job
+# ジョブの読み込み
 CREATE LOADING JOB load_data for GRAPH poc_graph {
 
     DEFINE FILENAME f1;
@@ -918,7 +918,7 @@ CREATE LOADING JOB load_data for GRAPH poc_graph {
     LOAD f3 to EDGE work_at VALUES ($0, $1, $3, $4, $5);
 }
 
-# Provide data for for the second LOAD statement
+# 2番目のLOADステートメントのためのデータを供給
 curl -X POST --data-binary @./another_company.csv \
 "http://localhost:9000/ddl/poc_graph?tag=load_data&filename=__GSQL_FILENAME_0__" | jq
 
@@ -960,95 +960,95 @@ curl -X POST --data-binary @./another_company.csv \
   "code": "REST-0000"
 }
 
-# Provide data for filename f1 for the first LOAD statement
+# 1番目のLOADステートメントのためのファイル名1のデータを供給
 curl -X POST --data-binary @./person.csv \
 "http://localhost:9000/ddl/poc_graph?tag=load_data&filename=f1"
 
-# Provide data for filename f3 for the third LOAD statement
+# 3番目のLOADステートメントのためのファイル名3のデータを供給
 curl -X POST --data-binary @./work_at.csv \
 "http://localhost:9000/ddl/poc_graph?tag=load_data&filename=f3"
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `tag`
-| Yes
-| Loading job name defined in your DDL loading job
+| はい
+| DDL読み込みジョブで定義された読み込みジョブ名。
 
 | `filename`
-| Yes
-| File variable name or file path for the file containing the data
+| はい
+| データを含むファイルのファイル変数名またはファイルパス。
 
 | `sep`
-| No
-| Separator of CSV data. If your data is JSON, you do not need to specify this parameter. The default separator is a comma``","``
+| いいえ
+| CSVデータのセパレーター。データがJSONの場合、このパラメーターを指定する必要はありません。デフォルトのセパレーターはコンマ ``","`` です。
 
 | `eol`
-| No
-| End-of-line character. Only one or two characters are allowed, except for the special case "\r\n". The default value is `"\n"`
+| いいえ
+| 行末文字。1文字または2文字のみが許可されます。(特殊なケース、"\r\n"を除きます。)デフォルト値は `"\n"` です。
 
 | `ack`
-| No
-| `"all"`: request will return after all GPE instances have acknowledged the `POST` request. `"none"`: request will return immediately after RESTPP processed the `POST` request.
+| いいえ
+| `"all"` : すべてのGPEインスタンスが `POST` リクエストを認識した後にリクエストが返されます。`" none "` : RESTPPが `POST` リクエストを処理した直後にリクエストが返されます。
 
 | `timeout`
-| No
-| Timeout in seconds. If set to 0, use system-wide endpoint timeout setting.
+| いいえ
+| タイムアウトの秒数。0が設定されている場合は、システム全体のエンドポイントタイムアウト設定を使用します。
 
 | `concise`
-| No
-| Boolean value that indicates whether to return concise results of the data loading request. Concise results will only include the number of vertices and edges added or deleted, and will omit information such as the number of valid and invalid lines in the default response.
+| いいえ
+| データ読み込みリクエストの簡潔な結果を返すかどうかを示すブール値。簡潔な結果には、追加または削除された頂点とエッジの数のみが含まれます。デフォルトの応答にある有効な行と無効な行の数などの情報は通知されません。
 |===
 
-If there are special characters in your parameter values, the special characters should use https://www.w3schools.com/tags/ref_urlencode.asp[URL encoding]. To avoid confusion about whether you should you one or two backslashes, we do not support backslash escapes for the `eol` or `sep` parameter.
+パラメーター値に特殊文字が含まれている場合、特殊文字は https://www.w3schools.com/tags/ref_urlencode.asp[URL エンコード]を使用する必要があります。バックスラッシュを1つ使うか2つ使うかについての混乱を避けるために、 `eol` または `sep` パラメーターのバックスラッシュエスケープはサポートされていません。
 
-The maximum size of data you can upload via this endpoint is controlled by the xref:API:intro.adoc#_request_body_size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
+このエンドポイントによってアップロードできるデータの最大サイズは、xref:API:intro.adoc#_request_body_size[ `Nginx.ClientMaxBodySize` ]設定パラメーター(デフォルトは200MB)によって制御されます。
 
-== Graphs
+== グラフ
 
-=== Run built-in functions on graph
+=== グラフの組み込み関数の実行
 
 `+POST /builtins/{graph_name}+`
 
-This endpoint runs a set of built-in functions and returns relevant statistics about a graph.
+このエンドポイントは、組み込み関数を実行し、グラフに関連する統計値を返します。
 
-==== Request body:
+==== リクエスト本文:
 
-This endpoint expects a data payload in the request body that specifies which function to run on the graph. Depending on the function being run, different fields may also be expected in the request body.
+このエンドポイントは、グラフ上で実行される関数を指定するリクエスト本文のデータペイロードを想定しています。実行されている関数によって、リクエスト本文内で異なるフィールドが必要となる場合もあります。
 
-Here is a list of functions supported by this endpoint and their corresponding data payload format.
+このエンドポイントでサポートされている関数とそれに対応するデータペイロード形式を次に示します。
 
 * `stat_vertex_attr`
- ** Returns the minimum, maximum, and average values of the given vertex type's `int`, `uint`, `float` and `double` attributes, and the count of `true` and `false` of a boolean attribute.
- ** Data payload fields:
-  *** `"function": "stat_vertex_attr"`: This specifies that the function to run is``stat_vertex_attr``.
-  *** `"type"`: The vertex type whose attribute values to report on. Required field. It also accepts the value `*` (wild card), in which case, all vertex types are included.
+ ** 指定された頂点タイプの `int` 、 `uint` 、 `float` 、 `double` 属性の最小値、最大値、平均値、およびブール属性の `true` と `false` のカウントを返します。
+ ** データペイロードのフィールド:
+  *** `"function": "stat_vertex_attr"`: これは、実行する関数が ``stat_vertex_attr`` であることを指定します。
+  *** `"type"`: レポートする属性値を持つ頂点タイプ。必須フィールド。値 `*` (ワイルドカード)も受け付けます。この場合、すべての頂点タイプが含まれます。
 * `stat_edge_attr`
- ** Returns the minimum, maximum, and average values of the given edge type's `int`, `uint`, `float` and `double` attributes, and the count of `true` and `false` of a boolean attribute.
- ** Data payload fields:
+ ** 指定されたエッジタイプの `int` 、 `uint` 、 `float` 、 `double` 属性の最小値、最大値、平均値、およびブール属性の `true` と `false` のカウントを返します。
+ ** データペイロードのフィールド:
   *** `"function": stat_edge_attr`
-  *** `"type"`: The edge type whose attribute values to report on. Required field. It also accepts the value `*` , in which case all edge types are included.
-  *** `"from_type"`: Optional. The source vertex type of the edges to report on.
-  *** `"to_type"`: Optional. The target vertex type of the edges to report on.
+  *** `"type"`: レポートする属性値を持つエッジタイプ。必須フィールド。値 `*` も受け付けます。この場合すべてのエッジタイプが含まれます。
+  *** `"from_type"`: オプション。レポートするエッジのソース頂点タイプ。
+  *** `"to_type"`: オプション。レポートするエッジのターゲット頂点タイプ。
 * `stat_vertex_number`
- ** Returns the number of vertices of the given vertex type.
- ** Data payload fields:
+ ** 指定された頂点タイプの頂点の数を返します。
+ ** データペイロードのフィールド:
   *** `"function"`:  `"stat_vertex_number"`
-  *** `"type"`: Required field. The vertex type of the vertices to count. It also accepts the value `*` (wild card), in which case, all vertex types are included.
+  *** `"type"`: 必須フィールド。カウントする頂点の頂点タイプ。値 `*` (ワイルドカード)も受け付けます。この場合、すべての頂点タイプが含まれます。
 * `stat_edge_number`
- ** Returns the number of edges of the given edge type
- ** Data payload fields:
+ ** 指定されたエッジタイプのエッジの数を返します
+ ** データペイロードのフィールド:
   *** `"function": "stat_edge_number"`
-  *** `"type"`: Required field. The edge type of the edges to count. It also accepts the value `*` , in which case all edge types are included.
-  *** `"from_type"`: Optional. The source vertex type of the edges to report on.
-  *** `"to_type"`: Optional. The target vertex type of the edges to report on.
+  *** `"type"`: 必須フィールド。カウントするエッジのエッジタイプ。値 `*` も受け付けます。この場合すべてのエッジタイプが含まれます。
+  *** `"from_type"`: オプション。レポートするエッジのソース頂点タイプ。
+  *** `"to_type"`: オプション。レポートするエッジのターゲット頂点タイプ。
 
-==== Sample requests:
+==== リクエストサンプル:
 
-Below is an example request running `stat_vertex_attr` on `socialNet` and its output. The vertex type `"Person"` has a `uint` attribute `"age"`.
+以下は、 `socialNet` での `stat_vertex_attr` の実行リクエストの例とその出力です。頂点タイプ `"Person"` には `uint` 属性 `"age"` があります。
 
 [source,bash]
 ----
@@ -1078,7 +1078,7 @@ curl -X POST "http://localhost:9000/builtins/socialNet" \
 }
 ----
 
-Here is an example request running `stat_edge_attr` on `socialNet` and its output. The edge type `"Liked"` has a float attribute `"strength"`.
+これは、 `socialNet` での `stat_edge_attr` の実行リクエストの例とその出力です。エッジタイプ `"Liked"` は float属性 `"strength"` を持ちます。
 
 [source,bash]
 ----
@@ -1107,7 +1107,7 @@ curl -X POST "http://localhost:9000/builtins/socialNet" \
 }
 ----
 
-Here is an example request running `stat_vertex_number` and its output.
+これは、 `stat_vertex_number` の実行リクエストの例とその出力です。
 
 [source,bash]
 ----
@@ -1158,17 +1158,17 @@ curl -X POST "http://localhost:9000/builtins/socialNet" \
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
-No parameters.
+パラメーターはありません。
 
-=== Show graph schema metadata
+=== グラフデータスキーマのメタデータの表示
 
 `GET /gsqlserver/gsql/schema`
 
-Returns schema details about a vertex type, an edge type, or the entire graph schema. This is a GSQL Server request sent to port 14240, and authentication credentials need to be provided.
+頂点タイプ、エッジタイプ、またはグラフスキーマ全体に関するスキーマの詳細を返します。これはポート14240に送信されるGSQLサーバー要求であり、認証資格情報を供給する必要があります。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -1220,27 +1220,27 @@ $ curl -u tigergraph:tigergraph \
 }
 ----
 
-_*Vertex schema object*_ *fields:*
+__**頂点スキーマオブジェクトの**__ **フィールド:**
 
-* *`Name`*: the vertex type name, same as the input parameter "type"
-* *`PrimaryId`*: details about the primary id
-* *`Attributes`*: details about each attribute, listed in order
-* *`Config`*: details about global properties of the vertex type
+* *`Name`*: 頂点タイプ名。入力パラメーター"type"と:同じです。
+* *`PrimaryId`*: プライマリーIDに関する詳細。
+* *`Attributes`*: 各属性の詳細。順番にリストされます。
+* *`Config`*: 頂点タイプのグローバルプロパティーに関する詳細。
 
-_*Edge schema object*_ *fields:*
+__**エッジスキーマオブジェクトの**__ **フィールド:**
 
-* *`Name`*: the edge type name, same as the input parameter "type"
-* *`FromVertexTypeName`*: source vertex type name
-* *`ToVertexTypeName`*: target vertex type name
-* *`Attributes`*: details about each attribute, listed in order
-* *`IsDirected`*: whether the edge is directed
-* *`Config`*: additional details about global properties of the edge type
+* *`Name`*: エッジタイプ名。入力パラメーター"type"と:同じです。
+* *`FromVertexTypeName`*: ソース頂点タイプ名。
+* *`ToVertexTypeName`*: ターゲット頂点タイプ名。
+* *`Attributes`*: 各属性の詳細。順番にリストされます。
+* *`IsDirected`*: エッジが方向付けられているか。
+* *`Config`*: エッジタイプのグローバルプロパティーに関するさらなる詳細。
 
-_*Graph schema object*_ *fields:*
+__**グラフスキーマオブジェクトの**__ **フィールド:**
 
-* *`GraphName`*: the graph name, same as the input parameter "graph"
-* *`VertexTypes`*: an array of _vertex schema objects_. Each vertex schema object is exactly the JSON output if that specific vertex type had been specified.
-* *`EdgeTypes`*: an array of _edge schema objects_. Each edge schema object is exactly the JSON output if that specific edge type had been specified.
+* *`GraphName`*: グラフ名。入力パラメーター"graph"と:同じです。
+* *`VertexTypes`*: __頂点スキーマオブジェクト__ の配列。特定の頂点タイプが指定されている場合、それぞれの頂点スキーマオブジェクトはJSON出力になります。
+* *`EdgeTypes`*: __エッジスキーマオブジェクト__ の配列。特定のエッジタイプが指定されている場合、それぞれのエッジスキーマオブジェクトはJSON出力になります。
 
 [source,bash]
 ----
@@ -1275,33 +1275,33 @@ _*Graph schema object*_ *fields:*
 }
 ----
 
-==== Parameters:
+====パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `graph`
-| Yes
-| The name of the graph whose schema to retrieve.
+| はい
+| スキーマを取得するグラフ名。
 
 | `type`
-| No
-| The vertex or edge type whose details to retrieve. If not provided, the endpoint will provide a _graph schema object_ containing the schema details of the entire graph.
+| いいえ
+| 詳細を取得する頂点またはエッジタイプ。指定しない場合、エンドポイントは、グラフ全体のスキーマの詳細を含む __グラフスキーマオブジェクト__ を返します。
 |===
 
-=== Upsert data to graph
+=== データのグラフへのアップサート
 
 `+POST /graph/{graph_name}+`
 
-This endpoint upserts vertices and/or edges into a graph. To upsert means that if a vertex or edge does not exist, it is inserted, and if it does exist, it is updated.
+このエンドポイントは、頂点および/またはエッジをグラフにアップサートします。アップサートとは、頂点またはエッジが存在しない場合に挿入を行ない、存在する場合は更新することを意味します。
 
-==== Atomic upsert transaction
+==== アトミックアップサートトランザクション
 
-By default, the `+POST /graph/{graph_name}+` endpoint is not atomic. If something goes wrong during the process of the request,  the request data can be partially consumed by the database.
+`+POST /graph/{graph_name}+` エンドポイントは、デフォルトではアトミックではありません。リクエスト処理中に問題が発生した場合、リクエストデータはデータベースによって部分的にコンシュームされる可能性があります。
 
-You can append a query string parameter `atomic_post` to the URL of the request and set its value to true to make the request an atomic transaction, which means that updates to the database contained in the request are all-or-nothing. Either all changes are successful, or none is successful.
+クエリ文字列パラメーター `atomic_post` をリクエストのURLに加え、その値をtrueに設定することで、リクエストをアトミックトランザクションにすることができます。これは、リクエストに含まれるデータベースへの更新が「オール・オア・ナッシング」になることを意味します。つまり、すべての変更が成功するか、どれも成功しないということです。つまり、すべての変更が成功するか、どれも成功しないということです。
 
-For example, suppose we have the following request to upsert two vertices:
+たとえば、次の2つの頂点をアップサートするリクエストがあるとします。
 
 [source,text]
 ----
@@ -1330,52 +1330,52 @@ And the content of `vertices.json` is:
 }
 ----
 
-With the request above, if the vertex `Kelly` fails to be upserted due to a machine failure, it is still possible that the vertex `Velma` is upserted to the database.
+上記のリクエストにおいて、マシンの障害によって頂点 `Kelly` のアップサートに失敗しているにもかかわらず、頂点 `Velma` はデータベースにアップサートされている可能性があります。
 
-If you add the `atomic_post` parameter to the request URL and set its value to true, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
+`atomic_post` パラメーターをリクエストURLに追加し、その値をtrueに設定すると、リクエストはアトミックになり、リクエスト本文のいずれかの部分がアップサートに失敗した場合には、何もアップサートされなくなります。
 
 [source,bash]
 ----
-# This is an atomic request
+# これはアトミックリクエストです
 curl --data-binary @vertices.json http://localhost:9000/graph/social?automic_post=true
 ----
 
-==== Parameters
+==== パラメーター
 [width="100%",cols="23%,9%,68%",options="header",]
 |===
-|Name |Required |Description
-|`ack` |No |The value of this parameter can either be `"all"` or
-`"none"`. `"all"`: request will return after all GPE instances have
-acknowledged the POST `"none"`: request will return immediately after
-RESTPP processed the POST.
-Default value is false.
+|名称 |必須 |説明
+|`ack` |いいえ |このパラメーターの値は、 `"all"` または `"none"` のいずれかです。
+`"all"` : リクエストは、すべてのGPEインスタンスがPOST を認識後、
+結果を返します。
+`"none"` : リクエストは、RESTPPがPOSTを処理した直後に結果を返します。
+デフォルト値はfalseです。
 
-|`new_vertex_only` |No |If `new_vertex_only` is set to true, the request will only insert new
-vertices and not update existing ones.
-Default value is false.
+|`new_vertex_only` |いいえ | `new_vertex_only` がtrueの場合、リクエストは新しい頂点
+を挿入しますが、既存の頂点の更新は行ないません。
+デフォルト値はfalseです。
 
-|`vertex_must_exist` |No |If `vertex_must_exist` true, the request will only insert an *edge* if both the `FROM` and
-`TO` vertices of the edge already exist.
-If the value is false, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
-Note that this parameter does not affect vertices.
-Default value is false.
+|`vertex_must_exist` |いいえ | `vertex_must_exist` がtrueの場合、エッジの `FROM` 頂点と `TO` 頂点の両方がすでに存在する場合に、
+リクエストは *エッジ* を挿入します。
+値がfalseの場合、リクエストは常に新しいエッジを挿入し、属性のデフォルト値で必要な頂点を作ります。
+このパラメーターは頂点に影響を与えないことにご注意ください。
+デフォルト値はfalseです。
 
-|`update_vertex_only`|No |If `update_vertex_only` is set to true, the request will only update existing vertices and not insert new vertices.
+|`update_vertex_only` |いいえ | `update_vertex_only` がtrueの場合、リクエストは既存の頂点を更新しますが、新しい頂点の挿入は行ないません。
 
-|`atomic_post`|No |If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
-Default value is false.|
+|`atomic_post` |いいえ | `atomic_post` がtrueの場合、リクエストはアトミックトランザクションになります。これによって、すべての更新が成功するか、すべての更新が成功しないかのどちらかになります。
+デフォルト値はfalseです。|
 |===
 
-The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted.
-The JSON code can be stored in a text file or specified directly in a command line.
-There is a maximum size for a `POST` data payload (see the xref:API:intro.adoc#_size_and_time_limits[*Size Limits*] section).
-The JSON format for describing a vertex set or edge set is summarized below.
+返されるのは、受け付けられた頂点とエッジの数です。APIは、アップサートされる頂点とエッジの記述にJSON形式を使用します。
+JSONコードは、テキストファイルに保存することも、コマンドラインで直接指定することもできます。
+`POST` データペイロードには最大サイズがあります。これについては、xref:API:intro.adoc#_size_and_time_limits[**サイズ制限**]セクションを参照してください。
+頂点セットまたはエッジセットを記述するためのJSON形式については、以下をご覧ください。
 
-==== Request body
+==== リクエスト本文
 
-The payload data should be in JSON according to the schema shown below:
+ペイロードデータは、以下に示すスキーマに従ってJSON形式で記述される必要があります。
 
-.Request body schema
+.リクエスト本文スキーマ
 ====
 [source,bash]
 ----
@@ -1408,16 +1408,16 @@ The payload data should be in JSON according to the schema shown below:
     }
 }
 ----
-The fields in angle brackets (`<>`) are placeholder names or values, to be replaced with actual values.
-The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a list of items.
-The keys which are not in angle brackets are exact texts that must be used as they are.
-The nested hierarchy means that vertices are grouped by type.
-Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
+山かっこ(`<>`)内のフィールドは、実際の値に置き換えるプレースホルダー名または値です。
+`<Vertex_type>` などの山かっこ内のキーを繰り返して、アイテムのリストを作成することができます。
+山かっこで囲まれていないキーは、そのまま使用する必要のあるテキストです。
+ネストされた階層は、頂点がタイプごとにグループ化されていることを意味しています。
+一方、エッジは、最初にソース頂点タイプ、次に頂点ID、その次にエッジタイプによってグループ化されます。
 ====
 
-The first example below shows two `User` vertices having an attribute called `age`:
+以下に示す最初の例は、`age` という属性を持つ2つの `User` 頂点を示しています。
 
-.Upsert Example Data 1: Two User vertices
+.アップサートのデータ例1: 2つのユーザー頂点
 [source,json]
 ----
 {
@@ -1438,12 +1438,12 @@ The first example below shows two `User` vertices having an attribute called `ag
 }
 ----
 
-The second example starts with one `User` vertex.
-Since `id6` contains no attributes, it will remain the same it if already exists.
-If it doesn't yet exist, the request will create a vertex with ID `id6` with default attribute values.
-Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Liked_By` edge from `id6` to `id1`.
+次の例は、1つの頂点 `User` から始まります。
+`Id6` には属性が含まれていないため、すでに存在している場合は、変わりません。
+まだ存在していない場合、リクエストはデフォルトの属性値でID `id6` の頂点を作成します。
+次に、`id1` から `id6` への `Liked` エッジと、`id6` から `id1` への `Liked_By` エッジの2つが作成されます。
 
-.Upsert Example Data 2:add_id6.json
+.アップサートのデータ例2: add_id6.json
 [source,json]
 ----
 {
@@ -1482,9 +1482,9 @@ Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Like
 }
 ----
 
-Follow the instructions in the Introduction section to xref:API:intro.adoc#_formatting_data_in_json[format advanced data types].
+「はじめに」セクションの指示に従って、xref:API:intro.adoc#_formatting_data_in_json[高度なデータタイプのフォーマット]を行ないます。
 
-For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
+たとえば、次のペイロードは、 `LIST` タイプの属性 `coordinates` と `MAP` タイプの属性 `measurements` を持つ2つの `User` 頂点をアップサートするために使用されます。
 
 [source,bash]
 ----
@@ -1518,72 +1518,72 @@ For example, the following payload is used to upsert two `User` vertices with an
 }
 ----
 
-==== Operation codes
+==== オペレーションコード
 
-Each attribute value may be accompanied by an operation (op) code, which provides very sophisticated schemes for data update or insertion:
+属性値には、データの更新または挿入を行なうための非常に高度なスキームを指示する、オペレーション(op)コードが付随しているものがあります。
 
 |===
-| Type | op | Meaning
+| タイプ | op | 意味
 
 | 1
-| `"ignore_if_exists"` or `"~"`
-| If the vertex/edge does not exist, use the payload value to initialize the attribute; but if the vertex/edge already exists, do not change this attribute.
+| `"ignore_if_exists"` または `"~"`
+| 頂点/エッジが存在しない場合は、ペイロード値を使用して属性を初期化します。ただし、頂点/エッジがすでに存在する場合は、属性を変更しません。
 
 | 2
-| `"add"` or `"+"`
-| Add the payload value to the existing value.
+| `"add"` または `"+"`
+| ペイロード値を既存の値に加えます。
 
 | 3
-| `"and"` or `"&"`
-| Update to the logical AND of the payload value and the existing value.
+| `"and"` または `"&"`
+| ペイロード値と既存の値の論理積へと更新します。
 
 | 4
-| `"or"` or `"\|"`
-| Update to the logical OR of the payload value and the existing value.
+| `"or"` または `"\|"`
+| ペイロード値と既存の値の論理和へと更新します。
 
 | 5
-| `"max"` or `">"`
-| Update to the higher value between the payload value and the existing value.
+| `"max"` または `">"`
+| ペイロード値と既存の値のうち、より高い値へと更新します。
 
 | 6
-| `"min"` or `"<"`
-| Update to the lower value between the payload value and the existing value.
+| `"min"` または `"<"`
+| ペイロード値と既存の値のうち、より低い値へと更新します。
 |===
 
-If an attribute is not given in the payload, the attribute stays unchanged if the vertex/edge already exists, or if the vertex/edge does not exist, a new vertex/edge is created and assigned the default value for that data type. The default value is 0 for `int/uint`, 0.0 for `float/double`, and `""`(empty string) for string.
+ペイロードに属性が指定されていない場合、頂点/エッジがすでに存在していれば、属性は変更されません。頂点/エッジが存在していなければ、新しい頂点/エッジが作成され、そのデータ型のデフォルト値が入ります。デフォルト値は、 `int/uint` の場合は0、 `float/double` の場合は0.0、stringの場合は `""`(空の文字列)です。
 
-==== Invalid data types cause the request to be rejected
+==== 無効なデータ型の場合、リクエストは拒否されます。
 
-The RESTPP server validates the request before updating the values. The following schema violations will cause the entire request to fail and no change will be made to a graph:
+RESTPPサーバーは、値を更新する前にリクエストを検証します。以下はスキーマ違反の例です。こうした場合、リクエスト全体が失敗し、グラフは変更されません。
 
-* For vertex upsert
- ** Invalid vertex type
- ** Invalid attribute data type
-* For edge upsert:
- ** Invalid source vertex type
- ** Invalid edge type
- ** Invalid target vertex type
- ** Invalid attribute data type.
+* 頂点のアップサート
+ ** 無効な頂点タイプ
+ ** 無効な属性データタイプ
+* エッジのアップサート
+ ** 無効なソース頂点タイプ
+ ** 無効なエッジタイプ
+ ** 無効なターゲット頂点タイプ
+ ** 無効な属性データタイプ
 
-If an invalid attribute name is given, it is ignored.
+無効な属性名が指定された場合、無視されます。
 
-==== Output response
+==== 応答の出力
 
-The response is the number of vertices and edges that were accepted. Additionally, if `new_vertex_only` is true, the response will include two more fields:
+返されるのは、受け付けられた頂点とエッジの数です。また、 `new_vertex_only` がtrueの場合、応答にはさらに2つのフィールドが含まれます。
 
-* `skipped_vertices`: the number of vertices in the input data which already existed in the graph
-* `vertices_already_exist`: the id and type of the input vertices which were skipped
+* `skipped_vertices` : グラフにすでに存在する入力データの頂点の数。
+* `vertices_already_exist` : スキップされた入力頂点のIDとタイプ。
 
-If `vertex_must_exist` is true, the response will include two more fields:
+`vertex_must_exist` がtrueの場合、応答にはさらに2つのフィールドが含まれます。
 
-* `skipped_edges`: the number of edges in the input data rejected because of missing endpoint vertices
-* `miss_vertices`: the id and type of the endpoint vertices which were missing
+* `skipped_edges` : エンドポイントの頂点が欠落していることが原因で拒否された入力データのエッジの数。
+* `miss_vertices` : 欠落していたエンドポイント頂点のIDとタイプ。
 
-The example file `add_id6.json` (shown in the *Request Body* section) upserts one `User` __vertex with `id = "id6"`, one `Liked` __edge, and one `Liked_By` __edge. The `Liked` __edge is from `"id1` " to `"id6"`; the `Liked_By` __edge is from `"id6"` to _``"id1"``_.
+サンプルファイル `add_id6.json` (**リクエスト本文** セクションをご覧ください)では、1つの `User` 頂点を `id = "id6"` でアップサートします。また、1つの `Liked` エッジを `"id1"` から `"id6"` へ 、 `Liked_By` エッジを `"id6"` から `"id1"` へアップサートします。
 
-==== Example
+==== 例
 
-The following example submits an upsert request by using the payload data stored in `add_id6.json`.
+次の例では、`add_id6.json` に保存されているペイロードデータを使ってアップサートリクエストを送信します。
 
 [source,bash]
 ----
@@ -1593,8 +1593,8 @@ $ curl -X POST --data-binary @add_id6.json \
 {"accepted_vertices":1,"accepted_edges":2}
 ----
 
-If we set the value of `vertex_must_exist` parameter to `true`, the endpoint will only insert edges whose endpoint vertices both exist. This includes the vertices being inserted in the same request.
-Therefore, inserting the content of `add_id6.json` to an empty graph would cause the edges to be rejected:
+`Vertex_must_exist` パラメーターの値を `true` にすると、エンドポイントは、エンドポイントの頂点が存在するエッジのみを挿入します。これには、同じリクエストに挿入されている頂点が含まれます。
+したがって、 `add_id6.json` の内容を空のグラフに挿入すると、エッジは拒否されます。
 
 [source,bash]
 ----
@@ -1626,24 +1626,24 @@ $ curl -X POST --data-binary @add_id6.json \
 }
 ----
 
-== Vertices
+== 頂点
 
 [NOTE]
 ====
-To support multiple graphs within one system, the graph data REST endpoint URLs include an optional graph name.
+1つのシステム内の複数のグラフをサポートするために、グラフデータのRESTエンドポイントURLにはオプションのグラフ名が含まれています。
 ====
 
-=== Insert vertices
+=== 頂点の挿入
 
-To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
+頂点またはエッジを挿入するには、xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[データのグラフへのアップサート]エンドポイントを使用します
 
-=== List vertices
+=== 頂点のリスト化
 
 `+GET /graph/{graph_name}/vertices/{vertex_type}+`
 
-This endpoint returns all vertices having the type _`vertex_type`_ in a graph. __
+このエンドポイントは、グラフ内のタイプ __`vertex_type`__ を持つすべての頂点を返します。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,javascript]
 ----
@@ -1672,43 +1672,43 @@ curl -X GET "http://localhost:9000/graph/socialNet/vertices/User"
 }
 ----
 
-==== Parameters
+==== パラメーター
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `count_only`
-| No
-| Takes a boolean value. If the value is true, the `results` field will only contain the count of how many vertices were selected. Default is `false`.
+| いいえ
+| ブール値を取ります。値がtrueの場合、`results` フィールドにはいくつの頂点が選択されたかのカウントのみが含まれます。デフォルトは `false` です。
 
 | `select`
-| No
-| Attributes of the selected vertices to return. The parameter takes a list, which is a string of comma-separated values, and will only return the attributes that are provided.
+| いいえ
+| 返すように選択された頂点の属性。パラメーターは、コンマで区切られた値の文字列のリストを受け取り、指定された属性のみを返します。
 
 | `filter`
-| No
-| Conditions used to filter the returned vertices. The parameter takes a list of conditions, which is a string of comma-separated values. If any filter conditions are provided, the endpoint will only return the vertices that satisfy the conditions. Six comparison operators are supported for this parameter: `=`, `!=`, `>`, `>=`, `<` and `+<=+`. If the value on the right side of an operator is a string literal, it should be enclosed in double-quotes.
+| いいえ
+| 返された頂点をフィルタリングするために使用する条件。このパラメーターは、条件のリスト(コンマで区切られた値の文字列)を取ります。フィルタリング条件が指定されている場合、エンドポイントは条件を満たす頂点のみを返します。このパラメーターでは、 `=` 、 `!=` 、 `>` 、 `>=` 、 `<` 、 `+<=+` の6つの比較演算子がサポートされています。演算子の右側の値が文字列リテラルの場合は、二重引用符で囲む必要があります。
 
 | `limit`
-| No
-| Integer value that specifies the total number of vertices to return
+| いいえ
+| 返すエッジの合計数の最大値を指定する整数値。
 
 | `sort`
-| No
-| Attributes to sort the results by. The parameter takes a list, which is a string of comma-separated values, and will sort the returned vertices based on the attributes provided in the list in order. Add "-" in front of the attribute to sort in descending order.
+| いいえ
+| 結果を並べ替えるために使用する属性。パラメーターは、コンマで区切られた値の文字列のリストを受け取り、リストで指定された属性に基づいて、返されたエッジをすべて並べ替えます。属性の前に "-" を追加して、降順で並べ替えを行ないます。
 
 | `timeout`
-| No
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
+| いいえ
+| クエリがタイムアウトするまでの秒数を指定する整数。パラメーターが `0` に設定されているか、何も指定されていない場合、システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
-=== Retrieve a vertex
+=== 頂点の取得
 
 `+GET /graph/{graph_name}/vertices/{vertex_type}/{vertex_id}+`
 
-This endpoint will return a single vertice by its vertex ID.
+このエンドポイントは、頂点IDによって単一の頂点を返します。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,javascript]
 ----
@@ -1731,29 +1731,29 @@ curl -X GET "http://localhost:9000/graph/socialNet/vertices/User/id1"
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `select`
-| No
-| Attributes of the selected vertices to return. The parameter takes a list, which is a string of comma-separated values, and will only return the attributes that are provided.
+| いいえ
+| 返すように選択された頂点の属性。パラメーターは、コンマで区切られた値の文字列のリストを受け取り、指定された属性のみを返します。
 
 | `timeout`
-| No
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
+| いいえ
+| クエリがタイムアウトするまでの秒数を指定する整数。パラメーターが0に設定されているか、何も指定されていない場合、システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
-=== Delete vertices
+=== 頂点の削除
 
 `+DELETE /graph/{graph_name}/vertices/{vertex_type}+`
 
-This endpoint deletes vertices by their vertex type. The delete operation is a cascading deletion. If a vertex is deleted, then all of the edges connected to it are automatically deleted as well.
+このエンドポイントは、頂点タイプに基づいて頂点を削除します。この削除操作はカスケード削除です。頂点が削除されると、それに接続されているエッジもすべて自動的に削除されます。
 
-==== Sample request:
+==== リクエストサンプル:
 
-The response object will contain a `"deleted_vertices"` field that indicates the number of vertices that were deleted
+応答オブジェクトは、削除された頂点の数を示す `"deleted_vertices"` フィールドを含みます。
 
 [source,bash]
 ----
@@ -1774,71 +1774,71 @@ curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User"
 }
 ----
 
-==== Parameters
+==== パラメーター
 [width="100%",cols="15%,10%,75%",options="header",]
 |===
-|Name |Required |Description
-|`permanent` |No |Takes a boolean value. If the value is true, the
-deleted vertex IDs can never be inserted back, unless the graph is
-dropped or the graph store is cleared.
+|名称 |必須 |説明
+|`permanent` |いいえ |ブール値を取ります。値がtrueの場合、
+グラフがドロップされるか、グラフの保存がクリアされない限り、
+削除された頂点IDを元に戻すことはできません。
 
-|`filter` |No |Conditions used to filter the vertices to delete. The
-parameter takes a list of conditions, which is a string of
-comma-separated values. If any filter conditions are provided, the
-endpoint will only delete the vertices that satisfy the conditions. Six
-comparison operators are supported for this parameter: `=`, `!=`, `>`,
-`>=`, `<` and `<=`. If the value on the right side of an operator is a
-string literal, it should be enclosed in double-quotes.
+|`filter` |いいえ |削除する頂点をフィルタリングする条件。
+このパラメーターは、条件のリスト(コンマで区切られた値の文字列)
+を取ります。 フィルタリング条件が指定されている場合、
+エンドポイントは条件を満たす頂点のみを削除します。
+このパラメーターでは、 `=` 、 `!=` 、 `>` 、 `>=` 、 `<` 、 `+<=+` の
+6つの比較演算子がサポートされています。
+演算子の右側の値が文字列リテラルの場合は、二重引用符で囲む必要があります。
 
-|`limit` |No |Integer value that specifies the total number of vertices
-to delete.
+|`limit`|いいえ| 削除する頂点の合計数を指定する
+整数値。
 
-|`sort` |No |Attributes to sort the vertices by. In delete
-operations,`sort` should always be used together with `limit`. The
-endpoint will delete the number of vertices under the limit specified in
-the order specified. The parameter takes a list of attributes, and the
-endpoint will sort all vertices based on the attributes provided in the
-list in order. Add `"-"` in front of the attribute to sort by that
-attribute in descending order.
+|`sort` |いいえ |頂点を並べ替えるために使用する属性。削除操作では、
+`sort` は常に `limit` とともに用いる必要があります。
+エンドポイントは、指定された順序で、指定された制限内の頂点の数を削除します。
+パラメーターは属性のリストを取り、エンドポイントはリストが指定する属性に
+基づいて頂点をすべて順番に並べ替えます。
+属性の前に "-" を追加して、その属性の降順で並べ替えを
+行います。
 
-|`timeout` |No |Integer that specifies the number of seconds after which
-the query will time out. If the parameter is set to 0 or isn’t provided,
-the system-wide endpoint timeout setting is applied.
+|`timeout` |いいえ | クエリーがタイムアウトするまでの秒数を指定する整数。
+パラメーターが0に設定されているか、何も指定されていない場合、
+システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
 
-=== Delete vertices by type
+=== タイプに基づいた頂点の削除
 
 `+DELETE /graph/{graph_name}/delete_by_type/vertices/{vertex_type}+`
 
-This endpoint deletes all vertices of the given vertex type in a graph.
+このエンドポイントは、グラフ内にある指定された頂点タイプの頂点をすべて削除します。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
 curl -X DELETE "http://localhost:9000/graph/poc_graph/delete_by_type/vertices/person"
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `permanent`
-| No
-| Takes a boolean value. If the value is true, the deleted vertex IDs can never be inserted back, unless the graph is dropped or the graph store is cleared.
+| いいえ
+| ブール値を取ります。値がtrueの場合、グラフがドロップされるか、グラフの保存がクリアされない限り、削除された頂点IDを元に戻すことはできません。
 
 | `ack`
-| No
-| If the parameter is set to "none", the delete operation doesn't need to get acknowledgment from any GPE. If it is set to "all" (default), the operation needs to get acknowledgment from all GPEs.
+| いいえ
+| パラメーターが"none"に設定されているとき、削除操作はGPEから確認の応答を取得する必要はありません。"all"(デフォルト)に設定されている場合、すべてのGPEから確認の応答を取得する必要があります。
 |===
 
-=== Delete a vertex
+=== 頂点の削除
 
 `+DELETE /graph/{graph_name}/vertices/{vertex_type}/{vertex_id}+`
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -1859,29 +1859,29 @@ curl -X DELETE "http://localhost:9000/graph/socialNet/vertices/User/id1"
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `timeout`
 | no
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
+| クエリーがタイムアウトするまでの秒数を指定する整数。パラメーターが0に設定されているか、何も指定されていない場合、システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
-== Edges
+== エッジ
 
-=== Insert edges
+=== エッジの挿入
 
-To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
+頂点またはエッジを挿入するには、xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[データのグラフへのアップサート]エンドポイントを使用します。
 
-=== List edges of a vertex
+=== 頂点のエッジのリスト化
 
 `+GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}+`
 
-This endpoint returns all edges which are connected to a given vertex ID in the graph
+このエンドポイントは、グラフ内の指定された頂点IDにつながるエッジをすべて返します。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -1923,43 +1923,43 @@ curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0?limit=2
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `count_only`
-| No
-| Takes a boolean value. If the value is true, the `results` field will only contain the count of how many edges were selected. Default is `false`.
+| いいえ
+| ブール値を取ります。値がtrueの場合、`results` フィールドにはいくつのエッジが選択されたかのカウントのみが含まれます。デフォルトは `false` です。
 
 | `select`
-| No
-| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values. If `select` is provided, the edges returned will only show the attributes provided.
+| いいえ
+| 返すように選択されたエッジの属性。このパラメーターは、リスト(コンマで区切られた値の文字列)を取ります。`select` が指定された場合、返されるエッジには指定された属性のみが表示されます。
 
 | `filter`
-| No
-| Conditions used to filter the edges to return. The parameter takes a list of conditions, which is a string of comma-separated values. If any filter conditions are provided, the endpoint will only return the edges that satisfy the conditions. Six comparison operators are supported for this parameter: `=`, `!=`, `>`, `>=`, `<` and `+<=+`. If the value on the right side of an operator is a string literal, it should be enclosed in double-quotes.
+| いいえ
+| 返されるエッジをフィルタリングするために使用する条件。このパラメーターは、条件のリスト(コンマで区切られた値の文字列)を取ります。フィルタリング条件が指定されている場合、エンドポイントは条件を満たすエッジのみを返します。このパラメーターでは、 `=` 、 `!=` 、 `>` 、 `>=` 、 `<` 、 `+<=+` の6つの比較演算子がサポートされています。演算子の右側の値が文字列リテラルの場合は、二重引用符で囲む必要があります。
 
 | `limit`
-| No
-| Integer value that specifies the maximum limit of the total number of edges to return.
+| いいえ
+| 返すエッジの合計数の最大値を指定する整数値。
 
 | `sort`
-| No
-| Attributes to sort the results by. The parameter takes a list, which is a string of comma-separated values, and will sort all the edges based on the attributes provided in the list in order. Add `"-"` in front of the attribute to sort in descending order.
+| いいえ
+| 結果を並べ替えるために使用する属性。パラメーターは、コンマで区切られた値の文字列のリストを受け取り、リストで指定された属性に基づいて、返されたエッジをすべて並べ替えます。属性の前に `"-"` を追加して、降順で並べ替えを行ないます。
 
 | `timeout`
-| No
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, system-wide endpoint timeout setting is applied.
+| いいえ
+| クエリがタイムアウトするまでの秒数を指定する整数。パラメーターが `0` に設定されているか、何も指定されていない場合、システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
-=== List edges of a vertex by edge type
+=== 頂点のエッジのエッジタイプに基づくリスト化
 
 `+GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}+`
 
-This endpoint lists all the edges of a specified type connected to a given vertex ID in the graph
+このエンドポイントは、グラフ内の指定された頂点IDにつながる、指定されたタイプのエッジをすべてリスト化します。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -2001,51 +2001,51 @@ curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video?li
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `count_only`
-| No
-| Takes a boolean value. If the value is true, the `results` field will only contain the count of how many edges were selected. Default is `false`.
+| いいえ
+| ブール値を取ります。値がtrueの場合、`results` フィールドにはいくつのエッジが選択されたかのカウントのみが含まれます。デフォルトは `false` です。
 
 | `select`
-| No
-| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values. If `select` is provided, the edges returned will only show the attributes provided.
+| いいえ
+| 返すように選択されたエッジの属性。このパラメーターは、リスト(コンマで区切られた値の文字列)を取ります。`select` が指定された場合、返されるエッジには指定された属性のみが表示されます。
 
 | `filter`
-| No
-| Conditions used to filter the edges to return. The parameter takes a list of conditions, which is a string of comma-separated values. If any filter conditions are provided, the endpoint will only return the edges that satisfy the conditions. Six comparison operators are supported for this parameter: `=`, `!=`, `>`, `>=`, `<` and `+<=+`. If the value on the right side of an operator is a string literal, it should be enclosed in double quotes.
+| いいえ
+| 返されるエッジをフィルタリングするために使用する条件。このパラメーターは、条件のリスト(コンマで区切られた値の文字列)を取ります。フィルタリング条件が指定されている場合、エンドポイントは条件を満たすエッジのみを返します。このパラメーターでは、 `=` 、 `!=` 、 `>` 、 `>=` 、 `<` 、 `+<=+` の6つの比較演算子がサポートされています。演算子の右側の値が文字列リテラルの場合は、二重引用符で囲む必要があります。
 
 | `limit`
-| No
-| Integer value that specifies the maximum limit of the total number of edges to return.
+| いいえ
+| 返すエッジの合計数の最大値を指定する整数値。
 
 | `sort`
-| No
-| Attributes to sort the results by. The parameter takes a list, which is a string of comma-separated values, and will sort all the edges based on the attributes provided in the list in order. Add `"-"` in front of the attribute to sort in descending order.
+| いいえ
+| 結果を並べ替えるために使用する属性。パラメーターは、コンマで区切られた値の文字列のリストを受け取り、リストで指定された属性に基づいて、返されたエッジをすべて並べ替えます。属性の前に `"-"` を追加して、降順で並べ替えを行ないます。
 
 | `timeout`
-| No
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, system-wide endpoint timeout setting is applied.
+| いいえ
+| クエリがタイムアウトするまでの秒数を指定する整数。パラメーターが `0` に設定されているか、何も指定されていない場合、システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
-=== List edges of a vertex by edge type and target type
+=== 頂点のエッジのエッジタイプ、ターゲットタイプに基づくリスト化
 
 [source,bash]
 ----
 GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}
 ----
 
-This endpoint lists edges connected to a given vertex by edge type and target vertex type
+このエンドポイントは、指定された頂点に接続されているエッジをエッジタイプとターゲット頂点タイプ別にリスト化します。
 
 [NOTE]
 ====
-Use `"_"` for `edge_type` in the URL to permit any edge type.
+URLの `edge_type` に `"_"` を使用して、任意のエッジタイプを許可します。
 ====
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,php]
 ----
@@ -2087,50 +2087,50 @@ curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Vi
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `count_only`
-| No
-| Takes a boolean value. If the value is true, the `results` field will only contain the count of how many edges were selected. Default is `false`.
+| いいえ
+| ブール値を取ります。値がtrueの場合、`results` フィールドにはいくつのエッジが選択されたかのカウントのみが含まれます。デフォルトは `false` です。
 
 | `not_wildcard`
-| No
-| Boolean value that indicates whether or not `"_"` supplied in the endpoint URL is a wildcard. If the parameter is true, `"_"` is interpreted literally to select only edges with edge type name equal to underscore.
+| いいえ
+| エンドポイントのURLで指定された `+"_"+` がワイルドカードであるかどうかを示すブール値。パラメーターがtrueの場合、 `+"_"+` は文字通り解釈され、エッジタイプ名がアンダーバー("_")に等しいエッジのみを選択します。
 
 | `select`
-| No
-| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values. If `select` is provided, the edges returned will only show the attributes provided.
+| いいえ
+| 返すように選択されたエッジの属性。このパラメーターは、リスト(コンマで区切られた値の文字列)を取ります。`select` が指定された場合、返されるエッジには指定された属性のみが表示されます。
 
 | `filter`
-| No
-| Conditions used to filter the edges to return. The parameter takes a list of conditions, which is a string of comma-separated values. If any filter conditions are provided, the endpoint will only return the edges that satisfy the conditions. Six comparison operators are supported for this parameter: `=`, `!=`, `>`, `>=`, `<` and `+<=+`. If the value on the right side of an operator is a string literal, it should be enclosed in double-quotes.
+| いいえ
+| 返されるエッジをフィルタリングするために使用する条件。このパラメーターは、条件のリスト(コンマで区切られた値の文字列)を取ります。フィルタリング条件が指定されている場合、エンドポイントは条件を満たすエッジのみを返します。このパラメーターでは、 `=` 、 `!=` 、 `>` 、 `>=` 、 `<` 、 `+<=+` の6つの比較演算子がサポートされています。演算子の右側の値が文字列リテラルの場合は、二重引用符で囲む必要があります。
 
 | `limit`
-| No
-| Integer value that specifies the maximum limit of the total number of edges to return.
+| いいえ
+| 返すエッジの合計数の最大値を指定する整数値。
 
 | `sort`
-| No
-| Attributes to sort the results by. The parameter takes a list, which is a string of comma-separated values, and will sort all the edges based on the attributes provided in the list in order. Add `"-"` in front of the attribute to sort in descending order.
+| いいえ
+| 結果を並べ替えるために使用する属性。パラメーターは、コンマで区切られた値の文字列のリストを受け取り、リストで指定された属性に基づいて、返されたエッジをすべて並べ替えます。属性の前に `"-"` を追加して、降順で並べ替えを行ないます。
 
 | `timeout`
-| No
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, the system-wide endpoint timeout setting is applied.
+| いいえ
+| クエリがタイムアウトするまでの秒数を指定する整数。パラメーターが `0` に設定されているか、何も指定されていない場合、システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
-=== Retrieve edge by source, target, and edge type
+=== ソース、ターゲット、およびエッジタイプごとのエッジの取得
 
 [source,bash]
 ----
 GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
 
-This endpoint returns the edge of a specified type between a source vertex and a target vertex.
+このエンドポイントは、ソース頂点とターゲット頂点の間の指定されたタイプのエッジを返します。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -2160,36 +2160,36 @@ curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Vi
  }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `select`
-| No
-| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values. If `select` is provided, the edges returned will only show the attributes provided.
+| いいえ
+| 返すように選択されたエッジの属性。このパラメーターは、リスト(コンマで区切られた値の文字列)を取ります。`select` が指定された場合、返されるエッジには指定された属性のみが表示されます。
 
 | `timeout`
-| No
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, the system-wide endpoint timeout setting is applied.
+| いいえ
+| クエリがタイムアウトするまでの秒数を指定する整数。パラメーターが `0` に設定されているか、何も指定されていない場合、システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
-=== Delete an edge
+=== エッジの削除
 
 [source,bash]
 ----
 DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
 
-Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
+ソース頂点タイプとID、ターゲット頂点タイプとID、およびエッジタイプに基づいてエッジを削除します。
 
-==== Sample request
+==== リクエストサンプル
 
 [source,bash]
 ----
 $ curl -X DELETE "https://crunch.i.tgcloud.io:9000/graph/CrunchBasePre_2013/edges/person/p:23601/work_for_company/company/c:14478"
 
-# Response
+# 応答
 {
   "version": {
     "edition": "enterprise",
@@ -2207,25 +2207,25 @@ $ curl -X DELETE "https://crunch.i.tgcloud.io:9000/graph/CrunchBasePre_2013/edge
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `timeout`
-| no
-| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
+| いいえ
+| クエリがタイムアウトするまでの秒数を指定する整数。パラメーターが0に設定されているか、何も指定されていない場合、システム全体のエンドポイントのタイムアウト設定が適用されます。
 |===
 
-== Queries
+== クエリ
 
-=== Get query metadata
+=== クエリのメタデータの取得
 
 `GET /gsqlserver/gsql/queryinfo`
 
-Returns metadata details about a query. In particular, it lists the input parameters and output `PRINT` statement syntax. *This endpoint exists on port 14240 and requests are sent to the GSQL server.* Therefore, you should provide authentication credentials in the request.
+クエリのメタデータの詳細を返します。特に、入力パラメーターと出力の `PRINT` ステートメント構文をリスト化します。 **このエンドポイントは14240ポートに存在し、リクエストはGSQLサーバーに送られます。** そのため、リクエストで認証資格情報を指定する必要があります。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,gsql]
 ----
@@ -2284,200 +2284,200 @@ $ curl -u tigergraph:tigergraph -X GET \
 }
 ----
 
-The JSON response object contains three fields:
+JSON応答オブジェクトには、以下の3つのフィールドがあります。
 
-* *`queryname`*: name of the query, same as the query input parameter.
-* *`input`*: unordered list of the input parameter names and data types.
-* *`output`*: JSON object that follows the same structure of the query's output. For each key-value pair, the key is the name that appears in the query output, while the values are the data types of the output.
+* **`queryname`**: クエリーの名前。クエリー入力パラメーターと:同じです。
+* **`input`**: 入力パラメーター名とデータ型の順序付けされていないリスト。
+* **`output`**: クエリーの出力と同じ構造に従うJSONオブジェクト。キーと値のペアのうちの、キーはクエリー出力に表示される名前であり、値は出力のデータタイプです。
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `graph`
-| Yes
-| Name of the graph
+| はい
+| グラフ名。
 
 | `query`
-| Yes
-| Name of the query
+| はい
+| クエリー名。
 |===
 
-=== Run an installed query (`GET`)
+=== インストールしたクエリーの実行(`GET`)
 
 `+GET /query/{graph_name}/{query_name}+`
 
-Each time a new TigerGraph query is installed, a dynamic endpoint is generated. This new endpoint enables the user to run the new TigerGraph query through HTTP requests and giving the parameters in URL or in a data payload. In the case of a `GET` request, parameters should be passed in through the query string.
+新しいTigerGraphのクエリーがインストールされるたびに、動的エンドポイントが生成されます。この新しいエンドポイントによって、HTTPリクエストを通じて新しいTigerGraphのクエリーを実行することができます。URLまたはデータペイロードでのパラメーターの指定が可能です。`GET` リクエストの場合、パラメーターはクエリー文字列を通じて渡される必要があります。
 
-==== Parameters
+==== パラメーター
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `read_committed`
-| No
-| Boolean value that indicates whether to use https://en.wikipedia.org/wiki/Isolation_(database_systems)#Read_committed[read-committed isolation level] for the query. At the read committed level, it is guaranteed that any data read is committed at the moment it is read. By default, it is off.
+| いいえ
+| クエリに https://en.wikipedia.org/wiki/Isolation_(database_systems)#Read_committed[read-committedの分離レベル]を使用するかどうかを指定するブール値。read-committedの分離レベルの場合、読み取り時点でコミット済みになっているデータを読み込みます。デフォルトではオフになっています。
 |===
 
-==== Query parameter passing
+==== クエリのパラメーターの受け渡し
 
-When using a `GET` request to run an installed query, the query parameters are xref:API:intro.adoc#_query_string_parameters[passed in through the query string of the URL].
+`GET` リクエストを使用してインストールされたクエリーを実行する場合、クエリーパラメーターはxref:API:intro.adoc#_query_string_parameters[URLのクエリー文字列を通じて渡されます]。
 [width="100%",cols="28%,36%,36%",options="header",]
 |===
-|Parameter type |Query string format |Example
-|Set or bag of primitives |Assign multiple values to the same parameter
-name. |A set `p1` of integers: `**p1=1&p1=5&p1=10**`
+|パラメータータイプ |クエリー文字列形式 |例
+|プリミティブのセットまたはバッグ |同じパラメーター名に複数の値を割り当てます。
+|整数のセット `p1` : `**p1=1&p1=5&p1=10**`
 
-|`VERTEX<type>` |Use the ID of the vertex:`parameterName=vertex_id` |A
-vertex with parameter name `vp` and an ID of person2: `**vp=person2**`
+|`VERTEX<type>` |頂点IDを使用します: `parameterName = verbex_id` | 
+パラメーター名が `vp` でIDがperson2の頂点: `**vp=person2**`
 
-|`VERTEX`(type not pre-specified) |Use two query string
-parameters**:**`parameterName=vertex_id\'\'parameterName.type=vertex_type`
-|A vertex with parameter name `va` , type `person` and and ID
-`person1`:`va=person1&va.type=person`
+|`VERTEX`(タイプの事前指定なし) |2つのクエリー文字列パラメーターを使用**:**
+`parameterName=vertex_id\'\'parameterName.type=vertex_type`
+|パラメーター名が `va`、タイプが `person` 、IDが `person1` の頂点:
+`va=person1&va.type=person`
 
-|Set or bag of `VERTEX<type>` |Assign multiple vertex IDs to the same
-`SET` or `BAG` parameter name. |A set parameter named `vp` of vertices
-of type person:`vp=person3&vp=person4`
+|`VERTEX<type>` のセットまたはバッグ |同じ `セット` または `バッグ` のパラメーター名に
+複数の頂点IDを割り当てます。 |タイプ personの頂点の `vp` という
+設定パラメーター:`vp=person3&vp=person4`
 
-|Set or bag of `VERTEX`(type not pre-specified) |The `SET` or `BAG` must
-be treated as an array. A vertex ID and type must be provided for the
-vertex element at each index. |A set parameter named `vp` of
+|`VERTEX` のセットまたはバッグ(タイプの事前指定なし) |`セット` または `バッグ` は
+配列として扱われる必要があります。各インデックスの頂点要素には、
+頂点IDとタイプの指定が必要です。 |頂点の `vp` という設定パラメーター:
 vertices:`vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post`
 |===
 
-==== Specify replica
+==== レプリカの指定
 
-If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range one to the replication factor of the cluster. If you supply a invalid value for the header, the request will return an error.
+TigerGraph HAクラスターを持っている場合、HTTPヘッダー `GSQL-REPLICA` を使用することで、クエリーを指定して、特定のレプリカ上で実行することができます。ヘッダーの値は、クラスターのレプリケーション係数の範囲内の整数である必要があります。ヘッダーに無効な値を指定すると、リクエストはエラーを返します。
 
-==== Specify thread limit
+==== スレッド制限の指定
 
-When running a query through RESTPP, you can specify a limit on the number of threads that the query is allowed to use on each node through the HTTP header `GSQL-THREAD-LIMIT`. The number of threads used by a query means the number of vCPUs used by the query. By default, a query will use all threads that are available on a machine.
+RESTPPを通じてクエリを実行する場合、HTTPヘッダー `GSQL-THREAD-LIMIT` を利用して、クエリがそれぞれのノードで使用できるスレッド数の制限を指定できます。クエリで使用されるスレッドの数とは、クエリで使用されるvCPUの数を意味します。デフォルトでは、クエリはマシンで使用可能なすべてのスレッドを使用します。
 
-For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default. By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
+たとえば、それぞれ8つのvCPUを備えた3つのノードのクラスターの場合、クエリは、デフォルトではクラスター内のノードで使用可能な8つのスレッドすべてを使用します。リクエストヘッダーにスレッド制限を指定することで、制限内の数のスレッドのみを使用するようにクエリをコントロールできます。
 
-==== Sample request:
+==== リクエストサンプル:
 
-To run query `hello` on a graph named `social`, and the query parameter is of type `VERTEX<person>` whose ID is `"Tom"`
+`social` というグラフで `hello` というクエリを実行し、クエリパラメーターのタイプが `VERTEX<person>` で、IDが `"Tom"` である場合。
 
-.Running a query via HTTP request
+.HTTPリクエストを通じたクエリの実行
 
 [source,bash]
 ----
 curl -X GET "http://localhost:9000/query/social/hello?p=Tom"
 
-# Limiting the query to use under 4 threads
+# 4スレッド以下を使用するようクエリを制限
 curl -x GET -H "GSQL-THREAD-LIMIT: 4" "http://localhost:9000/query/social/hello?p=Tom"
 
-# Specifying the query to run on the first replica
+# 最初のレプリカで実行するクエリを指定
 curl -X GET -H "GSQL-REPLICA: 2" "http://localhost:9000/query/social/hello?p=Tom"
 
-# Specifying the query to run on the primary cluster
+# プライマリークラスターで実行するクエリを指定
 curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom"
 ----
 
 
 
 [#_run_an_installed_query_post]
-=== Run an installed query (`POST`)
+=== インストールしたクエリーの実行(`GET`)
 
 `+POST /query/{graph_name}/{query_name}+`
 
-Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON.This is especially helpful when the query takes complex parameters.
+`POST` リクエストを通じて、クエリを実行することもできます。この場合、JSONでクエリパラメーターを渡すことができます。これは、クエリが複雑なパラメーターをとる場合に特に有効です。
 
-==== Parameters
+==== パラメーター
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `read_committed`
-| No
-| Boolean value that indicates whether to use https://en.wikipedia.org/wiki/Isolation_(database_systems)#Read_committed[read-committed isolation level] for the query. At the read committed level, it is guaranteed that any data read is committed at the moment it is read. By default, it is off.
+| いいえ
+| クエリに https://en.wikipedia.org/wiki/Isolation_(database_systems)#Read_committed[read-committedの分離レベル]を使用するかどうかを指定するブール値。read-committedの分離レベルの場合、読み取り時点でコミット済みになっているデータを読み込みます。デフォルトではオフになっています。
 |===
 
-==== Query parameter Passing
+==== クエリーのパラメーターの受け渡し
 
-When using a `POST` request to run an installed query, the query parameters are passed in through the request body and xref:API:intro.adoc#_formatting_data_in_json[encoded in JSON format]. The formatting rules for the JSON payload is the same as xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
+`POST` リクエストを使用してインストールされたクエリーを実行する際、クエリーパラメーターはリクエスト本文を通して、xref:API:intro.adoc#_formatting_data_in_json[JSON形式でエンコード]した形で渡されます。JSONペイロードのフォーマットルールは、xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[JSONを使用した `RUNQUERY` コマンドでのパラメーターの受け渡し]の場合と同様です。
 
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
-|Parameter type |Syntax |Example
-|`DATETIME` |Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
+|パラメータータイプ |シンタックス |例
+|`DATETIME` |`"YYYY-MM-DD HH-MM-SS"` 形式の文字列を使用。
 |`"2019-02-19 19:19:19"`
 
-|Set or bag of primitives |Use a JSON array containing the primitive
-values |`["a", "list", "of", "args"]`
+|プリミティブのセットまたはバッグ |プリミティブ値を含むJSO配列を使用。 
+|`["a", "list", "of", "args"]`
 
-|`VERTEX<type>` |Use a JSON object containing a field `"id"` for the
-vertex ID and a field `"type"` for the type of the vertex
+|`VERTEX<type>` |頂点IDにフィールド `"id"` を含み、
+頂点のタイプにフィールド `"type"` を含むJSONオブジェクトを使用。
 |`{"id": "person1",\'\'"type": "person"}`
 
-|`VERTEX` (type not specified) |Use a JSON object containing a field
-`"id"` for the vertex ID |`{"id": "person1"}`
+|`VERTEX` (タイプの事前指定なし) |頂点IDにフィールド `"id"` を含むJSONオブジェクトを
+使用。 |`{"id": "person1"}`
 
-|Set or bag of `VERTEX<type>` |Use a JSON array containing a list of
-JSON `VERTEX<type>` object |`[{"id": "person1"}, {"id": "person2"}]`
+|`VERTEX<type>` のセットまたはバッグ |JSON `VERTEX<type>` オブジェクトのリストを含む
+JSON配列を使用。 |`[{"id": "person1"}, {"id": "person2"}]`
 
-|Set or bag of vertices of unspecified types |Use a JSON array
-containing a list of JSON `VERTEX`
+|タイプ指定れていない頂点のセットまたはバッグ | JSON `VERTEX` のリストを
+含むJSON配列を使用。
 |`[{"id": "person1",\'\'"type": "person"},{"id": "person2",\'\'"type": "person"}]`
 |===
 
-==== Specify replica
+==== レプリカの指定
 
-If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range one to the replication factor of the cluster. If you supply an invalid value for the header, the request will return an error.
+TigerGraph HAクラスターを持っている場合、HTTPヘッダー `GSQL-REPLICA` を使用することで、クエリーを指定して、特定のレプリカ上で実行することができます。ヘッダーの値は、クラスターのレプリケーション係数の範囲内の整数である必要があります。ヘッダーに無効な値を指定すると、リクエストはエラーを返します。
 
-==== Specify thread limit
+==== スレッド制限の指定
 
-When running a query through RESTPP,  you can specify a limit on the number of threads that the query is allowed to use on each node through the HTTP header `GSQL-THREAD-LIMIT`. The number of threads used by a query means the number of vCPUs used by the query. By default, a query will use all threads that are available on a machine.
+RESTPPを通じてクエリを実行する場合、HTTPヘッダー `GSQL-THREAD-LIMIT` を利用して、クエリがそれぞれのノードで使用できるスレッド数の制限を指定できます。クエリで使用されるスレッドの数とは、クエリで使用されるvCPUの数を意味します。デフォルトでは、クエリはマシンで使用可能なすべてのスレッドを使用します。
 
-For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default. By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
+たとえば、それぞれ8つのvCPUを備えた3つのノードのクラスターの場合、クエリは、デフォルトではクラスター内のノードで使用可能な8つのスレッドすべてを使用します。リクエストヘッダーにスレッド制限を指定することで、制限内の数のスレッドのみを使用するようにクエリをコントロールできます。
 
-==== Sample request
+==== リクエストサンプル
 
-The query in this sample request takes a parameter of type `VERTEX<person>`:
+このリクエストサンプルのクエリーは、`VERTEX<person>` タイプのパラメーターを取ります。
 
 [source,bash]
 ----
 curl -X POST -d '{"p":{"id":"Tom","type":"person"}}' \
 "http://localhost:9000/query/social/hello"
 
-# Specify that the query run on the first replica
+# クエリが最初のレプリカで実行されるように指定
 curl -X POST -d -H "GSQL-REPLICA: 2" '{"p":{"id":"Tom","type":"person"}}' \
 "http://localhost:9000/query/social/hello"
 
-# Specify that the query run on the primary cluster
+# クエリがプライマリークラスターで実行されるように指定
 curl -X POST -d -H "GSQL-REPLICA: 1" '{"p":{"id":"Tom","type":"person"}}' \
 "http://localhost:9000/query/social/hello"
 
-# Specify that the query run on
+# クエリの実行を指定
 curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' \
 "http://localhost:9000/query/social/hello"
 ----
 
 [NOTE]
 ====
-Installed queries can run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode]. To do this, use the ``GSQL-ASYNC``header and set its value to `true`. The xref:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
+インストールされたクエリーは、xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[デタッチモード]で実行できます。そのためには、 ``GSQL-ASYNC``ヘッダーを使用し、値を `true` に設定します。デタッチモードで実行されるクエリーのxref:built-in-endpoints.adoc#_check_query_status_detached_mode[結果]およびlink:built-in-endpoints.adoc#_check_query_status_detached_mode[ステータス] は、クエリーIDで取得できます。クエリーがデタッチモードで実行されるとすぐに返されます。
 ====
 
-=== Run an interpreted query
+=== インタープリテッドクエリの実行
 
 `POST /gsqlserver/interpreted_query`
 
-This endpoint runs a GSQL query in Interpreted Mode. The query body should be supplied at the data payload, and the query's parameters are supplied as the URL's query string. *This endpoint exists on the GSQL server on port 14240.*
+このエンドポイントは、インタープリターモードでGSQLクエリーを実行します。クエリ本文はデータペイロードで、クエリのパラメーターはURLのクエリ文字列として供給する必要があります。**このエンドポイントはGSQLサーバーのポート14240ポートに存在します。**
 
-This request goes directly to the GSQL server (port 14240) instead of the RESTPP server (port 9000), so the username and password must be specified in the header. If you are using curl, you can use the `-u` option as shown below.
+このリクエストは、RESTPPサーバー(ポート9000)ではなくGSQLサーバー(ポート14240)に直接送られるため、ユーザー名とパスワードをヘッダーで指定する必要があります。Curlを使用している場合は、以下に示す通り、 `-u` オプションを使用することができます。
 
-==== Request body:
+==== リクエスト本文:
 
-The request body for this endpoint should be the entire `INTERPRET QUERY` statement.
+このエンドポイントのリクエスト本文は、 `INTERPRET QUERY` ステートメント全体である必要があります。
 
-==== Parameter passing:
+==== パラメーターの受け渡し:
 
-When running an interpreted query through this endpoint, the query parameters should be xref:intro.adoc#_query_string_parameters[passed in through the URL query string].
+このエンドポイントを通じてインタープリテッドクエリーを実行する場合、クエリーパラメーターはxref:intro.adoc#_query_string_parameters[URLクエリー文字列を通じての受け渡し]が行なわれる必要があります。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,javascript]
 ----
@@ -2488,13 +2488,13 @@ curl --fail -u <my_username>:<my_password> -X POST \
  }'
 ----
 
-=== List running queries
+=== 実行中クエリのリスト化
 
 `+GET /showprocesslist/{graph_name}+`
 
-This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
+このエンドポイントは、グラフの実行中のクエリの統計情報(クエリのリクエストID、開始時刻、有効期限、RESTエンドポイントのURL)をレポートします。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -2526,17 +2526,17 @@ curl -X GET "http://localhost:9000/showprocesslist/poc_graph" | jq .
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
-No Parameters.
+パラメーターはありません。
 
-=== Abort a query
+=== クエリの中止
 
 `+GET /abortquery/{graph_name}+`
 
-This endpoint safely aborts a selected query by ID or all queries of an endpoint by endpoint URL of a graph.
+このエンドポイントは、IDによって指定されたクエリ、またはグラフのエンドポイントURLによって指定されたエンドポイントのすべてのクエリを安全に中止します。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,graphql]
 ----
@@ -2568,27 +2568,27 @@ curl -X GET "localhost:9000/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `requestid`
-| No
-| The ID of the query to abort. It can take a single query ID or the string `"all"`. If `requestid` is set to all. It will abort all running queries.
+| いいえ
+| 中止するクエリのID。ひとつのクエリIDまたは文字列 `"all"` が使用できます。`requestid` を `"all"` にすると、実行中の全てのクエリが中止されます。
 
 | `url`
-| No
-| The endpoint whose running queries to abort. You must specify the base of the endpoint's URL, but then use a wildcard to allow for different parameters. For example, to abort all running queries for the endpoint `/sleepgpe`, use `url=/sleepgpe.*`
+| いいえ
+| 実行中のクエリを中止するエンドポイント。エンドポイントのURLのベースを指定する必要がありますが、ワイルドカードを使用してさまざまなパラメーターを許可することができます。たとえば、エンドポイント `/sleepgpe` の実行中のすべてのクエリを中止するには、 `url =/sleepgpe*` と指定します。
 |===
 
-=== Check query status (Detached Mode)
+=== クエリのステータスの確認(デタッチモード)
 
 `GET /query_status`
 
-This endpoint allows you to check the status of a query run in xref:3.2@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
+このエンドポイントを使用すると、xref:3.2@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[デタッチモード]で実行されたクエリのステータスを確認できます。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -2614,61 +2614,61 @@ $ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&reques
 ----
 
 |===
-| *Field* | *Description*
+|**フィールド** | **説明**
 
 | `url`
-| URL of the given query.
+| 指定したクエリのURL。
 
 | `status`
-| The status of the given query. Possible values are `“success”`, `“timeout”`, `“aborted”`, or `“running”`.
+| 指定したクエリのステータス。可能な値は、 `“success”` 、 `“timeout”` 、 `“aborted”` 、 `“running”` です。
 
 | `startTime`
-| The timestamp for the start time of the given query.
+| 指定されたクエリの開始時刻のタイムスタンプ。
 
 | `requestid`
-| The query ID associated with the given query status JSON object.
+| 指定されたクエリのステータスJSONオブジェクトに関連付けられたクエリID。
 
 | `expirationTime`
-| The timestamp for when the given query times out. The default timeout limit is 16 seconds and can be set using the xref:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`] header.
+| 指定されたクエリがタイムアウトしたときのタイムスタンプ。デフォルトのタイムアウト制限は16秒で、xref:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`]ヘッダーを使って設定可能です。
 
 | `elapsedTime`
-| Elapsed real time of the given query measured in milliseconds. For completed queries, the value shows the total runtime of the request. For ongoing queries, it shows the amount of time taken so far.
+| 指定されたクエリの経過時間(ミリ秒単位)。完了したクエリの場合、値はリクエスト実行の合計時間を示します。進行中のクエリの場合、これまでにかかった時間を示します。
 |===
 
-If one or more of the provided query IDs (`requestid`) are invalid, the return JSON will include an``unknown_requestid``field containing all the invalid query IDs. If a query ID is marked as unknown, it means either the query does not exist or that it was not run in Detached Mode.
+指定されたクエリID(`requestid`)に無効なものが含まれている場合、返されるJSONには、 `unknown_requestid` フィールドが含まれ、無効なクエリIDがすべて示されます。クエリIDが不明としてマークされた場合は、クエリが存在しないか、デタッチモードで実行されていないことを意味します。
 
-==== Parameters
+==== パラメーター
 [width="100%",cols="22%,78%",options="header",]
 |===
-|*Field* |*Description*
-|`url` |URL of the given query.
+|**フィールド** | **説明**
+|`url` |指定したクエリのURL。
 
-|`status` |The status of the given query. Possible values are
-`“success”`, `“timeout”`, `“aborted”`, or `“running”`.
+|`status` |指定したクエリのステータス。可能な値は、
+`“success”` 、 `“timeout”` 、 `“aborted”` 、 `“running”` です。
 
-|`startTime` |The timestamp for the start time of the given query.
+|`startTime` |指定されたクエリの開始時刻のタイムスタンプ。
 
-|`requestid` |The query ID associated with the given query status JSON
-object.
+|`requestid` |指定されたクエリのステータス
+JSONオブジェクトに関連付けられたクエリID。
 
-|`expirationTime` |The timestamp for when the given query times out. The
-default timeout limit is 16 seconds and can be set using
-thehttps://docs.tigergraph.com/v/3.2/dev/restpp-api/intro#gsql-query-timeout[`GSQL-TIMEOUT`]
-header.
+|`expirationTime` |指定されたクエリがタイムアウトしたときのタイムスタンプ。
+指定されたクエリがタイムアウトしたときのタイムスタンプ。デフォルトのタイムアウト制限は16秒で、
+https://docs.tigergraph.com/v/3.2/dev/restpp-api/intro#gsql-query-timeout[`GSQL-TIMEOUT`] ヘッダーを
+使って設定可能です。
 
-|`elapsedTime` |Elapsed real time of the given query measured in
-milliseconds. For completed queries, the value shows the total runtime
-of the request. For ongoing queries, it shows the amount of time taken
-so far.
+|`elapsedTime` |指定されたクエリーの経過時間(ミリ秒単位)。
+完了したクエリーの場合、値はリクエスト実行の合計時間を
+示します。進行中のクエリーの場合、これまでにかかった時間を
+示します。
 |===
 
-=== Check query results (Detached Mode)
+=== クエリの結果の確認(デタッチモード)
 
 `GET /query_result`
 
-This endpoint allows you to check the results of queries run in Detached Mode if they have finished running. If the query is still running, the endpoint will respond with an error and a message saying `"Unable to retrieve result for query <requestid>"`.  Ensure that the query is finished before checking its result.
+このエンドポイントを使用すると、デタッチモードで実行されたクエリの終了後にその結果の確認ができます。クエリがまだ実行中の場合、エンドポイントはエラーを返し、「クエリ<requestid>の結果を取得できません」というメッセージが示されます。  結果を確認する前に、クエリが終了していることを確認してください。
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,gsql]
 ----
@@ -2690,35 +2690,35 @@ $ curl -s -X GET curl -s -X GET "http://localhost:9000/query_result?requestid=19
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `requestid`
-| Yes
-| String ID of the query.
+| はい
+| クエリーIDの文字列。
 |===
 
-== Path-Finding Algorithms
+== パス検索アルゴリズム
 
-The TigerGraph platform comes with two built-in endpoints, `/shortestpath` and `/allpaths`, which return either the shortest or all unweighted paths connecting a set of source vertices to a set of target vertices. The table below summarizes the two path-finding endpoints.
+TigerGraphプラットフォームは、 `/shortestpath` と `/allpaths` の2つの組み込みエンドポイントを備えており、ソース頂点のセットとターゲット頂点のセットを接続する最短パスまたはすべての重み付けされていないパスを返します。以下の表は、2つのパス検索エンドポイントの特徴をまとめたものです。
 
-=== Input Parameters and Output Format for Path-Finding
+=== パス検索の入力パラメーターと出力フォーマット
 
-Each REST endpoint reads a JSON-formatted payload that describes the input parameters. These parameters specify which vertices and edges may be on the paths, additional conditions on the attributes of the vertices and edges, and the maximum length of a path.
+各RESTエンドポイントは、JSON形式の入力パラメーターのペイロードを読み取ります。これらのパラメーターには、パス上に存在する可能性のある頂点とエッジ、頂点とエッジの属性に関する追加の条件、およびパスの最大長を指定します。
 
-==== Source and target vertices
+==== ソース頂点およびターゲット頂点
 
-Each endpoint must have either a *source* or *sources* key and either a *target* or *targets* parameter. The source and target parameters describe a single vertex. The format for a vertex object is as follows: `{"type" : "<vertex_type_name>", "id" : "<vertex_id>"}.`  The sources and targets parameters are JSON arrays containing a list of vertex objects.
+各エンドポイントには、**ソース**キーと**ターゲット**パラメーターが必要です。ソースパラメーターとターゲットパラメーターは、単一の頂点を記述します。頂点オブジェクトの形式は次のとおりです。`{"type" : "<vertex_type_name>", "id" : "<vertex_id>"}.` ソースパラメーターとターゲットパラメーターは、頂点オブジェクトのリストを含むJSON配列です。
 
-*Filters* +
-The payload may also have an array of filter conditions, to restrict the vertices or edges in the paths. Each individual filter is a JSON object which describes a condition on one vertex type or edge type.  A filter object has one or two key-value pairs: `{"type": "<vertex_or_edge_type>", "condition": "<attribute_condition>"}`
+**フィルター** +
+ペイロードには、パス内の頂点またはエッジを制限するために、フィルタリング条件を含めることもできます。個々のフィルターは、1つの頂点タイプまたはエッジタイプの条件を指定するJSONオブジェクトです。フィルターオブジェクトには、1つまたは2つのキー-値のペアがあります。 `{"type": "<vertex_or_edge_type>", "condition": "<attribute_condition>"}`
 
-* `"type":` the vertex type or edge type to be filtered
-* `"condition"` (optional): a boolean expression on one attribute of the given vertex type or edge type. "AND" and "OR" may be used to make compound expressions.
+* `"type":` フィルターをかける頂点タイプまたはエッジタイプ
+* `"condition"` (オプション): 指定された頂点タイプまたはエッジタイプの1つの属性のブール式。複合式を作成するために、"AND"および"OR"が使用できます。
 
-Example of a filter array:
+フィルター配列の例:
 
 [source,markup]
 ----
@@ -2726,51 +2726,51 @@ Example of a filter array:
  {"type": "sold",   "condition": "price > \"100\"  or quality != \"good\""}]
 ----
 
-Note that all filtering conditions in *`vertexFilters`* and *`edgeFilters`* are combined with the `"OR"`  relationship, i.e., if a vertex (or edge) fulfills any one of the filter conditions, then this vertex (or edge) will be included in the resulting paths.
+*`vertexFilters`* および *`edgeFilters`* のすべてのフィルタリング条件が `"OR"` で繋がれていることに注意してください。つまり、頂点(またはエッジ)がいずれかのフィルタリング条件を満たしている場合、その頂点(またはエッジ)は、結果のパスに含まれます。
 
-==== Output
+==== 出力
 
-The JSON output is a list of vertices and a list of edges. Each vertex and each edge is listed in full, with all attributes.  The collections of vertices and edges are not in path order.
+JSON出力は、頂点のリストとエッジのリストです。各頂点と各エッジは、すべての属性とともに完全にリスト化されます。 頂点とエッジはパス順に並んでいません。
 
-=== Find shortest path
+=== 最短パスの検索
 
 `+POST /shortestpath/{graph_name}+`
 
-This endpoint takes a source vertex or a set of source vertices, a target vertex or a set of target vertices, and returns the shortest path between the source and the target. If the source is a set of vertices, the resulting path will begin with one of the vertices in the set. If the target is a set of vertices, the resulting path will end with one of the vertices in the set.
+このエンドポイントは、ソース頂点(単数または複数)、ターゲット頂点(単数または複数)を取り、ソースとターゲットの間の最短パスを返します。ソースが複数の頂点である場合、結果のパスは複数の頂点うちの1つから始まります。ターゲットが複数の頂点である場合、結果のパスは複数の頂点うちの1つに行き着きます。
 
-==== Request body:
+==== リクエスト本文:
 
-This endpoint expects a request body that describes the source and target vertex or vertex set. Below is a table of all the fields in the request body.
+このエンドポイントは、ソースやターゲットの頂点(単数または複数)を記述するリクエスト本文を想定しています。以下の表で、リクエスト本文のすべてのフィールドについて説明しています。
 
 |===
-| Key | Type | Description
+| キー | タイプ | 説明
 
 | `source`
-| vertex object
-| Each path must start from this vertex. Mutually exclusive with `sources`.
+| 頂点オブジェクト
+| 各パスは、この頂点から開始する必要があります。`sources` を使用する場合 `sources` は使用されません。
 
 | `sources`
-| vertex array
-| Each path must start from one of these vertices. Mutually exclusive with `source`.
+| 複数の頂点の配列
+| 各パスは、これらの頂点のうちの1つから開始する必要があります。`sources` を使用する場合 `source` は使用されません。
 
 | `target`
-| vertex object
-| Each path must end at this vertex. Mutually exclusive with `targets`.
+| 頂点オブジェクト
+| 各パスは、この頂点で集結する必要があります。`target` を使用する場合 `targets` は使用されません。
 
 | `targets`
-| vertex array
-| Each path must end at one of these vertices. Mutually exclusive with `target`.
+| 複数の頂点の配列
+| 各パスは、これらの頂点のうちの1つで集結する必要があります。`targets` を使用する場合 `target` は使用されません。
 
 | `vertexFilters`
-| filter array
-| (OPTIONAL) Restrict the paths to those whose vertices satisfy any of the given filters.
+| フィルターの配列
+| (オプション)頂点が指定されたフィルターのいずれかを満たすパスのみを選ぶようフィルターを掛けます。
 
 | `edgeFilters`
-| filter array
-| (OPTIONAL) Restrict the paths to those whose edges satisfy any of the given filters. See details of filters above.
+| フィルターの配列
+| (オプション)エッジが指定されたフィルターのいずれかを満たすパスのみを選ぶようフィルターを掛けます。上記のフィルターの詳細を参照してください。
 |===
 
-==== Sample request:
+==== リクエストサンプル:
 
 [source,bash]
 ----
@@ -2782,8 +2782,8 @@ curl -s -X POST "http://localhost:9000/shortestpath/movieNet" \
   "maxLength":4
 }'
 
-# Result is an array of vertex json objects and edge json objects,
-# describing the subgraph for all found vertices and edges.
+# 結果は、頂点JSONオブジェクトとエッジJSONオブジェクトの配列であり、
+# 検索されたすべての頂点とエッジのサブグラフを記述します。
 {
   "version": { "edition": "developer", "api": "v2", "schema": 0 },
   "error": false,
@@ -2812,76 +2812,76 @@ curl -s -X POST "http://localhost:9000/shortestpath/movieNet" \
 }
 ----
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Key | Required | Description
+| キー | 必須 | 説明
 
 | `maxLength`
-| No
-| Integer that specified the maximum length of a shortest path. The default value is 6.
+| いいえ
+| 最短パスの最大長を指定する整数。デフォルト値は6です。
 
 | `allShortestPaths`
-| No
-| If *true*, the endpoint will return all shortest paths between the source and target. Default is *false*, meaning that the endpoint will return only one path.
+| いいえ
+| *true* に設定すると、エンドポイントはソースとターゲット間の最短パスをすべて返します。デフォルトは *false* です。この場合、エンドポイントは1つのパスのみを返します。
 |===
 
-=== Find all paths
+=== すべてのパスの検索
 
 `+POST /allpaths/{graph_name}+`
 
-This endpoint finds all paths between a source vertex (or vertex set) and target vertex (or vertex set).
+このエンドポイントは、ソース頂点(単数または複数)とターゲット頂点(単数または複数)の間のパスをすべて検索します。
 
-==== Request body:
+==== リクエスト本文:
 
-This endpoint expects a request body that describes the source and target vertex or vertex set. Below is a table of all the fields in the request body.
+このエンドポイントは、ソースやターゲットの頂点(単数または複数)を記述するリクエスト本文を想定しています。以下の表で、リクエスト本文のすべてのフィールドについて説明しています。
 
 |===
-| Key | Type | Description
+| キー | タイプ | 説明
 
 | `source`
-| vertex object
-| Each path must start from this vertex. Mutually exclusive with `sources`.
+| 頂点オブジェクト
+| 各パスは、この頂点から開始する必要があります。`sources` を使用する場合 `sources` は使用されません。
 
 | `sources`
-| vertex array
-| Each path must start from one of these vertices. Mutually exclusive with `source`.
+| 複数の頂点の配列
+| 各パスは、これらの頂点のうちの1つから開始する必要があります。`sources` を使用する場合 `source` は使用されません。
 
 | `target`
-| vertex object
-| Each path must end at this vertex. Mutually exclusive with `targets`.
+| 頂点オブジェクト
+| 各パスは、この頂点で集結する必要があります。`target` を使用する場合 `targets` は使用されません。
 
 | `targets`
-| vertex array
-| Each path must end at one of these vertices. Mutually exclusive with `target`.
+| 複数の頂点の配列
+| 各パスは、これらの頂点のうちの1つで集結する必要があります。`targets` を使用する場合 `target` は使用されません。
 
 | `vertexFilters`
-| filter array
-| (OPTIONAL) Restrict the paths to those whose vertices satisfy any of the given filters.
+| フィルターの配列
+| (オプション)頂点が指定されたフィルターのいずれかを満たすパスのみを選ぶようフィルターを掛けます。
 
 | `edgeFilters`
-| filter array
-| (OPTIONAL) Restrict the paths to those whose edges satisfy any of the given filters. See details of filters above.
+| フィルターの配列
+| (オプション)エッジが指定されたフィルターのいずれかを満たすパスのみを選ぶようフィルターを掛けます。上記のフィルターの詳細を参照してください。
 |===
 
-==== Parameters:
+==== パラメーター:
 
 |===
-| Name | Required | Description
+| 名称 | 必須 | 説明
 
 | `maxLength`
-| Yes
-| Maximum path length.
+| はい
+| 最大パス長。
 |===
 
 [WARNING]
 ====
-The current implementation of this endpoint will include paths with loops. Since it is possible to go around a loop an infinite number of times, it is important that you select the smallest value of maxLength which you consider appropriate.  Even if there are no loops in your graph, a smaller maxLength will allow your query to run faster.
+このエンドポイントの現在の仕様には、ループを伴うパスが含まれます。1つのループを何度も回る可能性があるため、maxLengthの値には、適切と思われる、できる限り小さな値を選択することが重要です。  グラフにループがない場合でも、maxLengthを小さくすることにより、クエリをより高速に実行できます。
 ====
 
-==== Sample request:
+==== リクエストサンプル:
 
-The example below requests all paths between the source vertex set {Video 0} and the target vertex set {AttributeTag "action"}, up to maximum length 3. The path may only contain Video vertices where `year >= 1984`. The result includes 3 paths: +
+次の例では、ソース頂点の集まり{Video 0}とターゲット頂点の集まり{AttributeTag "action"}の間の最大長3までのすべてのパスをリクエストしています。パスには、 `year >= 1984` の"Video"頂点のみを含めることができます。結果には次の3つのパスが含まれます。 +
 AttrributeTag "action"  --  Video 0 +
 AttrributeTag "action"  --  Video 3 -- VidUser 4 -- Video 0 +
 AttrributeTag "action"  --  Video 2 -- VidUser 0 -- Video 0
@@ -2896,8 +2896,8 @@ curl -s -X POST "http://localhost:9000/allpaths/movieNet" \
   "maxLength": 3
 }'
 
-# Result is an array of vertex json objects and edge json objects,
-# indicating the subgraph for all found vertices and edges.
+# 結果は、頂点JSONオブジェクトとエッジJSONオブジェクトの配列であり、
+# 検索されたすべての頂点とエッジのサブグラフを示します。
 {
   "version": { "edition": "developer", "api": "v2", "schema": 0 },
   "error": false,
@@ -2954,4 +2954,4 @@ curl -s -X POST "http://localhost:9000/allpaths/movieNet" \
 }
 ----
 
-Other versions of pathfinding algorithms are available in the xref:graph-ml:intro:overview.adoc[GSQL Graph Algorithm Library].
+パス検索の他のバージョンは、xref:graph-ml:intro:overview.adoc[GSQLグラフアルゴリズムライブラリー]でご覧ください。

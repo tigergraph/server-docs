@@ -1,19 +1,19 @@
-= Backup and Restore
-:description: GBAR - Graph Backup and Restore
+= バックアップおよび復元
+:description: GBAR - グラフのバックアップおよび復元
 :pp: {plus}{plus}
 
-Graph Backup And Restore (GBAR), is an integrated tool for backing up and restoring the data and data dictionary (schema, loading jobs, and queries) of a TigerGraph instance or cluster.
+グラフのバックアップと復元(GBAR)は、TigerGraphインスタンスまたはクラスターのデータとデータディクショナリー(スキーマ、読み込んだジョブ、クエリ)をバックアップおよび復元するための統合されたツールです。
 
-The backup feature packs TigerGraph data and configuration information into a directory on the local disk or a remote AWS S3 bucket. Multiple backup files can be archived. Later, you can use the restore feature to roll back the system to any backup point. This tool can also be integrated easily with Linux cron to perform periodic backup jobs.
+バックアップ機能は、TigerGraphデータと設定情報をローカルディスクまたはリモートのAWS S3バケットのディレクトリーに保存します。複数のバックアップファイルをアーカイブでき、後で復元機能を使用して、システムを任意のバックアップポイントにロールバックできます。このツールは、Linux cronと簡単に統合することができ、これにより定期的なバックアップジョブを実行することもできます。
 
-== Syntax
+== シンタックス
 
 [NOTE]
 ====
-The current version of GBAR is intended for restoring the same machine that was backed up. For help with cloning a database (i.e., backing up machine A and restoring the database to machine B), please contact link:mailto:support@tigergraph.com[support@tigergraph.com].
+GBARの現在のバージョンは、バックアップが行われた同マシンを復元することを目的としています。データベースのクローン作成(つまり、マシンAのバックアップおよびマシンBへのデータベースの復元)については、link:mailto:support@tigergraph.com[support@tigergraph.com]までお問い合わせください。
 ====
 
-.Synopsis
+.概要
 [source,text]
 ----
 Usage: gbar backup [options] -t <backup_tag>
@@ -22,62 +22,62 @@ Usage: gbar backup [options] -t <backup_tag>
 		      gbar remove|rm <backup_tag>
 		      gbar cleanup
 		      gbar expand [-a] <new_nodes>
-		           New nodes must be written in <name>:<host> pairs separated by comma
-		           Example:
+		           新しいノードはコンマで区切られた<name>:<host>のペアで記述する必要があります
+		           例:
 		               m1:192.168.1.2,m2:192.168.1.3,m3:192.168.1.4
 
-		Options:
-		 -h, --help     	Show this help message and exit
-		 -v             	Run with debug info dumped
-		 -vv            	Run with verbose debug info dumped
-		 -y             	Run without prompt
-		 -j            		Print gbar list as JSON
-		 -t BACKUP_TAG  	Tag for backup file, required on backup
-		 -a, --advanced    Enable advanced mode for node expansion
+		オプション:
+		 -h, --help     	このヘルプメッセージを表示して終了
+		 -v             	デバッグ情報をダンプして実行
+		 -vv            	詳細なデバッグ情報をダンプして実行
+		 -y             	プロンプトなしで実行
+		 -j            		リストをJSONとして出力
+		 -t BACKUP_TAG  	バックアップファイルのタグ(バックアップに必要)
+		 -a, --advanced     ノード拡張の詳細モードを有効化
 ----
 
 
 
-The `-y` option forces GBAR to skip interactive prompt questions by selecting the default answer. There is currently one interactive question:
+`-y` オプションを選択すると、GBARはインタラクティブなプロンプト質問をスキップします。その際、デフォルトの回答が選択されます。現在、インタラクティブな質問は1つあります。
 
-* At the start of restore, GBAR will always ask if it is okay to stop and reset the TigerGraph services: (y/N)? The default answer is yes.
+* GBARでは復元の開始時に、TigerGraphサービスを停止およびリセットしてもよいかどうかの質問が行われます。デフォルトの答えはyesです。
 
-== Configure GBAR
+== GBARの設定
 
-Before using the backup or the restore feature, GBAR must be configured.
+バックアップまたは復元機能を使用する前に、GBARの設定を行う必要があります。
 
-. Run `gadmin config entry system.backup`. At each prompt, enter the appropriate values for each config parameter.
+. `gadmin config entry system.backup` を実行します。プロンプトが表示されますので、それぞれの設定パラメーターに適切な値を入力します。
 +
 [source,console]
 ----
 $ gadmin config entry system.backup
 
-System.Backup.TimeoutSec [ 18000 ]: The backup timeout in seconds
+System.Backup.TimeoutSec [ 18000 ]: バックアップのタイムアウト時間(秒)
 New: 18000
 
-System.Backup.CompressProcessNumber [ 8 ]: The number of concurrent process for compression during backup
+System.Backup.CompressProcessNumber [ 8 ]: バックアップ中の圧縮の同時プロセス数
 New: 8
 
-System.Backup.Local.Enable [ true ]: Backup data to local path
+System.Backup.Local.Enable [ true ]: ローカルパスへのバックアップデータ
 New: true
 
-System.Backup.Local.Path [ /tmp/backup ]: The path to store the backup files
+System.Backup.Local.Path [ /tmp/backup ]: バックアップファイル保存のためのパス
 New: /data/backup
 
-System.Backup.S3.Enable [ false ]: Backup data to S3 path
+System.Backup.S3.Enable [ false ]: S3パスへのデータのバックアップ
 New: false
 
-System.Backup.S3.AWSAccessKeyID [ <masked> ]: The path to store the backup files
+System.Backup.S3.AWSAccessKeyID [ <masked> ]: バックアップファイル保存のためのパス
 New:
 
-System.Backup.S3.AWSSecretAccessKey [ <masked> ]: The path to store the backup files
+System.Backup.S3.AWSSecretAccessKey [ <masked> ]: バックアップファイル保存のためのパス
 New:
 
-System.Backup.S3.BucketName [  ]: The path to store the backup files
+System.Backup.S3.BucketName [  ]: バックアップファイル保存のためのパス
 New:
 ----
 
-. After entering the configuration values, run the following command to apply the new configurations
+. 設定値を入力した後、次のコマンドを実行して新しい設定を適用します
 +
 [source,console]
 ----
@@ -86,106 +86,106 @@ gadmin config apply -y
 
 [NOTE]
 ====
-* You can specify the number of parallel processes for backup and restore.
-* You must provide username and password using `GSQL_USERNAME` and `GSQL_PASSWORD` environment variables.
+* バックアップおよび復元の並列プロセスの数を指定できます。
+* 環境変数 `GSQL_USERNAME` および `GSQL_PASSWORD` を使ってユーザー名とパスワードを指定する必要があります。
 
  $ GSQL_USERNAME=tigergraph GSQL_PASSWORD=tigergraph gbar backup -t daily
 ====
 
-== Perform a backup
+== バックアップの実行
 
-To perform a backup, run the following command as the TigerGraph Linux user:
+バックアップを行うには、TigerSGraph Linuxユーザーとして、次のコマンドを実行します
 
 [source,console]
 ----
 gbar backup -t <backup_tag>
 ----
 
-Depending on your configuration settings, your backup archive will be output to your local backup path and/or your AWS S3 bucket. If you are running a cluster, there will be a backup archive on every node in the same path.
+行った設定に応じて、バックアップアーカイブはローカルバックアップパスやAWS S3バケットに出力されます。クラスターを実行している場合、同じパス内のすべてのノードにバックアップアーカイブがあります。
 
-A backup archive is stored as several files in a folder, rather than as a single file. The backup tag acts like a filename prefix for the archive filename. The full name of the backup archive will be `<backup_tag>-<timestamp>`, which is a subfolder of the backup repository.
+バックアップアーカイブは、ひとつのファイルとしてではなく、フォルダー内の複数のファイルとして保存されます。バックアップタグは、アーカイブファイル名のファイル名プレフィックスとなります。バックアップアーカイブのフルネームは `<backup_tag>-<timestamp>` となります。これはバックアップリポジトリーのサブフォルダーです。
 
-* If `System.Backup.Local.Enable` is set to `true`, the folder is a local folder on every node in a cluster, to avoid massive data moving across nodes in a cluster.
-* If `System.Backup.S3.Enable` is set to `true`, every node will upload data located on the node to the s3 repository. Therefore, every node in a cluster needs access to Amazon S3.
+* `System.Backup.Local.Enable` が `true` に設定されている場合、クラスター内のノード間での大量のデータの移動を防ぐため、フォルダーはクラスター内のすべてのノード上のローカルフォルダーとなります。
+* `System.Backup.S3.Enable` が `true` に設定されている場合、すべてのノードにおいて、その中にあるデータはS3リポジトリーにアップロードされます。したがって、クラスター内のすべてのノードはAmazon S3へのアクセスが必要です。
 
-GBAR Backup performs a live backup, meaning that normal operations may continue while the backup is in progress. When GBAR backup starts, GBAR will check if there are running loading jobs. If there are, it will pause loading for 1 minute to generate a snapshot and then continue the backup process. You can specify the loading pausing interval by the environment variable `PAUSE_LOADING`.
+GBARバックアップはライブバックアップを実行します。つまり、バックアップの進行中も通常の操作を続行できます。GBARバックアップが開始されると、GBARは実行中の読み込みジョブがあるかどうかを確認します。存在する場合は、1分間ロードを一時停止して、スナップショットを作成し、バックアッププロセスを続行します。ロードの一時停止の間隔は、環境変数 `PAUSE_LOADING` で指定できます。
 
-GBAR then sends a request to the admin server, which then requests the GPE and GSE to create snapshots of their data. Per the request, the GPE and GSE store their data under GBAR's own working directory. GBAR also directly contacts the Dictionary and obtains a dump of its system configuration information. In addition, GBAR gathers the TigerGraph system version and customized information including user-defined functions, token functions, schema layouts and user-uploaded icons. Then, GBAR compresses each of these data and configuration information files in tgz format and stores them in the `<backup_tag>-<timestamp>` subfolder on each node. As the last step, GBAR copies that file to local storage or AWS S3, according to the Config settings, and removes all temporary files generated during backup.
+次に、GBARは管理サーバーにリクエストを送り、GPEとGSEにデータのスナップショットを作成するよう要求します。これに応じてGPEとGSEは、GBARの作業ディレクトリーにデータを保存します。またGBARは、ディクショナリーに直接接続し、システム設定情報のダンプを取得します。GBARはさらに、TigerGraphシステムのバージョンとカスタマイズされた情報(ユーザー定義関数、トークン関数、スキーマレイアウト、ユーザーがアップロードしたアイコンなど)を収集します。次に、これらの各データおよび設定情報ファイルはtgz形式で圧縮され、各ノードの `<backup_tag>-<timestamp>` サブフォルダーに保存されます。最後に、GBARはそのファイルを、設定に従ってローカルストレージまたはAWS S3にコピーし、バックアップ中に生成されたすべての一時ファイルを削除します。
 
-The current version of GBAR Backup takes snapshots quickly to make it very likely that all the components (GPE, GSE, and Dictionary) are in a consistent state, but it does not fully guarantee consistency.
+GBARバックアップの現在のバージョンは、スナップショットを迅速に取得することで、すべてのコンポーネント(GPE、GSE、およびディクショナリー)をできる限り一貫性のある状態になるようにしていますが、その一貫性を完全に保証するものではありません。
 
 [WARNING]
 ====
-Backup does not save input message queues for REST{pp} or Kafka.
+バックアップでは、REST{pp}またはKafkaの入力メッセージキューの保存はできません。
 ====
 
-== List Backup Files
+== バックアップファイルの一覧表示
 
 [source,console]
 ----
 gbar list
 ----
 
-This command lists all generated backup files in the storage place configured by the user. For each file, it shows the file's full tag, its size in human-readable format, and its creation time.
+このコマンドによって、ユーザーが設定した保管場所に生成されたすべてのバックアップファイルを一覧表示できます。ファイルごとに、ファイルの完全なタグ、人間が読める形式のサイズ、および作成時間が表示されます。
 
-== Restore from a backup archive
+== バックアップファイルアーカイブからの復元
 
-Before restoring a backup, you should ensure that the backup you are restoring from is in the *same exact version* as your current version of TigerGraph.
+バックアップを復元する前に、復元に使うバックアップのバージョンが、現在お使いのTigerGraphのバージョンと**完全に同じバージョン**であることを確認する必要があります。
 
-To restore a backup, run the following command:
+バックアップを復元するには、次のコマンドを実行します。
 
 [source,console]
 ----
 gbar restore <archive_name>
 ----
 
-If GBAR can verify that the backup archive exists and that the backup's system version is compatible with the current system version, GBAR will shut down the TigerGraph servers temporarily as it restores the backup. After completing the restore, GBAR will restart the TigerGraph servers. If you are running a cluster, and you have copied the backup files to each individual node in the cluster, running `gbar restore` on any node will restore the entire cluster.
+バックアップアーカイブが存在し、バックアップのシステムバージョンが現在のシステムバージョンと互換性があることを確認できた場合、GBARはTigerGraphサーバーを一時的にシャットダウンし、バックアップを復元します。復元が完了すると、TigerGraphサーバーは再起動されます。 クラスターを実行していて、バックアップファイルをクラスター内の各ノードにコピーした場合、任意のノードで  `gbar restore` を実行すると、クラスター全体が復元されます。
 
-Restore is an offline operation, requiring the data services to be temporarily shut down. The user must specify the full archive name ( `<backup_tag>-<timestamp>` ) to be restored. When GBAR restore begins, it first searches for a backup archive exactly matching the archive name supplied in the command line. Then it decompresses the backup files to a working directory. Next, GBAR will compare the TigerGraph system version in the backup archive with the current system's version, to make sure that the backup archive is compatible with that current system. It will then shut down the TigerGraph servers (GSE, RESTPP, etc.) temporarily. Then, GBAR makes a copy of the current graph data, as a precaution. Next, GBAR copies the backup graph data into the GPE and GSE and notifies the Dictionary to load the configuration data. Also, GBAR will notify the GST to load backup user data and copy the backup user-defined token/functions to the right location. When these actions are all done, GBAR will restart the TigerGraph servers.
+復元はオフラインで行われるため、データサービスを一時的にシャットダウンする必要があります。復元する完全なアーカイブ名(  `<backup_tag>-<timestamp>` )を指定してください。GBARが復元を開始すると、まずはコマンドラインで指定されたアーカイブ名と完全に一致するバックアップアーカイブを探します。次に、バックアップファイルを作業ディレクトリーに解凍します。その後、バックアップアーカイブ内のTigerGraphシステムのバージョンを現在のシステムのバージョンの比較が行われ、バックアップアーカイブが現在のシステムと互換性があることが確認されます。その後に、TigerGraphサーバー(GSE、RESTPPなど)が一時的にシャットダウンされます。次に、予防措置として、現在のグラフデータのコピーが作成されます。GBARはバックアップグラフデータをGPEおよびGSEにコピーし、ディクショナリーに設定データを読み込むように通知します。また、バックアップユーザーデータを読み込むようGSTに通知し、バックアップされたユーザー定義のトークン/関数を適切な場所にコピーします。これらのアクションがすべて完了した後、GBARはTigerGraphサーバーを再起動します。
 
-NOTE: GBAR restore does not estimate the uncompressed data size and check whether there is sufficient disk space.
+NOTE: GBARによる復元では、非圧縮データサイズを推定せず、十分なディスク容量があるかどうかを確認します。
 
 [NOTE]
 ====
-The primary purpose of GBAR is to save snapshots of the data configuration of a TigerGraph system, so that in the future the same system can be rolled back (restored) to one of the saved states. A key assumption is that Backup and Restore are performed on the same machine, and that the file structure of the TigerGraph software has not changed.
+GBARの主な目的は、TigerGraphシステムのデータ設定のスナップショットを保存することです。これにより、同じシステムを、保存された状態のうちの1つにロールバック(復元)することができます。 バックアップと復元が同じマシンで実行され、TigerGraphソフトウェアのファイル構造が変更されていないことが重要な前提となります。
 ====
 
 [WARNING]
 ====
-Restore needs enough free space to accommodate both the old gstore and the gstore to be restored.
+復元には、古いgstoreと復元するgstoreの両方を収めるのに十分な空き容量が必要です。
 ====
 
-== Remove a backup
+== バックアップの消去
 
-To remove a backup, run the `gbar remove` command:
+バックアップを消去するには、 `gbar remove` コマンドを実行します。
 
 [source,console]
 ----
 $ gbar remove <backup_tag>
 ----
 
-The command removes a backup from the backup storage path. To retrieve the tag of a backup, you can use the `gbar list` command.
+このコマンドは、バックアップストレージパスからのバックアップの消去を行います。バックアップのタグを取得するには、 `gbarlist` コマンドを使用できます。
 
-== Clean up temporary files
+== 一時ファイルのクリーンアップ
 
-Run `gbar cleanup` to delete the temporary files created during backup or restore operations:
+バックアップや復元作業中に生成された一時ファイルを削除するには `gbar cleanup` コマンドを実行します。
 
 [source,console]
 ----
 $ gbar cleanup
 ----
 
-== GBAR Detailed Example
+== GBARの詳細例
 
-The following example describes a real example, to show the actual commands, the expected output, and the amount of time and disk space used, for a given set of graph data. For this example, an Amazon EC2 instance was used, with the following specifications:
+次に、グラフデータのセットの実際の例を示し、コマンド、期待される出力、所要時間とディスク容量について説明します。この例では、Amazon EC2インスタンスおよび次の設定が使用されています。
 
-Single instance with 32 vCPU + 244GB memory + 2TB HDD.
+32 vCPU + 244GBメモリ+ 2TB HDDのシングルインスタンス。
 
-Naturally, backup and restore time will vary depending on the hardware used.
+バックアップや復元の所要時間は、使用するハードウェアによって異なります。
 
-=== GBAR Backup Operational Details
+=== GBARバックアップ作業詳細
 
-To run a daily backup, we tell GBAR to backup with the tag name _daily_.
+毎日バックアップを実行するには、タグ名 _daily_ でGBARにバックアップ指示を入れます。
 
 [source,console]
 ----
@@ -202,11 +202,11 @@ $ gbar backup -t daily
 Backup to daily-20180607232159 finished in 31m33s.
 ----
 
-The total backup process took about 31 minutes, and the generated archive is about 49 GB. Dumping the GPE + GSE data to disk took 12 minutes. Compressing the files took another 20 minutes.
+バックアッププロセス全体には約31分かかり、生成されたアーカイブは約49GBです。GPEデータ、GSEデータをディスクにダンプするのに12分かかり、ファイルの圧縮にはさらに20分かかっています。
 
-=== GBAR Restore Operational Details
+=== GBAR復元作業詳細
 
-To restore from a backup archive, a full archive name needs to be provided, such as _daily-20180607232159_. By default, restore will ask the user to approve to continue. If you want to pre-approve these actions, use the "-y" option. GBAR will make the default choice for you.
+バックアップアーカイブから復元を行うには、「 _daily-20180607232159_ 」のように、完全なアーカイブ名を指定する必要があります。デフォルトでは、復元を行う際、ユーザーは続行の承認を求められます。これらのアクションを事前に承認する場合は、「-y」オプションを使用すると、GBARがデフォルトの選択を行います。
 
 [source,console]
 ----
@@ -234,17 +234,17 @@ Restore from daily-20180607232159 finished in 22m55s.
 Old gstore data saved under /home/tigergraph/tigergraph/gstore with suffix -20180608001836, you need to remove them manually.
 ----
 
-For our test, GBAR restore took about 23 minutes. Most of the time (20 minutes) was spent decompressing the backup archive.
+このテストでは、GBARの復元に約23分かかりました。ほとんどの時間(20分)は、バックアップアーカイブの解凍に費やされています。
 
-Note that after the restore is done, GBAR informs you were the pre-restore graph data (gstore) has been saved. After you have verified that the restore was successful, you may want to delete the old gstore files to free up disk space.
+復元が完了すると、GBARは復元前のグラフデータ(gstore)が保存されたことを通知します。復元が成功したことを確認したら、ディスク領域を空けるために古いgstoreファイルを削除と良いでしょう。
 
-=== Performance Summary of Example
+=== 本例のパフォーマンス概要
 
 |===
-| GStore size | Backup file size | Backup time | Restore time
+| GStoreサイズ | バックアップサイズ | バックアップ時間 | 復元時間
 
 | 219GB
 | 49GB
-| 31 mins
-| 23 mins
+| 31 分
+| 23 分
 |===

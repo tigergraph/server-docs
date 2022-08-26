@@ -1,51 +1,51 @@
-= Release Notes
-:description: Release notes for TigerGraph 3.4.
+= リリースノート
+:description: リリースノート - TigerGraph 3.4.
 :page-aliases: change-log.adoc
 
-TigerGraph Server 3.4.0 was released on Dec 21st, 2021.
+2021年12月21日にTigerGraph Server 3.4.0がリリースされました。
 
-== Security patch for Log4j CVE-2021-45105
-TigerGraph 3.4.0 includes a security patch for Log4j CVE-2021-45105.
-See <<Fixed issues>> for details.
+== Log4j CVE-2021-45105のセキュリティパッチ
+TigerGraph 3.4.0には、Log4j CVE-2021-45105のセキュリティパッチが含まれています。
+詳しくは <<改善された問題>> をご覧ください。
 
-== New - TigerGraph GraphQL Service
-Along with TigerGraph Server 3.4.0, we are proudly introducing xref:graphql::intro.adoc[TigerGraph GraphQL Service].
+== 新機能 - TigerGraph GraphQL サービス
+TigerGraphサーバ3.4.0に伴い、xref:graphql::intro.adoc[TigerGraph GraphQL Service]を導入しました。
 
-TigerGraph GraphQL Service allows you to make GraphQL requests to access graph data in TigerGraph.
-To learn more, please see xref:graphql::intro.adoc[TigerGraph GraphQL Service].
+TigerGraph GraphQL Serviceは、TigerGraphのグラフデータにアクセスするためのGraphQLリクエストを行うことができるようになります。
+詳しくは、 xref:graphql::intro.adoc[TigerGraph GraphQL Service]をご覧ください。
 
-== New Features
+== 新機能
 
-Below is a list of new features and improvements in TigerGraph 3.4.0:
+以下は、TigerGraph 3.4.0の新機能と改善点のリストです。
 
-=== Manageability
-* Added the xref:ha:cluster-commands.adoc#_show_current_gsql_leader[`-leader` option] to `gsql` to display the current cluster leader.
-* Added Oracle Linux 8 (OEL 8) to the xref:{page-component-version}@installation:hw-and-sw-requirements.adoc#_certified_operating_systems[list of certified operating systems].
-* Improved query installation process.
-Failure in installing a subset of the queries in a single `INSTALL QUERY` command will no longer cause all installations to abort.
+=== 管理性
+* 現在のクラスタリーダーを表示するために `gsql` に　xref:ha:cluster-commands.adoc#_show_current_gsql_leader[`-leader` オプション] を追加しました。
+* Oracle Linux 8 (OEL 8) xref:{page-component-version}@installation:hw-and-sw-requirements.adoc#_certified_operating_systems[認定オペレーティングシステム一覧]に追加しました。
+* クエリのインストールプロセスを改善しました。
+1つの `INSTALL QUERY` コマンドでクエリのサブセットをインストールする際に失敗しても、すべてのインストールが中断されなくなりました。
 
-=== Observability
-* Added xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_show_service_status[endpoint `POST /current-service-status`] to report TigerGraph service status through HTTP requests.
+=== 可観測性
+* TigerGraph のサービス状況を HTTP リクエストで報告する xref:{page-component-version}@tigergraph-server:API:built-in-endpoints.adoc#_show_service_status[エンドポイント `POST /current-service-status`] を追加しました。
 
-=== Reliability
-* Added Kafka protection to GSE to prevent message loss during high-volume data loading.
+=== 信頼性
+* GSEにKafkaプロテクションを追加し、大量データロード時のメッセージロスを防止します。
 
-=== Security
-* Masked AWS S3 secret from GSQL logs
+=== セキュリティ
+* GSQL logsGSQLのログから AWS S3 のシークレットをマスク処理します。
 
 
-=== Usability - GSQL
-* Added support for xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_container_variable[local container variables] in the GSQL Query Language.
-* Relaxed GSQL local variable declaration rules.
-Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_base_type_variables[declared at a lower level] to override the value of a variable with the same name.
-* Added support for declaring a xref:3.4@gsql-ref:querying:accumulators.adoc#_heapaccum[`HeapAccum`] without specifying size.
-* Removed the requirement of `LIMIT` clauses when using `ORDER BY` in xref:3.4@gsql-ref:querying:select-statement/sql-like-select-statement.adoc[SQL-like `SELECT` statements].
-* Removed the limitations on the following functions in Distributed Query Mode:
+=== ユーザビリティ - GSQL
+* GSQL クエリ言語における xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_container_variable[ローカルコンテナ変数] のサポートを追加しました。
+* GSQLのローカル変数の宣言ルールを緩和しました。
+ローカルベース型変数を xref:3.4@gsql-ref:querying:declaration-and-assignment-statements.adoc#_local_base_type_variables[より低いレベルで宣言] して、同じ名前の変数の値を上書きできるようになりました。
+* サイズを指定せずに xref:3.4@gsql-ref:querying:accumulators.adoc#_heapaccum[`HeapAccum`] を宣言できるようになりました。
+* xref:3.4@gsql-ref:querying:select-statement/sql-like-select-statement.adoc[SQLに似た `SELECT`  文で] `ORDER BY` を使用する際の `LIMIT` 節の必要性が削除されました。
+* 分散クエリモードにおける以下の関数の制限を解除しました。
 ** `edgeAttribute()`
 ** `neighborAttribute()`
 ** `neighbor()`
 ** `size()`
-* Added removal methods to xref:3.4@gsql-ref:querying:accumulators.adoc#_listaccum[`ListAccum`] andxref:3.4@gsql-ref:querying:accumulators.adoc#_mapaccum[`MapAccum`]:
+* xref:3.4@gsql-ref:querying:accumulators.adoc#_listaccum[`ListAccum`] と xref:3.4@gsql-ref:querying:accumulators.adoc#_mapaccum[`MapAccum`] に削除機能を追加
 ** `ListAccum`
 *** `.remove()`
 *** `.removeOne()`
@@ -53,93 +53,93 @@ Local base type variables can now be xref:3.4@gsql-ref:querying:declaration-and-
 ** `MapAccum`
 *** `.removeKey()`
 
-=== Usability - GraphStudio and Admin Portal
-* Added support for _xref:{page-component-version}@gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_add_a_pattern_view[Pattern View]_ in Visual Query Builder (VQB) that allows outputting a specified subset of a visual pattern's match results.
-* Added support for using a vertex or edge's primary ID in expressions if primary ID is marked as an attribute.
-* Added support for xref:gui:graphstudio:explore-graph/graph-exploration-panel.adoc[formatting number attributes].
-* Added support for search in GSQL query list.
-* Added support for search in visual pattern list.
-* Added a removal tool tip and a checkbox to select all privileges in the user-defined roles interface
-* Removed the deprecated `STRING COMPRESS` data type from schema design options
+=== ユーザビリティ - GraphStudioと管理ポータル
+* Visual Query Builder (VQB)において、ビジュアルパターンのマッチング結果を指定したサブセットで出力できる _xref:{page-component-version}@gui:graphstudio:build-graph-patterns/visual-query-builder-overview.adoc#_add_a_pattern_view[Pattern View]_ をサポートしました。
+* 頂点やエッジのプライマリ ID が属性としてマークされている場合、その ID を式で使用できるようになりました。
+* xref:gui:graphstudio:explore-graph/graph-exploration-panel.adoc[数値属性の書式設定]に対応しました。
+* GSQLクエリリストでの検索に対応しました。
+* ビジュアルパターンリストでの検索に対応しました。
+* ユーザー定義ロールのインターフェイスに、削除ツールチップと全権限を選択するチェックボックスを追加しました。
+* スキーマ設計オプションから非推奨の `STRING COMPRESS` データ型を削除しました。
 
-== Fixed issues
+== 改善点
 
-=== Fixed in 3.4.0
-* Upgraded log4j to 2.17.0 to resolve potential security vulnerability
-* Reduced system minimum free memory requirement for transactions
-* Increased the timeout limit for downloading, updating, and deleting the graph catalog
-* Fixed a bug that allowed non-privileged users being able to access GSQL output files through the Admin Portal
-* Increased timeout limit for file operations
-* Fixed an issue that led to GSE crash when a subquery uses file variables
-* Fixed issue where SmartContainer collects hardware-info more than once
-* Fixed an issue that led to cluster shrinking failure when instance as over 1000 queries
-* Increased timeout limit for checking Kafka broker ID
-* Fixed an issue that caused certain queries to use more memory than expected
-* Fixed an issue that in rare cases caused RESTPP memory leak
-* Fixed an issue that occasionally caused GPE to hang when interpreter raises an exception
-* Disabled proxy buffering for /gsqlserver endpoints
-* Fixed an issue that led to backup and restore failures on Kubernetes deployments
-* Fixed an issue with query-request memory tracking that in rare cases led to GPE segmentation fault
-* Fixed an issue that caused unexpected early query return when `getAttr()` has an invalid attribute
-* Fixed an issue that caused local base type variable to lose type inference after being overridden
-* Fixed an issue that caused `PER` clause to return unexpected results
-* Fixed an issue that produced unexpected output when a `WHERE` clause uses parentheses
-* Fixed an issue that caused `v.outdegree()` to return unexpected results
-* Fixed an issue that cause errors in accumulator conjunctive functions calls
-* Fixed an issue in GraphStudio that led to browser crash when dealing with huge map data columns
-* Fixed an issue where services don't automatically restart after updating license
-* Fixed an issue with GSQL syntax checker that threw an unexpected error when a SQL-like query uses built-in functions with multiple arguments
-
-
+=== 3.4.0の改善点
+* Log4j を 2.17.0 にアップグレードし、潜在的なセキュリティ脆弱性を解消しました。
+* トランザクションに必要なシステム最小空きメモリの削減
+* グラフカタログのダウンロード、更新、削除のタイムアウト制限を強化
+* 非特権ユーザーが管理者ポータルを介して GSQL 出力ファイルにアクセスできるバグを修正
+* ファイル操作のタイムアウト制限を増加
+* サブクエリでファイル変数を使用すると GSE がクラッシュする問題を修正
+* SmartContainer がハードウェア情報を複数回収集する問題を修正
+* インスタンスが 1000 クエリを超える場合、クラスタの縮小に失敗することがある問題を修正
+* Kafka ブローカー ID を確認する際のタイムアウト制限を増加
+* 特定のクエリで想定以上のメモリを消費する問題を修正
+* まれにRESTPPのメモリリークが発生する問題を修正
+* インタプリタが例外を発生させたときにGPEがハングアップすることがある問題を修正
+* /gsqlserverエンドポイントに対するプロキシバッファリングを無効にしました。
+* Kubernetes のデプロイメントでバックアップとリストアに失敗する問題を修正しました。
+* まれに GPE のセグメンテーションフォールトにつながるクエリリクエストのメモリトラッキングの問題を修正しました。
+* `getAttr()` に無効な属性が含まれている場合、予期せずクエリーが早期終了することがある問題を修正しました。
+* ローカルベース型変数がオーバーライドされると型推論ができなくなる問題を修正
+* `PER` 句が予期しない結果を返すことがある問題を修正しました。
+* `WHERE` 句で括弧を使用すると、予期しない出力を生成する問題を修正しました。
+* `v.outdegree()`  が予期しない結果を返すことがある問題を修正しました。
+* アキュムレータの接続関数の呼び出しでエラーが発生する問題を修正しました。
+* GraphStudio で巨大なマップデータのカラムを扱うとブラウザがクラッシュする問題を修正
+* ライセンス更新後、サービスが自動的に再起動しない問題を修正
+* GSQL 構文チェッカーで、SQLに似たクエリが複数の引数を持つ組み込み関数を使用した場合に予期せぬエラーを発生させる問題を修正
 
 
-== Known Issues
 
-=== Applications
+
+== 既知の問題
+
+=== アプリケーション
 
 * *GraphStudio*
- ** xref:gui:graphstudio:known-issues.adoc[Known Issues for GraphStudio]
- ** The No-Code Data Migration feature is in Alpha release. Your feedback would be appreciated.
- ** The No-Code Visual Query Builder is in Beta release. Your feedback would be appreciated.
-* *Admin Portal*
- ** xref:gui:admin-portal:known-issues.adoc[Known Issues for AdminPortal]
+ ** xref:gui:graphstudio:known-issues.adoc[GraphStudioの既知の問題]
+ ** ノーコードデータ移行機能はアルファ版に用意しております。ご使用の上、フィードバックをいただけましたら幸いです。
+ ** ノーコードビジュアルクエリービルダーはベータ版にあります。ご使用の上、フィードバックをいただけましたら幸いです。
+* **管理ポータル**
+ ** xref:gui:admin-portal:known-issues.adoc[管理ポータルの既知の問題]
 
 === *GSQL*
 
-* *Multiple (Conjunctive) Path Patterns*:
- ** There are no known functional problems, but the performance has not been optimized. Your feedback would be appreciated.
-* *DML type check error in V2 Syntax:*
- ** GSQL will report a wrong type check error for Query block with multiple POST-ACCUM clauses and Delete/Update attribute operation.
-* *Turn on GSQL HA manually when upgrading from 3.0.x*
- ** Users who are upgrading from 3.0.X need to manually start GSQL HA service. Please reach out to support for help with the process documented in: https://tigergraph.freshdesk.com/a/solutions/articles/5000865072
-* *Stale data visible after Deletes using index*
- ** Queries that use secondary index may still see the vertices being deleted until after the snapshots are fully rebuilt.
+* **複数の（連結）パスパターン**
+ ** 既知の機能上の問題はありませんが、パフォーマンスは最適化されていません。ご使用の上、フィードバックをいただけましたら幸いです。
+* **V2構文でのDMLタイプチェックエラー**
+ ** GSQLは、複数のPOST-ACCUM句と属性の削除/更新の操作など、Queryブロックで、誤ったタイプチェックエラーを報告します。
+* **3.0.xからアップグレードする際は、GSQL HAを手動でオンにしてください**
+ ** 3.0.Xからアップグレードする際は、GSQL HAサービスを手動でスタートさせる必要があります。サポートが必要な場合は、お問い合わせください。プロセスの説明につきましては、以下をご覧ください。 https://tigergraph.freshdesk.com/a/solutions/articles/5000865072
+* **index使用時、削除後にも古いデータが表示されます**
+ ** セカンダリインデックスを使用するクエリーでは、スナップショットが完全に再構築されるまで、削除された頂点が表示されていることがあります。
 
-== Release notes for previous versions
-* xref:3.3@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.3]
-* xref:3.2@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.2]
+== 以前のバージョンのリリースノート
+* xref:3.3@tigergraph-server:release-notes:release-notes.adoc[リリースノート - TigerGraph 3.3]
+* xref:3.2@tigergraph-server:release-notes:release-notes.adoc[リリースノート - TigerGraph 3.2]
 
-== Compatibility with TigerGraph 3.1
+== TigerGraph 3.1との互換性
 
-The following changes were made to the built-in roles in TigerGraph's Role-based Access Control
+lTigerGraphのロール・ベースのアクセスコントロール内の、組み込みのロールに以下の変更が加えられました
 
-* The built-in role `queryreader` can no longer run queries that include updates to the database.
-** To emulate the old `queryreader` role, create a role with all `queryreader` privileges, and also grant the `WRITE_DATA` privilege to the new role.
-* The built-in role `admin` can no longer create users
-** To emulate the old `admin` role, create a global role with all `admin` privileges, and also grant the `WRITE_USER` privilege to the new role.
-* To learn more about role management and the privileges of built-in roles, see:
-** xref:user-access:role-management.adoc[]
-** xref:reference:list-of-privileges.adoc[]
+* 組み込みのロール `queryreader` は、クエリ（データベースの更新を含みます）を実行できなくなりました。
+** 古い `queryreader` ロールをエミュレートするには、すべての `queryreader` 権限を持つロールを作成し、そこに `WRITE_DATA` 権限も付与します。
+* 組み込みのロール `admin` はユーザーを作成できなくなりました
+** 古い `admin` ロールをエミュレートするには、すべての `admin` 権限を持つグローバルロールを作成し、そこに `WRITE_USER` 権限も付与します。
+* ロール管理と組み込みロールの権限についての詳細は、以下をご覧ください。
+** xref:user-access:role-management.adoc[ロール管理]
+** xref:reference:list-of-privileges.adoc[権限]
 
-== Compatibility with TigerGraph 2
+== TigerGraph 2との互換性
 
-Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to deliver significant improvements. While we make every effort to maintain backward compatibility, in selected cases APIs have changed or deprecated features have been dropped, in order to advance the overall product.
+大規模な改訂(TigerGraph 2からTigerGraph 3への改訂など)の際は、大幅な改善を行っています。当社では下位互換性を維持するために最大限の注意を払っていますが、製品の品質向上のため、APIの変更や、廃止された機能の削除が行われていることがあります。
 
-*Data migration*: A tool is available to migrate the data in TigerGraph 2.6 to TigerGraph 3.0. Please contact TigerGraph Support for assistance.
+**データの移行**: TigerGraph 2.6のデータをTigerGraph 3.0に移行するツールをご利用いただけます。サポートにつきましては、TigerGraphサポートにお問い合わせください。
 
-*Query and API compatibility*:
+**クエリーとAPIの互換性**:
 
-* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.  Please see xref:gadmin:management-with-gadmin.adoc[Managing with gadmin].
-* Some features which were previously deprecated have been dropped. Please see xref:release-notes:v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
+* 一部のgadmin構文が変更されました。特に `gadmin setconfig` は `gadmin configset` に変更されていますのでご注意ください。詳細はxref:gadmin:management-with-gadmin.adoc[gadminによる管理]を参照してください。
+* 以前に廃止された機能の一部は削除されました。詳細なリストについては、xref:release-notes:v3.0-removal-of-previously-deprecated-features.adoc[V3.0以前に廃止された機能の削除]をご確認ください。
 
 include::v3.0-removal-of-previously-deprecated-features.adoc[]

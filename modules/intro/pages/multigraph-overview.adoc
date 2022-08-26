@@ -1,73 +1,73 @@
-= Multigraph Overview
+= MultiGraph概要
 
-One TigerGraph instance can manage multiple graphs, each with its own set of user privileges. This first-of-its-kind capability, dubbed MultiGraph, is available as an optional service in the TigerGraph platform.
+1つのTigerGraphインスタンスは複数のグラフを管理することができ、それぞれに独自のユーザー権限を持たせることができます。MultiGraphはこの種の初めての機能であり、TigerGraphプラットフォームのオプションサービスとして利用できます。
 
-image::image (16).png[MultiGraph allows one graph schema to be shared accross all departments, with different levels of access control at the type level. ]
+image::image (16).png[MultiGraphを使用すると、1つのグラフスキーマをすべての部門で共有できます(タイプレベルで異なるアクセス制御レベルを持ちます)]
 
-MultiGraph enables several powerful use cases:
+MultiGraphは、さまざまなユースケースにパワフルに対応します。
 
-* Multiple Tenancy: Use one TigerGraph instance to support several completely separate data sets, each with its own set of users. Each user community cannot see the other user communities or other data sets.
-* Fine-grained privileges on the same set of data: Role-based access control, available on single graphs, grants permission for the privilege to run queries (include data modification queries). In a single graph scheme, there is no way to say "Query X can be run by some users but not by others." Using multiple graphs defined over the same set of data, each graph can have its own set of queries and own set of users, in effect customizing who can run which queries.
-* Overlapping graphs: Graphs can partially overlap, to enable a combination of shared and private data.
-* Hierarchical subgraphs: A Graph X can be defined to cover the domains of Graphs Y and Z, that is, Graph X = (Graph Y) U (Graph Z). This provides an interesting way to describe a data partitioning or parent-child structure. (This is not the same as defining sub-classes of data types; data types are still independent.)
+* マルチテナンシー: 1つのTigerGraphインスタンスを使用して、それぞれが独自のユーザーセットを持つ複数の完全に別個のデータセットをサポートします。各ユーザーコミュニティは、他のユーザーコミュニティや他のデータセットを見ることはできません。
+* 同一データセットに対するきめ細かい権限付け: 単一のグラフ内で利用できる役割ベースのアクセス制御によって、クエリ(データ変更クエリを含む)を実行する権限の付与ができます。単一のグラフスキームでは、あるクエリを一部のユーザーだけが実行できるようにする方法はありません。同じデータセットに対して定義された複数のグラフを使用すれば、各グラフは独自のクエリセットと独自のユーザーセットを持つことができ、実質的に、誰がどのクエリを実行できるかをカスタマイズすることができます。
+* グラフのオーバーラップ: 共有データとプライベートデータを組み合わせられるよう、グラフを部分的にオーバーラップさせることができます。
+* 階層サブグラフ: 例えば、グラフXは、グラフYおよびZのドメインをカバーするように定義できます。つまり、グラフX =(グラフY) U (グラフZ)ということになります。これを工夫して利用すれば、データのパーティション化または親子構造を記述する際にさまざまな設定が可能となります。(これは、データ型のサブクラスを定義することと同義ではありません。データタイプは依然として独立しています。)
 
-If you implement only one graph now, you can upgrade to MultiGraph and add additional graphs at any time, without having to redo your existing design.
+現在、グラフを1つだけ導入している場合でも、既存の設計をやり直すことなく、いつでもMultiGraphにアップグレードしてグラフの追加が可能です。
 
-== Concepts
+== 概念
 
-=== Graphs and Graph Domains
+=== グラフおよびグラフドメイン
 
-A graph is defined as a set of vertex types and edge types. More precisely, it is all the vertices and edges of that collection of types. The domain of a graph is its set of vertex types and edge types. Each graph contains its own data loading jobs and queries, which do not affect and are not visible to other graphs.
+グラフは、頂点タイプとエッジタイプの集合として定義されます。それは、より正確に言うなら、頂点タイプやエッジタイプの集まりの中のすべての頂点やエッジです。グラフのドメインは、頂点タイプとエッジタイプの集合です。各グラフには、独自のデータ読み込みジョブとクエリが含まれています。これらは他のグラフに影響を与えず、表示もされません。
 
 [,gsql]
 ----
-CREATE GRAPH <gname> (<list of vertex types & edge types>)
+CREATE GRAPH <gname> (<頂点タイプおよびエッジタイプのリスト>)
 ----
 
 [NOTE]
 ====
-*MultiGraph Principles*
+**MultiGraphの原則**
 
-* A TigerGraph instance with a basic license key can have one graph. A TigerGraph instance with a MultiGraph license key can create multiple graphs.
+* 基本ライセンスキーのTigerGraphインスタンスは、1つのグラフのみを持つことができます。MultiGraphライセンスキーのTigerGraphインスタンスは、複数のグラフ作成が可能です。
 +
-**`superuser`**and **`globaldesigner`**can define one or more graphs. The domains of the two graphs may be completely separate, may overlap, or may coincide exactly.
+**`superuser`**および**`globaldesigner`**は、1つ以上のグラフを定義できます。2つのグラフのドメインは、完全に分離させることも、重複させることも、正確に一致させることもできます。
 
-* A vertex type or edge type created by a superuser is a global type.
-* A *`superuser`* or *`globaldesigner`* can include a global vertex or edge type in one or more graphs. Global types can be shared among multiple graphs.
-* Users with the *`admin`* or *`designer`* role for a particular graph can add local vertex types and edge types to their own graph. Local types cannot be shared among multiple graphs.
+* superuserによって作られた頂点タイプまたはエッジタイプはグローバルタイプとなります。
+* *`superuser`* または *`globaldesigner`* は、1つ以上のグラフにグローバル頂点またはエッジタイプを追加することができます。グローバルタイプの頂点やエッジは、複数のグラフ間での共有が可能です。
+* 特定のグラフで *`admin`* または *`designer`* の役割を持つユーザーは、ローカルの頂点タイプとエッジタイプを自分のグラフに追加できます。ローカルタイプの頂点やエッジは、複数のグラフ間での共有はできません。
 ====
 
-=== Graph-Specific Roles and Privileges
+=== グラフ固有の役割と権限
 
-The TigerGraph system includes several predefined roles**.** Each role is a fixed and logical set of privileges to perform operations. In order to access a graph, a user must be granted a role on that graph. Without a role, a user has no meaningful access.
+TigerGraphシステムには、事前に定義された役割がいくつかあります。それぞれの役割は、操作を実行するための定められた論理的権限を持っています。グラフにアクセスするには、ユーザーにそのグラフにおける役割を付与する必要があります。役割がないと、ユーザーはアクセスを行うことができません。
 
 [CAUTION]
 ====
-*Role-Based MultiGraph Access Control*
+**役割をベースとしたMultiGraphアクセス制御**
 
-* User roles are granted or revoked on a per-graph basis. Each GRANT or REVOKE statement specifies not only a role but also a graph.
-* The `GRANT`/`REVOKE` privilege is reserved for superuser and admin users.
-* The *`superuser`* can grant a role to any user on any graph.
-* A *`superuser`* can pick a user to be an *`admin`* on a particular graph. The admin can then manage user privileges on their graph.
-* A user may be granted different roles on different graphs.
+* ユーザーの役割は、グラフごとに付与したり取り消したりすることができます。役割の `GRANT` (付与)または `REVOKE` (取消)ステートメントは、グラフによって変更できます。
+* `GRANT` / `REVOKE` の設定の権限を持つのは、`superuser` と `admin` (管理者)ユーザーです。
+* *`superuser`* は、任意のグラフの任意のユーザーに役割を付与できます。
+* *`superuser`* は、特定のグラフで *`admin`* (管理者)ユーザーを選択できます。管理者は、グラフのユーザー権限の管理を行うことができます。
+* ユーザーに付与される役割を、グラフごとに変えることもできます。
 ====
 
-For details about managing users, privileges, and roles, see xref:user-access:README.adoc[User Privileges and Authentication]. There you will find a chart describing each of the roles in detail.
+ユーザー、権限、役割についての詳細は、xref:user-access:README.adoc[ユーザー権限と認証]を参照して下さい。各役割について詳細に説明したチャートをご覧いただけます。
 
-=== Setting a Working Graph
+=== 作業グラフの設定
 
 [NOTE]
 ====
 
-* A user must set their working graph in order to access that graph, either using the -g flag with the GSQL command, or by using the `USE GRAPH` command.
-* Users who have privileges on more than one graph (including superusers) may only work with one graph at a time. The `GLOBAL SCHEMA_CHANGE JOB` stretches this rule.
+* ユーザーは、グラフにアクセスするために、作業グラフを設定する必要があります。そのためには、GSQLコマンドで-gフラグを使用するか、 `USE GRAPH` コマンドを使用してください。
+* 複数のグラフに対する権限を持つユーザー(superuserを含みます)でも、一度に1つのグラフのみ操作できます。 `GLOBAL SCHEMA_CHANGE JOB` については、その限りではありません。
 ====
 
-Note that the `CREATE` commands for queries, loading jobs, and schema_change jobs require that the graph name be specified, even for systems with only one graph.
+クエリ、ジョブの読み込み、schema_changeジョブに使用する `CREATE` コマンドでは、グラフが1つのみのシステムでも、グラフ名を指定する必要がありますのでご注意ください。
 
-== Effect on Other Specifications
+== 他の仕様への影響
 
-. RESTPP Endpoints: Endpoints that pertain to the graph data must include the name of the graph in the request URL.  See xref:API:intro.adoc[RESTPP API User Guide.]
-. User Authentication secrets and tokens: Our commands and procedures follow OAuth standards.  See xref:user-access:README.adoc[].
+. RESTPPエンドポイント: グラフデータに関連するエンドポイントには、リクエストURL内にグラフ名を含める必要があります。これについては、xref:API:intro.adoc[RESTPP APIユーザーガイド]を参照してください。
+. ユーザー認証のシークレットとトークン: コマンドと手順はOAuth標準に準拠しています。詳細はxref:user-access:README.adoc[こちら]を参照してください。
 
-There are many other details about using the MultiGraph feature, especially if your application has multiple users with different roles. In the documentation, the Multiple Graph logo is placed next to relevant topics:  image:mg_logo_vl_50_new.jpg[] 
+MultiGraph機能の使用については、特に、アプリケーションに異なる役割を持つ複数のユーザーがいる場合、他にも知っておくべき詳細情報が多くあります。ドキュメントで内の関連トピックの横には、image:mg_logo_vl_50_new.jpg[Multiple Graphのロゴ] が表示されています。
