@@ -1,0 +1,25 @@
+= Restore a Database Backup from the Same Cluster
+:sectnums:
+:description:
+
+This page walks you through the process of restoring a database from a backup that was created from the same cluster.
+
+Restoring a backup is an offline operation.
+Your database will be down for a short period of time during database restore.
+
+== Prerequisites
+* You have access to the TigerGraph Linux user account on your cluster.
+All commands must be run from the TigerGraph Linux user.
+* You have access to a backup that was created from the same cluster.
+
+== Procedure
+To restore a backup, run the following command:
+
+[.wrap,console]
+----
+$ gadmin backup restore <backup_tag>
+----
+
+For example, if you want to restore a backup with the tag `weekly-2022-08-31T004132`.
+
+The restore operation cannot be canceled once started.
