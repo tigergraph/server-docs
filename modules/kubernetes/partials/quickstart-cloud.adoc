@@ -20,7 +20,7 @@ A `deploy` directory will be created automatically, and you should find the mani
 
 [source,console,subs="attributes+"]
 ----
-$ ./tg {cloud-code} kustomize -s 1
+$ ./tg {cloud-code} kustomize -s 1 -v <version>
 ----
 
 ==== Deploy manifest
@@ -83,7 +83,7 @@ If you don't specify a namespace, the command will delete the resources in the n
 
 [source,console,subs="attributes+"]
 ----
-$ ./tg {cloud-code} delete -n <namespace_name>
+$ ./tg {cloud-code} delete -n <namespace>
 ----
 
 
@@ -110,9 +110,9 @@ Use `-s` or `--size` to indicate the number of nodes in the cluster. Use the `--
 
 For example, the following command will create a manifest that will deploy a 3*2 cluster with a replication factor of 2 and a partitioning factor of 3.
 
-[source,console,subs="attributes+"]
+[source.wrap,console,subs="attributes+"]
 ----
-$ ./tg {cloud-code} kustomize -s 6 --ha 2
+$ ./tg {cloud-code} kustomize -s 6 --ha 2 -v <version> -n <namespace>
 ----
 
 The command will create a directory named `deploy` with the manifest inside.
