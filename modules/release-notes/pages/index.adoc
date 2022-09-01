@@ -47,33 +47,9 @@ The following is a list of new features and improvements:
 [#_fixed_issues]
 == Fixed issues
 
-=== Fixed in 3.6.1
-TigerGraph Server 3.6.1 was released on July 7th, 2022.
 
-* Fixed an issue where high-frequency schema changes can cause GPE dysfunction in rare cases.
-* Fixed an issue in GraphStudio that caused the data mapping arrow between the file icon and an edge type to disappear in some cases.
-* Fixed an issue where certain internal API endpoints did not properly authenticate incoming requests.
-
-=== Fixed in 3.6.0
-
-* Fixed a bug that caused issues reading the attributes of a vertex after cluster expansion if the vertex type had deleted attributes.
-* Fixed an issue that caused Graph Processing Engine (GPE) dysfunction in rare cases during concurrent read and write operations on the same vertex and its connected edges during data loading.
-* Fixed an issue that delayed the display of loading status on Load Data page in GraphStudio.
-* Fixed an issue where `v.getAttr()` function could cause GPE dysfunction if it is provided the wrong type.
-* Fixed an issue where if a Kafka topic only has one message, it cannot be consumed.
-* Fixed an issue with Graph Storage Engine (GSE) leader election that caused GSE dysfunction.
-* Fixed an issue that prevented GraphStudio from accepting a `SET<VERTEX>` type parameter if the size of the parameter is greater than 10.
-* Fixed an issue that could cause a query written in GSQL syntax V2 that uses a `POST-ACCUM` clause without an `ACCUM` clause to produce wrong results in rare cases.
-* Fixed an issue that could cause a query written in GSQL syntax v2 that uses multiple `POST-ACCUM` clauses that refer to the source vertex alias to produce wrong results in rare cases.
-* Fixed an issue that resulted in `SHOW LOADING STATUS ALL` command showing inaccurate loading job status when an instance has multiple graphs.
-* Fixed an issue that caused KAFKACONN out-of-memory (OOM) issue when loading large datasets through the data streaming connector.
-* Fixed an issue that affected the high availability (HA) of the application server on Elastic Kubernetes Service (EKS).
-* Removed inaccurate loading metrics from the Load Data page in GraphStudio.
-* When a user tries to edit an inferred vertex from returned edges in GraphStudio's visualized query results, they will now see a warning to modify their queries to return the vertices to be able to edit the vertices.
-
-
-== Deprecation warnings
-* The `-OPTIMIZE` flag for `INSTALL QUERY` is deprecated and is planned to be dropped in the 3.7 release.
+== Dropped feature
+* The `-OPTIMIZE` flag for `INSTALL QUERY` was deprecated in 3.5 and is dropped in this 3.7 release.
 
 == Known Issues
 
