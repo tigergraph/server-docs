@@ -1,0 +1,68 @@
+= Set Up Elastic Cluster for On-Prem Instance
+:description: Instructions on how to set up an elastic cluster for an on-prem TigerGraph instance.
+
+This page walks you through setting up an elastic cluster for an on-prem TigerGraph instance.
+This is a preview feature and should not be used for production purposes.
+
+== Before you begin
+* Ensure you have two running TigerGraph clusters - a primary cluster and a cluster to be set up as the elastic cluster.
+* Ensure the two clusters have shared storage.
+* Ensure the shared storage between clusters supports the use of https://en.wikipedia.org/wiki/Symbolic_link[symbolic links].
+
+== Set up primary cluster
+The following describes the procedure to set up your primary cluster, so that you can launch an elastic cluster for resource-intensive computations at any time.
+
+=== Configure primary cluster to use shared storage
+On the primary cluster, run the following command to configure the primary cluster to use the shared storage:
+
+[.wrap,console]
+----
+$ gelasticcluster -p -m $<shared_storage_folder>
+----
+
+This operation empties the graph as it changes the data storage location.
+
+=== Load data into primary cluster
+Define schema and load data into the primary cluster.
+Perform your normal workloads on the primary cluster until you need to launch an elastic cluster to support computation-intensive workload.
+
+WARNING: Launching an elastic cluster requires that the primary cluster cannot be empty - it must have a schema and some data.
+Ensure your primary cluster has data in it before launching an elastic cluster.
+
+
+
+== Launch elastic cluster
+
+Whenever you need to run a resource-intensive online analytical processing (OLAP) query, or handle any other sudden burst of workload, you can launch an elastic cluster to handle the workload for the primary cluster.
+
+=== Export primary cluster schema
+
+Run the following command on the primary cluster to export the primary cluster's schema.
+The schema folder must be accessible by the elastic cluster.
+It is recommended that the schema folder also be on the shared storage between the elastic cluster and the primary cluster:
+
+[.wrap,console]
+----
+$ gelasticcluster -p -e <schema_folder>
+----
+
+
+=== Configure elastic cluster to use shared storage
+On the elastic cluster, run the following command to configure the elastic cluster to use the shared storage:
+
+[.wrap,console]
+----
+$ gelasticcluster -s -m <shared_storage_folder> -e <schema_folder>
+----
+
+=== Run workload on elastic cluster
+Now that the elastic cluster is provisioned, you can perform your workload on the cluster.
+
+You are only allowed to perform workloads that do not modify the data.
+For example, you can run OLAP queries that are read-only.
+
+If you attempt to perform an operation that would modify the data, the system blocks the operation to ensure that the primary cluster isn't affected by the elastic cluster in any way.
+For example, if a query modifies data, the query is automatically aborted when it runs. 
+
+Whenever your workload is finished, you can shut down the elastic cluster.
+You can launch another cluster whenever you need.
