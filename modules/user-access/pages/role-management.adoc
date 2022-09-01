@@ -238,6 +238,10 @@ The privilege only applies to the specified attributes of the specified type.
 [source.wrap,gsql]
 GRANT PRIVILEGE privilege_name1 , privilege_name2... ON VERTEX/EDGE <graph_name>.<type.name> (<attribute1>, <attribute2> ...) TO <role_name> , <role_name2>...
 
+`from` and `to` are edge attributes that represent the source vertex and target vertex of an edge.
+When you grant access to these attributes, `from` and `to` are case-sensitive.
+You must use lower-case to indicate these two attributes.
+
 === Required privilege
 `WRITE_ROLE` and the privilege being granted
 
@@ -250,6 +254,15 @@ GRANT PRIVILEGE READ_DATA ON VERTEX G1.person (id, age) TO example_role
 
 This allows users with `example_role` to read the `id` and `age` attribute values of `Person` vertices.
 However, if the type `Person` has other attributes, such as an `SSN` attribute with their social security number, users who don't have the `READ_DATA` privilege on that attribute are not able to access its attribute value.
+
+The following command grants the `READ_DATA` privilege on the `to` attribute of the edge type `Knows` to `example_role`:
+
+[source.wrap,gsql]
+----
+GRANT PRIVILEGE READ_DATA ON edge ldbc_snb.Knows(to) TO example_role <1>
+----
+<1> `to` must be lower-case. 
+
 
 == Revoke privileges from a role
 
