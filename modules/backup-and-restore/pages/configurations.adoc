@@ -1,0 +1,55 @@
+= Backup and Restore Configurations
+
+This page walks you through the configurations available for backup and restore on TigerGraph and how to set them.
+
+== Prerequisites
+* You have access to the TigerGraph Linux user account on your cluster.
+All commands must be run from the TigerGraph Linux user.
+
+== Configuration parameters
+
+The following is a list of configurations available for backup and restore.
+
+
+|===
+|Configuration parameter |Description |Default
+
+|System.Backup.Local.Enable |Whether to store the database backup data to a local path.
+
+If this parameter is set to true, `System.Backup.S3.Enable` cannot be set to true.
+|`false`
+
+|System.Backup.Local.Path |Local path to store the backup files.
+Required if backup is to be stored locally. |`nan`
+
+|System.Backup.S3.AWSAccessKeyID |AWS access key ID for s3 bucket of
+backup.
+Required if backup is to be stored on S3. |`+nan+`
+
+|System.Backup.S3.AWSSecretAccessKey |Secret access key for s3
+bucket.
+Required if backup is to be stored on S3.|`+nan+`
+
+|System.Backup.S3.BucketName |Name of the S3 bucket to store backup files.
+Required if backup is to be stored on S3.|`+nan+`
+
+|System.Backup.S3.Enable |Whether to store the database backup data to S3.
+Required if backup is to be stored on S3.
+
+If this parameter is set to true, `System.Backup.Local.Enable` cannot be set to true.|`+false+`
+
+|System.Backup.TimeoutSec |Timeout limit for the backup operation in seconds |`+18000+`
+
+|System.Backup.CompressProcessNumber | Number of concurrent processes for compression during backup.
+
+It's recommended to keep the default value `0`, which means the number of processes used to compress is equal to the number of CPU cores on each node.
+| `0`
+|===
+
+== Configure backup and restore
+
+Running `gadmin config entry backup` allows you to enter the value for each parameter individually.
+
+Alternatively, you can also use `gadmin config set <parameter>` to change the value of any parameter.
+
+After configuring the parameters, run `gadmin config apply` to apply the new parameter values.

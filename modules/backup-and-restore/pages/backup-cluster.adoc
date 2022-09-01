@@ -1,0 +1,54 @@
+= Back up a Database Cluster
+:description:
+:sectnums:
+
+This page walks you through the steps to back up your database cluster.
+The process also applies to single-server instances.
+
+Backing up a cluster is an online operation.
+Your database remains available during the backup.
+
+== Prerequisites
+* You have access to the TigerGraph Linux user account on your cluster.
+All commands must be run from the TigerGraph Linux user.
+* You have provided valid xref:configurations.adoc[configurations for database backup].
+
+== Procedure
+
+=== Data backup
+
+To back up a database cluster, run the following command :
+
+[.wrap,console]
+----
+$ gadmin backup create <tag>
+----
+
+Replace `<tag>` with a custom tag for the backup.
+A timestamp is suffixed to the tag you provided to form the full tag of the backup.
+If no tag is provided, the system uses the default `backup` followed by the timestamp when the backup is created as the tag for the backup.
+
+For example, run the following command to create a backup for a database cluster:
+
+[.wrap,console]
+----
+$ gadmin backup create weekly
+----
+
+This creates a backup file named `weekly-<timestamp>` at the xref:configurations.adoc[backup location you configured].
+
+[#_metadata_backup_optional]
+=== Metadata backup (Optional)
+
+This step is only necessary if you are planning for an event where you need to restore the backup in another cluster.
+
+Run the following command to create a backup for the metadata of a particular backup:
+
+[.wrap,console]
+----
+$ gadmin backup list <backup_tag> --meta
+----
+
+This produces a file called `metadata` in the current path where the command is run.
+Store this file in a secure location.
+This file is required to restore the backup in another database cluster.
