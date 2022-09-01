@@ -1,0 +1,52 @@
+= Expand a Cluster - Kubernetes
+:description: This page provides instructions on how to expand a Kubernetes TigerGraph cluster.
+:sectnums:
+
+Like regular TigerGraph clusters, a TigerGraph cluster deployed on Kubernetes can also be expanded.
+When you expand a TigerGraph cluster on Kubernetes, the data across the different nodes are automatically redistributed.
+
+== Prerequisites
+* A running TigerGraph Deployment in a Kubernetes cluster
+* You have configured `kubectl` for access to your running Kubernetes cluster.
+* There is some data loaded in your TigerGraph instance.
+If the instance is completely empty, cluster expansion fails.
+
+== Procedure
+
+The following are the steps to expand a TigerGraph cluster on Kubernetes
+
+=== Identify new cluster replication and partition
+Before running any commands to expand a cluster, make sure you have a clear idea of how the new cluster should be distributed.
+You should have the following information:
+
+* The new replication factor of the cluster
+* The new partitioning factor of the cluster
+* The new size of the cluster
+
+=== Download script
+
+Clone the repository at https://github.com/tigergraph/ecosys.
+
+Change into the `k8s` directory.
+There is a script named `tg` that you need to perform the actions described in this page.
+
+=== Expand cluster
+Invoke the `tg` script with the following arguments to expand the cluster:
+
+[source.wrap,console]
+$ ./tg <cloud_platform> expand -s <new_size> -n <namespace> --prefix <prefix>
+
+* Replace `<cloud_platform>` with the cloud platform where your Kubernetes cluster is provisioned. Possible values are: `gke`, `aks`, `eks`.
+* Replace `<new_size>` with the new size (the number of nodes) of the cluster.
+This value is required.
+* Replace `<namespace>` with the namespace where your resources reside.
+If not provided, the script uses the default namespace `default`.
+* Replace `<prefix>` with the Pod name prefix.
+If you didn't specify a prefix when creating the cluster, do not specify one here.
+
+For example, to expand a TigerGraph Deployment in the `example` namespace of a Google Kubernetes Engine (GKE) Kubernetes cluster to a 6-node cluster, run the following command:
+
+    $ ./tg gke expand -s 6 -n example
+
+
+

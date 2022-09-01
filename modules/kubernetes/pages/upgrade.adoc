@@ -1,0 +1,44 @@
+= Upgrade a Cluster - Kubernetes
+:description: Instructions to upgrade a TigerGraph cluster deployed on Kubernetes.
+:sectnums:
+
+This page walks you through upgrading a TigerGraph cluster in Kubernetes.
+
+WARNING: Not every version can be upgraded directly to any other version.
+Depending on the version you are upgrading from, you may need to upgrade to another version first before upgrading to the target version.
+See xref:installation:upgrade.adoc[] for restrictions for details on upgrade restrictions.
+
+== Prerequisites
+* A running TigerGraph Deployment in a Kubernetes cluster
+* You have configured `kubectl` for access to your running Kubernetes cluster
+
+== Procedure
+
+=== Download script
+
+Clone the repository at https://github.com/tigergraph/ecosys.
+
+Change into the `k8s` directory.
+There is a script named `tg` that you need to perform the actions described in this page.
+
+=== Upgrade cluster
+
+Run the following command to upgrade your cluster:
+
+[.wrap,console]
+----
+$ ./tg upgrade <cloud_provider> upgrade -v <target_version> -n <namespace> --prefix <prefix>
+----
+* Replace `<cloud_platform>` with the cloud platform where your Kubernetes cluster is provisioned. Possible values are: `gke`, `aks`, `eks`.
+* Replace `<namespace>` with the namespace where your resources reside.
+If not provided, the script uses the default namespace `default`.
+* Replace `<prefix>` with the Pod name prefix you used when you created the cluster.
+If you didn't specify a prefix when creating the cluster, do not specify one here.
+
+
+For example, to upgrade a cluster in namespace `example` to 3.7.0 from 3.6.1, which is an eligible version to upgrade from to 3.7, run the following command:
+
+[.wrap,console]
+----
+$ ./tg eks upgrade -v 3.7.0 -n example
+----

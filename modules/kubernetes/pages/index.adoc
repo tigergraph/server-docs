@@ -5,6 +5,19 @@
 TigerGraph supports deployment on Kubernetes.
 You can deploy TigerGraph single servers and clusters using Kubernetes on any cloud provider of your choice.
 
-* xref:quickstart-with-gke.adoc[Quickstart with GKE]
-* xref:quickstart-with-eks.adoc[Quickstart with EKS]
-* xref:quickstart-with-aks.adoc[Quickstart with AKS]
+CAUTION: Each command in the following list starts a Job in your Kubernetes cluster.
+You should not start another job until the previous job has finished.
+
+* Quickstart
+** xref:quickstart-with-gke.adoc[Quickstart with GKE]
+** xref:quickstart-with-eks.adoc[Quickstart with EKS]
+** xref:quickstart-with-aks.adoc[Quickstart with AKS]
+* Cluster resizing
+** xref:expansion.adoc[]
+** xref:shrinking.adoc[]
+* xref:upgrade.adoc[]
+
+
+TigerGraph provides its custom Kubernetes Operator to help you automate TigerGraph operations such as the creation, status checking and deletion of TigerGraph clusters.
+
+* xref:k8s-operator/index.adoc[]
