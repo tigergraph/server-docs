@@ -1,0 +1,46 @@
+= Restore a Database Backup from Another Cluster
+:description:
+:sectnums:
+
+This page walks you through the process of restoring a cluster from a backup that was created from another database cluster.
+
+Restoring is an off-line operation.
+Your cluster is offline during the restore process.
+
+
+== Prerequisites
+* Your new cluster has the same xref:ha:ha-cluster.adoc[replication and partitioning] number as the cluster from which the backup file was created.
+* TigerGraph is installed on the new cluster in the exact same version as the previous cluster.
+* You have access to the TigerGraph Linux user account on your cluster.
+All commands must be run from the TigerGraph Linux user.
+* You have access to a data backup from another cluster as well as its xref:backup-cluster.adoc#_metadata_backup_optional[metadata backup].
+* You have xref:configurations.adoc[configured backup and restore] on the new cluster.
+
+== Procedure
+
+=== Upload metadata to new cluster
+Upload the metadata file specific to the backup with which you want to restore the cluster to a path on any node of the new cluster where the TigerGraph Linux user has access.
+
+For example, upload the file to `/home/tigergraph/metadata` on m1 of the new cluster.
+
+
+=== Copy data backup to new cluster
+
+If your backups are stored in Amazon S3 buckets, you can skip this step as long as you configure `System.Backup.S3.BucketName` for the new cluster to be the same as the previous cluster.
+
+If your backups were stored locally, you need to make sure backup files from all nodes are copied to the new cluster.
+They do not necessarily need to be on the corresponding nodes as long as all partitions are in the new cluster at the specified paths you configured.
+
+For example, if you have configured the backup path to be `/home/tigergraph/backups` for a 3-node cluster, you can put all backup files for backup `weekly-<timestamp>` in the folder `/home/tigergraph/backups/weekly-<timestamp>`.
+
+=== Restore cluster
+
+Run the following command to restore the cluster using the backup.
+You must run the command on the cluster to which you uploaded the cluster metadata:
+
+[.wrap,console]
+----
+$ gadmin backup restore --meta=/home/tigergraph/metadata <1>
+----
+<1> If you uploaded the metadata to a different folder, replace the path with the path where the file is.
+
