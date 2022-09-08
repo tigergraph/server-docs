@@ -63,8 +63,10 @@ To delete a connector,  run the below command and replace `<connector_name>` wit
 
 [,console]
 ----
-$ gadmin connector delete <connector_name>
+$ gadmin connector delete <connector_name> -y <1>
 ----
+<1> You can use the `-y` option to skip the confirmation prompt. 
+
 
 == Known issues
 Messages in TigerGraph's internal Kafka cluster are automatically removed from the topics at regular intervals.
