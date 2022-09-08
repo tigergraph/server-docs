@@ -244,16 +244,18 @@ Now that the connector has started loading data into TigerGraph's internal Kafka
 The broker's IP and hostname should be `localhost:30002`, which points to the port for TigerGraph's internal Kafka cluster.
 In the `kafka.config` field, set `group.id` to `tigergraph`:
 +
-[,json]
+[.wrap,json]
 ----
 {
-	"broker":"localhost:30002",
+    "broker":"10.128.0.240:30002", <1>
     "kafka_config":
         {
-            "group.id": "tigergraph"
+            "session.timeout.ms":"20000"
         }
 }
 ----
+<1> Make sure to use the internal ID of the machine instead of `localhost` for the hostname of the broker.
+`localhost` only works for single-server instances.
 . Run `CREATE DATA SOURCE` to create the data source:
 +
 [,gsql]
