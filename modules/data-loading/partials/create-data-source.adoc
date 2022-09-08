@@ -18,13 +18,15 @@ For example, you can specify `group.id` to be `tigergraph` to specify  the group
 [.wrap,json]
 ----
 {
-    "broker":"localhost:30002",
+    "broker":"10.128.0.240:30002", <1>
     "kafka_config":
         {
-            "group.id": "tigergraph"
+            "session.timeout.ms":"20000"
         }
 }
 ----
+<1> Make sure to use the internal ID of the machine instead of `localhost` for the hostname of the broker.
+`localhost` only works for single-server instances.
 . Run `CREATE DATA SOURCE` to create the data source:
 +
 [,gsql]
