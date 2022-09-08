@@ -15,6 +15,10 @@ From a high level, a user provides instructions to the TigerGraph system through
 
 image::kafka-loading-architecture.png[Kafka Data Loader Architecture]
 
+NOTE: Currently, the Kafka loader doesn't use consumer groups.
+If the loader is interrupted, you have to resume the loading job manually by running `RESUME LOADING JOB job_id`.
+This resumes the loading job where it was interrupted.
+
 == Supported file formats
 * Avro
 * CSV
