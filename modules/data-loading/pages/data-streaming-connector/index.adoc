@@ -23,6 +23,9 @@ You can list all running connectors or view detailed configuration of a specific
 To view a list of all connectors, run `gadmin connector list` from your bash terminal as the TigerGraph Linux user.
 
 To view configuration details of a specific connector, run `gadmin connector list <name_of_connector>` and replace `<name_of_connector>` with the name of the connector you want to inspect.
+By default, this command displays the name of the connector, but does not display sensitive information such as the location of the data source.
+
+If you use `gadmin config` to change the configuration parameter `Controller.Connect.RedactSensitiveConfigValue` to `true` , the command displays sensitive information such as the location of the data source.
 
 === Pause a connector
 Pausing a connector stops the connector from streaming data from the data source.
