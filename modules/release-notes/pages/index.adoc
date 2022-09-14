@@ -20,7 +20,8 @@ The following is a list of new features and improvements:
 
 === Manageability
 * Improved the stability and performance of backup and restore, and added a xref:backup-and-restore:index.adoc[new API for backing up and restoring database clusters].
-** The xref:backup-and-restore:gbar-legacy.adoc[legacy Graph Backup and Restore(GBAR)] tool remains available. 
+** The xref:backup-and-restore:gbar-legacy.adoc[legacy Graph Backup and Restore(GBAR)] tool remains available.
+* Added Debian 10 & 11 to the xref:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[list of supported operating systems].
 
 
 === Security
@@ -52,7 +53,24 @@ The following is a list of new features and improvements:
 * Fixed a number of security vulnerabilities from package dependencies.
 * Improved error messaging when a query uses `TYPEDEF TUPLE` with an unsupported data type.
 * Fixed an issue where unauthorized users could access certain local files on the server through a REST endpoint.
-* 
+* Fixed an issue where running multiple resource-intensive queries simultaneously causes would cause GPE dysfunction due to critical memory level handling.
+* Improved error messaging when query installation fails because certain services are not in ready state.
+* Fixed an issue that caused users to be unable to terminal an S3 loading job if the loading job did not use end-of-file mode.
+* Made folder permissions more restrictive after cluster expansion and shrinking.
+* Fixed an issue where creating a secret in a primary cluster could cause sync to stop.
+* Fixed an issue that caused restoring a cluster to fail when the backup file is on S3.
+* Fixed an issue where a heap accumulators (HeapAccum) might not be sorted when output in a group-by accumulator (GroupByAccum).
+* Fixed an issue that caused file permissions to be incorrect after cluster resizing.
+* Fixed an issue that caused imbalanced distribution of Kafka data when a cluster has a replication factor of two.
+* Fixed an issue where `POST /requesttoken` endpoint did not return `Content-Type`.
+* Fixed an issue that caused RESTPP dysfunction when it receives bearer token that is too short.
+* Fixed an issue where the database did not properly authorize requests made from JDBC driver.
+* Fixed an issue where GraphStudio data mapping would not detect disallowed data mapping to user-defined tuple (UDT) types.
+* Fixed an issue where SumAccum in GroupByAccum cannot be converted to a MaxAccum directly
+* Fixed an issue where loading large files through Data Streaming Connector might cause out-of-memory issues.
+* Fixed an issue where loading jobs created with the Kafka loader could not show accurate progress in GraphStudio data loading.
+* Fixed an issue where query installation in GraphStudio fails entirely if one of the queries being installed contains errors, instead of allowing valid queries to continue installation.
+* Fixed an issue where the function `instr()` cannot accept certain special characters as substring argument.
 
 
 
