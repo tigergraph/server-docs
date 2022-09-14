@@ -1,0 +1,102 @@
+= Metrics Reporting
+:description: Overview of metrics gathering in TigerGraph Server.
+
+You can use `gadmin metric` commands to collect the following metrics related to state of resource usage on your instances:
+
+* CPU usage
+* Memory usage
+* Disk space usage
+* Network-related information
+
+For a full list of options available to `gadmin metric`, see xref:management-commands.adoc#_gadmin_metric[`gadmin metric`] or run `gadmin metric -h` in the command line to view the help text for the command.
+
+== Report CPU usage
+
+Use the command `gadmin metric -t cpu` to report CPU usage by different TigerGraph services on a cluster or a node in the cluster.
+
+To report CPU usage on select nodes, use the `--host` flag or the `-m` shorthand, followed by the nodes for which you want CPU usage data, separated by commas.
+If you choose not to specify nodes, then the command reports CPU usage for all nodes in the cluster.
+
+To select specific services to report data for, specify the service IDs after the command.
+If you don't specify a service, the command reports data for all services.
+
+NOTE: Service ids currently include the following:
+`gpe gse restpp gsql ifm gui ctrl kafka etcd zk nginx ts3 ts3serv dict admin kafkaconn kafkastrm-ll`
+
+The following command reports CPU usage by the `GUI` service for m1 and m2:
+
+[.wrap,console]
+----
+$ gadmin metric gui -t cpu -m m1,m2
+----
+
+The following command reports CPU usage by all services for m1 and m2:
+
+[.wrap,console]
+----
+$ gadmin metric gui -t cpu -m m1,m2
+----
+
+
+
+== Report memory usage
+
+Use command `gadmin metric -t mem` to report memory usage on a cluster or a node in the cluster.
+
+To report memory usage on select nodes, use the `--host` flag or the `-m` shorthand, followed by the nodes for which you want memory usage data.
+If you choose not to specify nodes, then the command reports memory usage for all nodes in the cluster.
+
+To select specific services to report data for, specify the service IDs after the command.
+If you don't specify a service, the command reports data for all services.
+
+NOTE: Service ids currently include the following:
+`gpe gse restpp gsql ifm gui ctrl kafka etcd zk nginx ts3 ts3serv dict admin kafkaconn kafkastrm-ll`
+
+The following command reports memory usage by the `GUI` service for m1 and m2:
+
+[.wrap,console]
+----
+$ gadmin metric gui -t mem -m m1,m2
+----
+
+
+The following command reports memory usage by all services for m1 and m2:
+
+[.wrap,console]
+----
+$ gadmin metric -t mem -m m1,m2
+----
+
+== Report disk space usage
+
+Use command `gadmin metric -t disk` to report disk space usage for a cluster or select nodes in a cluster.
+
+To report network information on select nodes, use the `--host` flag or the `-m` shorthand, followed by the nodes for which you want disk usage data.
+If you choose not to specify nodes, then the command reports data for all nodes in the cluster.
+
+The following command reports disk usage for m1 and m2:
+
+[.wrap,console]
+----
+$ gadmin metric -t disk -m m1,m2
+----
+
+== Report network connections and traffic
+
+Use command `gadmin metric -t net` to report TCP connections and network I/O for a cluster or select nodes in a cluster.
+
+The command reports three data points for each node:
+
+* `TCP CONNS`: number of open connections.
+* `IN`: Network inflow since the node started.
+* `OUT`: Network outflow since the node started.
+
+To report network information on select nodes, use the `--host` flag or the `-m` shorthand, followed by the nodes for which you want network data.
+If you choose not to specify nodes, then the command reports data for all nodes in the cluster.
+
+The following command reports network information for m1 and m2:
+
+[.wrap,console]
+----
+$ gadmin metric -t net -m m1,m2
+----

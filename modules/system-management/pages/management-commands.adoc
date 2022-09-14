@@ -552,6 +552,42 @@ ZK     : /home/tigergraph/tigergraph/log/zk/ZK#1.out
 ZK     : /home/tigergraph/tigergraph/log/zk/zookeeper.log
 ----
 
+[#_gadmin_metric]
+=== gadmin metric
+
+This command reports information about resource consumption on a cluster or select nodes in a cluster, including CPU usage, memory usage, disk space usage, and network usage.
+
+[,console]
+----
+$ gadmin metric -h
+Show the metric information
+
+Usage:
+  gadmin metric [serviceID...] [flags]
+
+Description:
+  Show metric information including cpu usage, memory usage, diskspace and network.
+  ServiceID should be [serviceName][_partition][#replica], e.g., GSE_1#3. Leave
+  replica field empty(e.g. GSE_1) to either refer to all replicas of given
+  partition, or if the service has no replicas(e.g. EXE_1). Same for parititons.
+  If no serviceID is specified for the cpu or memory metric type, it will show all
+  service metrics.
+  Metric type should be one of the four types:
+    cpu                 cpu usage
+    mem                 memory usage
+    disk                diskspace usage
+    net                 network related information
+
+Flags:
+  -h, --help           help for metric
+  -m, --host strings   choose hosts
+  -t, --type string    choose the metric type from [cpu|mem|net|disk] (default "cpu")
+  -v, --verbose        report metrics in detail
+
+Global Flags:
+      --debug   enable debug log output to stdout
+----
+
 === gadmin reset
 
 This command resets a particular service. This command is recommended to be used only at the direction of TigerGraph Support, as data loss may occur.
