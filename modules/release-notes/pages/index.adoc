@@ -17,6 +17,7 @@ The following is a list of new features and improvements:
 === Elasticity
 * Added the ability to xref:ha:set-up-elastic-cluster.adoc[launch on-demand elastic clusters for on-prem instances (Preview)].
 * Added the ability to xref:kubernetes:expansion.adoc[expand], xref:kubernetes:shrinking.adoc[shrink] and xref:kubernetes:upgrade.adoc[upgrade] a TigerGraph instance running in a Kubernetes cluster.
+* Added support for AWS Elastic Kubernetes Service (EKS) to xref:kubernetes:Kubernetes Operator.
 
 === Manageability
 * Improved the stability and performance of backup and restore, and added a xref:backup-and-restore:index.adoc[new API for backing up and restoring database clusters].
@@ -26,21 +27,19 @@ The following is a list of new features and improvements:
 
 === Security
 * Enhanced the xref:user-access:access-control-model.adoc#_role_based_access_control[role-based access control] system to allow data CRUD privileges to be granted at the type and attribute level (Preview).
+** Local roles are deprecated as of the 3.7 release and will be dropped in a future version.
 * Added the ability to enable a xref:security:password-policy.adoc[password policy] to mandate the minimal complexity of passwords.
 * TigerGraph Server download packages are now xref:security:index.adoc#_pgp_key[signed with our PGP key].
 
 === Ecosystem integration
 * Added the ability to xref:data-loading:data-streaming-connector/azure-blob.adoc[stream data from Azure Blob Storage] to xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
-* Added the ability to xref:data-loading:data-streaming-connector/aws-s3.adoc[stream data from ]for all supported sources with xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
+* Added the ability to xref:data-loading:data-streaming-connector/aws-s3.adoc[stream data from AWS S3] to xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
 * Deleting a Data Streaming Connector now deletes the data in the topics created by the connector.
 
-=== Performance
-* Introduced the cost-based query optimizer (Preview), which has the potential to significantly reduce query execution time.
-
 === Observability
-
-
-=== Data API service
+* Improved logging for privilege checks.
+Every time a user performs an action that requires any privilege, a detailed log of the action and the user is generated.
+** You must xref:user-access:enabling-user-authentication.adoc[enable authentication] for privilege checking to happen.
 
 
 === Query Language Enhancement
