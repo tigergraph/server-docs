@@ -11,19 +11,21 @@ The following is a list of new features and improvements:
 
 === Developer tools
 * Introduced xref:insights:intro:index.adoc[TigerGraph Insights], a no-code visual graph analyzer that makes building data analytics dashboards intuitive.
-* Introduced xref:gsql-shell:web.adoc[GSQL Shell], a web-based version of the GSQL client that allows you to run GSQL commands from your browser.
+* Introduced xref:gsql-shell:web.adoc[GSQL Shell], a web-based version of the GSQL client that allows you to run GSQL commands from your browser with keyboard shortcuts and autocomplete.
 * Introduced xref:master@home:ROOT:index.adoc#_tigergraph_suite[TigerGraph Suite], a family of applications including GraphStudio, Admin Portal, TigerGraph Insights, GSQL Shell, and GraphQL Service to empower your graph journey.
 
 === Elasticity
 * Added the ability to xref:ha:set-up-elastic-cluster.adoc[launch on-demand elastic clusters for on-prem instances (Preview)].
 * Added the ability to xref:kubernetes:expansion.adoc[expand], xref:kubernetes:shrinking.adoc[shrink] and xref:kubernetes:upgrade.adoc[upgrade] a TigerGraph instance running in a Kubernetes cluster.
-* Added support for AWS Elastic Kubernetes Service (EKS) to xref:kubernetes:Kubernetes Operator.
+* Added support for AWS Elastic Kubernetes Service (EKS) to the xref:kubernetes:k8s-operator/index.adoc[].
 
 === Manageability
 * Improved the stability and performance of backup and restore, and added a xref:backup-and-restore:index.adoc[new API for backing up and restoring database clusters].
 ** The xref:backup-and-restore:gbar-legacy.adoc[legacy Graph Backup and Restore(GBAR)] tool remains available.
 * Added Debian 10 & 11 to the xref:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[list of supported operating systems].
-
+* Expanded xref:gui:admin-portal:dashboard.adoc[metrics] available at a glance through Admin Portal.
+* Enhanced ease of use by enabling drag-and-drop xref:gui:graphstudio:map-data-to-graph.adoc[data mapping in GraphStudio] and in-browser JSON file upload.
+* Added new xref:gui:graphstudio:explore-graph/actions.adoc[] page in the GraphStudio GUI for easy, secure commands to clear and rebuild graph data.
 
 === Security
 * Enhanced the xref:user-access:access-control-model.adoc#_role_based_access_control[role-based access control] system to allow data CRUD privileges to be granted at the type and attribute level (Preview).
@@ -32,7 +34,7 @@ The following is a list of new features and improvements:
 * TigerGraph Server download packages are now xref:security:index.adoc#_pgp_key[signed with our PGP key].
 
 === Ecosystem integration
-* Added the ability to xref:data-loading:data-streaming-connector/azure-blob.adoc[stream data from Azure Blob Storage] to xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
+* Added the ability to xref:data-loading:data-streaming-connector/azure-blob.adoc[stream data from Azure Blob Storage] to a xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
 * Added the ability to xref:data-loading:data-streaming-connector/aws-s3.adoc[stream data from AWS S3] to xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
 * Deleting a Data Streaming Connector now deletes the data in the topics created by the connector.
 
@@ -63,14 +65,14 @@ Every time a user performs an action that requires any privilege, a detailed log
 * Fixed an issue that caused file permissions to be incorrect after cluster resizing.
 * Fixed an issue that caused imbalanced distribution of Kafka data when a cluster has a replication factor of two.
 * Fixed an issue where `POST /requesttoken` endpoint did not return `Content-Type`.
-* Fixed an issue that caused RESTPP dysfunction when it receives bearer token that is too short.
+* Fixed an issue that caused RESTPP dysfunction when it received a bearer token that was too short.
 * Fixed an issue where the database did not properly authorize requests made from JDBC driver.
 * Fixed an issue where GraphStudio data mapping would not detect disallowed data mapping to user-defined tuple (UDT) types.
 * Fixed an issue where SumAccum in GroupByAccum cannot be converted to a MaxAccum directly
 * Fixed an issue where loading large files through Data Streaming Connector might cause out-of-memory issues.
 * Fixed an issue where loading jobs created with the Kafka loader could not show accurate progress in GraphStudio data loading.
-* Fixed an issue where query installation in GraphStudio fails entirely if one of the queries being installed contains errors, instead of allowing valid queries to continue installation.
-* Fixed an issue where the function `instr()` cannot accept certain special characters as substring argument.
+* Fixed an issue where query installation in GraphStudio failed entirely if one of the queries being installed contains errors, instead of allowing valid queries to continue installation.
+* Fixed an issue where the function `instr()` could not accept certain special characters as substring arguments.
 
 
 
@@ -106,8 +108,8 @@ Every time a user performs an action that requires any privilege, a detailed log
 
 For a list of known issues for GraphStudio and Admin Portal, please see xref:gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
 
-
 == Release notes for previous versions
+* xref:3.6@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.6]
 * xref:3.5@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.5]
 * xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
 * xref:3.3@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.3]
