@@ -16,14 +16,14 @@ The following is a list of new features and improvements:
 
 === Elasticity
 * Added the ability to xref:ha:set-up-elastic-cluster.adoc[launch on-demand elastic clusters for on-prem instances (Preview)].
-* Added the ability to xref:kubernetes:expansion.adoc[expand], xref:kubernetes:shrinking.adoc[shrink] and xref:kubernetes:upgrade.adoc[upgrade] a TigerGraph instance running in a Kubernetes cluster.
-* Added support for AWS Elastic Kubernetes Service (EKS) to xref:kubernetes:Kubernetes Operator.
+
 
 === Manageability
 * Improved the stability and performance of backup and restore, and added a xref:backup-and-restore:index.adoc[new API for backing up and restoring database clusters].
 ** The xref:backup-and-restore:gbar-legacy.adoc[legacy Graph Backup and Restore(GBAR)] tool remains available.
 * Added Debian 10 & 11 to the xref:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[list of supported operating systems].
-
+* Added the ability to xref:kubernetes:expansion.adoc[expand], xref:kubernetes:shrinking.adoc[shrink] and xref:kubernetes:upgrade.adoc[upgrade] a TigerGraph instance running in a Kubernetes cluster.
+* Added support for AWS Elastic Kubernetes Service (EKS) to xref:kubernetes:k8s-operator/index.adoc[Kubernetes Operator].
 
 === Security
 * Enhanced the xref:user-access:access-control-model.adoc#_role_based_access_control[role-based access control] system to allow data CRUD privileges to be granted at the type and attribute level (Preview).
@@ -83,6 +83,29 @@ Every time a user performs an action that requires any privilege, a detailed log
 |===
 |In version |Description |Status
 |3.7.0
+|Running a query that returns results that are too large in size may cause GraphStudio to become unresponsive.
+|Unresolved
+
+|3.7.0
+|Running a query that calls the `setAttr()` function could cause GPE dysfunction in rare cases.
+|Unresolved
+
+|3.7.0
+|When a solution is exported, the key and secret used to authenticate a connector to AWS S3 are not encrypted in the exported file.
+|Unresolved
+
+|3.7.0
+|Creating a query that has too many hops and requires intensive semantic checking could cause the GSQL client to become unresponsive.
+|Unresolved
+|3.7.0
+|Renaming a vertex type revokes privileges granted on the vertex type.
+|Unresolved
+
+|3.7.0
+|Query user-defined functions cannot be synced to a DR cluster in cross-region replication.
+|Unresolved
+
+|3.7.0
 |Frequent backups of large volumes of data could lead to failure during a backup.
 |Unresolved
 
@@ -100,6 +123,10 @@ Every time a user performs an action that requires any privilege, a detailed log
 
 |3.7.0
 |Calling the `setAttr()` function in an interpreted query causes GPE dysfunction.
+|Unresolved
+
+|3.7.0
+|Running a query that calls the `setAttr()` function could cause GPE dysfunction in rare cases.
 |Unresolved
 
 |===
