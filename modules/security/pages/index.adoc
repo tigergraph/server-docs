@@ -4,6 +4,38 @@
 TigerGraph provides a number of security features to protect your data both-in transit and at-rest.
 
 
+[cols="3a,3a,3a"]
+|===
+|Authentication |Authorization |Encryption
+
+|
+* xref:user-access:enabling-user-authentication.adoc#_enable_restpp_authentication[RESTPP authentication]
+* xref:user-access:enabling-user-authentication.adoc#_enable_gsql_authentication[GSQL authentication]
+* xref:user-access:sso.adoc[SSO with SAML 2.0]
+** Azure AD
+** Okta
+** Auth0
+** PingFederate
+* xref:user-access:ldap.adoc[LDAP authentication]
+|
+* xref:user-access:access-control-model.adoc#_role_based_access_control[Role-based Access Control (RBAC)]
+* xref:user-access:access-control-model.adoc#_access_control_lists[Access control lists (ACL)]
+* Audit logs for privileged user actions
+
+|
+* xref:encrypting-connections.adoc[Data in-transit encryption (TLS 1.2)]
+* xref:encrypting-data-at-rest.adoc[Data at-rest encryption]
+* PGP key-signed download package
+|===
+
+== Operational compliance
+TigerGraph Server abides by the following security compliance standards:
+
+* https://www.tigergraph.com/soc-2/[SOC 2 Compliance]
+* https://www.tigergraph.com/compliance/[PCI-DSS]
+
+== Vulnerability scanning
+TigerGraph leverages best-of-breed tools to periodically and proactively scan source code, application runtime, infrastructure to identify security vulnerabilities.
 
 [#_pgp_key]
 == PGP key
