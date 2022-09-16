@@ -29,13 +29,36 @@ TigerGraph provides a number of security features to protect your data both-in t
 |===
 
 == Operational compliance
-TigerGraph Server abides by the following security compliance standards:
+TigerGraph Server meets the following security compliance standards as certified by third-party audits:
 
 * https://www.tigergraph.com/soc-2/[SOC 2 Compliance]
 * https://www.tigergraph.com/compliance/[PCI-DSS]
 
 == Vulnerability scanning
-TigerGraph leverages best-of-breed tools to periodically and proactively scan source code, application runtime, infrastructure to identify security vulnerabilities.
+TigerGraph leverages best-of-breed tools to periodically and proactively scan source code, application runtime, infrastructure to identify security vulnerabilities:
+
+* Dynamic Application Security Testing (DAST)
+** Bi-weekly scanning of applications
+* Static Application Security Testing (SAST)
+** Bi-weekly scanning of the code base
+* Software Composition Analysis (SCA) (Third-Party Library/Dependency Check)
+**  Bi-weekly scanning as part of the application build process
+* Operating System (OS) Level Vulnerability Scanning
+**  Bi-weekly scanning of servers
+* Network Vulnerability Scanning
+** Bi-weekly scanning of network devices
+* Penetration Testing
+** Annual 3rd Party
+** Weekly in-house
+
+=== Vulnerability remediation
+
+TigerGraph commits to vulnerability remediation upon discovery by the following timelines:
+
+* Critical/high: 30 days
+* Medium: 90 days
+* Low: 180 days
+
 
 [#_pgp_key]
 == PGP key
