@@ -80,6 +80,11 @@ This controls the format of the values in messages written to or read from Kafka
 
 * If records are in plaintext or JSON format, this field should be `org.apache.kafka.connect.converters.ByteArrayConverter`.
 |`value.converter=com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter`
+
+|`value.converter.schema.registry.url`|
+URL of the schema registry service.
+Required if  `value.converter` is `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverterWithoutSchemaRegistry`.
+For details, see https://docs.confluent.io/platform/current/schema-registry/connect.html#example-converter-properties[Confluent documentation].|`\http://localhost:8081`
 |===
 
 Other configuration options are available to fine-tune the connector.
@@ -118,7 +123,7 @@ For example, to specify `GSSAPI` as the SASL mechanism for producer, put `produc
 
 |`<prefix>.sasl.jaas.config`
 |JAAS login context parameters for SASL connections in the format used by JAAS configuration files.
-See link:https://docs.oracle.com/javase/8/docs/technotes/guides/security/jgss/tutorials/LoginConfigFile.html[JAAS Login Configuration File] for
+See link:https://docs.oracle.com/javase/8/docs/technotes/guides/security/jgss/tutorials/LoginConfigFile.html[JAAS Login Configuration File] for details.
 
 
 |`<prefix>.ssl.endpoint.identification.algorithm`

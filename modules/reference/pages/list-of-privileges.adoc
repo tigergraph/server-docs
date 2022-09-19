@@ -2,7 +2,8 @@
 
 This page provides a complete list of privileges in TigerGraph's Role-based Access Control system.
 
-* Any privilege marked "`on global only`" can only be granted to a global role. It cannot be granted to a local role (See xref:user-access:roles-and-privileges.adoc#_global_vs_local_privileges[Global role vs local role]).
+* Any privilege marked "`on global only`" can only be granted to a global role. It cannot be granted to a local role (See xref:user-access:roles-and-privileges.adoc[Global role vs local role]).
+** Local roles are deprecated and will be dropped in a later version.
 * The command `IMPORT GRAPH <gName>` needs multiple privileges, .e.g `WRITE_SCHEMA`, `WRITE_LOADING_JOB`, `WRITE_QUERY` and so on.
 * To run the command `CREATE SECRET` on a graph, the user must have at least one of the access database privileges: `READ_DATA`, `WRITE_DATA` and `EXECUTE_LOADINGJOB` on that graph. Thus the built-in `queryreader` role and above can create secrets on a graph, but the observer role cannot.
 
@@ -56,11 +57,23 @@ a|* `create query <qName>`
 * `drop query <qName>`
 |No
 
-|`READ_DATA` |`run Read_Only_Query <qName>` |No
+|`CREATE_DATA`|
+Running queries that insert vertices or edges in the allowed scope.
+For details see xref:user-access:access-control-model.adoc#_data_crud_privileges[Data CRUD privileges].|NO
 
-|`WRITE_DATA`
-a|* `run Query_With_Update <qName>`
-* `(including create, delete, update in its own or any sub-query)`
+|`READ_DATA` |
+Running queries that read vertex or edge information in the allowed scope.
+For details see xref:user-access:access-control-model.adoc#_data_crud_privileges[Data CRUD privileges].
+|No
+
+|`UPDATE_DATA`
+a|Running queries that update vertex or edge information in the allowed scope.
+For details see xref:user-access:access-control-model.adoc#_data_crud_privileges[Data CRUD privileges].
+|No
+
+|`DELETE_DATA`
+|Running queries that delete vertices or edges in the allowed scope.
+For details see xref:user-access:access-control-model.adoc#_data_crud_privileges[Data CRUD privileges].
 |No
 
 |`WRITE_DATASOURCE`
@@ -117,6 +130,13 @@ a|
 * Operations with loading jobs involving tags
 * Operations with queries involving tags
 | No
+
+|`APP_ACCESS_DATA`
+|Accessing data through TigerGraph Suite applications including GraphStudio and TigerGraph Insights.
+
+This privilege only allows you to access the information through TigerGraph Suite applications if you already have access to the data in GSQL.
+It only pertains to the applications and does not have meaning in GSQL itself.
+|
 
 |`DROP_ALL`
 | `drop all`
