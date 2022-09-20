@@ -1,11 +1,60 @@
 = Security
 :description: Overview of security features in TigerGraph.
 
-TigerGraph provides a number of security features to protect your data both-in transit and at-rest.
+TigerGraph provides a comprehensive set of security features, including authentication, access control, and encryption to secure your data and communication.
 
-* xref:encrypting-connections.adoc[]
-* xref:encrypting-data-at-rest.adoc[]
-* xref:file-output-policy.adoc[]
+== Network access
+
+* All communication secured and encrypted
+* xref:encrypting-connections.adoc[Connection encryption (TLS 1.2)]
+
+== Authentication
+
+* xref:user-access:enabling-user-authentication.adoc#_enable_restpp_authentication[RESTPP authentication]
+* xref:user-access:enabling-user-authentication.adoc#_enable_gsql_authentication[GSQL authentication]
+* xref:user-access:sso.adoc[SSO with SAML 2.0]
+** xref:user-access:sso.adoc#_azure_ad[Azure AD]
+** xref:user-access:sso.adoc#_okta[Okta]
+** xref:user-access:sso.adoc#_auth0[Auth0]
+** xref:user-access:sso.adoc#_pingfederate[PingFederate]
+* xref:user-access:ldap.adoc[LDAP authentication]
+* xref:password-policy.adoc[Strong password policy enforcement]
+
+== Authorization
+
+* xref:user-access:access-control-model.adoc#_role_based_access_control[Role-based Access Control (RBAC)]
+* xref:user-access:access-control-model.adoc#_access_control_lists[Access control lists (ACL)]
+* Audit logs for privileged user actions
+
+== Data encryption
+* xref:encrypting-connections.adoc[Data in-transit encryption (TLS 1.2)]
+* xref:encrypting-data-at-rest.adoc[Data at-rest encryption]
+* PGP key-signed download package
+
+== Operational compliance
+TigerGraph Server meets the following security compliance standards as certified by third-party audits:
+
+* https://www.tigergraph.com/soc-2/[SOC 2 Compliance]
+* https://www.tigergraph.com/compliance/[PCI-DSS]
+
+== Vulnerability scanning
+TigerGraph leverages best-of-breed tools to periodically and proactively scan source code, application runtime, infrastructure to identify security vulnerabilities:
+
+* Dynamic Application Security Testing (DAST)
+* Static Application Security Testing (SAST)
+* Software Composition Analysis (SCA)
+* Penetration Testing
+* Operating System (OS) Level Vulnerability Scanning
+* Network Vulnerability Scanning
+
+=== Vulnerability remediation
+
+TigerGraph commits to vulnerability remediation upon discovery by the following timelines:
+
+* Critical/high: 30 days
+* Medium: 90 days
+* Low: 180 days
+
 
 [#_pgp_key]
 == PGP key
