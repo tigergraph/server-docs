@@ -4,13 +4,22 @@
 
 TigerGraph Data Streaming Connector is a link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and other data systems.
 
+== Architecture overview
+Data Streaming Connector streams data from a source data system into TigerGraph's internal Kafka cluster in the form of Kafka messages in specified topics.
+The messages are then ingested by a xref:kafka-loader/index.adoc[Kafka loading job] and loaded into the database.
+
+.Data streaming connector architecture
+image::data-streaming-connector.png[Data streaming connector streams from data source to TigerGraph's internal Kafka, and a loading job ingests the Kafka messages into the database.]
+
+Multiple connectors can run at the same time, streaming data from various sources into the TigerGraph system concurrently.
+
 == Supported data systems
 The data streaming connector supports the following data systems:
 
 * xref:data-streaming-connector/gcp.adoc[Google Cloud Storage (GCS)]
 * xref:data-streaming-connector/kafka.adoc[Apache Kafka]
 * xref:data-streaming-connector/aws-s3.adoc[AWS S3]
-* xref:data-streaming-connector/azure-blob.adoc[]
+* xref:data-streaming-connector/azure-blob.adoc[Azure Blob Storage(ABS)]
 
 
 == Manage connectors
@@ -52,7 +61,12 @@ $ gadmin connector resume <connector_name>
 === Delete a connector
 Deleting a connector removes a connector.
 It stops the connector from streaming, as well as deletes the data that has been streamed to the corresponding topics in Kafka that haven't been ingested by a loading job.
+See the diagram in Figure 1 for details.
+
+
 This does not delete the topics themselves; they remain reusable since all data is deleted from the topics.
+This also does not affect the data that has already been loaded into the database by a loading job, it only deletes the messages in TigerGraph's internal Kafka server.
+
 This action cannot be undone and a removed connector cannot be resumed.
 
 When you create the same connector, with the same connector name and configurations, the connector loads all data from the source again to the same topics.
