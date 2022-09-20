@@ -1070,6 +1070,32 @@ Response::
 
 None.
 
+=== Remove expired tokens
+
+`DELETE :8123/expiredtoken`
+
+This endpoint removes all expired authentication tokens.
+
+==== Sample request
+
+The following request deletes all expired tokens:
+
+[.wrap,console]
+----
+curl -X DELETE "localhost:8123/expiredtoken
+----
+
+The following request deletes all expried tokens of both users `u1` and `u2` created with secrets `s1` and `s2`.
+
+[.wrap,console]
+----
+curl -X DELETE "localhost:8123/expiredtoken?user=u1&user=u2&secret=s1&secret=s2
+----
+
+==== Parameters
+
+
+
 == Loading jobs
 
 === Run a Loading Job
