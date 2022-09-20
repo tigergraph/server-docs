@@ -14,13 +14,14 @@ Because there are two ways to access the TigerGraph system, either through the G
 * <<Enable GSQL authentication>>
 * <<Enable RESTPP authentication>>
 
+[#_enable_gsql_authentication]
 == Enable GSQL authentication
 
 To enable user authentication for GSQL, change the password of the default user whose username `tigergraph` to something other than `tigergraph`.
 
 === Procedure
 
-. Log in to the GSQL shell as the default user `tigergraph`. Since authentication is not enabled, entering `gsql` into the Linux terminal under the TigerGraph Linux user will log you in as user `tigergraph` automatically.
+. Log in to the GSQL shell as the default user `tigergraph`.Since authentication is not enabled, entering `gsql` into the Linux terminal under the TigerGraph Linux user will log you in as user `tigergraph` automatically.
 . Run the following command to change the password, and enter the new password as prompted:
 +
 [source,gsql]
@@ -28,7 +29,7 @@ To enable user authentication for GSQL, change the password of the default user 
 GSQL > ALTER PASSWORD
 ----
 
-. User authentication has been enabled. Exit the GSQL shell and try to reenter, and confirm that GSQL will now prompt for your password.
+. User authentication has been enabled.Exit the GSQL shell and try to reenter, and confirm that GSQL will now prompt for your password.
 +
 [source,console]
 ----
@@ -36,13 +37,14 @@ $ gsql
 Password for tigergraph : ********
 ----
 
-. To log in as a different user, use the `-u` option when you enter the GSQL shell. You can also supply the password in the same command with the `-p` option.
+. To log in as a different user, use the `-u` option when you enter the GSQL shell.You can also supply the password in the same command with the `-p` option.
 +
 [source,console]
 ----
 $ gsql -u newuser -p mypassword
 ----
 
+[#_enable_restpp_authentication]
 == Enable RESTPP authentication
 
 To enable RESTPP authentication, set the `RESTPP.Factory.EnableAuth` parameter to `true`.

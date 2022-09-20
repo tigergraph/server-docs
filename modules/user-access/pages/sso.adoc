@@ -45,6 +45,7 @@ After you finish configuring your identity provider, you will get the following:
 * An Identity Provider Entity ID
 * an X.509 certificate file `idp.cert`. You need these 3 things to configure TigerGraph next.
 
+[#_okta]
 === Okta
 
 https://developer.okta.com/docs/guides/build-sso-integration/saml2/create-your-app/[Create an Application Integration in Okta] for your TigerGraph application.
@@ -58,6 +59,7 @@ http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs
 http://<tigergraph-machine-hostname>:14240/gsqlserver/gsql/saml/meta
 
 
+[#_auth0]
 === Auth0
 
 . https://auth0.com/docs/get-started/create-apps/single-page-web-apps[Register TigerGraph as a Single-Page web application in Auth0].
@@ -67,6 +69,7 @@ You will need to enter the following information when following Auth0's guide:
 \http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
 * When downloading the certificate from Auth0, choose *`.cer`* format instead of `.pem` format.
 
+[#_azure_ad]
 === Azure AD
 
 . Log in to https://aad.portal.azure.com/[Azure Active Directory Admin Center] as an Admin user.
@@ -97,6 +100,7 @@ However, you may choose to only sign one of them, but you need to match this wit
 . Under "Set up <Application name>", Azure AD provides a login URL, an Azure AD identifier, and a logout URL.
 These items are used in the next steps to configure single sign-on in TigerGraph.
 
+[#_pingfederate]
 === PingFederate
 
 ==== Prerequisites
