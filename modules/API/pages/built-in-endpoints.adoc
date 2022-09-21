@@ -1070,6 +1070,58 @@ Response::
 
 None.
 
+=== Remove expired tokens
+
+`DELETE :8123/expiredtoken`
+
+This endpoint removes expired authentication tokens.
+A user is always allowed to remove their own expired tokens.
+If a user tries to delete tokens that belong to other users, they need to have xref:user-access:access-control-model.adoc#_privileges[the `WRITE_USER` privilege].
+
+==== Sample request
+
+The following request deletes all expired tokens.
+This request requires the privilege `WRITE_USER`:
+
+[.wrap,console]
+----
+curl -X DELETE "https://localhost:8123/expiredtoken"
+----
+
+The following request deletes all expired tokens that belong to users `u1` and `u2` as well as all tokens created with secrets `s1` and `s2`.
+This request requires the privilege `WRITE_USER`
+
+[.wrap,console]
+----
+curl -X DELETE 'localhost:8123/expiredtoken' -d '{"user":["u1","u2"],"secret":["s1","s2"]}'
+----
+
+==== Request body
+The request body is optional.
+If not provided a request body, a request deletes all expired tokens.
+
+[.wrap,javascript]
+----
+{
+    "user": ["string"], <1>
+    "secret": ["string"] <2>
+}
+----
+<1> Users whose expired tokens to remove. Optional.
+<2> If a token is created with one of the secrets in the list, they are removed by the request. Optional.
+
+The secrets and users provided in the request body do not have to correlate with each other.
+A request deletes all tokens associated with any of the users and secrets contained in the payload.
+
+The request is atomic:
+if any of the provided users or secrets are invalid, or if a user doesn't have the privilege to remove tokens that belong to one of the users or secrets provided, no tokens will be removed by the request.
+
+==== Parameters
+None.
+
+
+
+
 == Loading jobs
 
 === Run a Loading Job

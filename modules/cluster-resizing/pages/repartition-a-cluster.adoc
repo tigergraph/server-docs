@@ -38,7 +38,6 @@ For example, assume you begin with a 5-node cluster with a replication factor of
 Changing the replication factor to 2 without adding new nodes will change the distribution of your cluster to be 2*2, with one node being left idle.
 To avoid nodes being left idle, ensure that you pick a replication factor that can cleanly divide the total number of nodes you have in the cluster.
 
-[discrete]
 ==== Supply a staging location
 
 Extra disk space is required during cluster repartition. If more space is not available on the same disk, you can supply a staging location on a different disk to hold temporary data:
