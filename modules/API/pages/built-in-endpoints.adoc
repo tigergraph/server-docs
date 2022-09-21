@@ -2808,6 +2808,15 @@ At the read committed level, it is guaranteed that any data read is committed at
 By default, it is off.
 |===
 
+[NOTE]
+====
+To use the `read_commited` parameter, `read_commited` must be defined as a parameter in the query itself.
+The content of the query does not have to use the parameter, but the parameter must be defined.
+For example:
+
+`CREATE QUERY PageRank( ..., INT iteration, ..., BOOL read_committed) FOR GRAPH Example_Graph`
+====
+
 ==== Query parameter passing
 
 When using a `GET` request to run an installed query, the query parameters are xref:API:index.adoc#_query_string_parameters[passed in through the query string of the URL].
