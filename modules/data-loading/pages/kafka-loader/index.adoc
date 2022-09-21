@@ -1,6 +1,7 @@
 = Kafka Loader User Guide
 :description: This guide walks you through how to use the Kafka Loader to load data from an external Kafka cluster into your TigerGraph instance.
 :page-aliases: data-loading:kafka-loader-user-guide.adoc
+:sectnums:
 
 Kafka is a popular pub-sub system in enterprise IT, offering a distributed and fault-tolerant real-time data pipeline.
 The Kafka Loader lets you integrate TigerGraph with a Kafka cluster and speed up your real-time data ingestion.
@@ -52,7 +53,7 @@ For example:
 ----
 {
   "broker": "localhost:9092",
-  "kafka_config": {"group.id":"tigergraph"}
+  "kafka_config": {"session.timeout.ms":"20000"}
 }
 ----
 
@@ -129,7 +130,7 @@ There are three basic steps:
 The GSQL syntax for the Kafka Loader is designed to be consistent with the existing GSQL loading syntax.
 
 [#_1_define_the_data_source]
-=== 1. Define the data source
+=== Define the data source
 
 Before starting a Kafka data loading job, you need to define the Kafka server as a data source.
 The `CREATE DATA_SOURCE` statement defines a data source variable with a subtype of `KAFKA`:
@@ -171,7 +172,7 @@ In TigerGraph Cloud (tgcloud.io), you can use GSQL web shell to define and creat
 
 
 [#_2_create_a_loading_job]
-=== 2. Create a loading job
+=== Create a loading job
 
 The Kafka Loader uses the same basic xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[`CREATE LOADING JOB`] syntax used for standard GSQL loading jobs.
 A `DEFINE FILENAME` statement should be used to assign a loader `FILENAME` variable to a Kafka data source name and the path to its config file.
@@ -207,23 +208,26 @@ DEFINE FILENAME f1 = "$k1:{\"topic\":\"zzz\",\"default_start_offset\":2,\"partit
 ----
 
 [#_3_run_the_loading_job]
-=== 3. Run the loading job
+=== Run the loading job
 
 The Kafka Loader uses the same xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[`RUN LOADING JOB`] statement that is used for GSQL loading from files.
 Each filename variable can be assigned a string `<data_source_name>:<topic_partition_configuration_filepath>`, which will override the value defined in the loading job.
 
+A `RUN LOADING JOB` command may only use one type of data source: you cannot mix both Kafka data sources and regular file data sources in one loading job.
+
 In the example below, the config files for f3 and f4 are being set by the `RUN command`, whereas f1 is using the config which was specified in the `CREATE LOADING JOB` statement.
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 RUN LOADING JOB job1 USING f1, f3="$k1:~/topic_part3_config.json", f4="$k1:~/topic_part4_config.json", EOF="true";
 ----
 
 [CAUTION]
 ====
-A `RUN LOADING JOB` command may only use one type of data source.
+The Kafka loader doesn't use consumer groups, and therefore doesn't support HA.
+If a loading job is interrupted, you need to manually resume the loading job.
 
-For example, you may not mix both Kafka data sources and regular file data sources in one loading job.
+A resumed job picks up from where it was stopped before and will not consume messages that have already been consumed.
 ====
 
 All filename variables in one loading job statement must refer to the same `DATA_SOURCE` variable.
