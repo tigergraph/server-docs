@@ -1113,6 +1113,9 @@ If not provided a request body, a request deletes all expired tokens.
 The secrets and users provided in the request body do not have to correlate with each other.
 A request deletes all tokens associated with any of the users and secrets contained in the payload.
 
+The request is atomic:
+if any of the provided users or secrets are invalid, or if a user doesn't have the privilege to remove tokens that belong to one of the users or secrets provided, no tokens will be removed by the request.
+
 ==== Parameters
 None.
 
