@@ -64,7 +64,7 @@ It stops the connector from streaming, as well as deletes the data that has been
 See the diagram in Figure 1 for details.
 
 
-This does not delete the topics themselves; they remain reusable since all data is deleted from the topics.
+This does not delete the Kafka topics themselves, just the data in the topics associated to the connector.
 This also does not affect the data that has already been loaded into the database by a loading job, it only deletes the messages in TigerGraph's internal Kafka server.
 
 This action cannot be undone and a removed connector cannot be resumed.
