@@ -1514,7 +1514,7 @@ For example, suppose we have the following request to upsert two vertices:
 Request::
 +
 --
-[source,console]
+[source.wrap,console]
 ----
 curl --data-binary @vertices.json http://localhost:9000/graph/social
 ----
@@ -1549,7 +1549,7 @@ With the request above, if the vertex `Kelly` fails to be upserted due to a mach
 
 If you add the `gsql-atomic-level` header to the request URL and set its value to `atomic`, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
 
-[source,console]
+[source.wrap,console]
 ----
 # This is an atomic request
 curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
@@ -1755,6 +1755,41 @@ For example, the following payload is used to upsert two `User` vertices with an
     }
   }
 }
+----
+
+==== Composite keys
+
+If your vertex has composite keys, separate the attributes that make up the composite key with comma (`,`) in the same order as they are defined in the schema.
+
+For example, suppose we have the following vertex definition:
+
+[.wrap,gsql]
+----
+CREATE VERTEX compositePerson(id UINT, name STRING, age UINT, primary key (name, id))
+----
+
+The following requests upserts two vertices with the defined composite key:
+
+[.wrap,console]
+----
+curl -X POST "localhost:9000/graph/person_movie" -d '
+{
+  "vertices": {
+    "compositePerson":{
+      "Bob,123":{
+        "name":{"value":"Bob"},
+        "id":{"value":123},
+        "age":{"value":25}
+      },
+      "Tom,456":{
+        "name":{"value":"Tom"},
+        "id":{"value":456},
+        "age":{"value":47}
+      }
+    }
+  }
+}
+'
 ----
 
 ==== Operation codes
