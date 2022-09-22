@@ -1,26 +1,26 @@
-= Authentication
+= 認証
 :pp: {plus}{plus}
-:description: How authentication works in TigerGraph REST API.
+:description: REST APIにおける認証機能の仕組みについての説明。
 
-TigerGraph's RESTful APIs communicate with either the REST{pp} server on port 9000 or the GSQL server on port 14240.
-Each server uses different methods of authentication.
+TigerGraphのRESTful APIは、ポート9000のREST{pp}サーバーまたはポート14240のGSQLサーバーと通信します。
+それぞれのサーバーは異なる認証方法を使用します。
 
-== REST{pp} Server Requests
+== REST{pp} サーバーのリクエスト
 
-TigerGraph REST{pp} endpoints are public by default: anyone with access to the HTTP ports of the TigerGraph server can run your endpoints.
-When xref:user-access:enabling-user-authentication.adoc[REST{pp} authentication is enabled], then a valid authorization token must be included in the header.
+TigerGraphのREST{pp}のエンドポイントはデフォルトではパブリックに設定されています。TigerGraphサーバーのHTTPポートにアクセスできる人なら誰でも、エンドポイントを実行できます。
+xref:user-access:enabling-user-authentication.adoc[REST{pp}認証が有効になっている]場合、有効な認証トークンがヘッダーに含まれていなければなりません。
 
-The REST{pp} server implements OAuth 2.0-style authorization as follows:
+REST{pp}サーバーは、以下の通り、OAuth2.0スタイルの認証を行います。
 
-. Each user xref:user-access:managing-credentials.adoc#_create_a_secret[can create one or more *secrets* (unique pseudorandom strings)]. Each secret is associated with a particular user and the user's privileges for a particular graph.
-. Anyone who has this secret can invoke a special REST endpoint to xref:API:built-in-endpoints.adoc#_request_a_token_get[generate authorization *tokens*] (other pseudorandom strings).
-. An authorization token can then be used to perform TigerGraph database operations via other REST endpoints. Each token will expire after a certain period of time. The TigerGraph default lifetime for a token is 1 month.
+. 各ユーザーは xref:user-access:managing-credentials.adoc#_create_a_secret[1つ以上の**シークレット**(一意の疑似ランダム文字列)を作成できます]。各シークレットは、特定のユーザーおよび特定のグラフに対するユーザーの権限に関連付けられます。
+. このシークレットを持っている人は誰でも、xref:API:built-in-endpoints.adoc#_request_a_token_get [認証を生成する**トークン**](他の疑似ランダム文字列)への特別なRESTエンドポイントを呼び出すことができます。
+. 認証トークンは、他のRESTエンドポイントを通してTigerGraphデータベース操作を実行するために使用することができます。各トークンは一定期間後に期限切れになります。TigerGraphでのトークンの有効期間はデフォルトで1か月です。
 
-=== *Using Tokens*
+=== **トークンの使用**
 
-Once REST{pp} authentication is enabled, a valid token should always be included in the HTTP header. If you are using curl to format and submit your REST{pp} requests, then use the following syntax:
+REST{pp}認証が有効である場合、有効なトークンが常にHTTPヘッダーに含まれている必要があります。curlを使用してREST{pp}リクエストのフォーマットおよび送信を行う場合は、次の構文を使用します。
 
-.curl GSQL request, with authorization token in header
+ヘッダーに認証トークンを含むcurl GSQLリクエスト
 
 [source,console]
 ----
@@ -29,20 +29,20 @@ curl -X GET -H "Authorization: Bearer <token>" '<request_URL>'
 
 
 
-Here is a sample request:
+以下はリクエストの例です。
 
 [source,console]
 ----
 curl -X GET -H "Authorization: Bearer 01234567abcdefgh01234567abcdefgh" "http://localhost:9000/graph/socialNet/vertices/User?limit=3"
 ----
 
-== GSQL Server Requests
+== GSQLサーバーへのリクエスト
 
-All requests made to the GSQL Server must be accompanied by your user credentials. You can use the `curl -u` option to pass in the username and password of the TigerGraph user:
+GSQLサーバーに対して行われるすべてのリクエストには、ユーザーの資格情報が必要とされます。`curl -u` オプションを使用して、TigerGraphユーザーのユーザー名とパスワードを渡すことができます。
 
 [source,console]
 ----
 curl -X GET -u <username>:<password> "http://localhost:14240/<path_to_endpoint>
 ----
 
-To keep your credentials more secure, one way to avoid having the user name and password on the command line is to instead use a https://everything.curl.dev/usingcurl/netrc[.netrc file] or a https://everything.curl.dev/cmdline/configfile[config file]. If you are in interactive mode, you can also use the `-u` option without specifying the password, and then curl will prompt for the password.
+資格情報をより安全に保つために、コマンドラインにユーザー名とパスワードが表示されないようにしたい場合は、代わりに https://everything.curl.dev/usingcurl/netrc[.netrcファイル] または https://everything.curl.dev/cmdline/configfile[設定ファイル] を使用するのも1つの方法です。インタラクティブモードの場合は、パスワードを指定せずに `-u` オプションを使用することもできます。これにより、curlにパスワードの入力を求められます。

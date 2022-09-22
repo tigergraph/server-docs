@@ -1,110 +1,110 @@
-= Internal Architecture
+= 内部アーキテクチャー
 :pp: {plus}{plus}
 
-As the world's first and only Native Parallel Graph (NPG) system, TigerGraph is a complete, distributed, graph analytics platform supporting web-scale data analytics in real time. The TigerGraph NPG is built around both local storage and computation, supports real-time graph updates, and works like a parallel computation engine. These capabilities provide the following unique advantages:
+世界初にして唯一のネイティブパラレルグラフ(NPG)システムであるTigerGraphは、リアルタイムでWebスケールのデータ分析をサポートする完全な分散型グラフ分析プラットフォームです。TigerGraph NPGは、ローカルのストレージと計算を中心として構築されており、リアルタイムのグラフ更新をサポートし、並列計算エンジンのように機能します。 これらの機能には、次のユニークなメリットがあります。
 
-* Fast data loading speed to build graphs - able to load 50 to 150 GB of data per hour, per machine
-* Fast execution of parallel graph algorithms - able to traverse hundreds of million of vertices/edges per second per machine
-* Real-time updates and inserts using REST - able to stream 2B+ daily events in real-time to a graph with 100B+ vertices and 600B+ edges on a cluster of only 20 commodity machines
-* Ability to unify real-time analytics with large scale offline data processing - the first and only such system
+* グラフ作成のための高速データロード - マシン1台ごと、1時間当たり50〜150GBのデータロードが可能
+* 並列グラフアルゴリズムの高速実行 - マシン1台ごと、1秒当たり数億の頂点/エッジのトラバースが可能
+* RESTを利用したリアルタイムの更新と追加 - わずか20台のコモディティマシンのクラスターで、1,000億以上の頂点と6,000億以上のエッジを持つグラフに、リアルタイムで20億以上のデイリーイベントをストリーミング可能
+* リアルタイム分析と大規模なオフラインデータ処理と統合 - 世界初にして唯一のシステムです
 
-See the https://www.tigergraph.com/resources/[Resources] section of our main website https://www.tigergraph.com/[www.tigergraph.com]  to find white papers and other technical reports about the TigerGraph system.
+TigerGraphのシステムに関するホワイトペーパーやその他のテクニカルレポートは、メインWebサイト https://www.tigergraph.co.jp/[www.tigergraph.co.jp] の https://www.tigergraph.co.jp/resources/[リソース] セクションでご覧いただけます。
 
-== System Overview
+== システム概要
 
-The TigerGraph Platform runs on standard, commodity-grade Linux servers. The core components (GSE and GPE) are implemented in C{pp} for optimal performance. TigerGraph system is designed to fit into your existing environment with a minimum of fuss.
+TigerGraphプラットフォームは、標準のコモディティグレードのLinuxサーバーで動作します。コアコンポーネント(GSEおよびGPE)は、最適なパフォーマンスを実現するためにC{pp}で実装されています。TigerGraphのシステムは、最小限の手間でお使いの環境に適合するように設計されています。
 
-* Data Sources : __**__The platform includes a flexible, high-performance data loader which can stream in tabular or semi-structured data, while the system is online.
-* Infrastructure : The platform is available for on-premises, cloud, or hybrid use.
-* Integration : __**__REST APIs are provided to integrate your TigerGraph with your existing enterprise data infrastructure and workflow.
+* データソース: プラットフォームには、フレキシブルで高性能なデータローダーを備えており、システムがオンラインのときに表形式または半構造化データをストリーミングできます。
+* インフラストラクチャー: プラットフォームは、オンプレミス、クラウド、またはハイブリッドで使用できます。
+* 統合: TigerGraphを既存のエンタープライズデータインフラストラクチャーおよびワークフローと統合できるよう、REST APIが提供されています。
 
 image::2.1.png[]
 
-The figure below takes a closer look at the TigerGraph platform itself:
+次の図で、TigerGraphプラットフォームについて詳しく見ていきましょう。
 
 image::tigergraph-system-block-diagram (2) (2).png[]
 
-Within the TigerGraph system, a message-passing design is used to coordinate the activities of the components. RESTPP, an enhanced RESTful server, is central to the task management. Users can choose how they wish to interact with the system:
+TigerGraphのシステムは、メッセージパッシングデザインを使用し、コンポーネントのアクティビティを調整します。強化されたRESTfulサーバーであるRESTPPが、タスク管理の中心となります。以下の通り、システムとの対話方法の選択が可能です。
 
-* GSQL client.  One TigerGraph instance can support multiple GSQL clients, on remote nodes.
-* GraphStudio - our graphical user interface, which provides most of the basic GSQL functionality, with a graphical and intuitive interface.
-* REST API. Enterprise applications which need to run the same queries many times can maximize their efficiency by communicating directly with RESTPP.
-* gAdmin is used for system adminstration.
+* GSQLクライアント - 1つのTigerGraphインスタンスは、リモートノードで複数のGSQLクライアントをサポートできます。
+* GraphStudio - 基本的なGSQL機能のほとんどが使用できる、視覚的・直感的なグラフィカルユーザーインターフェイスです。
+* RESTAPI - 同じクエリーを多数回実行する必要があるエンタープライズアプリケーションは、RESTPPと直接通信することにより、効率を最大限に高めることができます。
+* gAdminはシステム管理に使用されます。
 
-== Glossary
+== 用語集
 
 |===
-| Name | Refers to
+| 名称 | 説明
 
 | *DDL*
-| Data Definition Language - a generic term for a set of commands used to define a database schema. The GSQL Language includes DDL commands. In GraphStudio, the Design Schema function.
+| DDL(Data Definition Language、データ定義言語)は、データベーススキーマの定義に使用される一連のコマンドの総称です。GSQL言語にはDDLコマンドが含まれます。GraphStudioで、スキーマ定義機能を持ちます。
 
-| *Dictionary (DICT)*
-| The shared storage space for storing metadata about the graph store's configuration and state, including the catalog (graph schema, loading jobs, and queries).
+| *ディクショナリー(DICT)*
+| カタログ(グラフスキーマ、読み込みジョブ、クエリー)など、グラフストアの設定と状態に関してのメタデータを格納するための共有ストレージスペース。
 
 | *DML*
-| Data Manipulation Language - a generic term for a set of commands used to add, modify, and delete data from a database. Query commands are often considered a part of DML, even a pure query statement does not manipulate (change) the data. The GSQL Language includes full DML capability for query, add (insert), delete, and modify (update) commands.
+| DML(Data Manipulation Language、データ操作言語)はデータベースのデータの追加、変更、削除に使用される一連のコマンドの総称です。クエリーコマンドはDMLの一部と考えられることが多く、純粋なクエリーステートメントもデータを操作(変更)しません。GSQL言語には、クエリー、追加(挿入)、削除、および変更(更新)コマンドの完全なDML機能が含まれます。
 
 | *gadmin*
-| The system utility for configuring and managing the TigerGraph System. Analogous to mysqladmin.
+| TigerGraphシステムの設定・管理のためのシステムユーティリティー。 mysqladminに類似しています。
 
 | *gbar*
-| Graph Backup and Restore. TigerGraph's utility program for backing up and restoring system data.
+| Graph Backup and Restore(グラフのバックアップと復元)。TigerGraphが提供する、システムデータのバックアップと復元のためのユーティリティープログラムです。
 
 | *GPE*
-| Graph Processing Engine. The server component which accepts requests from the REST{pp} server for querying and updating the graph store and which returns data.
+| GPEとはGraph Processing Engine(グラフ処理エンジン)のことで、Graph Storeのクエリーと更新のためにREST{pp}サーバーからのリクエストを受け入れ、データを返すサーバーコンポーネントです。
 
 | *Graph Store*
-| The component which logically and physically stores the graph data and provides access to the data in a fast and memory-efficient way. We use the term graph store to distinguish it from conventional graph databases.
+| グラフデータを論理的および物理的に格納し、高速かつメモリ効率の高い方法でデータへのアクセスを行えるようにするコンポーネント。このGraph Storeという用語は、従来のグラフデータベースと区別するために使用されます。
 
 | *GraphStudio UI*
-| The browser-based User Interface that enables the user to interact with the TigerGraph system in a visual and intuitive way, as an alternative to the GSQL Shell. The GraphStudio UI includes the following components: Schema Designer, Data Mapper, Data Loader, Graph Explorer, and Query Editor.
+| GSQLシェルの代替として、ユーザーがTigerGraphシステムと視覚的かつ直感的に対話することを可能とするブラウザーベースのユーザーインターフェイス。GraphStudio UIには、Schema Designer(スキーマデザイナー)、Data Mapper(データマッパー)、Data Loader(データローダー)、Graph Explorer(グラフエクスプローラー)、Query Editor(クエリーエディター)といったコンポーネントが含まれています。
 
 | *GSE*
-| Graph Storage Engine. The processing component which manages the Graph Store.
+| Graph Storage Engine(グラフストレージエンジン)のこと。Graph Storeを管理する処理コンポーネントです。
 
 | *GSQL*
-| The user program which interprets and executes graph processing operations, including (a) schema definition, (b) data loading, and (c) data updates, and (d) data queries.
+| (a)スキーマ定義、(b)データロード、(c)データ更新、(d)データのクエリーなど、グラフ処理操作を解釈・実行するユーザープログラム。
 
-| *GSQL Language*
-| The language used to instruct and communicate with the GSQL program.
+| *GSQL言語*
+| GSQLプログラムに対する指示と通信に使用される言語。
 
-| *GSQL Shell*
-| The interactive command shell which may be used when running the GSQL program.
+| *GSQLシェル*
+| GSQLプログラムの実行時に使用する対話型コマンドシェル。
 
 | *HA*
-| High Availability - a generic term describing a computer system which has been architected to a higher level of operational performance (e.g., throughput and uptime) than would be expected from a traditional single server node.
+| High Availability(高可用性)のこと。従来の単一サーバーノードに期待されるよりも、(スループットや稼働時間などにおいて)高レベルの運用パフォーマンスを得られるよう設計されたコンピューターシステムを表す一般的な用語。
 
 | *IDS*
-| ID Service. A subcomponent of the GSE which translates between user (external) IDs for data objects and graph store (internal) IDs.
+| ID Service(ID サービス)のこと。データオブジェクトのユーザー(外部)IDとGraph Store(内部)IDの間で変換を行うGSEのサブコンポーネント。
 
 | *Kafka*
-| A free open-source "high-throughput distributed messaging system" from the Apache Software Foundation. Our distributed system architecture is based on message passing/queuing. Kafka is automatically included during TigerGraph system installation as one implementation of messaging passing. https://kafka.apache.org/
+| Apache Software Foundationによる無償オープンソースの「高スループット分散メッセージングシステム」。TigerGraphの分散システムアーキテクチャは、メッセージパッシング/キューイングに基づいています。Kafkaは、メッセージパッシング機能の1つとして、TigerGraphシステムインストール中に自動的に設定されます。 https://kafka.apache.org//
 
 | *MultiGraph*
-| A graph architecture and feature set which enables one global graph to be viewed as multiple logical subgraphs, each with its own set of user privileges. The subgraphs can overlap, meaning each subgraph can support both shared and private data.
+| 1つのグローバルグラフを、それぞれが独自のユーザー権限を持つ複数の論理サブグラフとして表示できるようにするグラフアーキテクチャーおよび機能のセット。サブグラフはオーバーラップ可能です。つまり、各サブグラフは共有データとプライベートデータの両方をサポートできます。
 
-| *Native Parallel Graph*
-| An architecture and technology which provides for inherently highly-parallel and highly-scalable graph data storage and analytics. The use of vertex-level data+compute functionality is a key component of Native Parallel Graph design.
+| **Native Parallel Graph(ネイティブ並列グラフ)**
+| 本質的に高度に並列化され、高度にスケーラブルなグラフデータストレージと分析を可能とするアーキテクチャーとテクノロジー。頂点レベルのデータ+計算機能の使用は、ネイティブ並列グラフ設計の重要なコンポーネントといえます。
 
 | *Nginx*
-| A free, open-source, high-performance HTTP server and reverse proxy. Nginx is automatically included during TigerGraph system installation. https://nginx.org/en/
+| Ngixは無償オープンソースの高性能HTTPサーバーとリバースプロキシです。TigerGraphシステムのインストール中に自動的に設定されます。 https://nginx.org/en/
 
-| *REST{pp}* or  *RESTPP*
-| A server component which accepts RESTful requests from clients, validates the requests, invokes the GPE, and sends responses back to the client. Additionally, REST{pp} provides a zero-coding interface for users to define RESTful endpoints.REST{pp} offers easy-to-use APIs for customizing the logic of handling requests and processing responses.
+| *REST{pp}* または *RESTPP*
+| クライアントからのRESTfulリクエストを受け入れて検証し、GPEを呼び出し、応答をクライアントに送り返すサーバーコンポーネント。REST{pp}は、ユーザーがRESTfulエンドポイントを定義するためのコーディング不要のインターフェイスを提供します。また、リクエスト処理と応答処理のロジックをカスタマイズするための使いやすいAPIをも提供します。
 
 | *Single Sign-On (SSO)*
-| A user authentication service that permits a user to use one set of login credentials to access multiple applications.
+| ユーザーが1セットのログイン資格情報で複数のアプリケーションにアクセスできるようにするユーザー認証サービスです。
 
-| *TigerGraph  Platform*
-| The TigerGraph real-time graph data analytics software system. The TigerGraph Platform offers complete functionality for creating and managing a graph database and for performing data queries and analyses. The platform includes the Graph Store and GSE , GPE, REST{pp}, GSQL, GraphStudio, plus some third-party components, such as Apache Kafka and Zookeeper.
+| *TigerGraphプラットフォーム*
+| TigerGraphのリアルタイムグラフデータ分析ソフトウェアシステム。TigerGraphプラットフォームは、グラフデータベースの作成・管理、データクエリーと分析実行のための完全な機能を提供します。プラットフォームには、Graph StoreとGSE、GPE、REST{pp}、GSQL、GraphStudioのほか、Apache KafkaやZookeeperなどのサードパーティーコンポーネントが含まれています。
 
-| *TigerGraph*  *System*
-| The TigerGraph platform and its languages. Based on context, the term may also include additional optional TigerGraph components which have been installed.
+| *TigerGraphシステム*
+| TigerGraphプラットフォームとその言語。この用語は、コンテキストによっては、インストールされている追加オプションのTigerGraphコンポーネントを含む場合があります。
 
 | *TS3*
-| TigerGraph System Service State (TS3) is a TigerGraph sub-system which helps monitor the TigerGraph system. It serves as backend of TigerGraph Admin Portal.
+| TS3(TigerGraph System Service State、TigerGraphシステムサービスステート)は、TigerGraphシステムのモニターに役立つTigerGraphのサブシステムです。TigerGraph管理ポータルのバックエンドとして機能します。
 
 | *Zookeeper*
-| A free open-source program from the Apache Software Foundation, providing "a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services." Used for running the TigerGraph system on a cluster or other distributed system. Zookeeper is automatically included during TigerGraph system installation. https://zookeeper.apache.org/
+| Apache Software Foundationによる無償オープンソースプログラムで「設定情報の維持管理、命名、分散同期の提供、およびグループサービスの提供のための一元化されたサービス」を提供します。クラスターまたはその他の分散システム上でTigerGraphシステムを実行するために使用されます。 Zookeeperは、TigerGraphシステムのインストール中に自動的に設定されます。 https://zookeeper.apache.org/
 |===

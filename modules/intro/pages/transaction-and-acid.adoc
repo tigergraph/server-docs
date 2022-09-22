@@ -1,76 +1,76 @@
-= Transaction Processing and ACID Support
+= トランザクション処理とACIDサポート
 :pp: {plus}{plus}
 
-This document describes the transactional support provided by the TigerGraph platform. A TigerGraph _*transaction*_ is a sequence of operations which acts as a single logical unit of work. A _*read-only operation*_ in TigerGraph does not change any vertex/edge attribute value and doesn't insert any new or delete any existing vertex/edge. An _*update operation*_ in TigerGraph is an operation which either changes some vertex/edge attribute value or insert some new or delete some existing vertex/edge.
+このドキュメントでは、TigerGraphプラットフォームが提供するトランザクションサポートについて説明します。TigerGraphの**トランザクション**は、単一の論理的な作業単位として動作する一連の処理です。TigerGraphの**読み取り専用処理**は、頂点/エッジ属性値の変更、新しい頂点/エッジの挿入、既存の頂点/エッジの削除を行いません。TigerGraphの**更新処理**では、頂点/エッジ属性値の変更、新しい頂点/エッジの挿入、既存の頂点/エッジの削除を行います。
 
-The TigerGraph system provides full ACID transactions with sequential consistency. Transactions are defined as follows:
+TigerGraphシステムは、逐次一貫性を備えた完全なACIDトランザクションを提供しています。トランザクションの定義は次の通りです。
 
-* Each GSQL query is a transaction. Each query may have multiple read or write operations.
-* Each REST{pp} GET, POST, or DELETE operation (which may have multiple update operations within it) is a transaction.
-
-[discrete]
-==== *Atomicity* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Atomicity">++++++</a>+++
-
-A transaction with update operations may insert/delete multiple vertices/edges or update the attribute values of multiple edges/vertices.  Such update requests are "`all or nothing`": either all changes are successful, or none is successful.
+* 各GSQLクエリはひとつのトランザクションです。各クエリには、複数の読み取りまたは書き込み処理が含まれる場合があります。
+* 各REST{pp}のGET、POST、DELETE処理(ここには複数の更新処理が含まれる場合があります)はひとつのトランザクションです。
 
 [discrete]
-==== *Consistency* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Consistency">++++++</a>+++
+==== *不可分性* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Atomicity">++++++</a>+++
 
-The TigerGraph system provides traditional ACID consistency: A transaction can include data validation rules. The data validation rules can ensure any transaction will bring the system from one valid state to another.
-
-The TigerGraph system also provides distributed system Sequential Consistency: every replica of the data performs the same operations in the same order. This is one of the strongest forms of consistency available, stronger than causal consistency, for example.
+更新処理を伴うトランザクションでは、複数の頂点/エッジを挿入/削除したり、複数のエッジ/頂点の属性値を更新したりする場合があります。このような更新要求は「ゼロか100か」です。つまり、すべての変更が成功するか、ひとつも成功しないかのどちらかになります。
 
 [discrete]
-==== *Isolation Level* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-IsolationLevel">++++++</a>+++
+==== *一貫性* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Consistency">++++++</a>+++
 
-TigerGraph supports the Serializable isolation level, the strongest form of isolation. Internally, TigerGraph uses MVCC to implement the isolation. MVCC, or Multi-Version Concurrency Control, makes use of multiple snapshots of portions of the database state in order to support isolated concurrent operations.  In principle, there can be one snapshot per read or write operation.
+TigerGraphシステムは、従来のACIDの考え方に則った整合性を提供します。トランザクションはデータ検証ルールを持つことができます。トランザクションはデータ検証ルールに則ってシステムを1つの有効な状態から別の有効な状態に移行します。
 
-[discrete]
-==== *No Dirty Reads* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-NoDirtyReads">++++++</a>+++
-
-A read-only transaction R1 will not see any changes made by an uncommitted update transaction, whether that update transaction was submitted before or after R1 was submitted to the system.
+TigerGraphシステムは、分散システムの逐次一貫性も提供します。データのレプリカはすべて、同じ処理を同じ順序で実行します。これは、利用可能な最も強力な一貫性の形式の1つであり、たとえば因果一貫性などよりも強力です。
 
 [discrete]
-==== *Repeatable reads*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Repeatablereads">++++++</a>+++
+==== *分離レベル* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-IsolationLevel">++++++</a>+++
 
-Multiple same reads in a single transaction T1 will get the same results, even if there are update transactions which change vertex or edge attribute values read by T1 during T1's duration.
-
-[discrete]
-==== *No phantom reads* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Nophantomreads">++++++</a>+++
-
-Multiple reads in a single read-only transaction T1 will get the same results, even if there are update transactions which deleted/inserted vertices or edges read by T1 during T1's duration.
+TigerGraphは、最も強力な分離形式である直列化可能分離レベルをサポートしています。内部的には、TigerGraphはMVCCを使用して分離を行っています。MVCC、つまりMulti-Version Concurrency Control(多版型同時実行制御)は、データベースの状態の複数のスナップショットを利用し、分離された同時操作をサポートします。原則的には、読み取りまたは書き込み処理1つごとに1つのスナップショットが存在します。
 
 [discrete]
-==== *Durability*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Durability">++++++</a>+++
+==== *ダーティリード防止* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-NoDirtyReads">++++++</a>+++
 
-Committed transactions are written to disk (SSD or HDD). The TigerGraph platform implements write-ahead logging (WAL) to provide durability.
-
-[discrete]
-==== *TigerGraph internal Snapshot Implementation*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-TigerGraphinternalSnapshotImplementation">++++++</a>+++
-
-The TigerGraph platform uses Snapshot/MVCC (Multi-version Concurrency Control) to implement isolation of concurrent operations.  At the high level, the platform can temporarily maintain multiple versions or snapshots of the graph data. When a transaction T1 is submitted to the system, it will work on the last consistent snapshot of the graph which has all the changes made by transactions committed before T1 was submitted but has no changes made by any transaction not yet committed when T1 was submitted. The version of the graph T1 is working on will not be changed by any transactions other than T1 , even if they commit before T1 is finished.
-
-== Example Scenarios
-
-Let us examine a few transaction processing scenarios.
+読み取り専用トランザクションR1は、他の更新トランザクションが行ったコミットされていない変更を読み込みません。R1がシステムに送信される前または後にその更新トランザクションが送信されたかどうかには関わりません。
 
 [discrete]
-==== Scenario 1 Read - Write +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario1Read-Write">++++++</a>+++
+==== *再現リード*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Repeatablereads">++++++</a>+++
 
-A read-only transaction R1 is running. Before R1 finishes, an update transaction W2 comes in.  W2 might finish before R1 is finished.  But R1 will not see the changes made by W2 before W2 is committed (no dirty reads).  Even if W2 is committed before R1 is finished, if R1 reads the same part of the graph multiple times, it will not see the changes made by W2 (repeatable reads).  There are no phantom reads either. This is because the graph version R1 is working on cannot be changed by any of the W2 transaction aforementioned. Bottom line: If W2 starts when R1 is not yet committed, R1 will see results as though W2 did not exist.
+単一のトランザクションT1の実行中に、T1が読み込んだ頂点またはエッジの属性値を変更する他の更新トランザクションがあった場合に、T1で同じデータを複数回読み取りしても、同じ結果を得ることができます。
+
+[discrete]
+==== *ファントムリード防止* +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Nophantomreads">++++++</a>+++
+
+単一の読み取り専用トランザクションT1の実行中にT1が読み込んだ頂点またはエッジを削除/挿入した他の更新トランザクションがあった場合に、T1で同じデータを複数回読み取りしても、同じ結果を得ることができます。
+
+[discrete]
+==== *永続性*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Durability">++++++</a>+++
+
+コミットされたトランザクションはディスク(SSDまたはHDD)に書き込まれます。TigerGraphプラットフォームは、永続性を提供するためにログ先行書き込み(WAL)を備えています。
+
+[discrete]
+==== *TigerGraph内部スナップショット機能*  +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-TigerGraphinternalSnapshotImplementation">++++++</a>+++
+
+TigerGraphプラットフォームは、スナップショット/ MVCC(多版型同時実行制御)を使用して、並行操作の分離を行います。高レベルで、プラットフォームはグラフデータの複数のバージョン、スナップショットを一時的に維持することができます。トランザクションT1がシステムに送信されると、T1はグラフの最後の一貫したスナップショットで作業します。このスナップショットには、T1が送信される前にコミットされたトランザクションによって行われたすべての変更が反映されていますが、T1が送信されたときにまだコミットされていないトランザクションによって行われた変更は反映されていません。T1が作業しているグラフのバージョンは、T1以外のトランザクションによって(たとえT1が終了する前にコミットされた場合でも)変更されることはありません。
+
+== シナリオ例
+
+トランザクション処理のシナリオをいくつか見てみましょう。
+
+[discrete]
+==== シナリオ1 読み込み - 書き込み +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario1Read-Write">++++++</a>+++
+
+読み取り専用トランザクションR1が実行されています。R1が終了する前に、更新トランザクションW2が送信されてきました。R1が終了する前にW2が終了する可能性があります。しかしR1は、W2がコミットされる前にW2が行った変更を読み込みません(ダーティリードは起こりません)。R1が終了する前にW2がコミットされたとしても、R1が同じデータを複数回読み込んでも、W2が行った変更は読み込まれません(再現リード)。ファントムリードも発生しません。これは、R1が作業しているグラフバージョンは、前述のW2トランザクションのいずれによっても変更されないためです。つまり、R1がまだコミットされていないときにW2が開始すると、R1はW2が存在しなかったかのような結果を出します。
 
 image::1 (2).png[]
 
 [discrete]
-==== Scenario 2  Write - Read
+==== シナリオ2 書き込み - 読み込み
 
-An update transaction W1 is running. Before W1 is committed, a read-only transaction R2 comes in.  R2 will not wait for W1 to finish and will be executed as if there is no W1. Later. even if W1 finishes and commits before R2 is finished, R2 will not see any changes made by W1.  This is because the graph version R2 works on is 'fixed' at the time when R2 is submitted and will not include the changes to be made by W1. Bottom line: If R2 starts when W1 is not yet committed, R2 will see results as though W1 did not exist.
+更新トランザクションW1が実行されています。W1がコミットされる前に、読み取り専用トランザクションR2が送信されてきました。R2はW1が終了するのを待たず、W1が存在しないかのように実行されます。その後、R2が終了する前にW1が終了してコミットした場合でも、R2はW1が行った変更を認識しません。これは、R2が作業を行うグラフバージョンがR2の送信時に固定されており、W1が行った変更が含まれないためです。つまり、W1がまだコミットされていないときにR2が開始すると、R2はW1が存在しなかったかのような結果を出します。
 
 image::2 (1).png[]
 
 [discrete]
-==== Scenario 3  Write - Write +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario3Write-Write">++++++</a>+++
+==== シナリオ3 書き込み - 書き込み +++<a id="TigerGraphTransactionProcessingandACIDPropertiesSupport-Scenario3Write-Write">++++++</a>+++
 
-An update transaction W1 is running. Before W1 finishes, a new update request W2 comes in.  W2 will wait for W1 to finish before it is executed. When multiple update transactions come in, they will be executed sequentially by the system according to the time they are received by the system.
+更新トランザクションW1が実行されています。W1が終了する前に、新しい更新リクエストW2が送信されてきました。W2は、​​W1が終了してから実行されます。複数の更新トランザクションが送信されると、システムは受信した時間が早い順にそれらを実行します。
 
 image::3 (1) (1).png[]

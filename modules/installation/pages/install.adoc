@@ -1,41 +1,41 @@
-= Installation Guide
-:description: Installing Single-machine and Multi-machine systems
+= インストールガイド
+:description: 1台のマシンおよび複数のマシンシステムへのインストール
 
 
-This guide describes how to install the TigerGraph platform either as a single node or as a multi-node cluster, interactively or non-interactively.
+このガイドでは、TigerGraphプラットフォームをシングルノードまたはマルチノードクラスターとして、インタラクティブまたは非インタラクティブでインストールする方法について説明しています。
 
-NOTE: If you signed up for the Enterprise Free license, you also have access to the TigerGraph platform as a Docker image or a virtual machine (VirtualBox) image.
-Follow the instructions in xref:cloud:start:getting-started.adoc[Getting started] to start up TigerGraph in a Docker container or with VirtualBox.
+NOTE: エンタープライズフリーライセンスでサインアップした場合は、Dockerイメージまたは仮想マシン(VirtualBox)イメージとしてTigerGraphプラットフォームにアクセスすることもできます。
+xref:cloud:start:getting-started.adoc[はじめに]の指示に従って、DockerコンテナーまたはVirtualBoxでTigerGraphを起動してください。
 
-Video walk-through:
+手引き動画:
 
 video::sfe3Q37oWJQ[youtube,800,600]
 
 
-== Preparation
+== 準備
 
-Before you can install the TigerGraph system, you need the following:
+TigerGraphシステムをインストールする前に、以下の準備をしてください。
 
-* One or more machines that meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_].
-* A sudo user with the same username and login credential on every machine.
- ** If sudo privilege is not available, please contact TigerGraph support for workarounds.
-* A license key provided by TigerGraph (not applicable to Enterprise Free)
-* A TigerGraph system package
- ** If you do not yet have a TigerGraph system package, you can request one at the following address: https://www.tigergraph.com/get-tigergraph/
-* If you are installing a cluster, ensure that every machine has the same SSH port and the port stays open during installation
+* xref:hw-and-sw-requirements.adoc[__ハードウェアおよびソフトウェア最小要件__]を満たす1台以上のマシン。
+* すべてのマシンで同じユーザー名とログイン資格を持つsudoユーザー。
+ ** sudo権限が利用できない場合、代替策についてはTigerGraphサポートにご連絡ください。
+* TigerGraphが提供するライセンスキー(エンタープライズフリー以外の場合)
+* TigerGraphシステムパッケージ
+ ** TigerGraphシステムパッケージをまだお持ちでない場合は、次のアドレスより要求できます https://www.tigergraph.co.jp/get-tigergraph/
+* クラスターをインストールする場合は、すべてのマシンに同じSSHポートがあることを確認し、インストール中はポートが開いたままであるようにしてください
 
-== *Installation*
+== **インストール**
 
-TigerGraph's installation script support both single-node and cluster installation, and the user can choose to install either interactively and non-interactively.
+TigerGraphのインストールスクリプトは、シングルノードとクラスターの両方のインストールをサポートしています。インストールの際は、インタラクティブまたは非インタラクティブのいずれかを選択することができます。
 
-=== Interactive installation
+=== インタラクティブでのインストール
 
-The following describes the procedure to install TigerGraph on Linux interactively. The filename of your package may vary, depending on the product edition and version. For the examples here, we use the filename `tigergraph-<version>.tar.gz`, which should be replaced by the actual filename of your package.
+以下に、LinuxにTigerGraphをインタラクティブでインストールする手順を説明します。パッケージのファイル名は、製品のエディションとバージョンによって異なります。この例では、ファイル名 `tigergraph-<version>.tar.gz` を使用します。これをお使いのパッケージの実際のファイル名に置き換えてください。
 
-==== *Step 1*: Extract the package
+==== **ステップ 1** :パッケージの抽出
 
-Extract the package by running the following command.
-A folder named `tigergraph-<version>-offline` will be created.
+次のコマンドを実行して、パッケージを抽出してください。
+`tigergraph-<version>-offline` という名前のフォルダーが作成されます。
 
 [,console]
 ----
@@ -44,82 +44,82 @@ $ tar -xzf tigergraph-<version>.tar.gz
 
 
 [#_step_2_run_installation_script]
-==== *Step 2*:  Run installation script
+==== **ステップ 2**: インストールスクリプトの実行
 
-Navigate to the `tigergraph-<version>-offline` folder and run script `install.sh`  with the following commands:
+`tigergraph-<version>-offline` フォルダーに移動し、次のコマンドを使用してスクリプト `install.sh` を実行します。
 
-.Run the installation script
+.インストールスクリプトの実行
 [source,console]
 ----
 $ cd tigergraph-<version>-offline
 
-# to install enterprise license
+# エンタープライズライセンスのインストール
 $ sudo ./install.sh
 
-# For non-interactive installations, please see the non-interactive mode section.
+# 非インタラクティブのインストールを行うには、非インタラクティブモードのセクションを参照して下さい。
 ----
 
 
-The installer will ask for the following information, for which you may choose to hit Enter to skip and use the system default or enter a new value:
+インストーラーから次の情報の入力を要求されます。これらの情報については、Enterキーを押してスキップすること、システムのデフォルトを使用すること、新しい値を入力することを選択できます。
 
-* Your agreement to the License Terms and Conditions
-* Your license key (not applicable for Enterprise Free)
-* Username for the Linux user who will own and manage the TigerGraph platform
- ** The installer creates a Linux user who is the only authorized user that can run `gadmin` commands to manage the TigerGraph Platform, and for whom this username is for
-* Password for the Linux user who will own and manage the TigerGraph platform
-* Path to where the installation folder will be
-* Path to where the data folder will be
-* Path to where the log folder will be
-* Path to where the temp folder will be
-* The SSH port for your machine
+* ライセンス契約条件への同意
+* ライセンスキー(エンタープライズフリー以外の場合)
+* TigerGraphプラットフォームを所有・管理するLinuxユーザーのユーザー名
+ ** インストーラーはLinuxユーザーを作成します。このユーザーは `gadmin` コマンドを実行してTigerGraphプラットフォームを管理できる唯一の認証されたユーザーであり、このユーザー名の対象者となります
+* TigerGraphプラットフォームを所有・管理するLinuxユーザーのパスワード
+* インストールフォルダーの保存先パス
+* データフォルダーの保存先パス
+* ログフォルダーの保存先パス
+* 一時フォルダーの保存先パス
+* 使用マシンのSSHポート
 
-To see what the default settings are, read the <<_installation_options>> section below.
+デフォルトの設定を見るには、以下の<<_インストールのオプション_>>セクションをご覧ください。
 
-WARNING: Since license keys are long -- over 100 characters long. If you copy-and-paste the license key, be careful not to accidentally include an end-of-line character.
-
-
-==== *Step 3*: Configure cluster settings
-
-TigerGraph cluster configuration enables the graph database to be partitioned and distributed across multiple server nodes in a local network. After you have answered the questions described in the previous step, the installation script will ask for the following to complete cluster configuration:
-
-* The number of nodes in your cluster. Each node  will be given an alias following the input (`m1`, `m2`, `m3`, etc.)
- ** If this is a single-node installation, enter `1`
-* The IP address of each node
-* Username and credentials information of the sudo user
- ** Every machine in the cluster must have a sudo user with the same username and password or SSH key.
-* Permission to set NTP time synchronization
-* Permission to set firewall rules among the cluster nodes
+WARNING: ライセンスキーは100文字を超える長さです。ライセンスキーをコピーして貼り付ける場合は、誤って行末文字を含めないように注意してください。
 
 
-NOTE: In TigerGraph 3.x, the installation machine can be within or outside the cluster. If outside the cluster, the installation machine still needs to be a Linux machine.
+==== **ステップ 3**: クラスター設定
+
+TigerGraphのクラスター設定では、グラフデータベースを分割し、ローカルネットワーク内の複数のサーバーノードに分散させることができます。上記のステップで説明した質問に答えた後、インストールスクリプトによる、クラスター設定を完了するための以下の情報を入力する必要があります。
+
+* クラスター内のノード数。各ノードには、入力に続いて別名が与えられます(`m1` 、 `m2` 、 `m3` など)
+ ** シングルノードのインストールの場合、`1` を入力します
+* 各ノードのIPアドレス
+* sudoユーザーのユーザー名とログイン資格情報
+ ** クラスター内のすべてのマシンで、同じユーザー名とパスワードまたはSSHキーを持つsudoユーザーが必要です。
+* NTP時刻同期を設定する権限
+* クラスターノード間でファイアウォールのルールを設定する権限
 
 
-After all the questions are answered, the script will proceed to installation. A screenshot of the interactive installation is shown below:
+NOTE: TigerGraph 3.xでは、インストールマシンはクラスターの中または外部に配置できます。クラスター外の場合でも、インストールマシンはLinuxマシンである必要があります。
+
+
+すべての質問に回答すると、スクリプトはインストールを始めます。インタラクティブインストールのスクリーンショットを以下に示します。
 
 image::image (76).png[]
 
-==== *Step 4*: Verify installation
+==== **ステップ 4**: インストールの確認
 
-After installation is complete, you can switch to the Linux user who owns the platform (created in xref:install.adoc#_step_2_run_installation_script[Step 2]) with the following command :
+インストールが完了したら、次のコマンドを使用して、プラットフォームを所有するLinuxユーザー(xref:install.adoc#_step_2_run_installation_script[ステップ 2]で作成)に切り替えることができます。
 
 [,console]
 ----
-$ su <username>  # default username: tigergraph
+$ su <username>  # デフォルトのユーザー名はtigergraph
 ----
 
-At the prompt, enter the password that was set in Step 2.
+プロンプトで、ステップ 2で設定したパスワードを入力します。
 
-After switching to the correct user, you now have access to xref:gadmin:management-with-gadmin.adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready. Since there is no graph data loaded yet, GSE and GPE will show `"Warmup"`.
+正しいユーザーに切り替えると、xref:gadmin:management-with-gadmin.adoc[`gadmin` コマンド]を使用できるようになります。`gadmin status` を実行して、インストールが成功したことを確認してください。システムが正しくインストールされ、ライセンスが有効化されている場合、コマンドはすべてのサービスが起動して準備が整っていると回答します。グラフデータがまだロードされていないため、GSEとGPEについては `"Warmup"` と表示されます。
 
 image::image (77).png[Status of all components upon successful installation]
 
-=== Non-interactive installation
+=== 非インタラクティブのインストール
 
-The following describes the procedure to install TigerGraph on Linux non-interactively.
+以下に、LinuxにTigerGraphを非インタラクティブでインストールする手順を説明します。
 
-==== *Step 1*: Extract the package
+==== **ステップ 1**: パッケージの抽出
 
-Extract the package by running the following command. A folder named `tigergraph-<version>-offline` will be created.
+次のコマンドを実行して、パッケージを抽出してください。`tigergraph-<version>-offline` という名前のフォルダーが作成されます。
 
 
 .Extract for version X.Y.Z
@@ -129,11 +129,11 @@ $ tar -xzf tigergraph-<version>.tar.gz
 ----
 
 
-==== Step 2: Configure installation settings
+==== *ステップ 2*: インストールスクリプトの設定
 
-Navigate to the `tigergraph-<version>-offline` folder. Inside the folder, there is a file named `install_conf.json`. For non-interactive mode installation, the user must review and modify all the settings in the file _**_`install_conf.json` before running the installer.
+`tigergraph-<version>-offline` フォルダーに移動します。フォルダー内に `install_conf.json` という名前のファイルがあります。非インタラクティブモードでのインストールの場合、インストーラーを実行する前に、 `install_conf.json` ファイル内のすべての設定を確認または変更する必要があります。
 
-Below is an example of the `install_conf.json` file:
+以下は `install_conf.json` ファイルの例です。
 
 [,javascript]
 ----
@@ -171,36 +171,36 @@ Below is an example of the `install_conf.json` file:
 }
 ----
 
-Here is a description of all the fields in the config file:
+以下は設定ファイルのフィールドの説明です。
 
 * `"BasicConfig"`
- ** `"TigerGraph"` : Information about the Linux user that will be created by the installer who owns and manages the TigerGraph platform.
-  *** `"Username"`: Username of the Linux user.
-  *** `"Password"`: Password of the Linux user.
-  *** `"SSHPort"`: Port number used to establish SSH connections.
-  *** `"PrivateKeyFile"` (optional):  Absolute path to a valid private key file. If left empty, TigerGraph will generate one named `tigergraph.rsa` automatically.
-  *** `"PublicKeyFile"`(optional): Absolute path to a valid public key file. If left empty, TigerGraph will generate one named `tigergraph.pub` automatically.
+ ** `"TigerGraph"` : TigerGraphプラットフォームを管理するためにインストーラーによって作成される、LinuxユーザーであるTigerGraph Linuxユーザーに関する情報。 `gadmin` などのコマンドは、TigerGraph Linuxユーザーのみが使用できます。
+  *** `"Username"`: Linuxユーザーのユーザー名。
+  *** `"Password"`:Linuxユーザーのパスワード。
+  *** `"SSHPort"`: SSH接続確立のために使用されるポート番号。
+  *** `"PrivateKeyFile"` (オプション): 有効な秘密鍵ファイルへの絶対パス。空のままにすると、 `tigergraph.rsa` という名前のパスを自動的に生成します。
+  *** `"PublicKeyFile"`(オプション): 有効な公開鍵ファイルへの絶対パス。空のままにすると、 `tigergraph.pub` という名前のパスを自動的に生成します。
  ** `"RootDir"`
-  *** `"AppRoot"`: Absolute path to where application folder will be.
-  *** ``"DataRoot``": Absolute path to where the data folder will be.
-  *** `"LogRoot"`: Absolute path to where the log folder will be.
-  *** `"TempRoot"`: Absolute path to where the temp folder will be.
- ** `"License"`: Your TigerGraph license string.
- ** `"Node List"`:  A JSON array of the nodes in the cluster. Each machine in the cluster is defined as a key-value pair, where the key is a machine alias (m1, m2, m3, etc.) and the value is the IP address of the node.
+  *** `"AppRoot"`: アプリケーションフォルダーの保存先の絶対パス。
+  *** ``"DataRoot``": データフォルダーの保存先の絶対パス。
+  *** `"LogRoot"`: ログフォルダーの保存先の絶対パス。
+  *** `"TempRoot"`: 一時フォルダーの保存先の絶対パス。
+ ** `"License"`: お使いのTigerGraphのライセンス文字列。
+ ** `"Node List"`: クラスター内のノードのJSON配列。クラスター内の各マシンは、キーと値のペアとして定義されます。キーはマシンの別名(m1、m2、m3など)であり、値はノードのIPアドレスです。
 * `"AdvancedConfig"`
- ** `"ClusterConfig"`: Cluster configurations
-  *** `"LoginConfig"`: Login configurations
-   **** `"SudoUser"`: Username of the sudo user who will be used to execute the installation on all nodes.
-   **** `"Method"`: Authentication method for SSH. Enter `"P"` to use password authentication and `"K"` to use key-based authentication.
-   **** `"P"`: Password of the sudo user.
-   **** `"K"`: Absolute path to the SSH key to be used to authenticate the sudo user.
-  *** `"ReplicationFactor"`: xref:intro:continuous-availability-overview.adoc#_continuous_availability__definitions[Replication factor] of the cluster.
-   **** If you would like to enable the High Availability (HA) feature, please make sure you have at least 3 nodes in the cluster and set the replication factor to be greater than 1. For example, if your cluster has 6 nodes, you could set the replication factor to be 2 or 3. If you set the replication factor to be 2, then the partitioning factor will be  6 / 2 = 3.  Therefore, 3 nodes will be used for one copy of the data, and the other 3 nodes will be used as a replica copy of the data.
-   **** Ensure that the total number of nodes can be fully divided by the replication factor.  Otherwise, some nodes may not be utilized as parts of the HA cluster.
+ ** `"ClusterConfig"`: クラスター設定
+  *** `"LoginConfig"`: ログイン設定
+   **** `"SudoUser"`: すべてのノードでインストールを行うために使用されるsudoユーザーのユーザー名
+   **** `"Method"`: SSHの認証方法。パスワード認証を使用するには `"P"` を、キーベースの認証を使用するには `"K"` を入力します。
+   **** `"P"`: sudoユーザーのパスワード。
+   **** `"K"`: sudoユーザーの認証に使用されるSSHキーへの絶対パス。
+  *** `"ReplicationFactor"`: クラスターのxref:ha:ha-cluster.adoc[レプリケーション係数]
+   **** xref:ha:ha-cluster.adoc[高可用性(HA)機能]を有効にする場合は、クラスター内に少なくとも3つのノードがあることを確認し、レプリケーション係数を1より大きい値に設定してください。たとえばクラスターが6ノードなら、レプリケーション係数に2か3を設定することができます。レプリケーション係数を2に設定すると、分割係数は 6 / 2 = 3で、3になります。したがって、3つのノードが1つのデータのコピーに、他の3つのノードはデータのレプリカコピーとして使用されます。
+   **** レプリケーション係数には、ノード総数を完全に割り切れる数を設定してください。そうでない場合、一部のノードがHAクラスターの一部として使用されない場合があります。
 
-==== Step 3: Run install script with `-n` option
+==== ステップ 3: インストールスクリプトを `-n` オプションで実行
 
-Start the non-interactive installation process by running the `install.sh` script with the `-n` option:
+`-n` オプションを指定して `install.sh` スクリプトを実行し、非インタラクティブのインストールプロセスを開始します。
 
 [,bash]
 ----
@@ -208,40 +208,44 @@ $ sudo ./install.sh -n
 ----
 
 [#_installation_options]
-=== Installation options
+=== インストールのオプション
 
-The following default settings will be applied if no parameters are specified:
+パラメーターが指定されなかった場合、次のデフォルト設定が適用されます。
 
-* The installer will create a Linux user with username `tigergraph` and with password `tigergraph`.This user will be the only user authorized to run `gadmin` commands to manage the TigerGraph platform and services.
-** If there is already a user named `tigergraph`, this user will be designated as the platform owner and no other user will be created.
-* The default root directory for the installation would be `/home/tigergraph/tigergraph` with the App/Data/Log/Temp files within it : App Path : `/home/tigergraph/tigergraph/app` ****Data Path :``/home/tigergraph/tigergraph/data`` ****Log Path :``/home/tigergraph/tigergraph/log`` ****Temp Path :``/home/tigergraph/tigergraph/tmp``
-* The root directory for the installation (referred to as `<tigerGraph_root_dir>`) is a folder called `tigergraph` located in the tigergraph user's home directory, i.e., `/home/tigergraph/tigergraph`.
+* インストーラーは、ユーザー名  `tigergraph` 、パスワード `tigergraph` のLinuxユーザーを作成します。このユーザーは、TigerGraphプラットフォームおよびサービスを管理するための `gadmin` コマンド実行を許可される唯一のユーザーになります。
+** `tigergraph` という名前のユーザーがすでに存在する場合、このユーザーはプラットフォームの所有者として指定されます。他のユーザーは作成されません。
+* インストールのデフォルトのルートディレクトリーは `/home/tigergraph/tigergraph` で、その中にApp/Data/Log/Tempファイルがあります。
+** アプリケーションパス : `/home/tigergraph/tigergraph/app`
+** データパス: `/home/tigergraph/tigergraph/data`
+** ログパス: `/home/tigergraph/tigergraph/log`
+** 一時パス: `/home/tigergraph/tigergraph/tmp`
+* インストールのルートディレクトリー(`<tigerGraph_root_dir>` で参照されます)は、tigergraphユーザーのホームディレクトリー、つまり `/home/tigergraph/tigergraph` にある `tigergraph` というフォルダーです。
 
-The installation can be customized by running command-line options with the `install.sh` script:
+インストールは、 `install.sh` スクリプトを使用してコマンドラインオプションを実行することで、カスタマイズ可能です。
 
-==== Command-line options
+==== コマンドラインオプション
 
 [,bash]
 ----
-# Command-line options for install.sh
+# install.shのコマンドラインオプション
 Usage:
 ./install.sh [-n] [-u <user>] [-p <password>] [-r <tigergraph_root_dir>] [-l <license_key>] [-F] [-N]
 ./install.sh -h
-Options:
-  -h  --  Show help information
-  -u  --  Username of Linux user to create [default: tigergraph]
-  -p  --  Password of Linux user to create [default: tigergraph]
-  -l  --  TigerGraph license key
-  -n  --  Non-interactive option: suppress prompts, and install
-          using default config
-  -F  --  Set iptables (firewall) rules to open TCP ports among cluster nodes
-  -N  --  Set NTP system time synchronization among cluster nodes
+オプション:
+  -h  --  ヘルプ情報を表示
+  -u  --  作成するLinuxユーザーのユーザー名[デフォルト: tigergraph]
+  -p  --  作成するLinuxユーザーのパスワード[デフォルト: tigergraph]
+  -l  --  TigerGraphライセンスキー
+  -n  --  非インタラクティブのオプション: プロンプトを表示せず、
+          デフォルトの設定を使用してインストールします 
+  -F  --  クラスターノード間でTCPポートを開くようにiptables(ファイアウォール)ルールを設定します
+  -N  --  クラスターノード間のNTPシステム時刻同期を設定します
 
-[NOTE    ]: Using option '-n' will non-interactively install the platform
-            on single node or cluster with all configurations from
-            config file "install_config.json". In this case, the config
-            file should be modified before installation.
+[NOTE    ]: オプション '-n' を使用すると、設定ファイル"install_config.json"内の
+            すべての設定で、単一ノードまたはクラスターにプラットフォームが
+            非インタラクティブにインストールされます。
+            この場合、インストール前に設定ファイルの変更を行う必要があります。
 
-[WARNING ]: Installer will fail if any option (except -F and -N)
-            is provided with option '-n' at the same time.
+[WARNING ]: オプション '-n' と同時に '-F' 、'-N' 以外のオプションが指定されている場合、
+            インストールは失敗します。
 ----

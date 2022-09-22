@@ -1,81 +1,81 @@
-= Introduction
+= はじめに
 :pp: {plus}{plus}
 
-TigerGraph's REST API endpoints exist on the REST{pp} and the GSQL server. REST{pp} (or RESTPP) is the TigerGraph customized https://en.wikipedia.org/wiki/Representational_state_transfer[REST] server. Our API accepts URL-encoded query string parameters, https://www.json.org/json-en.html[JSON]-encoded request bodies and returns JSON encoded responses. This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while the subsequent sections describe in detail each endpoint and its input and output.
+TigerGraphのREST APIエンドポイントは、REST{pp}とGSQLサーバーに存在します。REST{pp} (またはRESTPP)は、TigerGraphのカスタマイズされた https://en.wikipedia.org/wiki/Representational_state_transfer[REST] サーバーです。APIは、URLでエンコードされたクエリ文字列パラメーター https://www.json.org/json-en.html[JSON]でエンコードされたリクエスト本文を受け入れ、JSONでエンコードされた応答を返します。このユーザーガイドでは、REST APIを使用する方法について説明します。この「はじめに」セクションでは、リクエストの送信、パラメーターの受け渡し、リクエスト本文のフォーマット方法について説明します。その後のセクションでは、各エンドポイントとその入力・出力について詳しく説明します。
 
-To submit a request, send an HTTP request to the REST{pp} server or the GSQL server. xref:troubleshooting:system-administration-faqs.adoc#_how_can_i_find_out_the_port_of_a_service[By default], the REST{pp} server listens for requests at port 9000 and the GSQL server listens on port 14240. A request needs to specify five things:
+リクエストを送るには、HTTPリクエストをREST{pp}サーバーまたはGSQLサーバーに送信します。 xref:troubleshooting:system-administration-faqs.adoc#_how_can_i_find_out_the_port_of_a_service [デフォルト]では、REST{pp}サーバーはポート9000で、GSQLサーバーはポート14240でリクエストをリッスンします。リクエストには次の5つを指定する必要があります。
 
-* The request method (`GET`, `POST`, `PUT`, or `DELETE`)
-* The endpoint address
-* Any required or optional request parameters in URL encoding
-* For `POST` requests, a data payload (i.e., request body) in JSON encoding unless otherwise specified
-* In some cases, request header parameters
+* リクエストメソッド(`GET`、 `POST` 、 `PUT` 、または `DELETE`)
+* エンドポイントアドレス
+* URLエンコードの必須またはオプションのリクエストパラメーター
+* `POST` リクエストの場合、特に指定がなければ、JSONエンコーディングのデータペイロード(つまり、リクエストの本文)
+* リクエストヘッダーパラメーター(一部のケース)
 
-For requests that are sent to the GSQL server, the sender needs to provide TigerGraph user credentials for the request to be accepted. If authentication is enabled on the RESTPP server, a request token needs to be included in the request header as well.
+GSQLサーバーに送信されるリクエストの場合、送信者は、リクエストが受け入れられるよう、TigerGraphユーザー資格情報を指定する必要があります。RESTPPサーバーで認証が有効になっている場合は、リクエストトークンもリクエストヘッダーに含める必要があります。
 
 [NOTE]
 ====
-In a test or development environment, the requester may be on the same server as REST{pp}. In this case, the server IP is *localhost*.
+テスト環境または開発環境では、リクエスターはREST{pp}と同じサーバー上にある可能性があります。この場合、サーバーIPは *localhost* です。
 ====
 
-== Query String Parameters
+== クエリ文字列パラメーター
 
-TigerGraph's API endpoints accept parameters in URL encoding, which is straightforward in the case of string, number, and boolean values. However, some parameters are more complex and require specific formatting. The list below describes how to format the complex type parameter values when executing a query.
+TigerGraphのAPIエンドポイントは、URLエンコードのパラメーターを受け入れます。これが文字列、数値、ブール値の場合は簡単ですが、一部のパラメーターはより複雑で、特定のフォーマットが必要となります。以下のリストは、クエリ実行時に複雑なタイプのパラメーター値をフォーマットする方法を示しています。
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
-|Parameter type |Description |Example
-|`+SET+` or `+BAG+` of primitives |Assign multiple values to the same
-parameter name. |A `+SET<INT> +`parameter named `+p1 +`is assigned 3
-integers: +
- +
+|パラメータータイプ |説明 |例
+|プリミティブタイプの `+SET+` または `+BAG+` |同じパラメーター名に複数の値を割り
+当てます。|`+p1+` という名前の `+SET<INT>+` パラメーターに、3つの整数が割り当て
+られています。
+ 
 *`+p1=1&p1=5&p1=10+`*
 
-|`+VERTEX+` with a defined type |Use the primary key of the vertex. a|
-<b></b>
+|定義されたタイプの `+VERTEX+` |頂点の主キーを使用します。|
 
-A `+VERTEX<person>+` parameter named`+vp+` is assigned a vertex whose ID
-is `+"person2"+`: +
-+
+
+`+vp+` という名前の `+VERTEX<person>+` パラメーターに、IDが `+"person2"+` の頂点を
+割り当てています。:
+
 *`+vp=person2+`*
 
-|`+VERTEX+` without a defined type |Use
-`+<parameter_name>.<parameter_type> +`to specify the type of the
-parameter, and also provide the primary key of the vertex. a|
-<b></b>
+|定義されたタイプなしの `+VERTEX+`
+|`+<parameter_name>.<parameter_type> +` を使用して
+パラメーターのタイプを指定し、頂点の主キーも指定します。 |
 
-A `+VERTEX+` parameter named `+va+` is assigned a `+person+` type vertex
-whose ID is`+"person1"+` +
-+
+
+`+va+` という名前の `+VERTEX+` パラメーターに、 `+"person1"+` というIDの
+`person` タイプの頂点が割り当てられています。
+
 *`+va=person1&va.type=person+`*
 
-|`+SET+` or `+BAG+` of vertices with a defined type |Same as a `+SET+`
-or `+BAG+` of primitives, where the value for each element is the
-primary key of the vertex. |A `+SET<VERTEX<person>>+` parameter named
-`+vp+` is assigned two vertices with IDs `+person3+` and `+person4+`: +
-+
+|定義されたタイプの頂点の `+SET+` または `+BAG+`|プリミティブの `+SET+` 
+または `+BAG+` と同様。それぞれのエレメントの値は頂点の主キーです。|`+vp+` 
+という名前の `+SET<VERTEX<person>>+` パラメーターにIDが `+"person3"+` 
+と `+"person4"+` の2つの頂点に割り当てられています
+
 *`+vp=person3&vp=person4+`*
 
-|`+SET+` or `+BAG+` of vertices without a defined type |The `+SET+` or
-`+BAG+` must be treated as an array, specifying the order of the
-elements with indices `++`,`++`, etc. a|
-A `+SET<VERTEX>+` parameter named `+vp+`is assigned a `+person+` type
-vertex with an ID of `+person1+` and a `+post+` type vertex with an ID
-of `+11+` :
+|定義されたタイプのない頂点の `+SET+` または `+BAG+`|`+SET+` または 
+`+BAG+` は配列として扱う必要があり、インデックス `++`,`++` など、
+要素の順序を指定します。
+|`+vp+` という名前の `+SET<VERTEX>+` パラメーターに、IDが 
+`+"person5"+` の `person` タイプの頂点とIDが `+11+` の 
+`post` タイプの頂点が割り当てられます。
 
-*`+vp[0]=person1&vp[0].type=person&vp[1]=11&vp[1].type=post+`*
+*`+vp[0]=person5&vp[0].type=person&vp[1]=11&vp[1].type=post+`*
 
 |===
 
-== Input Data for `POST` requests
+== `POST` リクエストの入力データ
 
-Input data for `POST` requests should be in JSON format, unless the endpoint specifically accepts data in other formats. There are two ways to supply the data: inline or in a separate file.
+エンドポイントが特別に、他のフォーマットのデータを受け入れない限り、`POST` リクエストの入力データはJSON形式でなければなりません。データを指定方法には、インラインまたは別ファイルの2つがあります。
 
-=== *Inline Data*
+=== **インラインデータ**
 
-The data should be formatted as a single string without linebreaks. If using curl, use the `-d` __**__option, followed by the JSON string.
+データは、改行なしの単一の文字列としてフォーマットする必要があります。curlを使用する場合、 `-d` __**__ オプションを使用し、その後にJSON文字列を続けます。
 
-.Syntax for a POST request with Inline Data Payload
+.インラインデータペイロードを使ったPOSTリクエストの構文
 
 [source,bash]
 ----
@@ -84,9 +84,9 @@ curl -X POST -d 'json_string' "http://server_ip:9000/path_to_endpoint?request_pa
 
 
 
-The following example uses the `POST /graph` endpoint to insert one User type vertex whose ID is ``"id6``" into the graph called `"socialNet"`.
+次の例では、 `POST / graph` エンドポイントを使用してIDが ``"id6"`` である1つのユーザータイプの頂点を `"socialNet"` というグラフに挿入しています。
 
-.Example using inline input data
+.インライン入力データを使用した例
 
 [source,bash]
 ----
@@ -95,13 +95,13 @@ curl -X POST -d '{"vertices":{"User":{"id6":{"id":{"value":"id6"}}}}}' "http://l
 
 
 
-=== *Data File*
+=== **データファイル**
 
-Often it will be more convenient for the input data to be in a separate file, especially if the data is large.
+多くの場合、そして特にデータが大きい場合は、入力データを別のファイルに入れる方が便利です。
 
-For curl, use `--data-binary <path_to_file>` __**__as in the example below:
+curlには、次の例のように `--data-binary <path_to_file>` __**__ を使用します。
 
-.Syntax for a POST request with Payload Data File
+.データファイルペイロードを使ったPOSTリクエストの構文
 
 [source,bash]
 ----
@@ -110,61 +110,61 @@ curl -X POST --data-binary <path_to_file> "http://server_ip:9000/path_to_endpoin
 
 
 
-=== Formatting Data in JSON
+=== JSONでのデータフォーマット
 
-Data of primitive types, including `INT, UINT, FLOAT, DOUBLE, STRING, BOOL`, and `DATETIME`, as well as arrays and objects, follow the standard https://www.json.org/json-en.html[JSON Data Interchange Syntax]. This subsection describes how to format complex data types.
+`INT、UINT、FLOAT、DOUBLE、STRING、BOOL、DATETIME` などのプリミティブ型のデータ、配列とオブジェクトは、標準の https://www.json.org/json-en.html[JSONデータ交換構文] に従います。このサブセクションでは、複雑なデータ型をフォーマットする方法について説明します。
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
-|Data type |Description |Example
-|`+SET+`, `+LIST+` or `+BAG+` of primitives |Use a JSON array of
-primitive values. a|
-A set of primitive values: `[1, 2, 3]`
+|データタイプ |説明 |例
+|プリミティブタイプの `+SET+`、 `+LIST+` または `+BAG+`|プリミティブ値の
+JSON配列を使用します。 a|
+プリミティブ値: `[1、2、3]`
 
-|`+VERTEX+` |Use a JSON object that has an`+id+` field +
+|`+VERTEX+` |`+id+` フィールドを持つJSONオブジェクトを使用します。
 +
-whose value is the primary key of the +
+値が頂点の主キーである
 +
-vertex and a`+"type"+`field whose value +
+値が頂点のタイプである `+"type"+` フィールドを
 +
-is the type of the vertex. a|
-A `+person+` vertex with an ID of `+"Tom"+`:
+持つJSONオブジェクトを使用します。 a|
+IDが `+"Tom"+` の `+person+` タイプの頂点 :
 
 `+{"id": "Tom", "type": "person"}+`
 
-|`+MAP+` |Use a JSON object that has two JSON
-arrays with keys `+keyList+` and
-`+valueList+`, each containing the keys and the values of the map respectively. +
+|`+MAP+` |キーである `+keyList+` と `+valueList+`の
+2つのJSON配列を持ち、それぞれにマップのキーと値が含まれている
+JSONオブジェクトを使用します。
 
-The order of items in the valueList should correspond to the order of
-items in the keyList. a|
-A map of nations and their capitals:
+valueList内のアイテムの順序は、
+keyList内のアイテムの順序に対応させます。 a|
+国々とその首都のマップ:
 
 `+{"keyList": ["England", "Germany"],+`
 
 `+"valueList": }+`
 
-|User-Defined Type (UDT) |Use a JSON object that has two JSON +
-+
-arrays with keys `+keyList+` and +
-+
-`+valueList+`. The `+keyList+` array contains the field names of the
-tuple, and the `+valueList+` array contains the values of the fields. +
-+
-+
-+
-The order of items in the valueList should correspond to the order of
-items in the keyList. a|
-Tuple schema definition:
+|ユーザー定義タイプ (UDT) |キーである `+keyList+` と `+valueList+`
 
-`+TYPEDEF TUPLE <name STRING, age INT> person+`A `+person+` tuple
-written in JSON:
+ の2つのJSON配列を持つJSONオブジェクトを
+
+使用します。 `+keyList+` の配列にはタプルのフィールド名が含まれ、
+`+valueList+` 配列にはフィールドの値が含まれます。
+
+
+
+valueListの値の順序は、keyListのアイテムの
+順序に対応させます。 a|
+タプルのスキーマの定義:
+
+`+TYPEDEF TUPLE <name STRING, age INT> person+`　`+person+`
+JSONの `person` タプルの記述:
 
 `+{"keyList: ["name", "age"], "valueList": ["Sam", 24]}+`
 
 |===
 
-.Example: UDT Definition 
+.例: UDT定義 
 
 [source,gsql]
 ----
@@ -172,18 +172,18 @@ TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> myT
 ----
 
 
-==== Vertices with Composite Keys
+==== 複合キーを持つ頂点
 
-If a vertex has a composite key composed of N attributes, then N values must be provided for the `"id"` . The values can be presented either as a JSON object with N key-value pairs, or as a JSON array with a list of N values in the same order as defined in the schema.
+頂点がN個の属性で構成される複合キーを持つ場合、`"id"` にはN個の値を指定する必要があります。 値は、キーと値のペアN個を持つJSONオブジェクトとして、またはスキーマ内の定義と同じ順序でN個の値が並ぶリストを持つJSON配列として表すことができます。
 
-The example below shows the two methods for a  vertex `v` having a composite primary key composed of the three attributes `id`, `name`, and `label.`
+以下の例は、3つの属性 `id`、 `name` 、 `label` で構成される複合主キーを持つ頂点 `v` の2つの表し方を示しています。
 
 [tabs]
 ====
-Option 1::
+オプション1::
 +
 --
-.Vertex v with composite key as JSON object
+.JSONオブジェクトとして複合キーを持つ頂点 v
 [source,javascript]
 ----
 {
@@ -198,17 +198,17 @@ Option 1::
 }
 ----
 --
-Option2::
+オプション2::
 +
 --
-.Vertex v with composite key as JSON array
+.JSON配列として複合キーを持つ頂点 v
 [source,javascript]
 ----
 {
   "v": {
     "id": {
-      "id": [3, "c", 300] // The values in the array must be in the same
-                          // order as they are defined in the schema
+      "id": [3, "c", 300] // 配列の価値はスキーマで定義された順序
+                          // と同じである必要があります
     },
     "type": "v3"
   }
@@ -217,22 +217,22 @@ Option2::
 --
 ====
 
-==== `SET` or `BAG` of Vertices
+==== 頂点の `SET` または `BAG`
 
-To describe a `SET` or `BAG` of vertices in JSON, use a JSON array with _vertex objects_ nested in the `SET` or `BAG` array.
+JSONで頂点の `SET` または `BAG` を記述するには、 `SET` または `BAG` 配列にネストされた _vertexオブジェクト_ を持つJSON配列を使用します。
 
-== Output Responses
+== 応答の出力
 
-All TigerGraph REST responses are in JSON format. The output JSON object has four fields: `"version"`, `"error"`, `"message"`, and `"result"`.
+TigerGraphのRESTの応答はすべてJSON形式です。出力されるJSONオブジェクトには、 `"version"` 、 `"error"` 、 `"message"` 、 `"result"` の4つのフィールドがあります。
 
-* `"version"` - this field describes the version of the running TigerGraph instance.
-* "``error"`` - a boolean value to indicate if there is an error in processing the request. If there is an error, the `"error"` field will be `true`.
-* `"message"` - the error message when there is an error. If a request is successful, the field will be an empty string or a brief message conveying the result of the request.
-* `"results"` - this field contains the resulting data from the request. Details about the result of each built-in endpoint are described in the xref:built-in-endpoints.adoc[Built-in Endpoints] section.
+* `"version"` - このフィールドは、実行中のTigerGraphインスタンスのバージョンを示します。
+* "``error"`` - リクエストの実行でエラーが発生したかどうかを示すブール値。エラーが発生した場合、 `" error"` フィールドが `true` になります。
+* `"message"` - エラーが起こった場合のエラーメッセージ。リクエストが成功した場合、フィールドには空の文字列またはリクエストの結果を伝える簡単なメッセージが入ります。
+* `"results"` - このフィールドは、リクエストの結果データを含みます。それぞれの組み込みエンドポイントの結果の詳細については、xref:built-in-endpoints.adoc[組み込みエンドポイント]セクションで説明しています。
 
 [source,javascript]
 ----
-// Example response
+// 応答例
 {
   "version": {
     "api": "v2",
@@ -252,7 +252,7 @@ All TigerGraph REST responses are in JSON format. The output JSON object has fou
 
 [NOTE]
 ====
-To make the JSON output more human-readable in the terminal, use the https://stedolan.github.io/jq/[`jq`] command or Python json library built into most Linux installations:
+ターミナルでJSON出力をより分かりやすくするには、 https://stedolan.github.io/jq/[`jq`] コマンドまたはほとんどのLinuxインストールに組み込まれているPython jsonライブラリーを使用します。
 
 [source,bash]
 ----
@@ -262,40 +262,40 @@ curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | pyt
 
 ====
 
-== Size and Time limits
+== サイズとタイムの制限
 
-The maximum length for the request URL is 8K bytes, including the query string. Requests with a large parameter size should use a data payload file instead of inline data.
+リクエストURLの最大長は、クエリー文字列を含めて8Kバイトです。パラメーターサイズが大きいリクエストの場合、インラインデータではなくデータペイロードファイルを使用する必要があります。
 
-=== Request Body Size
+=== リクエストの本文サイズ
 
-The maximum size for a request body, including the payload file, is set by the system parameter `Nginx.ClientMaxBodySize`. The default value is 200 (in MB). To increase this limit, use the following `gadmin` command:
+ペイロードファイルを含むリクエスト本文の最大サイズは、システムパラメーター `Nginx.ClientMaxBodySize` によって設定されます。デフォルト値は200 MBです。この制限を増やすには、次の `gadmin` コマンドを使用します。
 
 [source,console]
 ----
 gadmin config set Nginx.ClientMaxBodySize NNN
 ----
 
-The upper limit of this setting is 1024 MB. Raising the size limit for the data payload buffer reduces the memory available for other operations, so be cautious about increasing this limit.
+この設定の上限は1,024 MBです。データペイロードバッファーのサイズ制限を上げることにより、他の操作のためのメモリーが減少するため、この制限を増やす作業には注意が必要です。
 
-=== GSQL Query Timeout
+=== GSQLクエリのタイムアウト
 
-By default, an HTTP request in the TigerGraph system times out after 16 seconds.  to customize this timeout limit for a particular query instance, you can set the GSQL-TIMEOUT parameter in the request header. If you are using curl to submit your RESTPP request, the syntax would be the following:
+TigerGraphシステムのHTTPリクエストは、デフォルトでは16秒後にタイムアウトになります。特定のクエリーインスタンスのためにこの制限をカスタマイズするには、リクエストヘッダーでGSQL-TIMEOUTパラメーターを設定します。curlを使用してRESTPPリクエストを送信する場合、構文は以下のようになります。
 
 [source,bash]
 ----
 curl -X <GET/POST> -H "GSQL-TIMEOUT: <timeout value in ms>" '<request_URL>'
 ----
 
-=== Response Size
+=== 応答サイズ
 
-You can specify the response size limit of an HTTP request with the following header:
+HTTPリクエストの応答サイズ制限を指定するには、以下のヘッダーを使用します。
 
 [source,bash]
 ----
 curl -X <GET/POST> -H "RESPONSE-LIMIT: <size limit in byte>" '<request_URL>'
 ----
 
-If the response size is larger than the given limit, an error message will be returned instead of the actual query result:
+応答サイズが設定された制限より大きい場合、クエリーの結果の代わりに、エラーメッセージが返されます。
 
 [source,bash]
 ----
@@ -307,24 +307,24 @@ If the response size is larger than the given limit, an error message will be re
 }
 ----
 
-== `curl` options
+== `curl` のオプション
 
-Request examples in this guide are made using https://curl.se/docs/manpage.html[`curl`]. Below is a list of `curl` options used in our code examples:
+このガイドのリクエスト例は、 https://curl.se/docs/manpage.html[`curl`] を使用して作成されています。以下で、コード例で使用されている `curl` のオプションについて説明します。
 
 * `-d <data>`
- ** Sends the specified data in a `POST` request to the HTTP server in the same way that a browser does when a user has filled in an HTML form and presses the submit button. This will cause curl to pass the data to the server using the content-type `application/x-www-form-urlencoded`.
- ** If you start the data with the character `@`, the rest should be a filepath from which to read the data. The command `curl -d @foobar` will read data from a file named `foobar`.
+ ** `POST` リクエストで指定されたデータをHTTPサーバーに送信します。ブラウザーのHTMLフォームに入力を行って送信ボタンを押したときと同様、curlはコンテンツタイプ `application/x-www-form-urlencoded` を使用してデータをサーバーに送ります。
+ ** データを文字 `"@"` で開始する場合、残りはデータを読み取るためのファイルパスにする必要があります。コマンド `curl -d @foobar` は、`foobar` という名前のファイルからデータを読み取ります。
 * `--data-binary <data>`
- ** Sends data with a `POST` request exactly as specified with no extra processing.
+ ** 追加の処理をすることなく、指定されたとおりに `POST` リクエストでデータを送信します。
 * `--fail`
- ** Makes curl fail silently (no output at all) on server errors.
- ** This is mostly done to enable scripts etc. to better deal with failed attempts. In normal cases when an HTTP server fails to deliver a document, it returns an HTML document stating so (which often also describes why and more). This flag will prevent curl from outputting that and return error 22.
+ ** サーバーエラーのときにcurlがサイレントで(まったく出力がなく)失敗するようにします。
+ ** これは主に、スクリプト等が失敗した試みをより適切に処理できるようにするために使われます。通常、HTTPサーバーがドキュメントの送信に失敗すると、そのことを示すHTMLドキュメントが返されます(大抵、理由などの情報も説明されています)。このフラグにより、curlはこれを出力しなくなり、エラー22が返されます。
 * `-H <header>`
- ** Extra header to include in the request when sending HTTP to a server. You may specify any number of extra headers.
- ** TigerGraph APIs use headers to specify xref:API:intro.adoc#_size_and_time_limits[size and time limits], as well as to provide RESTPP xref:authentication.adoc#_rest_server_requests[authentication] tokens.
+ ** サーバーにHTTPを送信するときにリクエストに含める、追加のヘッダー。これはいくつでも指定できます。
+ ** TigerGraph APIは、ヘッダーによって、xref:API:intro.adoc#_size_and_time_limits[サイズとタイムの制限]、およびRESTPP xref:authentication.adoc#_rest_server_requests[認証]トークンを指定します。
 * `-s`
- ** Silent or quiet mode. Don't show a progress meter or error messages. It will still output the data you ask for, potentially even to the terminal/stdout unless you redirect it.
+ **サイレントモードまたはクワイエットモード。プログレスメーターやエラーメッセージを表示しません。リダイレクトしない限り、要求したデータの出力は行われ、場合によってはターミナル/標準出力にも出力します。
 * `-u <user:password>`
- ** Submits the specified user name and password for server authentication.
+ ** サーバー認証のために指定されたユーザー名とパスワードを送信します。
 * `-X <request_method>`
- ** Specifies a custom request method to use when communicating with the HTTP server. If this option is not used, curl will make a `GET` request by default.
+ ** HTTPサーバーと通信するときに使用するカスタムリクエストメソッドを指定します。このオプションを使用しない場合、デフォルトでcurlは `GET` リクエストを行います。

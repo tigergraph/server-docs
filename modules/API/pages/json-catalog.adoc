@@ -1,13 +1,13 @@
-= Built-in Endpoints JSON Catalog
+= 組み込みエンドポイントJSONカタログ
 
-The request
+リクエスト
 
 [source,bash]
 ----
 curl -X GET "http://server_ip:9000/endpoints?builtin=true"
 ----
 
-generates the following output, appropriately 400 lines long when formatted. In addition to listing each endpoint, the JSON output also lists all the required and optional parameters for each endpoint.  In turn, each parameter is described by some or all of these attributes:
+リクエストは以下の出力を生成します。これはフォーマット時に適切に400行の長さになります。JSON出力には、各エンドポイントのリスト表示に加えて、それぞれのエンドポイントの必須パラメーターすべてとオプションパラメーターもリスト表示されます。また、各パラメーターは、これらの属性の一部またはすべてによって記述されます。
 
 * default
 * max_count
@@ -17,7 +17,7 @@ generates the following output, appropriately 400 lines long when formatted. In 
 * is_id
 * id_type
 
-While this information alone is not sufficient for a full understanding of each endpoint, the descriptive names of parameters and the attribute values go a long way towards this goal.
+この情報だけでは各エンドポイントを完全に理解するためには十分とは言えないものの、パラメーターの説明的な名前と属性値は、この目的において大きな助けとなるでしょう。
 
 [source,bash]
 ----
