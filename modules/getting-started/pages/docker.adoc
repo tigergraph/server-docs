@@ -40,9 +40,11 @@ Follow the steps below to install Docker Desktop on your machine and configure i
  ** Minimum: 2 cores and 10GB memory
  ** Click the Docker Desktop icon, click *Preferences* >> *Resources*, drag the CPU and Memory sliders to the desired configuration, save and restart Docker Desktop
 
-== Prepare a Shared Folder on Host OS to be shared with Docker Container
+== Prepare a volume or shared folder for your container
 
-Open a shell on your host machine and create or select a directory for sharing data between your host machine and docker container. Grant read+write+execute permission to the folder. For example, to create a folder called data in Linux:
+Open a shell on your host machine and create or select a directory for sharing data between your host machine and docker container and grant read, write, execute permission to the folder.
+This allows you to easily upload make files accessible to your Docker container.
+For example, to create a folder called data in Linux:
 
 [source,console]
 ----
@@ -50,13 +52,13 @@ $ mkdir data
 $ chmod 777 data
 ----
 
-You can mount (map) the data folder to a folder under the docker container, which allows you to share files between your host OS and Docker OS.
+You can map the data folder to a folder under the docker container, which allows you to share files between your host OS and Docker OS.
 
 For example, if you mount the host OS folder `~/data` to the docker folder `/home/tigergraph/mydata`,  then anything you put on `~/data` will be visible in the docker container under `/home/tigergraph/mydata`, and vice versa.
 
 == Run TigerGraph Docker image as a daemon
 
-Run the following command to pull the TigerGraph docker image, bind ports, map a shared data folder, and start a container from the image. Note: this command is very long; please make sure you copy the whole command by dragging the scroll bar to the end:
+Run the following command to pull the TigerGraph docker image, bind ports, map a shared data folder, and start a container from the image:
 
 [source.wrap,console]
 ----
@@ -67,25 +69,26 @@ $ docker run -d \ <1>
     --name tigergraph \ <3>
     --ulimit nofile=1000000:1000000 \ <4>
     -v ~/data:/home/tigergraph/mydata \ <5>
-    -t \ <6>
-    tigergraph/tigergraph:latest <7>
+    -v tg-data:/home/tigergraph <6>
+    -t \ <7>
+    tigergraph/tigergraph:latest <8>
 ----
 <1> `-d`: make the container run in the background.
 <2> `-p`: map docker 22 port to host OS 14022 port, 9000 port to host OS 9000 port, 14240 port to host OS 14240 port.
 <3> `--name`: name the container tigergraph.
 <4>  `--ulimit`: set the `ulimit` (the number of open file descriptors per process) to 1 million.
-<5> `-v`: mount the host OS `~/data` folder to the docker `/home/tigergraph/mydata` folder using the -v option. If you are using Windows, change the above ~/data to something using Windows file system convention.
+<5> `-v`: mount the host OS `~/data` folder to the docker `/home/tigergraph/mydata` folder using the -v option.
+If you are using Windows, change the above ~/data to something using Windows file system convention.
 For example, `c:\data`
-<6> `-t`: allocate a pseudo terminal.
-<7> `tigergraph/tigergraph:latest`:  download the latest docker image from the TigerGraph docker registry URL tigergraph/tigergraph.
-
-[NOTE]
-====
+<6> `-v`: mounts a volume called `tg-data` to your container.
+If the volume doesn't exist, Docker creates it automatically.
+This allows you to retain the data from your container.
+The next time you start up a new container with the same volume, all your changes are perserved.
+<7> `-t`: allocate a pseudo terminal.
+<8> `tigergraph/tigergraph:latest`:  download the latest docker image from the TigerGraph docker registry URL tigergraph/tigergraph.
 Replace "latest" with a specific version number if a dedicated version of TigerGraph is to be used.
 For example, if you want to get the 3.0.5 version, the URL should be:
-
-`tigergraph/tigergraph:3.0.5`
-====
+`tigergraph/tigergraph:3.0.5`.
 
 If you use Windows and have write permission issues with the above command,  try the following command instead (this command does not map the shared folder on your host machine to your container) :
 
