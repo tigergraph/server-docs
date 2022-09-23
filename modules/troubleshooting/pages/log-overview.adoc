@@ -1,5 +1,13 @@
 = Log Files
+:page-aliases: troubleshooting/log-files.adoc
 
+This page provides a general overview of the way log files are stored in TigerGraph.
+
+For information specific to system logs, see xref:system-logs.adoc[].
+
+For information specific to audit logging, see xref:audit-logs.adoc[].
+
+== TigerGraph log structure
 TigerGraph logs are all stored in the `log` root directory.
 
 This is configured at install time and set to `/home/tigergraph/tigergraph/log` as the default location.
@@ -13,9 +21,9 @@ admin       dict  executor    gpe  gsql  informant  kafkaconn     nginx   ts3   
 controller  etcd  fileLoader  gse  gui   kafka      kafkastrm-ll  restpp  ts3serv
 ----
 
-Additionally, one can use the `gadmin log` command to list log files:
+You can also use the `gadmin log` command to list log files:
 
-[source,bash]
+[source, console]
 ----
 $ gadmin log
 ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN#1.out
@@ -59,7 +67,7 @@ ZK     : /home/tigergraph/tigergraph/log/zk/zookeeper.log
 
 Use the command `gadmin log <service name>` to just get the logs for a specific service:
 
-[source,bash]
+[source, console]
 ----
 $ gadmin log gpe
 GPE    : /home/tigergraph/tigergraph/log/gpe/GPE_1#1.out
@@ -70,23 +78,33 @@ The `log.INFO` file contains messages logged by the application code.
 The `.out` log contains the redirection of the process output, and is used for debugging significantly less frequently than `log.INFO`.
 
 [CAUTION]
-The log format differs between the `.out` and `INFO` logs. It also differs between certain TigerGraph components. An internal project to unify log formats is ongoing.
+The log format differs between the `.out` and `INFO` logs.
+It also differs between certain TigerGraph services.
+An internal project to unify log formats is ongoing.
 
 Inside each of the log directories for the TigerGraph services are a number of different files:
 
-. log.INFO, log.WARNING, and log.ERROR.
-These are all symbolic links to the latest INFO, WARNING, or ERROR level log. There is also a log.DEBUG,
-if the log level config for that service is set to DEBUG instead of the default INFO. Additionally, there will be a log.FATAL if any fatal level events are logged.
+. `log.INFO`, `log.WARNING`, and `log.ERROR`.
+These are all symbolic links to the latest `INFO`, `WARNING`, or `ERROR` level log.
+There is also a `log.DEBUG`, if the log level config for that service is set to `DEBUG` instead of the default `INFO`.
+Additionally, there will be a `log.FATAL` if any fatal level events are logged.
 . INFO, WARNING, ERROR level logs. The filename has the form:
-LOGLEVEL.YYYYMMDD-HHMMSS.fffff
-For example: INFO.20220621-213945.13651
+`LOGLEVEL.YYYYMMDD-HHMMSS.fffff`
+For example: `INFO.20220621-213945.13651`
 Note that the warning logs will include all error level messages as well as warning, and the info logs will include all warning and error level messages, as well as info.
-. Current and historical .out logs. Current .out log will have the form servicename.out, historical ones will have the form servicename-old-YYYY-MM-DDTHH-MM-SS.fff.out
-For example: GPE_1#1.out and GPE_1#1-old-2022-06-28T00-52-24.178.out
+. Current and historical .out logs.
+Current `.out` logs will have the form `<service name>.out`, historical ones will have the form `<service name>-old-YYYY-MM-DDTHH-MM-SS.fff.out`
+For example: `GPE_1#1.out` and `GPE_1#1-old-2022-06-28T00-52-24.178.out`
 
-Note that the open source components that TigerGraph includes (Kafka, Nginx, ZooKeeper, Kafkaconn, Kafkastream) follow the logging behavior of that project instead of having a INFO/WARNING/ERROR log, in addition to having a .out file for the process output redirection. For example, the Kafka logs have a controller.log, kafka.log, kafka-request.log, state-change.log, and server.log.
+== Open source TigerGraph components
 
-Finally, TigerGraph also handles log rotation. When the log is rotated, the log.LEVEL symlink will be updated to point to the newest log. The default configuration is to rotate under the following circumstances:
+The open source components that TigerGraph includes (Kafka, Nginx, ZooKeeper, Kafkaconn, Kafkastream) follow their respective logging behavior instead of having a INFO/WARNING/ERROR log, in addition to having a `.out` file for process output redirection.
+For example, the Kafka logs have a `controller.log`, `kafka.log`, `kafka-request.log`, `state-change.log`, and `server.log`.
+
+== Log rotation
+
+TigerGraph also handles log rotation.
+When the log is rotated, the log.LEVEL symlink will be updated to point to the newest log. The default configuration is to rotate under the following circumstances:
 
 * Log file max size exceeds 100mb
 * Log is older than 90 days
