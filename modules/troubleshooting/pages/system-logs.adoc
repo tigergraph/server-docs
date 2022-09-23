@@ -1,10 +1,11 @@
-= Log files
+= System Logs
 
 TigerGraph Database captures key information on activities occurring across its different components through log functions that output to log files. These log files are not only helpful in xref:troubleshooting-guide.adoc[troubleshooting] but also serve as an auditory resource. This document gives a high-level overview of TigerGraph's logging structure and lists some common information one might need to monitor their database services and where to obtain them in the logs.
 
 == Overall Logging Structure
 
-Logs in TigerGraph are stored at `<tigergraph_root_dir>/log/`. TigerGraph's logs are divided into different folders by the different internal components and each folder corresponds to a different component. Log formats also vary across the different components. In folders where logs are checked often, such as `restpp`, `gsql`, and `admin`,  there are three symbolic links that help you quickly get to the most recent log file of that category:
+Logs in TigerGraph are stored at `<tigergraph root directory>/log/`.
+TigerGraph's logs are divided into different folders by the different internal components and each folder corresponds to a different component. Log formats also vary across the different components. In folders where logs are checked often, such as `restpp`, `gsql`, and `admin`,  there are three symbolic links that help you quickly get to the most recent log file of that category:
 
 * `log.INFO`
  ** Contains regular output and errors
@@ -16,7 +17,7 @@ Logs in TigerGraph are stored at `<tigergraph_root_dir>/log/`. TigerGraph's logs
  ** `log.WARNING` contains warnings
  ** In the``gsql`` folder, `log.DEBUG` contains very specific information you only need when certain errors happen
 
-Knowing where certain activities are recorded allows one to use tools such as the Linux `grep` command to easily obtain critical information from your database.
+Knowing where certain activities are recorded allows you to use tools such as the Linux `grep` command to easily obtain critical information from your database.
 
 == Log locations on a cluster
 

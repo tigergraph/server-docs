@@ -1,0 +1,54 @@
+= Audit Logs
+
+For query execution via RESTPP, GSQL, and GraphStudio.
+
+Logging in the same files can also be found for login, and all other requests sent to any of these services.
+
+[NOTE]
+ML workbench is an application on top of TigerGraph, so all requests that it sends will be logged in the same manner.
+
+Query execution via RESTPP:
+Nginx NGINX#1.out log contains the endpoint accessed, the IP, and the client.
+RESTPP log.INFO contains the query run, user who ran it, and the graph it ran against.
+Note in a cluster, the log for the server that processed the request will contain the details.
+For example, if the request was routed to m3, the log would be in NGINX#3.out on m3 or RESTPP log.INFO on m3.
+
+Example query:
+[source,bash]
+----
+`curl -H "Authorization: Bearer 4m6nh1rakn60430rjf5asv" <ip_address>:9000/query/ldbc_snb/example_query`
+----
+Nginx logs:
+
+[source,bash]
+----
+<ip_address> - - [30/Jun/2022:01:37:52 +0000] "GET /query/ldbc_snb/example_query HTTP/1.1" 200 117 "-" "curl/7.29.0"
+----
+
+RESTPP logs:
+
+[source,bash]
+----
+I0630 01:41:29.779425 29409 handler.cpp:312] RawRequest|,131076.RESTPP_1_1.1656553289779.N,NNN,0,0,0,S|GET|/query/ldbc_snb/example_query|async = 0|payload_data.size() = 0|api = v2
+I0630 01:41:29.779491 29409 handler.cpp:434] RequestInfo|,131076.RESTPP_1_1.1656553289779.N,NNN,0,0,0,S|user:example_user|api:v2|function:queryDispatcher|graph_name:ldbc_snb|libudf:libudf_ldbc_snb
+I0630 01:41:29.783354 29410 requestrecord.cpp:349] ReturnResult|0|4ms|GPE_1_1|131076.RESTPP_1_1.1656553289779.N|user:example_user|/query/ldbc_snb/example_query|graph_id=1|117
+----
+
+Query execution via GraphStudio: Nginx NGINX#1.out log contains the endpoint accessed, the IP, and the client. GraphStudio (gui) GUI#1.out contains the query run, user who ran it, and the graph it ran against.
+Nginx logs:
+136.2.2.2 - - [30/Jun/2022:01:44:58 +0000] "GET /api/restpp/query/ldbc_snb/example_query HTTP/1.1" 202 67 "http://35.2.2.2:14240/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0"
+GraphStudio logs:
+2022-06-30 01:46:28.911 I | middleware/logger.go:63] <-- |     |               | 8d4b9219-0733-4413-8dd2-e4765a7e08da |    example_user |  136.2.2.2 | GET     /api/restpp/query/ldbc_snb/example_query
+2022-06-30 01:46:28.922 I | middleware/logger.go:96] --> | 202 |   11.297188ms | 8d4b9219-0733-4413-8dd2-e4765a7e08da |    example_user |  136.2.2.2 | GET     /api/restpp/query/ldbc_snb/example_query
+
+Query execution via GSQL CLI: NGINX#1.out log contains the endpoint accessed, the IP, and the client. GSQL log.INFO contains all commands run during the client session, including queries run, and graph queries ran against. Note in a cluster, that the GSQL request will be served by the current GSQL leader which could be any node running the GSQL service.
+Nginx logs:
+10.2.2.2 - - [30/Jun/2022:01:51:07 +0000] "POST /query/ldbc_snb/example_query HTTP/1.1" 200 117 "-" "Apache-HttpClient/4.5.13 (Java/11.0.10)"
+GSQL logs:
+Leader:
+I@20220630 01:58:37.050 example_user|localhost:50366|00000003140 (QueryRunner.java:87) RunQuery: http://10.2.2.3:9000/query/ldbc_snb/example_query
+I@20220630 01:58:37.050 example_user|localhost:50366|00000003140 (GlobalCatalog.java:769) use 4m6****asv to authenticate graph ldbc_snb
+I@20220630 01:58:37.066 example_user|localhost:50366|00000003140 (CommandHandler.java:125) (Succeeded) _GSQL_CMD_DDL: run query example_query(...)
+Follower:
+I@20220630 01:52:02.256  (GsqlHAHandler.java:359) 2430|Forward request to http://10.2.2.3:14240/gsqlserver/gsql/command
+I@20220630 01:52:02.269  (GsqlHAHandler.java:464) 2430|Forward request finish http://10.2.2.3:14240/gsqlserver/gsql/command
