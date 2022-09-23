@@ -1,0 +1,95 @@
+= Set Up Cross-Region Replication
+:description: Instruction on how to set up the DR cluster for cross-region replication.
+:sectnums:
+
+To set up cross-region replication (CRR), you set up Disaster Recover (DR) clusters that sync with the primary cluster.
+Changes on the primary cluster are copied over to the DR cluster.
+
+When necessary, you can fail over to a DR cluster, making it the new primary cluster.
+
+[NOTE]
+====
+This setup assumes that you are setting up a DR cluster for an existing primary cluster.
+If you are setting up both the primary cluster and DR cluster from scratch, you only need perform Step 3 after TigerGraph is installed on both clusters.
+====
+
+== Before you begin
+
+* Install TigerGraph 3.2 or higher on both the primary cluster and the DR cluster *in the same version*.
+* Make sure that your DR cluster has the same number of partitions as the primary cluster.
+* Make sure the username and password of the TigerGraph database user created on the DR cluster during installation matches one of the users on the primary cluster who have the `superuser` role.
+* If you choose to enable CRR and your DR cluster is in a different Virtual Private Cloud (VPC) than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
+** If you xref:installation:install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
+** If you xref:installation:install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
+
+[WARNING]
+====
+Make sure TigerGraph is *not* installed with a local loopback IP such as 127.0.0.1. You can verify if you are using loopback IP with `gadmin config get System.HostList` if this returns 127.0.0.1 then it means you have installed TigerGraph with loopback IP
+====
+
+== Procedure
+
+The following setup is needed in order to enable Cross Region Replication.
+
+
+
+=== Backup primary data
+
+Use GBAR to xref:backup-and-restore:index.adoc[create a backup] of the primary cluster. See xref:backup-and-restore:index.adoc[Backup and Restore] on how to create a backup.
+
+If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
+
+=== Restore on the DR cluster
+
+Copy the backup files from every node to every node on the new cluster.  xref:backup-and-restore:index.adoc#_restore_from_a_backup_archive[Restore the backup] of the primary cluster on the DR cluster. See xref:backup-and-restore:index.adoc[Backup and Restore] on how to restore a backup.
+
+=== Enable CRR on the DR cluster
+
+Run the following commands on the DR cluster to enable CRR on the DR cluster.
+
+[source.wrap,console]
+----
+# Enable Kafka Mirrormaker
+$ gadmin config set System.CrossRegionReplication.Enabled true
+
+# Kafka mirrormaker primary cluster's IPs, separator by ','
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs <PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3>
+
+# Kafka mirrormaker primary cluster's KafkaPort
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
+
+# The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+$ gadmin config set System.CrossRegionReplication.TopicPrefix Primary
+
+# Apply the config changes, init Kafka, and restart
+$ gadmin config apply -y
+$ gadmin init kafka -y
+$ gadmin restart all -y
+----
+
+
+
+=== Force install queries on primary
+
+Run the `INSTALL QUERY -force ALL` command on the primary cluster. After the command is finished, all other metadata operations on the primary cluster will start syncing to the DR cluster.
+
+== Restrictions on the DR cluster
+
+After being set up, the DR cluster will be read-only and all data update operations will be blocked. This includes the following operations:
+
+* All metadata operations
+** Schema changes
+** User access management operations
+** Query creation, installation, and dropping
+** User-defined function operations
+* Data-loading operations
+** Loading job operations
+** RESTPP calls that modify graph data
+* Queries that modify the graph
+
+== Sync an outdated DR cluster
+
+When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
+
+To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the setup steps detailed on this page again.
+However, you can skip <<_enable_crr_on_the_dr_cluster, Step 3: Enable CRR on the DR cluster>>, because CRR will have already been enabled.
