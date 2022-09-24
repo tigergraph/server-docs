@@ -142,34 +142,34 @@ is the type of the vertex.
 `{"id": "Tom", "type": "person"}`
 
 |`MAP`
-|Use a JSON object that has two JSON arrays with keys `keyList`
-and `valueList`, each containing the keys and the values of the
+|Use a JSON object that has two JSON arrays with keys `keylist`
+and `valuelist`, each containing the keys and the values of the
 map respectively.
 
-The order of items in the valueList should correspond to the
-order of items in the keyList.
+The order of items in the valuelist should correspond to the
+order of items in the keylist.
 |A map of nations and their capitals:
 
-`{"keyList": ["England", "Germany"],` +
-`"valueList": ["London", "Berlin"]}`
+`{"keylist": ["England", "Germany"],` +
+`"valuelist": ["London", "Berlin"]}`
 
 |User-Defined Type (UDT)
 |Use a JSON object that has two JSON
-arrays with keys `keyList` and `valueList`.
-The `keyList` array contains the field names of the
-tuple, and the `valueList` array contains the values of the fields.
+arrays with keys `keylist` and `valuelist`.
+The `keylist` array contains the field names of the
+tuple, and the `valuelist` array contains the values of the fields.
 
-The order of items in the `keyList` should correspond to the order
+The order of items in the `keylist` should correspond to the order
 of the fields as specified in the definition of the tuple/UDT, and
-the order of values in the `valueList` should correspond to the order of
-items in the keyList.
+the order of values in the `valuelist` should correspond to the order of
+items in the keylist.
 |Tuple schema definition:
 
 `TYPEDEF TUPLE <name STRING, age INT> person`
 
 A `person` tuple written in JSON:
 
-`{"keyList: ["name", "age"], "valueList": ["Sam", 24]}`
+`{"keylist: ["name", "age"], "valuelist": ["Sam", 24]}`
 
 |===
 
