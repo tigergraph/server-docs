@@ -1768,7 +1768,7 @@ For example, suppose we have the following vertex definition:
 CREATE VERTEX compositePerson(id UINT, name STRING, age UINT, primary key (name, id))
 ----
 
-The following requests upserts two vertices with the defined composite key:
+The following requests upserts two vertices with the defined composite key, as well as an edge of the type `compositeRoles` between `Bob, 123` and `Harry Potter, 1990, 1337`:
 
 [.wrap,console]
 ----
@@ -1785,6 +1785,21 @@ curl -X POST "localhost:9000/graph/person_movie" -d '
         "name":{"value":"Tom"},
         "id":{"value":456},
         "age":{"value":47}
+      }
+    }
+  },
+  "edges":{
+    "compositePerson":{
+      "Bob,123":{
+        "compositeRoles":{
+          "compositeMovie":{
+            "Harry Potter,1990,1337":{
+              "role":{
+                "value":"Wizard"
+              }
+            }
+          }
+        }
       }
     }
   }
