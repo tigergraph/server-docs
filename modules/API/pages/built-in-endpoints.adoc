@@ -1765,17 +1765,19 @@ For example, suppose we have the following vertex definition:
 
 [.wrap,gsql]
 ----
-CREATE VERTEX compositePerson(id UINT, name STRING, age UINT, primary key (name, id))
+CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name, id))
+CREATE DIRECTED EDGE Composite_Roles (from Composite_Person,to Composite_Movie, role string)
+CREATE GRAPH Person_Movie(Composite_Person, Composite_Movie, Composite_Roles)
 ----
 
-The following requests upserts two vertices with the defined composite key, as well as an edge of the type `compositeRoles` between `Bob, 123` and `Harry Potter, 1990, 1337`:
+The following requests upserts two vertices with the defined composite key, as well as an edge of the type `Composite_Roles` between `Bob, 123` and `Harry Potter, 1990, 1337`:
 
 [.wrap,console]
 ----
-curl -X POST "localhost:9000/graph/person_movie" -d '
+curl -X POST "localhost:9000/graph/Person_Movie" -d '
 {
   "vertices": {
-    "compositePerson":{
+    "Composite_Person":{
       "Bob,123":{
         "name":{"value":"Bob"},
         "id":{"value":123},
@@ -1789,10 +1791,10 @@ curl -X POST "localhost:9000/graph/person_movie" -d '
     }
   },
   "edges":{
-    "compositePerson":{
+    "Composite_Person":{
       "Bob,123":{
-        "compositeRoles":{
-          "compositeMovie":{
+        "Composite_Roles":{
+          "Composite_Movie":{
             "Harry Potter,1990,1337":{
               "role":{
                 "value":"Wizard"
