@@ -1,0 +1,40 @@
+= Auditing Privileged User Actions
+
+TigerGraph records every privileged user action that occurs on a TigerGraph deployment.
+This document walks you through the steps to identify privileged actions that occur on a deployment by user and by action.
+
+== Prerequisite
+* `awk` program is installed on your server.
+** `awk` is the program used by the commands on this page to filter logs.
+If you are proficient in other text-processing utilities, you can use those instead, but the instructions on this page won't apply.
+
+== Extract all privileged actions on an instance
+
+Run the following command in a bash shell to extract information on all privileged actions on an instance:
+
+[.wrap,console]
+----
+$ awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*_ACCESS_CHECK_.*/ {p=1; printf FILENAME ":" FNR ":"}; p { print }' ~/tigergraph/log/gsql/INFO.*
+----
+
+
+== Extract logs by user
+
+== Extract logs by action
+
+== Interpreting extracted logs
+
+Each line of output includes the exact location of the log, the action attempted, the required privileges to perform the action, whether the action was authorized, as well as the user who tried to execute the action.
+
+The following is a sample line of output from one of the aforementioned commands:
+
+[.wrap,text]
+----
+/home/tigergraph/tigergraph/log/gsql/INFO.20220914-163940.595:153: \ <1>
+I@20220914 16:40:11.958 tigergraph|127.0.0.1:50216|00000000006 (PermissionUtil.java:371) \
+User Name: tigergraph, _ACCESS_CHECK_RBAC_, <2>
+Command Type: CREATE VERTEX Comment ( PRIMARY_ID id UINT , creationDate DATETIME , locationIP STRING , browserUsed STRING , content STRING , length UINT ) WITH primary_id_as_attribute = TRUE, \ <3>
+Validation Result: SUCCESS, \ <4>
+Required RBAC Permission: [WRITE_SCHEMA], \ <5>
+Required Data Access Permission: [] \
+----
