@@ -4,13 +4,16 @@
 
 Kafka is a popular pub-sub system in enterprise IT, offering a distributed and fault-tolerant real-time data pipeline.
 The Kafka Loader lets you integrate TigerGraph with a Kafka cluster and speed up your real-time data ingestion.
+
 The Kafka Loader is easily extensible using the many plugins available in the Kafka ecosystem.
+Multiple loading jobs created with the Kafka Loader can run at the same time to stream data from various sources into the TigerGraph system concurrently.
 
 The Kafka Loader consumes data in a Kafka cluster and loads data into the TigerGraph system.
 
 == Architecture
 
-From a high level, a user provides instructions to the TigerGraph system through GSQL, and the external Kafka cluster loads data into TigerGraph's RESTPP server. The following diagram demonstrates the Kafka Loader data architecture.
+From a high level, a user provides instructions to the TigerGraph system through GSQL, and the external Kafka cluster loads data into TigerGraph's RESTPP server.
+The following diagram demonstrates the Kafka Loader data architecture.
 
 .User input feeds into the RESTPP server via a GSQL server. A Kafka cluster feeds directly into the RESTPP server.
 image::kafka-loading-architecture.png["Diagram of the Kafka Loader showing User Input going through a GSQL server into a RESTPP Server. A Kafka cluster data source is also shown connected to the RestPP server. Both servers are labeled as the TigerGraph System."]
@@ -20,7 +23,7 @@ image::kafka-loading-architecture.png["Diagram of the Kafka Loader showing User 
 * CSV
 * JSON
 
-If the Kafka loader fails to parse messages due to formatting issues, the Kafka Loader skips the messages the fail to be parsed.
+If the Kafka Loader fails to parse messages due to formatting issues, the Kafka Loader skips the messages the fail to be parsed.
 
 == Prerequisites
 
@@ -200,7 +203,7 @@ DEFINE FILENAME f1 = "$k1:~/topic_partition_conf.json";
 
 Instead of specifying the config file path, you can also provide the topic-partition configuration as a string argument, as shown below:
 
-[source,text]
+[source.wrap,text]
 ----
 DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
 DEFINE FILENAME f1 = "$k1:{\"topic\":\"zzz\",\"default_start_offset\":2,\"partition_list\":[]}";
@@ -214,7 +217,7 @@ Each filename variable can be assigned a string `<data_source_name>:<topic_parti
 
 In the example below, the config files for f3 and f4 are being set by the `RUN command`, whereas f1 is using the config which was specified in the `CREATE LOADING JOB` statement.
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 RUN LOADING JOB job1 USING f1, f3="$k1:~/topic_part3_config.json", f4="$k1:~/topic_part4_config.json", EOF="true";
 ----
@@ -318,7 +321,8 @@ The global data source will be shown in global scope. The graph scope will only 
 
 == Manage loading jobs
 
-Kafka Loader loading jobs are managed the same way as regular loading jobs. The three key commands are
+Kafka Loader loading jobs are managed the same way as regular loading jobs.
+The three key commands are
 
 * `SHOW LOADING STATUS`
 * `ABORT LOADING JOB`
