@@ -1648,7 +1648,7 @@ The payload data should be in JSON according to the schema shown below:
 }
 ----
 The fields in angle brackets (`<>`) are placeholder names or values, to be replaced with actual values.
-The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a list of items.
+The keys in angle parentheses, such as `<vertex_type>`, can be repeated to form a list of items.
 The keys which are not in angle brackets are exact texts that must be used as they are.
 The nested hierarchy means that vertices are grouped by type.
 Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
@@ -1766,7 +1766,8 @@ For example, suppose we have the following vertex definition:
 [.wrap,gsql]
 ----
 CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name, id))
-CREATE DIRECTED EDGE Composite_Roles (from Composite_Person,to Composite_Movie, role string)
+CREATE VERTEX Composite_Movie (id UINT, title STRING, country STRING, year UINT, PRIMARY KEY (title,year,id))
+CREATE DIRECTED EDGE Composite_Roles (from Composite_Person,to Composite_Movie, role STRING)
 CREATE GRAPH Person_Movie(Composite_Person, Composite_Movie, Composite_Roles)
 ----
 
