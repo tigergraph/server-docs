@@ -45,7 +45,8 @@ Results::
 == Extract logs by user
 
 Run the following command in a bash shell to extract information on all privileged actions on an instance by a particular user.
-Replace `<username>` in the first line with the name of the user whose actions you want to look up:
+Replace `<username>` in the first line with the name of the user whose actions you want to look up.
+The string for the username is case-sensitive:
 
 [.wrap,console]
 ----
@@ -82,7 +83,7 @@ Results::
 You can also look up specific actions that occurred on an instance and investigate when and by whom did those actions occur.
 
 * For GSQL commands, the "Command Type" field of a log details the exact command that was executed.
-* For REST API cals, the "Command Type" field of a log details the endpoint that was called.
+* For REST API calls, the "Command Type" field of a log details the endpoint that was called.
 
 Run the following command in a bash shell to extract information on all privileged actions of a particular type on an instance.
 Replace `<command>` with the type of action you want to look up.
@@ -103,7 +104,7 @@ For example:
 Command::
 +
 --
-The following request prints all privileged actions by the user `tigergraph` on this instance:
+The following request prints all privileged actions that start with `CREATE GRAPH` on this instance:
 
 [source.wrap,console]
 $ awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*_ACCESS_CHECK_.*Command Type: CREATE GRAPH.*/ {p=1; printf FILENAME ":" FNR ":"}; p { print }' ~/tigergraph/log/gsql/INFO.*
