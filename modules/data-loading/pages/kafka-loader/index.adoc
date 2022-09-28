@@ -20,6 +20,14 @@ From a high level, a user provides instructions to the TigerGraph system through
 .User input feeds into the RESTPP server via a GSQL server. A Kafka cluster feeds directly into the RESTPP server.
 image::kafka-loading-architecture.png["Diagram of the Kafka Loader showing User Input going through a GSQL server into a RESTPP Server. A Kafka cluster data source is also shown connected to the RestPP server. Both servers are labeled as the TigerGraph System."]
 
+[CAUTION]
+====
+The Kafka loader doesn't use consumer groups, and therefore doesn't support HA.
+If a loading job is interrupted, you need to manually xref:kafka-loader/manage-loading-jobs.adoc[resume the loading job].
+
+A resumed job picks up from where it was stopped before and will not consume messages that have already been consumed.
+====
+
 == Supported file formats
 * Avro
 * CSV
