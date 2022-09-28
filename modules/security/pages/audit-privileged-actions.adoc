@@ -1,4 +1,5 @@
 = Auditing Privileged User Actions
+:description: Instructions on how to extract logs to audit user actions with the awk commandline utility. 
 
 TigerGraph records every privileged user action that occurs on a TigerGraph deployment.
 This document walks you through the steps to identify privileged actions that occur on a deployment by user and by action.
@@ -14,13 +15,109 @@ Run the following command in a bash shell to extract information on all privileg
 
 [.wrap,console]
 ----
-$ awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*_ACCESS_CHECK_.*/ {p=1; printf FILENAME ":" FNR ":"}; p { print }' ~/tigergraph/log/gsql/INFO.*
+$ awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*_ACCESS_CHECK_.*/ {p=1; printf FILENAME ":" FNR ":"}; p { print }' \
+~/tigergraph/log/gsql/INFO.* <1>
 ----
+<1> This pattern contains the default log location.
+If your logs are located at a different path, replace it with your log location.
 
+For example:
+
+[tabs]
+====
+Command::
++
+--
+[source.wrap,console]
+$ awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*_ACCESS_CHECK_.*/ {p=1; printf FILENAME ":" FNR ":"}; p { print }' \
+~/tigergraph/log/gsql/INFO.*
+--
+Results::
++
+--
+[source,text]
+/home/tigergraph/tigergraph/log/gsql/INFO.20220914-163940.595:1200:I@20220914 16:44:11.344 tigergraph|127.0.0.1:34994|00000000013 (PermissionUtil.java:371) User Name: tigergraph, _ACCESS_CHECK_RBAC_, Command Type: create query hello ( ) { print hello ; }, Validation Result: SUCCESS, Required RBAC Permission: [], Required Data Access Permission: [], Required Application Access Permission: []
+/home/tigergraph/tigergraph/log/gsql/INFO.20220914-163940.595:1532:I@20220914 19:27:34.585 tigergraph|127.0.0.1:41468|00000000013 (PermissionUtil.java:371) User Name: tigergraph, _ACCESS_CHECK_RBAC_, Command Type: /gsql/abortclientsession, Validation Result: SUCCESS, Required RBAC Permission: [], Required Data Access Permission: [], Required Application Access Permission: []
+
+--
+====
 
 == Extract logs by user
 
+Run the following command in a bash shell to extract information on all privileged actions on an instance by a particular user.
+Replace `<username>` in the first line with the name of the user whose actions you want to look up:
+
+[.wrap,console]
+----
+$ awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*User Name: <username>.*_ACCESS_CHECK_.*/ {p=1; printf FILENAME ":" FNR ":"}; p { print }' \
+~/tigergraph/log/gsql/INFO.* <1>
+----
+<1> This pattern contains the default log location.
+If your logs are located at a different path, replace it with your log location.
+
+For example:
+
+[tabs]
+====
+Command::
++
+--
+The following request prints all privileged actions by the user `tigergraph` on this instance:
+
+[source.wrap,console]
+$ awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*User Name: tigergraph.*_ACCESS_CHECK_.*/ {p=1; printf FILENAME ":" FNR ":"}; p { print }' ~/tigergraph/log/gsql/INFO.*
+--
+Results::
++
+--
+[source,text]
+/home/tigergraph/tigergraph/log/gsql/INFO.20220914-163940.595:1200:I@20220914 16:44:11.344 tigergraph|127.0.0.1:34994|00000000013 (PermissionUtil.java:371) User Name: tigergraph, _ACCESS_CHECK_RBAC_, Command Type: create query hello ( ) { print hello ; }, Validation Result: SUCCESS, Required RBAC Permission: [], Required Data Access Permission: [], Required Application Access Permission: []
+/home/tigergraph/tigergraph/log/gsql/INFO.20220914-163940.595:1532:I@20220914 19:27:34.585 tigergraph|127.0.0.1:41468|00000000013 (PermissionUtil.java:371) User Name: tigergraph, _ACCESS_CHECK_RBAC_, Command Type: /gsql/abortclientsession, Validation Result: SUCCESS, Required RBAC Permission: [], Required Data Access Permission: [], Required Application Access Permission: []
+
+--
+====
+
 == Extract logs by action
+
+You can also look up specific actions that occurred on an instance and investigate when and by whom did those actions occur.
+
+* For GSQL commands, the "Command Type" field of a log details the exact command that was executed.
+* For REST API cals, the "Command Type" field of a log details the endpoint that was called.
+
+Run the following command in a bash shell to extract information on all privileged actions of a particular type on an instance.
+Replace `<command>` with the type of action you want to look up.
+The content of the command is case-sensitive:
+
+[.wrap,console]
+----
+awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*_ACCESS_CHECK_.*Command Type: <command>.*/ {p=1; printf FILENAME ":" FNR ":"}; \
+p { print }' ~/tigergraph/log/gsql/INFO.* <1>
+----
+<1> This pattern contains the default log location.
+If your logs are located at a different path, replace it with your log location.
+
+For example:
+
+[tabs]
+====
+Command::
++
+--
+The following request prints all privileged actions by the user `tigergraph` on this instance:
+
+[source.wrap,console]
+$ awk '/^(E|I|D)@.*/ {p=0}; /^(E|I|D)@.*_ACCESS_CHECK_.*Command Type: CREATE GRAPH.*/ {p=1; printf FILENAME ":" FNR ":"}; p { print }' ~/tigergraph/log/gsql/INFO.*
+--
+Results::
++
+--
+[source,text]
+/home/tigergraph/tigergraph/log/gsql/INFO.20220914-163940.595:603:I@20220914 16:40:57.157 tigergraph|127.0.0.1:53046|00000000008 (PermissionUtil.java:371) User Name: tigergraph, _ACCESS_CHECK_RBAC_, Command Type: CREATE GRAPH ldbc_snb ( * ), Validation Result: SUCCESS, Required RBAC Permission: [], Required Data Access Permission: [], Required Application Access Permission: []
+
+--
+====
+
+
 
 == Interpreting extracted logs
 
@@ -36,5 +133,12 @@ User Name: tigergraph, _ACCESS_CHECK_RBAC_, <2>
 Command Type: CREATE VERTEX Comment ( PRIMARY_ID id UINT , creationDate DATETIME , locationIP STRING , browserUsed STRING , content STRING , length UINT ) WITH primary_id_as_attribute = TRUE, \ <3>
 Validation Result: SUCCESS, \ <4>
 Required RBAC Permission: [WRITE_SCHEMA], \ <5>
-Required Data Access Permission: [] \
+Required Data Access Permission: [] \ <6>
 ----
+<1> The location of the log.
+<2> The user who performed the action and the type of access validation involved.
+<3> The action that was performed.
+<4> The result of the access control validation.
+<5> The required RBAC permission.
+<6> The required data CRUD permission in RBAC.
+This is separated from the previous list for clarity since xref:user-access:access-control-model.adoc#_data_crud_privileges[data CRUD privileges] are more granular.
