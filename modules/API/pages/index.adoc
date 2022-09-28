@@ -6,7 +6,7 @@
 TigerGraph's REST API endpoints exist on the REST{pp} and the GSQL server. REST{pp} (or RESTPP) is the TigerGraph customized https://en.wikipedia.org/wiki/Representational_state_transfer[REST] server.
 Our API accepts URL-encoded query string parameters, https://www.json.org/json-en.html[JSON]-encoded request bodies and returns JSON encoded responses.
 
-This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while the subsequent sections describe in detail each endpoint and its input and output.
+This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while xref:built-in-endpoints.adoc[] describes in detail each endpoint and its input and output.
 
 To submit a request, send an HTTP request to the REST{pp} server or the GSQL server.
 By default, the REST{pp} server listens for requests at port 9000 and the GSQL server listens on port 14240.
@@ -27,11 +27,13 @@ In a test or development environment, the requester may be on the same server as
 In this case, the server IP is *localhost*.
 ====
 
-== Query String Parameters
+[#_query_string_parameters]
+== Formatting query string parameters
 
 TigerGraph's API endpoints accept parameters in URL encoding, which is straightforward in the case of string, number, and boolean values.
-However, some parameters are more complex and require specific formatting.
-The list below describes how to format the complex type parameter values when executing a query.
+However, some parameters, such as parameters for running a query, are more complex and require specific formatting.
+
+The following table describes how to format the complex type parameter values when executing a query.
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
@@ -41,15 +43,14 @@ The list below describes how to format the complex type parameter values when ex
 |Assign multiple values to the same parameter name.
 |A `SET<INT>` parameter named `p1` is assigned three integers:
 
-*`p1=1&p1=5&p1=10`*
+`p1=1&p1=5&p1=10`
 
 |`VERTEX` with a defined type
 |Use the primary key of the vertex.
 |A `VERTEX<person>` parameter named `vp` is assigned a vertex
 whose ID is `"person1"`:
 
-*`vp=person1`*
-
+`vp=person1`
 |`VERTEX` without a defined type
 |Use `<parameter_name>.<parameter_type>` to specify the type
 of the parameter, and also provide the primary key of the vertex.
@@ -80,11 +81,11 @@ of `11` :
 === Example
 
 
-== Input Data for `POST` requests
+== Input data for `POST` requests
 
 Input data for `POST` requests should be in JSON format, unless the endpoint specifically accepts data in other formats. There are two ways to supply the data: inline or in a separate file.
 
-=== Inline Data
+=== Inline data
 
 The data should be formatted as a single string without linebreaks.
 If using curl, use the `-d` option, followed by the JSON string.
@@ -95,8 +96,6 @@ If using curl, use the `-d` option, followed by the JSON string.
 curl -X POST -d 'json_string' "http://server_ip:9000/path_to_endpoint?request_parameters"
 ----
 
-
-
 The following example uses the `POST /graph` endpoint to insert one User type vertex whose ID is `id6` into the graph called `"Social_Net"`.
 
 .Example using inline input data
@@ -105,24 +104,26 @@ The following example uses the `POST /graph` endpoint to insert one User type ve
 curl -X POST -d '{"vertices":{"User":{"id6":{"id":{"value":"id6"}}}}}' "http://localhost:9000/graph/Social_Net"
 ----
 
-=== Data File
+=== Data file
 
 Often it will be more convenient for the input data to be in a separate file, especially if the data is large.
 
-For curl, use `--data-binary <path_to_file>` as in the following example:
+For curl, use `--data-binary @<path_to_file>` as in the following example:
 
 .Syntax for a POST request with Payload Data File
 [source.wrap,bash]
 ----
-curl -X POST --data-binary <path_to_file> "http://server_ip:9000/path_to_endpoint?parameter1=<parameter1>"
+curl -X POST --data-binary @./person.csv  "http://localhost:9000/ddl/poc_graph?tag=load_data&filename=f1"
 ----
 
 
 
-=== Formatting Data in JSON
+[#_formatting_data_in_json]
+=== Formatting data in JSON
 
 Data of primitive types, including `INT, UINT, FLOAT, DOUBLE, STRING, BOOL`, and `DATETIME`, as well as arrays and objects, follow the standard https://www.json.org/json-en.html[JSON Data Interchange Syntax].
-This subsection describes how to format complex data types.
+
+The following table subsection describes how to format complex data types.
 
 [width="100%",cols="<34%,<33%,<33%",options="header",]
 |===
@@ -141,34 +142,34 @@ is the type of the vertex.
 `{"id": "Tom", "type": "person"}`
 
 |`MAP`
-|Use a JSON object that has two JSON arrays with keys `keyList`
-and `valueList`, each containing the keys and the values of the
+|Use a JSON object that has two JSON arrays with keys `keylist`
+and `valuelist`, each containing the keys and the values of the
 map respectively.
 
-The order of items in the valueList should correspond to the
-order of items in the keyList.
+The order of items in the valuelist should correspond to the
+order of items in the keylist.
 |A map of nations and their capitals:
 
-`{"keyList": ["England", "Germany"],` +
-`"valueList": ["London", "Berlin"]}`
+`{"keylist": ["England", "Germany"],` +
+`"valuelist": ["London", "Berlin"]}`
 
 |User-Defined Type (UDT)
 |Use a JSON object that has two JSON
-arrays with keys `keyList` and `valueList`.
-The `keyList` array contains the field names of the
-tuple, and the `valueList` array contains the values of the fields.
+arrays with keys `keylist` and `valuelist`.
+The `keylist` array contains the field names of the
+tuple, and the `valuelist` array contains the values of the fields.
 
-The order of items in the `keyList` should correspond to the order
+The order of items in the `keylist` should correspond to the order
 of the fields as specified in the definition of the tuple/UDT, and
-the order of values in the `valueList` should correspond to the order of
-items in the keyList.
+the order of values in the `valuelist` should correspond to the order of
+items in the keylist.
 |Tuple schema definition:
 
 `TYPEDEF TUPLE <name STRING, age INT> person`
 
 A `person` tuple written in JSON:
 
-`{"keyList: ["name", "age"], "valueList": ["Sam", 24]}`
+`{"keylist: ["name", "age"], "valuelist": ["Sam", 24]}`
 
 |===
 
@@ -180,45 +181,47 @@ TYPEDEF TUPLE <field1 INT(1), field2 UINT, field3 STRING(10), field4 DOUBLE> myT
 ----
 
 
-==== Vertices with Composite Keys
+==== Vertices with composite keys
 
-If a vertex has a composite key composed of N attributes, then N values must be provided for the `"id"` . The values can be presented either as a JSON object with N key-value pairs, or as a JSON array with a list of N values in the same order as defined in the schema.
+NOTE: This format for vertices with composite keys does not apply to the xref:built-in-endpoints.adoc#_upsert_data_to_graph[endpoint used to upsert data].
+It is only applicable to the xref:built-in-endpoints.adoc#_run_an_installed_query_post[endpoint to run a query].
 
-The example below shows the two methods for a  vertex `v` having a composite primary key composed of the three attributes `id`, `name`, and `label.`
+If a vertex has a composite key composed of multiple attributes, then all values for those attributes must be provided for the `"id"` field.
+The values can be presented either as a JSON object with key-value pairs for each attribute-value pair, or as a JSON array with a list values in the same order as defined in the schema.
+
+The following example shows the two methods for a  vertex `v` having a composite primary key composed of the three attributes `id` and `name`
 
 [tabs]
 ====
 Option 1::
 +
 --
-.Vertex v with composite key as JSON object
-[source,javascript]
-----
-{
-  "v": {
-    "id": {
-      "id": 3,
-      "name": "c",
-      "label": 300
-    },
-    "type": "v3"
-  }
-}
-----
---
-Option2::
-+
---
 .Vertex v with composite key as JSON array
 [source,javascript]
 ----
 {
-  "v": {
-    "id": {
-      "id": [3, "c", 300] // The values in the array must be in the same
-                          // order as they are defined in the schema
+  "v":{
+    "id":["Tom",456], <1>
+    "type":"compositePerson"
+  }
+}
+----
+<1> The values in the array must be in the same order as they are defined in the schema.
+--
+Option 2::
++
+--
+
+.Vertex v with composite key as JSON object
+[source,javascript]
+----
+{
+  "v":{
+    "id":{
+      "name":"Tom",
+      "id":456
     },
-    "type": "v3"
+    "type":"compositePerson"
   }
 }
 ----
@@ -229,7 +232,7 @@ Option2::
 
 To describe a `SET` or `BAG` of vertices in JSON, use a JSON array with _vertex objects_ nested in the `SET` or `BAG` array.
 
-== Output Responses
+== Output responses
 
 All TigerGraph REST responses are in JSON format. The output JSON object has four fields: `"version"`, `"error"`, `"message"`, and `"result"`.
 
@@ -271,13 +274,14 @@ curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | pyt
 
 ====
 
-== Size and Time limits
+== Size and time limits
 
 The maximum length for the request URL is 8K bytes, including the query string. Requests with a large parameter size should use a data payload file instead of inline data.
 
-=== Request Body Size
+=== Request body size
 
-The maximum size for a request body, including the payload file, is set by the system parameter `Nginx.ClientMaxBodySize`. The default value is 200 (in MB). To increase this limit, use the following `gadmin` command:
+The maximum size for a request body, including the payload file, is set by the system parameter `Nginx.ClientMaxBodySize`.
+The default value is 200 (in MB). To increase this limit, use the following `gadmin` command:
 
 [source,console]
 ----
@@ -286,7 +290,7 @@ gadmin config set Nginx.ClientMaxBodySize NNN
 
 The upper limit of this setting is 1024 MB. Raising the size limit for the data payload buffer reduces the memory available for other operations, so be cautious about increasing this limit.
 
-=== GSQL Query Timeout
+=== GSQL query timeout
 
 By default, an HTTP request in the TigerGraph system times out after 16 seconds.  to customize this timeout limit for a particular query instance, you can set the GSQL-TIMEOUT parameter in the request header. If you are using curl to submit your RESTPP request, the syntax would be the following:
 
@@ -295,7 +299,7 @@ By default, an HTTP request in the TigerGraph system times out after 16 seconds.
 curl -X <GET/POST> -H "GSQL-TIMEOUT: <timeout value in ms>" '<request_URL>'
 ----
 
-=== Response Size
+=== Response size
 
 You can specify the response size limit of an HTTP request with the following header:
 

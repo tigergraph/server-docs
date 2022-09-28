@@ -2,7 +2,7 @@
 :sectnums:
 
 
-If you experience issues with cross-region replication(CRR), such as data out-of-sync, follow these steps to debug.
+If you experience issues with cross-region replication (CRR), such as data out-of-sync, follow these steps to debug.
 If the problem persists, please open a support ticket.
 
 
@@ -20,9 +20,9 @@ If you see inconsistencies, it's likely you are facing some issues with CRR.
 If you do this check while loading data, it expected that vertex and edge count will not match as DR will be catching up in the meantime.
 If that's your case, you can run multiple times the above query, API or command on DR and see if they are increasing, if that's the case then there is no issue.
 
-Another way to validate data integrity between primary and DR is to check`lastSeqId` which is the last replayed replica by GSQL from Kafka Metadata topic.
-If no data loading is happening on primary the `lastSeqId` on primary and DR must match.
-To check that run `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql/replication`
+Another way to validate data integrity between primary and DR is to check `lastSeqId` which is the last replayed replica by GSQL from Kafka Metadata topic.
+If no data loading is happening on primary, the `lastSeqId` on primary and DR must match.
+To check that, run `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql/replication`
 
 == Isolate the issue to a specific layer
 
@@ -157,7 +157,7 @@ $ gadmin restart all -y
 $ gadmin connector status
 ----
 
-Once done check the lastSeqId, and it should match the primary lastSeqId (it might take sometime to catch up with the primary one in case there are many replicas that needs to be replayed).
+Once done check the lastSeqId, and it should match the primary lastSeqId (it might take some time to catch up with the primary one ifvthere are many replicas that need to be replayed).
 
 === Debugging GSQL layer issues
 
