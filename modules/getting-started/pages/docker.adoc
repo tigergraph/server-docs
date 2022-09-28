@@ -30,7 +30,7 @@ video::V5VvgJyjLxA[youtube,width=640,height=320]
 Follow the steps below to install Docker Desktop on your machine and configure it with sufficient resources for TigerGraph:
 
 . Install Docker on your OS:
- ** To install Docker for Mac OS, follow this video: https://www.youtube.com/watch?v=MU8HUVlJTEY
+ ** To install Docker for macOS, follow this video: https://www.youtube.com/watch?v=MU8HUVlJTEY
  ** To install Docker for Linux, follow these instructions:
   *** Centos: https://docs.docker.com/install/linux/docker-ce/centos/
   *** Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
@@ -40,9 +40,11 @@ Follow the steps below to install Docker Desktop on your machine and configure i
  ** Minimum: 2 cores and 10GB memory
  ** Click the Docker Desktop icon, click *Preferences* >> *Resources*, drag the CPU and Memory sliders to the desired configuration, save and restart Docker Desktop
 
-== Prepare a Shared Folder on Host OS to be shared with Docker Container
+== Prepare a shared folder for your container
 
-Open a shell on your host machine and create or select a directory for sharing data between your host machine and docker container. Grant read+write+execute permission to the folder. For example, to create a folder called data in Linux:
+Open a shell on your host machine and create or select a directory for sharing data between your host machine and Docker container and grant read, write, execute permission to the folder.
+This allows you to easily upload make files accessible to your Docker container.
+For example, to create a folder called data in Linux:
 
 [source,console]
 ----
@@ -50,44 +52,49 @@ $ mkdir data
 $ chmod 777 data
 ----
 
-You can mount (map) the data folder to a folder under the docker container, which allows you to share files between your host OS and Docker OS.
+You can map the data folder to a folder under the Docker container, which allows you to share files between your host OS and Docker OS.
 
 For example, if you mount the host OS folder `~/data` to the docker folder `/home/tigergraph/mydata`,  then anything you put on `~/data` will be visible in the docker container under `/home/tigergraph/mydata`, and vice versa.
 
 == Run TigerGraph Docker image as a daemon
 
-Run the following command to pull the TigerGraph docker image, bind ports, map a shared data folder, and start a container from the image. Note: this command is very long; please make sure you copy the whole command by dragging the scroll bar to the end:
+Run the following command to pull the TigerGraph docker image, bind ports, map a shared data folder, and start a container from the image:
 
-[source,console]
+[source.wrap,console]
 ----
-$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -v ~/data:/home/tigergraph/mydata -t docker.tigergraph.com/tigergraph:latest
+$ docker run -d \ <1>
+    -p 14022:22 \ <2>
+    -p 9000:9000 \ <2>
+    -p 14240:14240 \ <2>
+    --name tigergraph \ <3>
+    --ulimit nofile=1000000:1000000 \ <4>
+    -v ~/data:/home/tigergraph/mydata \ <5>
+    -v tg-data:/home/tigergraph <6>
+    -t \ <7>
+    tigergraph/tigergraph:latest <8>
 ----
-
-* Here is a breakdown of the options and arguments in the command:
- ** `-d`: make the container run in the background.
- ** `-p`: map docker 22 port to host OS 14022 port, 9000 port to host OS 9000 port, 14240 port to host OS 14240 port.
- ** `--name`: name the container tigergraph.
- ** `--ulimit`: set the `ulimit` (the number of open file descriptors per process) to 1 million.
- ** `-v`: mount the host OS `~/data` folder to the docker `/home/tigergraph/mydata` folder using the -v option. If you are using Windows, change the above ~/data to something using windows file system convention, e.g. `c:\data`
- ** `-t`: allocate a pseudo-TTY
- ** `docker.tigergraph.com/tigergraph:latest`:  download the latest docker image from the TigerGraph docker registry URL docker.tigergraph.com/tigergraph.
-
-[NOTE]
-====
-Replace "latest" with a specific version number if a dedicated version of TigerGraph is to be used. E.g., if you want to get the 3.0.5 version, the URL should be:
-
-`docker.tigergraph.com/tigergraph:3.0.5`
-
-To use the legacy developer editions, use:
-
-`docker.tigergraph.com/tigergraph-dev`
-====
+<1> `-d`: make the container run in the background.
+<2> `-p`: map docker 22 port to host OS 14022 port, 9000 port to host OS 9000 port, 14240 port to host OS 14240 port.
+<3> `--name`: name the container tigergraph.
+<4>  `--ulimit`: set the `ulimit` (the number of open file descriptors per process) to 1 million.
+<5> `-v`: mount the host OS `~/data` folder to the docker `/home/tigergraph/mydata` folder using the -v option.
+If you are using Windows, change the above ~/data to something using the Windows file system convention.
+For example, `c:\data`
+<6> `-v`: mounts a volume called `tg-data` to your container.
+If the volume doesn't exist, Docker creates it automatically.
+This allows you to retain the data from your container.
+The next time you start up a new container with the same volume, all your changes are preserved.
+<7> `-t`: allocate a pseudo terminal.
+<8> `tigergraph/tigergraph:latest`:  download the latest docker image from the TigerGraph docker registry URL tigergraph/tigergraph.
+Replace "latest" with a specific version number if a dedicated version of TigerGraph is to be used.
+For example, if you want to get the 3.0.5 version, the URL should be:
+`tigergraph/tigergraph:3.0.5`.
 
 If you use Windows and have write permission issues with the above command,  try the following command instead (this command does not map the shared folder on your host machine to your container) :
 
-[source,console]
+[source.wrap,console]
 ----
-$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t docker.tigergraph.com/tigergraph:latest
+$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t tigergraph/tigergraph:latest
 ----
 
 == Connect to your container (via SSH or `docker exec`)
@@ -109,7 +116,8 @@ $ ssh -p 14022 tigergraph@localhost
 ----
 
 You can also access your TigerGraph container via `docker exec` with the following command:
-[source,console]
+
+[source.wrap,console]
 ----
 $ docker exec -it $(docker ps | grep tigergraph | awk '{print $1}') /bin/sh
 ----

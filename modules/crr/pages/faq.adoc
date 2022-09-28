@@ -1,0 +1,53 @@
+= Cross-Region Replication FAQ
+
+== How can I check if data is replicated between primary and Disaster Recovery (DR) clusters?
+
+You can check the output of `gstatusgraph` on both primary and DR.
+The count for vertices and edges should match.
+Note that if there are running loading jobs, DR might show a lower count, in which case check again when the loading job is done.
+
+
+== Why am I not seeing any loading job declared in DR?
+
+Loading jobs are not replicated over DR, however the data loaded by these loading jobs is replicated over DR.
+
+== I've run a `DROP ALL` command on primary and now new added data is not replicated in DR.
+
+`DROP ALL` command will stop Cross Region Replication, you will need to restore re-establish the feature again.
+Here is a list of all commands and operations that will stop Cross Region Replication:
+
+* `gsql drop all` which clears all data and schema
+* `gsql clear graph store` which clears only data
+* `gsql --reset` which clears all data, schemas and users, even resetting the password of the default tigergraph.
+* `gsql import graph`
+* `gsql export graph`
+* `gbar restore`
+
+== Why is GSQL failing to replay a replica with an "UNAUTHORIZED" error?
+
+It's most likely that primary and DR have different passwords for the same TigerGraph user.
+This sometimes happens when you enable Cross Region Replication without restoring the GBAR backup in DR (since you did not have any data) but DR was installed with a different password than primary.
+Make sure DR and primary have the same TigerGraph password before enabling Cross Region Replication.
+
+== What happens if DR is down, unavailable or under scheduled maintenance (e.g. VM Motion)?
+
+Nothing will happen.
+As soon as DR is back online, Kafka MirrorMaker will replicate the Kafka Topic and GSQL will start replaying the replicas from where it left off.
+in order to DR automatically recover, it has to come back up within the Kafka Topic retention time limit.
+By default, this is set to 168 hours (7 days).
+You can tune this parameter based on your need by running `gadmin config set Kafka.RetentionHours <value_in_hrs>`
+
+== Can I have multiple DRs?
+
+Yes, just enable Cross Region Replication on the other DR.
+There is a limit to the number of DRs that you can have.
+
+== Is failover to DR automatic?
+
+No, failover to DR is a manual operation.
+
+== How will my application write to the new primary after DR failover?
+
+It's suggested that you handle this with an application load balancer where you can configure the DR IP hosts list (e.g. if you are using NGINX you can add the DR hosts list in the upstream section).
+When the Load Balancer fails the health check on the current primary it will re-route the traffic to the DR host list.
+You should then manually fail over to the DR cluster.

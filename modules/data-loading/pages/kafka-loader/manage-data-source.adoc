@@ -1,0 +1,81 @@
+= Kafka Data Source Management
+
+Kafka loader loading jobs use data sources, which is a type of object that you can define in a graph's schema.
+Data sources are defined with a configuration file, which specify the configurations to apply to the data source.
+
+This page describes the permissions required for different operations concerning data sources, as well as how to delete a data source.
+See xref:kafka-loader/load-data.adoc#_1_define_the_data_source[] for how to define a data source.
+
+== Data source operation permissions
+
+A data source can be either global or local:
+
+* A global data source can only be created by a user with `WRITE_DATASOURCE` privilege on the global scope, who can grant it to any graph.
+* A local data source belongs to a graph and cannot be accessed by other graphs.
+
+The following are examples of permitted `DATA_SOURCE` operations.
+
+* Users with the `WRITE_DATASOURCE` privilege on the global scope may create a global level data source without assigning it to a particular graph:
+
+[source,gsql]
+----
+GSQL > CREATE DATA_SOURCE KAFKA k1 = "/path/to/config"
+----
+
+* Users with the `WRITE_DATASOURCE` privilege on the global scope may grant/revoke a data source to/from one or more graphs:
+
+[source,gsql]
+----
+GSQL > GRANT DATA_SOURCE k1 TO GRAPH graph1, graph2
+GSQL > REVOKE DATA_SOURCE k1 FROM GRAPH graph1, graph2
+----
+
+* Users with the `WRITE_DATASOURCE` privilege for a particular graph user may create a local data source for that graph:
+
+[source,gsql]
+----
+GSQL > CREATE DATA_SOURCE KAFKA k1 = "/path/to/config" FOR GRAPH test_graph
+----
+
+[NOTE]
+====
+In the above statement, the local data_source k1 is only accessible to graph test_graph. A superuser cannot grant it to another graph.
+====
+
+== Delete a data source
+
+A data source variable can be dropped by a user who has sufficient privileges.
+A global data source can only be dropped by a users with global `WRITE_DATASOURCE` privilege.
+Users with `WRITE_DATASOURCE` privilege for one graph can drop data sources on that graph.
+The syntax for the `DROP DATA_SOURCE` command is as follows:
+
+[source,gsql]
+----
+GSQL > DROP DATA_SOURCE <source1>[<source2>...] | * | ALL
+----
+
+Below are several examples of Kafka data source `CREATE` and `DROP` commands.
+
+[source,gsql]
+----
+GSQL > CREATE DATA_SOURCE KAFKA k1 = "/home/tigergraph/kafka.conf"
+GSQL > CREATE DATA_SOURCE KAFKA k2 = "/home/tigergraph/kafka2.conf"
+
+GSQL > DROP DATA_SOURCE k1, k2
+GSQL > DROP DATA_SOURCE *
+GSQL > DROP DATA_SOURCE ALL
+----
+
+=== SHOW DATA_SOURCE
+
+The `SHOW DATA_SOURCE` command will display a summary of all existing data sources for which the user has privilege:
+
+[source.wrap,gsql]
+----
+GSQL > SHOW DATA_SOURCE *
+
+// The sample output
+Data Source:
+  - KAFKA k1 ("127.0.0.1:9092")
+The global data source will be shown in global scope. The graph scope will only show the data source it has access to.
+----

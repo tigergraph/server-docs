@@ -1,0 +1,186 @@
+= Troubleshooting for Cross-Region Replication
+:sectnums:
+
+
+If you experience issues with cross-region replication (CRR), such as data out-of-sync, follow these steps to debug.
+If the problem persists, please open a support ticket.
+
+
+== Check data consistency between primary and DR
+
+To check data consistency, first make sure that the vertex and edge count is matching between primary and DR.
+You can check that in different ways:
+
+* Run a count query to check vertex count and edges and compare them between primary and DR.
+If you don't have a count query handy you can use the built-in endpoint reported xref:API:built-in-endpoints.adoc#_list_vertices[here] to list a specific vertex count
+* Check output of `gstatusgraph` command vertex count should match between primary and DR
+
+If you see inconsistencies, it's likely you are facing some issues with CRR.
+
+If you do this check while loading data, it expected that vertex and edge count will not match as DR will be catching up in the meantime.
+If that's your case, you can run multiple times the above query, API or command on DR and see if they are increasing, if that's the case then there is no issue.
+
+Another way to validate data integrity between primary and DR is to check `lastSeqId` which is the last replayed replica by GSQL from Kafka Metadata topic.
+If no data loading is happening on primary, the `lastSeqId` on primary and DR must match.
+To check that, run `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql/replication`
+
+== Isolate the issue to a specific layer
+
+Assuming the above steps are showing data mismatch between primary and DR, the next step is to understand on which layer the issue is occurring on (See xref:index.adoc#_crr_logic[Cross-region replication logic]).
+
+First, we need to make sure that Kafka MirrorMaker has correctly done his job in replicating Kafka Metadata from primary to DR to check that we need to run the following commands on both primary and DR:
+
+[source,console]
+----
+# cd to kafka bin path
+$ cd $(gadmin config get System.AppRoot)/kafka/bin/
+
+# Add JAVA to your path, JAVA is already provided by TigerGraph
+$ JAVA_HOME=$(dirname `find $(gadmin config get System.AppRoot)/.syspre -name java -type f`)
+$ PATH=$PATH:$JAVA_HOME
+
+# Run kafka-console-consumer to read from the Metadata topic
+$ bash kafka-console-consumer.sh --bootstrap-server $(gmyip):30002 --topic Metadata --from-beginning
+
+# When running the above command make sure you are passing the right name for the --topic flag. On primary it will be Metadata and on DR it will be Primary.Metadata
+# The output of the above command might be verbose, it's suggested to redirect the output ot a file for ease of usage
+----
+
+The following is a snippet of the above output:
+
+[source,console]
+----
+[...]
+
+{"@type":"type.googleapis.com/google.protobuf.Value","value":{"254":"{\"method\":\"POST\",\"uri\":\"/gsql/file\",\"headers\":\"{\\\"Cookie\\\":\\\"{\\\\\\\"sessionId\\\\\\\":\\\\\\\"00000000561\\\\\\\",\\\\\\\"serverId\\\\\\\":\\\\\\\"8_1659614329898\\\\\\\",\\\\\\\"graph\\\\\\\":\\\\\\\"Social\\\\\\\",\\\\\\\"gShellTest\\\\\\\":false,\\\\\\\"terminalWidth\\\\\\\":80,\\\\\\\"compileThread\\\\\\\":0,\\\\\\\"clientPath\\\\\\\":\\\\\\\"/home/tigergraph/3.6.1/bin/gui\\\\\\\",\\\\\\\"fromGraphStudio\\\\\\\":true,\\\\\\\"fromGsqlClient\\\\\\\":true,\\\\\\\"fromGsqlServer\\\\\\\":false,\\\\\\\"clientCommit\\\\\\\":\\\\\\\"6edbf23d9750ab4451g341f605e58e9421dc7a\\\\\\\",\\\\\\\"sessionParameters\\\\\\\":{},\\\\\\\"sessionAborted\\\\\\\":false,\\\\\\\"loadingProgressAborted\\\\\\\":false,\\\\\\\"auth\\\\\\\":\\\\\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXX\\\\\\\\u003d\\\\\\\",\\\\\\\"metadataUpdateSeqId\\\\\\\":0}\\\",\\\"Authorization\\\":\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=\\\"}\",\"body\":\"CREATE QUERY FindFriendship(/* Parameters here */) FOR GRAPH Social { \\n  /* Write query logic here */ \\n  PRINT \\\"Found Friends!\\\"; \\n}\"}"}}
+
+
+{"@type":"type.googleapis.com/google.protobuf.Value","value":{"255":"{\"method\":\"POST\",\"uri\":\"/gsql/file\",\"headers\":\"{\\\"Cookie\\\":\\\"{\\\\\\\"sessionId\\\\\\\":\\\\\\\"00000000563\\\\\\\",\\\\\\\"serverId\\\\\\\":\\\\\\\"8_1659614329898\\\\\\\",\\\\\\\"graph\\\\\\\":\\\\\\\"Social\\\\\\\",\\\\\\\"gShellTest\\\\\\\":false,\\\\\\\"terminalWidth\\\\\\\":80,\\\\\\\"compileThread\\\\\\\":0,\\\\\\\"clientPath\\\\\\\":\\\\\\\"/home/tigergraph/app/3.6.1/bin/gui\\\\\\\",\\\\\\\"fromGraphStudio\\\\\\\":true,\\\\\\\"fromGsqlClient\\\\\\\":true,\\\\\\\"fromGsqlServer\\\\\\\":true,\\\\\\\"clientCommit\\\\\\\":\\\\\\\"6edbf23d9750ab4451g341f605e58e9421dc7a\\\\\\\",\\\\\\\"sessionParameters\\\\\\\":{},\\\\\\\"sessionAborted\\\\\\\":false,\\\\\\\"loadingProgressAborted\\\\\\\":false,\\\\\\\"auth\\\\\\\":\\\\\\\"Basic XXXXXXXXXXXXXXXXXXXXXX\\\\\\\\u003d\\\\\\\",\\\\\\\"metadataUpdateSeqId\\\\\\\":0}\\\",\\\"Authorization\\\":\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=\\\"}\",\"body\":\"INSTALL QUERY FindFriendship\"}"}}
+
+
+{"@type":"type.googleapis.com/google.protobuf.Value","value":{"256":"{\"method\":\"POST\",\"uri\":\"/gsql/file\",\"headers\":\"{\\\"Cookie\\\":\\\"{\\\\\\\"sessionId\\\\\\\":\\\\\\\"00000000585\\\\\\\",\\\\\\\"serverId\\\\\\\":\\\\\\\"8_1659614329898\\\\\\\",\\\\\\\"gShellTest\\\\\\\":false,\\\\\\\"terminalWidth\\\\\\\":0,\\\\\\\"compileThread\\\\\\\":0,\\\\\\\"fromGraphStudio\\\\\\\":false,\\\\\\\"fromGsqlClient\\\\\\\":false,\\\\\\\"fromGsqlServer\\\\\\\":false,\\\\\\\"sessionAborted\\\\\\\":false,\\\\\\\"loadingProgressAborted\\\\\\\":false,\\\\\\\"auth\\\\\\\":\\\\\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\\\\\\\\u003d\\\\\\\",\\\\\\\"metadataUpdateSeqId\\\\\\\":0}\\\",\\\"Authorization\\\":\\\"Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=\\\"}\",\"body\":\"IMPORT SECRET (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, AUTO_GENERATED_ALIAS_jf2a021) TO USER foo FOR GRAPH Social\"}"}}
+----
+
+Each line above is a replica that has been copied from primary Kafka Metadata to DR Kafka `Primary.Metatada` via Kafka MirrorMaker.
+Each replica has a unique and consistent (across primary and DR) ID which is (based on the above example) `"value:{"256":...` and each replica ID maps to a single GSQL WRITE operation which in this example is `"IMPORT SECRET (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, AUTO_GENERATED_ALIAS_jf2a021) TO USER foo FOR GRAPH Social\"`.
+Also the replica ID must be sequential and incremental (+1) and there should *not* be any gaps (e.g. 254, 255, 256).
+
+The last replica ID must be the same of the `lastSeqId` returned on each of the primary and DR. In this example the last replica ID is `256` and the output of `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql/replication` is:
+
+[source,console]
+----
+$ curl -u tigergraph:tigergraph  localhost:8123/gsql/replication | jq
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100    61    0    61    0     0   3812      0 --:--:-- --:--:-- --:--:--  3812
+{
+  "numChangesToBeReplicated": 0,
+  "lastSeqId": 256,
+  "error": false
+}
+----
+
+The following two condition must be satisfied:
+
+. All and each of the above replicas must be consistent between the primary and DR Kafka Metadata.
+. All and each of the above replicas will be replayed by GSQL on DR and all of them must succeed.
+
+If the former condition is not satisfied then it's an Infrastructure layer issue, if the latter condition is not satisfied (meanwhile the former one it is) then it is a GSQL layer issue.
+
+===  Debugging Infrastructure layer issues
+
+In case the replicas in Kafka Metadata topic are not consistent between primary and DR, then there could be multiple possibilities that are:
+
+* Kafka MirrorMaker is not RUNNING
+* Network connectivity issue between primary and DR
+* Port 30002 and 30003 are not open
+* DR is replicating from the wrong Kafka Metadata topic
+
+*Kafka MirrorMaker is not working*
+
+To check this run `gadmin connector status` on DR:
+
+[source,console]
+----
+# Run this command on DR
+$ gadmin connector status
++----------------+---------------------+------------------+---------+-------------+---------------------+
+| CONNECTOR NAME |  CONNECTOR WORKID   | CONNECTOR STATUS | TASK ID | TASK STATUS |     TASK WORKID     |
++----------------+---------------------+------------------+---------+-------------+---------------------+
+| infr_mm        | aa.bbb.cc.ddd:30003 | RUNNING          | 0       | RUNNING     | aa.bbb.cc.ddd:30003 |
++----------------+---------------------+------------------+---------+-------------+---------------------+
+----
+
+[NOTE]
+====
+You might have additional entries in the above table output that are related to loading job (file loader, s3, Kafka loader) that are not related to Cross Region Replication. Make sure you identify the right connector name which is `infr_mm` which is related to this case.
+====
+
+If the above table is empty then Kafka MirrorMaker is not running, and you need to check the network connectivity between DR and primary by running `nc -zv <primary_internal_IP> 30002` and this should return a success message, if not then you fix the network issues between primary and DR.
+
+In case you have already set up a new DR cluster after xref:fail-over.adoc[the failover] and the above table is returning a RUNNING state for the Kafka MirrorMaker and you still see discrepancy between the replicas reported in Kafka Metadata on primary and DR it could be that you did not run correctly the `gadmin config set System.CrossRegionReplication.TopicPrefix` command with the right value. In fact, it could be that you omitted the additional `.Primary` for that command and by doing so, now the new DR is replicating from the wrong Kafka Metadata topic.
+
+To check if this is the case try from DR:
+
+[source,console]
+----
+# cd to kafka bin path
+$ cd $(gadmin config get System.AppRoot)/kafka/bin/
+
+# Add JAVA to your path, JAVA is already provided by TigerGraph
+$ JAVA_HOME=$(dirname `find $(gadmin config get System.AppRoot)/.syspre -name java -type f`)
+$ PATH=$PATH:$JAVA_HOME
+
+# Run kafka-console-consumer to read from the Primary.Primary.Metadata topic
+$ bash kafka-console-consumer.sh --bootstrap-server $(gmyip):30002 --topic Primary.Primary.Metadata --from-beginning
+----
+
+If the output is now matching the same output of your primary then this is the issue and to solve it you need to do:
+
+[source,console]
+----
+# Disable Kafka Mirrormaker
+$ gadmin config set System.CrossRegionReplication.Enabled false
+
+# Make sure Kafka MirrorMaker is stopped, there should be no infr_mm entry
+$ gadmin connector status
+
+# Add the additional .Primary to the TopicPrefix.
+$ gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
+
+# Apply the config changes, init Kafka, and restart
+$ gadmin config apply -y
+$ gadmin init kafka -y
+$ gadmin restart all -y
+
+# Make sure Kafka MirrorMaker is running, there should be infr_mm entry
+$ gadmin connector status
+----
+
+Once done check the lastSeqId, and it should match the primary lastSeqId (it might take some time to catch up with the primary one ifvthere are many replicas that need to be replayed).
+
+=== Debugging GSQL layer issues
+
+In case the replicas in Kafka Metadata topic are consistent between primary and DR, but data is not consistent between primary and DR (e.g. DR is missing data that is available in primary) then we need to check the GSQL logs and understand what is going wrong.
+
+Find the GSQL leader with `gsql --leader` and open its logs, a quick way to do that is `vi $(gadmin config get System.LogRoot)/gsql/log.INFO` at this point you should see this pattern in the logs:
+
+[source,console]
+----
+# Starting to replay replica 123
+I@20220811 07:04:21.382  (ReplicaReplayer.java:48) Try to replay Replica 123 (0)
+
+# Information about the Replica operation that will be executed
+[...]
+I@20220811 07:04:21.386 foo|127.0.0.1:40672|00000000017 (FileHandler.java:44) IMPORT SECRET (abc****def, AUTO_GENERATED_ALIAS_sd23fse) TO USER foo FOR GRAPH Social
+
+# Error showing faliure in executing the operation
+[...]
+E@20220811 07:04:21.391 foo|127.0.0.1:40672|00000000017 (MetadataUpdateOperation.java:151) Failed executeInMemory for CreateSecretOperation
+
+# Error reporting that GSQL failed to replay replica 123
+[...]
+E@20220811 07:04:21.396  (ReplicaReplayer.java:59) Failed to replay Replica 123: 212
+----
+
+GSQL will always retry to replay until it succeeds because it is supposed to be successful as the equivalent command already happened in the primary. In this case there is something wrong happening on DR and need to be checked (could be GSQL, GPE or GSE related), for this please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].

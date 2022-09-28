@@ -1070,6 +1070,58 @@ Response::
 
 None.
 
+=== Remove expired tokens
+
+`DELETE :8123/expiredtoken`
+
+This endpoint removes expired authentication tokens.
+A user is always allowed to remove their own expired tokens.
+If a user tries to delete tokens that belong to other users, they need to have xref:user-access:access-control-model.adoc#_privileges[the `WRITE_USER` privilege].
+
+==== Sample request
+
+The following request deletes all expired tokens.
+This request requires the privilege `WRITE_USER`:
+
+[.wrap,console]
+----
+curl -X DELETE "https://localhost:8123/expiredtoken"
+----
+
+The following request deletes all expired tokens that belong to users `u1` and `u2` as well as all tokens created with secrets `s1` and `s2`.
+This request requires the privilege `WRITE_USER`
+
+[.wrap,console]
+----
+curl -X DELETE 'localhost:8123/expiredtoken' -d '{"user":["u1","u2"],"secret":["s1","s2"]}'
+----
+
+==== Request body
+The request body is optional.
+If not provided a request body, a request deletes all expired tokens.
+
+[.wrap,javascript]
+----
+{
+    "user": ["string"], <1>
+    "secret": ["string"] <2>
+}
+----
+<1> Users whose expired tokens to remove. Optional.
+<2> If a token is created with one of the secrets in the list, they are removed by the request. Optional.
+
+The secrets and users provided in the request body do not have to correlate with each other.
+A request deletes all tokens associated with any of the users and secrets contained in the payload.
+
+The request is atomic:
+if any of the provided users or secrets are invalid, or if a user doesn't have the privilege to remove tokens that belong to one of the users or secrets provided, no tokens will be removed by the request.
+
+==== Parameters
+None.
+
+
+
+
 == Loading jobs
 
 === Run a Loading Job
@@ -1514,7 +1566,7 @@ For example, suppose we have the following request to upsert two vertices:
 Request::
 +
 --
-[source,console]
+[source.wrap,console]
 ----
 curl --data-binary @vertices.json http://localhost:9000/graph/social
 ----
@@ -1549,7 +1601,7 @@ With the request above, if the vertex `Kelly` fails to be upserted due to a mach
 
 If you add the `gsql-atomic-level` header to the request URL and set its value to `atomic`, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
 
-[source,console]
+[source.wrap,console]
 ----
 # This is an atomic request
 curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
@@ -1648,7 +1700,7 @@ The payload data should be in JSON according to the schema shown below:
 }
 ----
 The fields in angle brackets (`<>`) are placeholder names or values, to be replaced with actual values.
-The keys in angle brackets, such as `<vertex_type>`, can be repeated to form a list of items.
+The keys in angle parentheses, such as `<vertex_type>`, can be repeated to form a list of items.
 The keys which are not in angle brackets are exact texts that must be used as they are.
 The nested hierarchy means that vertices are grouped by type.
 Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
@@ -1755,6 +1807,59 @@ For example, the following payload is used to upsert two `User` vertices with an
     }
   }
 }
+----
+
+==== Composite keys
+
+If your vertex has composite keys, separate the attributes that make up the composite key with a comma (`,`) in the same order as they are defined in the schema.
+
+For example, suppose we have the following vertex definition:
+
+[.wrap,gsql]
+----
+CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name, id))
+CREATE VERTEX Composite_Movie (id UINT, title STRING, country STRING, year UINT, PRIMARY KEY (title,year,id))
+CREATE DIRECTED EDGE Composite_Roles (from Composite_Person,to Composite_Movie, role STRING)
+CREATE GRAPH Person_Movie(Composite_Person, Composite_Movie, Composite_Roles)
+----
+
+The following requests upserts two vertices with the defined composite key, as well as an edge of the type `Composite_Roles` between `Bob, 123` and `Harry Potter, 1990, 1337`:
+
+[.wrap,console]
+----
+curl -X POST "localhost:9000/graph/Person_Movie" -d '
+{
+  "vertices": {
+    "Composite_Person":{
+      "Bob,123":{
+        "name":{"value":"Bob"},
+        "id":{"value":123},
+        "age":{"value":25}
+      },
+      "Tom,456":{
+        "name":{"value":"Tom"},
+        "id":{"value":456},
+        "age":{"value":47}
+      }
+    }
+  },
+  "edges":{
+    "Composite_Person":{
+      "Bob,123":{
+        "Composite_Roles":{
+          "Composite_Movie":{
+            "Harry Potter,1990,1337":{
+              "role":{
+                "value":"Wizard"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+'
 ----
 
 ==== Operation codes
@@ -2807,6 +2912,15 @@ In the case of a `GET` request, parameters should be passed in through the query
 At the read committed level, it is guaranteed that any data read is committed at the moment it is read.
 By default, it is off.
 |===
+
+[NOTE]
+====
+To use the `read_commited` parameter, `read_commited` must be defined as a parameter in the query itself.
+The content of the query does not have to use the parameter, but the parameter must be defined.
+For example:
+
+`CREATE QUERY PageRank( ..., INT iteration, ..., BOOL read_committed) FOR GRAPH Example_Graph`
+====
 
 ==== Query parameter passing
 
