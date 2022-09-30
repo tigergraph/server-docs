@@ -1,50 +1,46 @@
-= Get Started with Docker
-:sectnums:
-:description: A quickstart guide to run Tigergraph with Docker.
+= Dockerの使用の開始
 
-This document provides step-by-step instructions on how to pull the latest TigerGraph Enterprise Edition docker image to your host machine. You can follow the sections in sequence to set up the TigerGraph docker environment.
+本ドキュメントでは、最新のTigerGraph Enterprise Edition Docker Imageをお使いのホストマシンにプルする方法について順を追って説明します。セクションで説明している手順に従うことで、TigerGraph Docker環境のセットアップを行うことができます。
 
-The latest TigerGraph docker image includes the following content:
+最新のTigerGraph Docker Imageには、次のコンテンツが含まれています。
 
-* The latest version of TigerGraph
-* Linux packages:
- ** `openssh-server`
- ** `git`
- ** `wget`
- ** `curl`
- ** `emac`
- ** `vim`
- ** `jq`
- ** `tar`
-* Tutorial material
+* TigerGraphの最新バージョン
+* Linuxパッケージ 
+ ** openssh-server
+ ** git
+ ** wget
+ ** curl
+ ** emac
+ ** vim
+ ** jq
+ ** tar
+* 説明資料
  ** GSQL 101
  ** GSQL 102
-* The latest GSQL open-source graph algorithm library
+* 最新のGSQLオープンソースグラフアルゴリズムライブラリー
 
-This follow-along video shows the whole setup process:
+この補足動画でセットアッププロセス全体をご覧いただけます
 
-video::V5VvgJyjLxA[youtube,width=640,height=320]
+video::V5VvgJyjLxA[youtube]
 
-== Install Docker Desktop
+== 1. Docker Desktopのインストール
 
-Follow the steps below to install Docker Desktop on your machine and configure it with sufficient resources for TigerGraph:
+以下の手順に従って、Docker Desktopをお使いのマシンにインストールし、TigerGraphの使用に十分なリソースを設定します。
 
-. Install Docker on your OS:
- ** To install Docker for macOS, follow this video: https://www.youtube.com/watch?v=MU8HUVlJTEY
- ** To install Docker for Linux, follow these instructions:
+. お使いのOSにDockerをインストール
+ ** Mac OSにDockerをインストールする際はこちらの動画をご確認ください。 https://www.youtube.com/watch?v=MU8HUVlJTEY
+ ** LinuxにDockerをインストールする際はこちらの動画をご確認ください。
   *** Centos: https://docs.docker.com/install/linux/docker-ce/centos/
   *** Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
- ** To install Docker for Windows OS, follow this video: https://www.youtube.com/watch?v=ymlWt1MqURY
-. Configure Docker Desktop with sufficient resources:
- ** Recommended: 4 cores and 16GB memory
- ** Minimum: 2 cores and 10GB memory
- ** Click the Docker Desktop icon, click *Preferences* >> *Resources*, drag the CPU and Memory sliders to the desired configuration, save and restart Docker Desktop
+ ** WindowsにDockerをインストールする際はこちらの動画をご確認ください。 https://www.youtube.com/watch?v=ymlWt1MqURY
+. TigerGraphの使用に十分なリソースでDocker Desktopを設定
+ ** 推奨: 4コアプロセッサーと16GB RAM
+ ** 最小: 2コアプロセッサーと10GB RAM。
+ ** Docker Desktopアイコンをクリックし、*Preferences* >> *Resources* の順でクリックします。CPUスライダーとメモリスライダーをドラッグして設定し、保存後、Docker Desktopを再起動します。
 
-== Prepare a shared folder for your container
+== 2. Dockerコンテナと共有するホストOS上の共有フォルダーの準備
 
-Open a shell on your host machine and create or select a directory for sharing data between your host machine and Docker container and grant read, write, execute permission to the folder.
-This allows you to easily upload make files accessible to your Docker container.
-For example, to create a folder called data in Linux:
+お使いのホストマシンでシェルを開き、ホストマシンとDockerコンテナ間でのデータ共有のためのディレクトリーを作成または選択します。フォルダーには、読み取り+書き込み+実行の権限を付与します。以下に例として、Linuxで"data"というフォルダーを作成する方法を示します。
 
 [source,console]
 ----
@@ -52,87 +48,74 @@ $ mkdir data
 $ chmod 777 data
 ----
 
-You can map the data folder to a folder under the Docker container, which allows you to share files between your host OS and Docker OS.
+データフォルダーをDockerコンテナ下のフォルダーにマウント(マップ)できます。これで、ホストOSとDocker OSの間でファイルを共有できます。
 
-For example, if you mount the host OS folder `~/data` to the docker folder `/home/tigergraph/mydata`,  then anything you put on `~/data` will be visible in the docker container under `/home/tigergraph/mydata`, and vice versa.
+たとえば、ホストOSのフォルダー `~/data` をDockerのフォルダー `/home/tigergraph/mydata` にマウントすると、 `~/data` に置いたものはすべて `/home/tigergraph/mydata` 下のDockerコンテナに表示されます。また、その逆も可能です。
 
-== Run TigerGraph Docker image as a daemon
+== 3. TigerGraph Docker Imageをデーモンとして実行
 
-Run the following command to pull the TigerGraph docker image, bind ports, map a shared data folder, and start a container from the image:
+次のコマンドを実行して、TigerGraph Dockerイメージをプルし、ポートのバインドを行い、共有データフォルダーをマップし、イメージからコンテナを開始します。注: このコマンドは非常に長いので、スクロールバーを最後までドラッグして、コマンド全体をコピーするようにしてください。
 
-[source.wrap,console]
+[source,console]
 ----
-$ docker run -d \ <1>
-    -p 14022:22 \ <2>
-    -p 9000:9000 \ <2>
-    -p 14240:14240 \ <2>
-    --name tigergraph \ <3>
-    --ulimit nofile=1000000:1000000 \ <4>
-    -v ~/data:/home/tigergraph/mydata \ <5>
-    -v tg-data:/home/tigergraph <6>
-    -t \ <7>
-    tigergraph/tigergraph:latest <8>
-----
-<1> `-d`: make the container run in the background.
-<2> `-p`: map docker 22 port to host OS 14022 port, 9000 port to host OS 9000 port, 14240 port to host OS 14240 port.
-<3> `--name`: name the container tigergraph.
-<4>  `--ulimit`: set the `ulimit` (the number of open file descriptors per process) to 1 million.
-<5> `-v`: mount the host OS `~/data` folder to the docker `/home/tigergraph/mydata` folder using the -v option.
-If you are using Windows, change the above ~/data to something using the Windows file system convention.
-For example, `c:\data`
-<6> `-v`: mounts a volume called `tg-data` to your container.
-If the volume doesn't exist, Docker creates it automatically.
-This allows you to retain the data from your container.
-The next time you start up a new container with the same volume, all your changes are preserved.
-<7> `-t`: allocate a pseudo terminal.
-<8> `tigergraph/tigergraph:latest`:  download the latest docker image from the TigerGraph docker registry URL tigergraph/tigergraph.
-Replace "latest" with a specific version number if a dedicated version of TigerGraph is to be used.
-For example, if you want to get the 3.0.5 version, the URL should be:
-`tigergraph/tigergraph:3.0.5`.
-
-If you use Windows and have write permission issues with the above command,  try the following command instead (this command does not map the shared folder on your host machine to your container) :
-
-[source.wrap,console]
-----
-$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t tigergraph/tigergraph:latest
+$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -v ~/data:/home/tigergraph/mydata -t docker.tigergraph.com/tigergraph:latest
 ----
 
-== Connect to your container (via SSH or `docker exec`)
+* 上記のコマンドのオプションと引数は次のとおりです。
+ ** `-d`: コンテナをバックグラウンドで実行します。
+ ** `-p`: OSポート14022、9000、14240をDockerポート22、9000、14240にマップします。
+ ** `--name`: コンテナに"tigergraph"という名前を付けます。
+ ** `--ulimit`: `ulimit`(各プロセスで開くファイル記述子の数)を100万に設定します。
+ ** `-v`: -vオプションを使用して、ホストOSの `~/data` フォルダーをDockerの `/home/tigergraph/mydata` フォルダーにマウントします。Windows使用の場合は、`~/data` をWindowsのファイルシステムの規則に合わせて変更します。たとえば、`c:\data` などです。
+ ** `-t`: 擬似TTYの割り当て
+ ** TigerGraph Dockerレジストリー(URL: `docker.tigergraph.com/tigergraph`)から最新のDockerイメージをダウンロードします。
 
-After launching the container, you can use SSH to connect to your container:
+[NOTE]
+====
+TigerGraphの特定のバージョンを使用したい場合は、 "latest" をバージョン番号に置き換えてください。バージョン3.0.5の場合のURLは以下の通りです。
 
-. Verify that the container is running. You should see a row that describes the running container after running the command below:
+`docker.tigergraph.com/tigergraph:3.0.5`
+
+従来の開発者向けエディションを使用するには、以下を使用します。
+
+`docker.tigergraph.com/tigergraph-dev`
+====
+
+Windowsを使用し、上記のコマンドによってディスクドライブのアクセス許可の問題が発生する場合は、次のコマンドを代わりに試してください(このコマンドは、ホストマシン上の共有フォルダーをコンテナにマップしません)
+
+[source,console]
+----
+$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t docker.tigergraph.com/tigergraph:latest
+----
+
+== 4. SSHを使用してコンテナに接続
+
+コンテナを起動した後、SSHを使用してコンテナに接続できます。
+
+. コンテナが起動していることを確認します。以下のコマンドを実行すると、起動中のコンテナの状態を説明するメッセージが表示されます。
 +
 [source,console]
 ----
 $ docker ps | grep tigergraph
 ----
 
-. Use ssh to open a shell to the container. At the prompt, enter `tigergraph`  as the password. Note that we have mapped the host 14022 port to the container's 22 port (the ssh default port), so on the host we use ssh to connect to port 14022.
+. SSHを使用して、コンテナへのシェルを開きます。プロンプトで、パスワードとして `tigergraph` を入力します。ホスト14022ポートをコンテナの22ポート(SSHのデフォルトポート)にマップしているため、ホストではSSHを使用してポート14022に接続していることに注意してください。
 +
 [source,console]
 ----
 $ ssh -p 14022 tigergraph@localhost
 ----
 
-You can also access your TigerGraph container via `docker exec` with the following command:
+== 5. TigerGraphを起動
 
-[source.wrap,console]
-----
-$ docker exec -it $(docker ps | grep tigergraph | awk '{print $1}') /bin/sh
-----
-
-
-== Start TigerGraph
-
-. After connecting to the container via ssh, inside the container, start all TigerGraph services with the following command (which may take up to one minute):
+. SSHを介してコンテナに接続した後、コンテナ内で次のコマンドを使用して、TigerGraphサービスを起動します(最大で1分ほどかかる場合があります)。
 +
 [source,console]
 ----
 $ gadmin start all
 ----
 
-. Run the `gsql` command as shown below to start the GSQL shell. If you are new to TigerGraph, you can run the xref:gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101] tutorial now.
+. 以下に示す通り `gsql` コマンドを実行して、GSQLシェルを起動します。TigerGraphを初めて使用する場合は、xref:gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101]チュートリアルをここで実行できます。
 +
 [source,console]
 ----
@@ -140,13 +123,13 @@ $ gsql
 GSQL >
 ----
 
-. Start GraphStudio, TigerGraph's visual IDE, by visiting `+http://localhost:14240+`
+. お使いのPC(ホストOS)のブラウザーで `+http://localhost:14240+`  
 +
-in a browser on your host OS.
+にアクセスして、TigerGraphのビジュアルIDであるGraphStudioを起動します
 
-== Operation Commands Cheat Sheet
+== 操作コマンド早見表
 
-* After you start Docker Desktop, use the commands below to stop and restart the container:
+* Docker Desktopの起動後、コンテナの停止や再起動を行うには以下のコマンドを使用します。
 +
 [source,console]
 ----
@@ -154,7 +137,7 @@ in a browser on your host OS.
   $ docker container start tigergraph
 ----
 
-* Start the TigerGraph service within the container:
+* コンテナ内でTigerGraphサービスを起動します。
 +
 [source,console]
 ----
@@ -162,7 +145,7 @@ in a browser on your host OS.
   $ gadmin stop  all
 ----
 
-* ssh to the container. Note: if localhost is not recognized, remove the localhost entry from ~/.ssh/known_hosts
+* コンテナへのSSH。注: ローカルホストが認識されない場合は、ローカルホストエントリを ~/.ssh/known_hostsから削除してください。
 +
 [source,console]
 ----
@@ -170,7 +153,7 @@ in a browser on your host OS.
   $ ssh -p 14022 tigergraph@localhost
 ----
 
-* Linux users can access the container through its ip address directly:
+* Linuxユーザーは、IPアドレスを介してコンテナに直接アクセスできます。
 +
 [source,console]
 ----
@@ -178,16 +161,16 @@ in a browser on your host OS.
   $ vssh tigergraph@<container_ip_address>
 ----
 
-* Default user: `tigergraph`
-* Default password: `tigergraph`
-* After running `gadmin start`, you can go to GraphStudio. Open a browser on your host OS and access GraphStudio at the following URL:
+* デフォルトユーザー名: `tigergraph`
+* デフォルトパスワード: `tigergraph`
+* `gadmin start` の実行後、GraphStudioに移動できます。PC(ホストOS)ブラウザーを開き、次のURLでGraphStudioにアクセスします
 +
 [,text]
 ----
   http://localhost:14240
 ----
 
-* Check the version of GSQL:
+* GSQLのバージョンを確認します
 +
 [source,console]
 ----
