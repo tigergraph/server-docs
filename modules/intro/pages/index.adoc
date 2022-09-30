@@ -1,88 +1,83 @@
-= TigerGraph Server
-:description:This page provides a brief overview of TigerGraph's key features, the GSQL language, versioning, and internal architecture.
-:page-aliases: introduction.adoc
+= 概要
+:description:このページでは、TigerGraphの主な機能、GSQL言語、バージョン管理、内部アーキテクチャーについて簡単に説明します。
 
-TigerGraph, the world's fastest and most scalable graph analytics platform, breaks through the limitations of other graph technologies to enable real-time big data graph applications. 
-It also lowers cost by getting more done with less storage, less memory, and less time.
-
+世界最速で最もスケーラブルなグラフ分析プラットフォームTigerGraphは、グラフテクノロジーの限界を越えた、リアルタイムのビッグデータグラフ機能を実現します。
+また、より少ないストレージ、メモリー、時間でより多くのことを実行できるため、コストの削減も可能です。
 
 
 == GSQL
-The GSQL™ software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis.  In short, TigerGraph users do most of their work via the GSQL program. 
+GSQL™ソフトウェアプログラムはTigerGraphの包括的な環境で、グラフスキーマの設計、グラフ作成用データの読み込みと管理、データ分析時のグラフのクエリーの実行などを行うことができます。つまりTigerGraphでは、ほとんどの作業をGSQLプログラムを通じて行うことになります。
 
-To learn more about GSQL, see the xref:gsql-ref:intro:intro.adoc[GSQL Language Reference].
+GSQLについての詳細は、xref:gsql-ref:intro:intro.adoc[GSQL言語についての参考資料]を参照してください。
 
-== TigerGraph Data Science Library
-TigerGraph provides a collection of expertly written GSQL queries that efficiently implement common graph algorithms.
-For more information, see xref:graph-ml:intro:index.adoc[TigerGraph Graph Data Science Library].
+=== TigerGraphデータサイエンスライブラリ
+TigerGraphでは、一般的なグラフアルゴリズムを効率的に実行できる、専門的に記述された数々のGSQLクエリーを提供しています。
+詳細については、xref:graph-ml:intro:index.adoc[TigerGraphグラフデータサイエンスライブラリ]をご覧ください。
 
-== GraphStudio and Admin Portal
-GraphStudio and Admin Portal are TigerGraph's Graphic User Interfaces. 
+== GraphStudioと管理ポータル
+GraphStudioと管理ポータルはTigerGraphのグラフィックユーザーインターフェイスです。
 
-The TigerGraph GraphStudio™ UI (User Interface) provides an intuitive, browser-based interface that helps users get started quickly with graph-based application development tasks: designing a graph schema, creating a schema mapping, loading data, exploring the graph, and writing GSQL queries. 
+TigerGraph GraphStudio™ UI(ユーザーインターフェイス)は、直感的なブラウザーベースのインターフェイスを提供します。これにより、グラフスキーマの設計、スキーママッピングの作成、データの読み込み、グラフの探索、書き込みやGSQLクエリーの作成などのグラフベースのアプリケーション開発タスクをすばやく始めることができます。 
 
-The TigerGraph Admin Portal is a browser-based devops tool which provides users an overview of a running TigerGraph system, from an application and infrastructure point of view. It also allows the users to configure the TigerGraph system through a user-friendly interface. 
+TigerGraphの管理ポータルはブラウザーベースのDevOpsツールであり、アプリケーションとインフラストラクチャーの観点から、実行中のTigerGraphシステムの概要を知ることができます。また、使いやすいインターフェイスを通してTigerGraphシステムの設定を行うことができます。
 
-To learn more about GraphStudio and Admin Portal, see xref:gui:graphstudio:overview.adoc[GraphStudio and Admin Portal].
+GraphStudioと管理ポータルについての詳細は、xref:gui:graphstudio:overview.adoc[GraphStudioと管理ポータル]をご覧ください。
 
 == TigerGraph Cloud
-TigerGraph Cloud is a fully-managed cloud database built on the same TigerGraph Enterprise Server engine that is delivering the fastest and most scalable graph database.
-TigerGraph Cloud handles all the complexity of deploying and managing your deployments on the cloud service provider of your choice (AWS, Azure, and GCP).
+TigerGraph Cloudは、フルマネージドのクラウドデータベースで、最速で最もスケーラブルなグラフデータベースを提供しているTigerGraph Enterpriseサーバーのエンジン上に構築されています。
+TigerGraph Cloudは、複雑なデプロイやデプロイ管理を、お使いのクラウドサービスプロバイダー(AWS、Azure、GCP)ですべて処理できます。
 
-For more information, see xref:cloud:start:overview.adoc[].
+詳細については、xref:cloud:start:overview.adoc[こちら]をご覧ください。
 
-== Versioning
-TigerGraph uses https://en.wikipedia.org/wiki/Software_versioning[sequence-based identifiers]. 
-Versions are numbered in the format `MAJOR.MINOR.PATCH`:
+== バージョニング
+TiGerGraphは https://semver.org/[セマンティックバージョニング] を使用しています。``メジャー.マイナー.パッチ``で構成されるバージョン番号には次のようなルールがあります。 
 
-* `MAJOR` version releases indicate the most significant full releases.
-* `MINOR` version releases indicate less significant releases.
-* `PATCH` version releases indicate backward compatible bug fixes.
+* ``メジャー``バージョン: 以前のメジャーバージョンと互換性のないAPIの変更が行われたとき、``メジャー``バージョンが上がります
+* ``マイナー``バージョン: 下位互換性のある機能が追加されたとき、 ``マイナー``バージョンが上がります
+* ``パッチ``バージョン: 下位互換性のあるバグ修正を行ったとき、 ``パッチ``バージョンが増加します。
 
-We create a new branch of documentation for every major and minor release.
-To view the documentation of a particular TigerGraph version, use either of the version selectors in the upper right or lower left corners of the page.
+メジャーリリース、マイナーリリースごとに、新しいドキュメントのブランチを作成しています。
+TigerGraphのバージョンのドキュメントを見るには、ページの右上、ナビバーの下にあるバージョンセレクターを使います。
+また、ページ左下のコンポーネントバージョンセレクターで、別のコンポーネントやバージョンに切り替えることができます。
 
-For a more detailed description of the TigerGraph release process, please see the xref:release-process.adoc[Release and Patch Process] section of the documentation.
+== アーキテクチャーの概要
+TigerGraphプラットフォームは、標準のコモディティグレードのLinuxサーバーで動作します。
+コアコンポーネント(GSEおよびGPE)は、最適なパフォーマンスを実現するためにC++で設定されています。TigerGraphのシステムは、最小限の手間でお使いの環境に適合するように設計されています。
 
-== Architecture overview
-The TigerGraph Platform runs on standard, commodity-grade Linux servers. 
-The core components of the Graph Storage Engine (GSE) and the Graph Processing Engine (GPE) are implemented in C++ for optimal performance. TigerGraph is designed to fit into your existing environment with a minimum of fuss.
+* データソース: プラットフォームには、フレキシブルで高性能なデータローダーを備えており、システムがオンラインのときに表形式または半構造化データをストリーミングできます。
+* インフラストラクチャー: プラットフォームは、オンプレミス、クラウド、またはハイブリッドで使用できます。
+* 統合: TigerGraphを既存のエンタープライズデータインフラストラクチャーおよびワークフローと統合できるよう、REST APIが提供されています。
 
-* Data Sources: The platform includes a flexible, high-performance data loader which can stream in tabular or semi-structured data, while the system is online.
-* Infrastructure : The platform is available for on-premises, cloud, or hybrid use.
-* Integration : REST APIs are provided to integrate your TigerGraph with your existing enterprise data infrastructure and workflow.
+TigerGraphのシステムは、メッセージパッシングデザインを使用し、コンポーネントのアクティビティを調整します。強化されたRESTfulサーバーであるRESTPPが、タスク管理の中心となります。以下の通り、システムとの対話方法の選択が可能です。
+GSQLクライアント - 1つのTigerGraphインスタンスは、リモートノードで複数のGSQLクライアントをサポートできます。
+GraphStudio - 基本的なGSQL機能のほとんどが使用できる、視覚的・直感的なグラフィカルユーザーインターフェイスです。 
+RESTAPI - 同じクエリーを多数回実行する必要があるエンタープライズアプリケーションは、RESTPPと直接通信することにより、効率を最大限に高めることができます。
+gAdminはシステム管理に使用されます。
 
-The TigerGraph system uses a message-passing design to coordinate the activities of the components. RESTPP, an enhanced RESTful server, is central to the task management. Users can choose how they wish to interact with the system:
+== 主要な特長
+=== ハイパフォーマンス
+TigerGraphは、データ取り込みとクエリーをハイパフォーマンスで行います。特長は以下の通りです。
 
-* *GSQL client*: One TigerGraph instance can support multiple GSQL clients, on remote nodes.
-* *GraphStudio*: Our intuitive graphical user interface, which provides most of the basic GSQL functionality.
-* *REST API*: Enterprise applications which need to run the same queries many times can maximize their efficiency by communicating directly with RESTPP.
-* *gAdmin* is used for system administration.
+* グラフ作成のための高速データ読み込み - マシン1台、1時間当たり、50〜150GBのデータを読み込めます。
+* 並列グラフアルゴリズムの高速実行 - マシン1台、1秒当たり数億の頂点/エッジをトラバースできます。
+* RESTを使用したリアルタイムの更新と挿入 - わずか20台のコモディティマシンのクラスター上で、1,000億以上の頂点と6,000億以上のエッジを持つグラフにリアルタイムで20億以上のデイリーのイベントをストリーミングできます。
+* リアルタイム分析を大規模なオフラインデータ処理と統合する機能を持つ、画期的なシステムです。
 
-== Key features
-=== High performance
-TigerGraph provides high-performance data ingestion and querying. In particular:
+=== 高機能なクエリー言語
+TigerGraphのGSQLは、チューリング完全な言語で、大規模なグラフの探索と分析が可能です。
 
-* Fast data loading speed to build graphs - able to load 50 to 150 GB of data per hour, per machine.
-* Fast execution of parallel graph algorithms - able to traverse hundreds of million of vertices/edges per second, per machine.
-* Real-time updates and inserts using REST - able to stream 2B+ daily events in real-time to a graph with 100B+ vertices and 600B+ edges on a cluster of only 20 commodity machines.
-* Ability to unify real-time analytics with large scale offline data processing - the first and only such system.
+=== 継続的可用性
+TigerGraphの性能は、高可用性(High Availability = HA)の標準的な範囲と定義を高く上回っています。継続的可用性を提供するため、次の機能を備えています。
 
-=== Rich query language
-TigerGraph's GSQL is a turing-complete language for the exploration and analysis of large scale graphs. 
+* データベースサーバーの損失に対するフォールトトレランス
+** クラスター内障害に対するサービスの自動回復
+* ユーザー用アプリケーションの完全なネイティブHAサポート
+** スタンバイGSQLサーバーおよびGraphStudioサーバーへのシームレスな自動クライアント再接続
+* 障害リカバリー中のリモートクラスターへのフェイルオーバー
+* 追加レプリカでRoIを改善
+** クエリースループットパフォーマンスを強化
+** 運用ワークロードの同時実行性の向上
 
-=== Continuous Availability
-TigerGraph goes beyond the standard scope and definition of High Availability (HA) and provides Continuous Availability with the following functionality: 
-
-* Fault tolerance against loss of database server(s) 
-** Automated recovery of services for Intra-cluster failure
-* Full native HA support for user-facing applications 
-** Seamless automatic client reconnection to standby GSQL server and GraphStudio servers 
-* Failover to remote cluster during Disaster Recovery
-* Improve RoI with additional Replicas
-** Enhanced Query Throughput performance
-** Increased concurrency for operational workloads
-
-=== ACID transactions
-The TigerGraph distributed database provides full ACID transactions with sequential consistency.
+=== ACIDトランザクション
+TigerGraph分散データベースは、逐次一貫性を備えた完全なACIDトランザクションを実現します。
 

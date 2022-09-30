@@ -1,96 +1,91 @@
-= Continuous Availability Overview
+= 継続的可用性概要
 
-== Introduction
+== はじめに
 
-HA (High Availability) is a generic term used to describe a computer system which has been architected to deliver higher levels of operational performance through enhanced uptime and throughput than would be expected from a traditional single server node.
+HA(High Availability=高可用性)は、強化されたアップタイムとスループットを通して、従来の単一サーバーノードより高いレベルの運用パフォーマンスを実現できるように設計されたコンピューターシステムを表すために使用される一般的な用語です。
 
-With Continuous Availability, TigerGraph goes beyond the standard scope and definition of High Availability by providing the following functionality:
+継続的可用性を備えたTigerGraphは、高可用性の標準的な範囲や定義を超え、以下の機能を提供します。
 
-* Fault tolerance against loss of database server(s)
- ** Automated recovery of services in case of intra-cluster failure
-* Full native HA support for user-facing applications - Seamless automatic client reconnection to standby GSQL server and GraphStudio servers
-* Failover to remote cluster during disaster recovery
-* Improve RoI with additional replicas
- ** Enhanced query throughput performance
- ** Increased concurrency for operational workloads
+* データベースサーバーのロスに対するフォールトトレランス
+ ** クラスター内障害に対するサービスの自動回復
+* ユーザー向けアプリケーションの完全なネイティブHAサポート - 待機GSQLサーバーおよびGraphStudioサーバーへの切れ目のない自動クライアント再接続
+* 障害回復中のリモートクラスターへのフェイルオーバー
+* 追加のレプリカによりRoIを改善
+ ** クエリースループットパフォーマンスを強化
+ ** 運用ワークロードの同時実行性を向上
 
-In short, TigerGraph Continuous Availability not only provides the ability to keep a business application running without any noticeable downtime, but also delivers a higher return on investment.
+つまり、TigerGraphの継続的可用性は、大きなダウンタイムなしにビジネスアプリケーションを実行し続ける機能を提供するだけでなく、投資に対するより高い利益をも実現します。
 
-== Architecture Design
+== アーキテクチャーの設計
 
-TigerGraph's architecture design relies on active-active replication to keep multiple data copies in sync.
-This is transparent to the user.
-The underlying principles of uniform distribution of data are automatically applied no matter how many replicas are stored.
-Additionally, the placement of replicas is infrastructure-aware to tolerate hardware failures.
-Continuous availability is a production configuration that customers can pick at cluster installation time.
-Customers have flexibility to place replicas in specific availability zones or data centers based on their infrastructure requirements.
+TigerGraphのアーキテクチャー設計は、アクティブ/アクティブレプリケーションに依存し、複数のデータコピーの同期を維持します。
+これはユーザーにとってはトランスペアレントです。
+データを均一に分割するという基本的原則は、レプリカがいくつ格納されているかに関わらず、自動的に適用されます。
+さらに、レプリカの配置は、インフラストラクチャーに対応しており、ハードウェア障害に耐性を持ちます。
+継続的可用性は、お客様がクラスターのインストール時に選択できる設定です。
+お客様は、インフラストラクチャーの要件に基づき、レプリカを特定のアベイラビリティーゾーンやデータセンターに置くことができます。
 
-TigerGraph Continuous Availability design provides the following
+TigerGraphの継続的可用性設計が実現すること
 
-* Throughput: Each replica is always up-to-date and handles its share of read requests. This provides higher query concurrency and throughput.
-* If a server goes offline for planned or unplanned reasons, TigerGraph's HA design with Automatic Failover will reroute work to the replica nodes of that server, maintaining continuous operation.
-* Higher levels of replication provide more throughput and resilience.
+* スループット: 各レプリカは常に最新の状態を保たれ、読み取り要求の共有を処理します。これによって、クエリーの同時処理性とスループットが向上します。
+* 計画的または計画外の理由でサーバーがオフラインになった場合、TigerGraphのHA設計は自動フェイルオーバーを備えているため、運用を維持しつつ、そのサーバーのレプリカノードに作業を再ルーティングします。
+* レプリケーションのレベルが高いほど、スループットと復元力が向上します。
 
 [#_continuous_availability__definitions]
-=== Continuous Availability - Definitions
+=== 継続的可用性 - 定義
 
-TigerGraph is based on an MPP architecture.
-All services are distributed uniformly across the cluster.
-This requires data to be distributed across the cluster.
-There are two key concepts in the cluster design:
+TigerGraphはMPPアーキテクチャーをベースにしています。
+すべてのサービスは、クラスター全体に均一に分割されます。
+このためには、データをクラスター全体に分割される必要があります。
+クラスター設計には、以下に挙げる2つの重要な概念があります。
 
-- *Replication Factor*: Replication factor is a characteristic of the cluster design that determines the number of copies of data that will be stored in the cluster.
-This is configurable at the time of installation.
-- *Partitioning Factor*: Partitioning factor is an internal TigerGraph characteristic of a TigerGraph cluster that determines how the data in the database will be distributed.
-Based on the nodes of the cluster size, TigerGraph will automatically pick a partitioning factor, taking into account the replication factor.
+- **レプリケーションファクター**: レプリケーションファクターは、クラスターに格納されるデータのコピーの数を決定するクラスター設計の値です。これは設定可能であり、お客様はインストール時に選択することができます。
+- **パーティショニングファクター**: パーティショニングファクターは、TigerGraphの内部の値であり、クラスターがデータベース内にいかにデータを分割するかを決定します。クラスターサイズのノードに基づいて、TigerGraphはレプリケーションファクターを考慮してパーティショニングファクターを自動的に選択します。
 
-image::cluster_arch.png[Diagram showing the mathematical relationship between the partitioning and replication factors in a TigerGraph cluster]
+image::cluster_arch.png[TigerGraph クラスターサイズ = P X R]
 
-In short, a TigerGraph cluster can be seen as a combination of data spread across _P_ partitions with multiple copies equal to the number of _R_ replicas.
+つまり、TigerGraphクラスターは、レプリカの数Rと等しい複数のコピーを持つパーティションPに分割されたデータの組み合わせであると考えることができます。
 
 [NOTE]
 ====
-Some key cluster design considerations:
+クラスター設計に関する重要考慮事項
 
-* Any cluster size is allowed, except 1x2
-* Minimum number of servers needed for continuous availability is 3 servers - This is due to Zookeeper quorum dependency.
+* 1x2を除く、あらゆるクラスターサイズが許可されます
+* 継続的可用性に最低限必要なサーバーは3台です。これは、Zookeeper定足数の依存関係に基づく数字です。
 ====
 
-=== Continuous Availability - Data Operations
+=== 継続的可用性 - データ処理
 
-TigerGraph services are based on distributed leaderless architecture - all replicas are equal and can service both read and write requests.
-This is a key differentiation that ensures that no single node can be Single Point of Failure.
+TigerGraphサービスは、分割マスターレスアーキテクチャーをベースにしています。すべてのレプリカは同等であり、読み取りおよび書き込み要求の両方に対応できます。
+これは、単一のノードが単一障害点になることを防ぐための重要な違いとなります。
 
-* Write Operations: In order to keep all replicas in sync for full consistency of all data sets, all write operations are sent to all replicas synchronously by default. A write operation is considered complete only if all the replicas acknowledge that the writes are successful.
+* 書き込み処理: すべてのデータセットが完全に整合性を保てるように全レプリカの同期を維持するため、デフォルトでは、書き込み処理はすべてのレプリカに同期的に送信されます。書き込み操作は、すべてのレプリカが書き込みの成功を確認した場合にのみ、完了と見なされます。
 
-* Read Operations: As all replicas are guaranteed to be in sync for all write operations, Read requests can be sent to any replica with no need to verify the data consistency with other replica copies. This optimizes the read performance for read-heavy analytical queries.
+* 読み取り処理: すべての書き込み操作において全レプリカの同期が確保されているため、他のレプリカとのデータ整合性の確認を行う必要なしに、どのレプリカにも読み取りリクエストを送信できます。これにより、読み取りを頻繁に行う分析クエリーの読み取りのパフォーマンスが最大限に高まります。
 
-*Example*:
+**例**:
 
-In the following example, the data sets in the cluster are spread across 5 partitions with 2 replicas of data sets i.e. Partitioning Factor of 5 and Replication Factor of 2.
+次の例では、クラスター内のデータセットが5つのパーティションに分かれており、データセットのレプリカ2つがあります。つまり、パーティションファクターは5であり、レプリケーションファクターは2です。
 
-image::replication-partitioning-factor.png["Diagram showing a cluster with 10 partitions. The top group of partitions are labeled 1A through 5A, and the replicas are labeled 1B through 5B."]
+image::replication-partitioning-factor.png[レプリケーションファクターおよびパーティショニングファクターのダイアグラム]
 
-* All writes go to all replicas.
-For example, both 1A and 1B.
-* Reads can be from any one replica.
-For example, either 1A or 1B.
-* Distributed queries can read from a mix replicas.
-For example, {1A, 2B, 3B, 4A, 5B}.
+* すべての書き込みは全レプリカ(例: 1Aおよび1Bの両方)に送信されます。
+* 読み取りは、いずれか1つのレプリカ(例: 1Aまたは1B)から行うことができます。
+* 分割クエリーは、複数のレプリカ(例: {1A、2B、3B、4A、5B})から読み取ることができます。
 
-=== Continuous Availability - Cluster failover operations
+=== 継続的可用性 - クラスターのフェイルオーバー処理
 
-TigerGraph design ensures Automatic Failover for Continuous Availability. If a server goes down (hardware or software, planned or unplanned), incoming DB operations can continue.
-The requests are automatically routed around the unavailable server.
-The TigerGraph Database scheduler tracks in real time the availability of servers and routes the request to the right servers.
+TigerGraphの設計は、継続的可用性実現のため、自動フェイルオーバーを行うようにしています。サーバーがダウンした(ハードウェアまたはソフトウェア的要因、計画的または計画外)場合でも、着信DB操作を続行できます。
+リクエストは、使用できないサーバーを回避して自動的にルーティングされます。
+TigerGraphデータベーススケジューラーは、サーバーの可用性をリアルタイムで追跡し、リクエストを適切なサーバーにルーティングします。
 
-image::ha-failover.png["Diagram showing a cluster with 10 partitions. The top group of partitions are labeled 1A through 5A, and the replicas are labeled 1B through 5B. Replica 3B is crossed out with an X."]
+image::ha-failover.png[フェイルオーバー例のダイアグラム]]
 
-*Example*:
+**例**:
 
-In the event of server failure:
+サーバー障害発生時
 
-* If any single server is unavailable (expected or unexpected):
- ** When it fails to respond after a certain number of tries, requests will automatically divert to another replica (e.g. 3B is unavailable, so use 3A)
- ** If it fails in the middle of a transaction, that transaction might be aborted.
-* System continues to operate, with reduced throughput, until the server is restored.
+* いずれか1台のサーバーが利用できない場合(計画または計画外の理由で)
+ ** 一定回数の試行によって応答を得られなかった場合、リクエストは自動的に別のレプリカに転送されます(例: 3Bが応答不能なため、3Aを使用)
+ ** トランザクションの途中で障害が発生した場合、そのトランザクションは中止される可能性があります。
+* サーバーが復元されるまで、システムは低スループットで作動し続けます。
