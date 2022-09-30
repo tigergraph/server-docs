@@ -1005,7 +1005,7 @@ curl -X POST --data-binary @./work_at.csv \
 
 パラメーター値に特殊文字が含まれている場合、特殊文字は https://www.w3schools.com/tags/ref_urlencode.asp[URL エンコード]を使用する必要があります。バックスラッシュを1つ使うか2つ使うかについての混乱を避けるために、 `eol` または `sep` パラメーターのバックスラッシュエスケープはサポートされていません。
 
-このエンドポイントによってアップロードできるデータの最大サイズは、xref:API:intro.adoc#_request_body_size[ `Nginx.ClientMaxBodySize` ]設定パラメーター(デフォルトは200MB)によって制御されます。
+このエンドポイントによってアップロードできるデータの最大サイズは、xref:API:intro.adoc#_応答サイズ[ `Nginx.ClientMaxBodySize` ]設定パラメーター(デフォルトは200MB)によって制御されます。
 
 == グラフ
 
@@ -1289,6 +1289,7 @@ __**グラフスキーマオブジェクトの**__ **フィールド:**
 | 詳細を取得する頂点またはエッジタイプ。指定しない場合、エンドポイントは、グラフ全体のスキーマの詳細を含む __グラフスキーマオブジェクト__ を返します。
 |===
 
+[#_upsert_data_to_graph]
 === データのグラフへのアップサート
 
 `+POST /graph/{graph_name}+`
@@ -1482,7 +1483,7 @@ JSONコードは、テキストファイルに保存することも、コマン�
 }
 ----
 
-「はじめに」セクションの指示に従って、xref:API:intro.adoc#_formatting_data_in_json[高度なデータタイプのフォーマット]を行ないます。
+「はじめに」セクションの指示に従って、xref:API:intro.adoc#_jsonでのデータフォーマット[高度なデータタイプのフォーマット]を行ないます。
 
 たとえば、次のペイロードは、 `LIST` タイプの属性 `coordinates` と `MAP` タイプの属性 `measurements` を持つ2つの `User` 頂点をアップサートするために使用されます。
 
@@ -1635,7 +1636,7 @@ $ curl -X POST --data-binary @add_id6.json \
 
 === 頂点の挿入
 
-頂点またはエッジを挿入するには、xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[データのグラフへのアップサート]エンドポイントを使用します
+頂点またはエッジを挿入するには、xref:API:built-in-endpoints.adoc[データのグラフへのアップサート]エンドポイントを使用します
 
 === 頂点のリスト化
 
@@ -2322,7 +2323,7 @@ JSON応答オブジェクトには、以下の3つのフィールドがありま
 
 ==== クエリのパラメーターの受け渡し
 
-`GET` リクエストを使用してインストールされたクエリーを実行する場合、クエリーパラメーターはxref:API:intro.adoc#_query_string_parameters[URLのクエリー文字列を通じて渡されます]。
+`GET` リクエストを使用してインストールされたクエリーを実行する場合、クエリーパラメーターはxref:API:intro.adoc#_クエリ文字列パラメーター[URLのクエリー文字列を通じて渡されます]。
 [width="100%",cols="28%,36%,36%",options="header",]
 |===
 |パラメータータイプ |クエリー文字列形式 |例
@@ -2398,7 +2399,7 @@ curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:9000/query/social/hello?p=Tom
 
 ==== クエリーのパラメーターの受け渡し
 
-`POST` リクエストを使用してインストールされたクエリーを実行する際、クエリーパラメーターはリクエスト本文を通して、xref:API:intro.adoc#_formatting_data_in_json[JSON形式でエンコード]した形で渡されます。JSONペイロードのフォーマットルールは、xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[JSONを使用した `RUNQUERY` コマンドでのパラメーターの受け渡し]の場合と同様です。
+`POST` リクエストを使用してインストールされたクエリーを実行する際、クエリーパラメーターはリクエスト本文を通して、xref:API:intro.adoc#_jsonでのデータフォーマット[JSON形式でエンコード]した形で渡されます。JSONペイロードのフォーマットルールは、xref:3.2@gsql-ref:querying:query-operations.adoc#_parameter_json_object[JSONを使用した `RUNQUERY` コマンドでのパラメーターの受け渡し]の場合と同様です。
 
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
@@ -2475,7 +2476,7 @@ curl -X POST -d -H "GSQL-THREAD-LIMIT: 4" '{"p":{"id":"Tom","type":"person"}}' \
 
 ==== パラメーターの受け渡し:
 
-このエンドポイントを通じてインタープリテッドクエリーを実行する場合、クエリーパラメーターはxref:intro.adoc#_query_string_parameters[URLクエリー文字列を通じての受け渡し]が行なわれる必要があります。
+このエンドポイントを通じてインタープリテッドクエリーを実行する場合、クエリーパラメーターはxref:intro.adoc#_クエリ文字列パラメーター[URLクエリー文字列を通じての受け渡し]が行なわれる必要があります。
 
 ==== リクエストサンプル:
 
@@ -2582,6 +2583,7 @@ curl -X GET "localhost:9000/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1
 | 実行中のクエリを中止するエンドポイント。エンドポイントのURLのベースを指定する必要がありますが、ワイルドカードを使用してさまざまなパラメーターを許可することができます。たとえば、エンドポイント `/sleepgpe` の実行中のすべてのクエリを中止するには、 `url =/sleepgpe*` と指定します。
 |===
 
+[#_check_query_status_detached_mode]
 === クエリのステータスの確認(デタッチモード)
 
 `GET /query_status`
@@ -2629,7 +2631,7 @@ $ curl -s -X GET "http://localhost:9000/query_status?graph_name=poc_graph&reques
 | 指定されたクエリのステータスJSONオブジェクトに関連付けられたクエリID。
 
 | `expirationTime`
-| 指定されたクエリがタイムアウトしたときのタイムスタンプ。デフォルトのタイムアウト制限は16秒で、xref:intro.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`]ヘッダーを使って設定可能です。
+| 指定されたクエリがタイムアウトしたときのタイムスタンプ。デフォルトのタイムアウト制限は16秒で、xref:intro.adoc#_gsqlクエリのタイムアウト[`GSQL-TIMEOUT`]ヘッダーを使って設定可能です。
 
 | `elapsedTime`
 | 指定されたクエリの経過時間(ミリ秒単位)。完了したクエリの場合、値はリクエスト実行の合計時間を示します。進行中のクエリの場合、これまでにかかった時間を示します。
@@ -2954,4 +2956,4 @@ curl -s -X POST "http://localhost:9000/allpaths/movieNet" \
 }
 ----
 
-パス検索の他のバージョンは、xref:graph-ml:intro:overview.adoc[GSQLグラフアルゴリズムライブラリー]でご覧ください。
+パス検索の他のバージョンは、xref:graph-ml:intro:index.adoc[GSQLグラフアルゴリズムライブラリー]でご覧ください。
