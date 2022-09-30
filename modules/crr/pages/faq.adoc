@@ -1,20 +1,21 @@
 = Cross-Region Replication FAQ
 
-== How can I check if data is replicated between primary and Disaster Recovery (DR) clusters?
+== How can I verify if data is replicated between primary and Disaster Recovery (DR) clusters?
 
-You can check the output of `gstatusgraph` on both primary and DR.
-The count for vertices and edges should match.
+You can run `gstatusgraph` from the GSQL shell on both the primary and DR cluster.
+The count for vertices and edges should match if data is in sync.
 Note that if there are running loading jobs, DR might show a lower count, in which case check again when the loading job is done.
 
 
 == Why am I not seeing any loading job declared in DR?
 
-Loading jobs are not replicated over DR, however the data loaded by these loading jobs is replicated over DR.
+Loading jobs themselves are not replicated to the DR cluster.
+However, the data loaded by these loading jobs is replicated over DR.
 
 == I've run a `DROP ALL` command on primary and now new added data is not replicated in DR.
 
-`DROP ALL` command will stop Cross Region Replication, you will need to restore re-establish the feature again.
-Here is a list of all commands and operations that will stop Cross Region Replication:
+`DROP ALL` command will stop cross-region replication (CRR), you will need to restore re-establish the feature again.
+Here is a list of all commands and operations that will stop CRR:
 
 * `gsql drop all` which clears all data and schema
 * `gsql clear graph store` which clears only data
@@ -26,8 +27,8 @@ Here is a list of all commands and operations that will stop Cross Region Replic
 == Why is GSQL failing to replay a replica with an "UNAUTHORIZED" error?
 
 It's most likely that primary and DR have different passwords for the same TigerGraph user.
-This sometimes happens when you enable Cross Region Replication without restoring the GBAR backup in DR (since you did not have any data) but DR was installed with a different password than primary.
-Make sure DR and primary have the same TigerGraph password before enabling Cross Region Replication.
+This sometimes happens when you enable CRR without restoring the GBAR backup in DR (since you did not have any data) but DR was installed with a different password than primary.
+Make sure DR and primary have the same TigerGraph password before enabling CRR.
 
 == What happens if DR is down, unavailable or under scheduled maintenance (e.g. VM Motion)?
 
@@ -39,8 +40,8 @@ You can tune this parameter based on your need by running `gadmin config set Kaf
 
 == Can I have multiple DRs?
 
-Yes, just enable Cross Region Replication on the other DR.
-There is a limit to the number of DRs that you can have.
+Yes.
+There is no limit to the number of DR clusters that you can have.
 
 == Is failover to DR automatic?
 
@@ -48,6 +49,6 @@ No, failover to DR is a manual operation.
 
 == How will my application write to the new primary after DR failover?
 
-It's suggested that you handle this with an application load balancer where you can configure the DR IP hosts list (e.g. if you are using NGINX you can add the DR hosts list in the upstream section).
+We suggest that you handle this with an application load balancer where you can configure the DR IP hosts list (e.g. if you are using NGINX you can add the DR hosts list in the upstream section).
 When the Load Balancer fails the health check on the current primary it will re-route the traffic to the DR host list.
 You should then manually fail over to the DR cluster.
