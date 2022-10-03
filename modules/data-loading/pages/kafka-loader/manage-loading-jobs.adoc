@@ -21,3 +21,16 @@ To refer to a specific job instance, using the job_id which is provided when `RU
 * Duration
 
 See https://docs.tigergraph.com/dev/gsql-ref/ddl-and-loading/running-a-loading-job#inspecting-and-managing-loading-jobs[Inspecting and Managing Loading Jobs] for more details.
+
+[#_enable_concurrent_loading_jobs]
+== Enable concurrent loading jobs
+
+TigerGraph limits the number of running Kafka Loader loading jobs to 1 by default.
+You can increase this limit by changing the following configuration:
+
+[.wrap,console]
+----
+$ gadmin config set KafkaLoader.ReplicaNumber <new_limit>
+$ gadmin config apply -y && gadmin restart gse gpe restpp -y
+----
+
