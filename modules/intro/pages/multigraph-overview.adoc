@@ -32,14 +32,13 @@ Without a role, a user has no meaningful access.
 
 For details about managing users, privileges, and roles, see xref:user-access:index.adoc[].
 
-== Setting a Working Graph
+== Setting a working graph
 
 
 A user must set their working graph in order to access that graph, either using the -g flag with the GSQL command, or by using the `USE GRAPH` command.
-Users who have privileges on more than one graph (including superusers) may only work with one graph at a time. The `GLOBAL SCHEMA_CHANGE JOB` stretches this rule.
+Users who have privileges on more than one graph may only work with one graph at a time.
 
-
-Note that the `CREATE` commands for queries, loading jobs, and schema_change jobs require that the graph name be specified, even for systems with only one graph.
+Note that the `CREATE` commands for queries, loading jobs, and schema change jobs require that the graph name be specified, even for systems with only one graph.
 
 == Use cases
 MultiGraph enables several powerful use cases:
@@ -52,7 +51,7 @@ This provides an interesting way to describe a data partitioning or parent-child
 (This is not the same as defining subclasses of data types; data types are still independent.)
 
 
-== Effect on Other Specifications
+== Effect on other specifications
 
 * RESTPP Endpoints: Endpoints that pertain to the graph data must include the name of the graph in the request URL.  See xref:API:index.adoc[RESTPP API User Guide.]
 * User Authentication secrets and tokens: Our commands and procedures follow OAuth standards.  See xref:user-access:index.adoc[].
