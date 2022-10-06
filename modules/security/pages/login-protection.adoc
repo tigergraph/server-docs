@@ -1,0 +1,68 @@
+= Configuring Login Protection
+:description: Overview of login protection for TigerGraph database users.
+
+When you use your credentials to log in to TigerGraph, your account is automatically protected with the default login protection configurations:
+
+* After two consecutive failed login attempts, you must wait 10 seconds before attempting to log in again.
+* Any more failed attempts after the second failed attempts doubles the amount of time you must wait to attempt to log in again.
+* After five failed login attempts, you are prompted to change your password
+
+You can modify the relevant system configurations to modify the login protection.
+
+== Configure the number of failed attempts to trigger login protection
+After a number of consecutive failed login attempts, GSQL disallows logins to the same account for a specified interval and prompts the owner of this account to change their password.
+The default number of consecutive failed attempts that triggers login protection is 5.
+
+You can change this default configuration by using `gadmin config` commands to change the configuration `GSQL.LoginLimit.InitialThreshold`.
+For example, to change the number of failed attempts it takes to trigger login protection to three, run the following commands:
+
+[.wrap,console]
+----
+$ gadmin config set GSQL.LoginLimit.InitialThreshold 3
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
+After running the commands, if a user has three *consecutive* failed attempts at login, they'll have to wait for a specified period of time before attempting to log in again.
+When they log into their account, they are reminded to change their password.
+
+Once the user successfully logs in, they no longer have to wait for the interval between logins.
+
+== Configure the amount of time between failed attempts
+
+After a specified number of failed attempts, a user has to wait for a specified period of time before attempting to log in again.
+The default wait time is 10 seconds.
+
+You can change this default configuration by using `gadmin config` commands to change the configuration `GSQL.LoginLimit.InitialWaitTimeSec`.
+For example, to change the time it takes for them to be able to attempt logins again to 20 seconds, run the following commands:
+
+[.wrap,console]
+----
+$ gadmin config set GSQL.LoginLimit.InitialWaitTimeSec 20
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
+If more failed login attempts are recorded on the same account, the wait time doubles after a specified number of failed attempts.
+Once the user successfully logs in, they no longer have to wait for the interval between logins.
+
+== Configure the number of failed attempts to double wait time
+
+If a user has already failed to log in enough times to trigger login protection, successive login failures cause the wait time to double.
+By default, every two failed attempts after login protection is triggered causes the wait time to double.
+For example, if a user has already failed five times, and has triggered the 10-second login protection period.
+Two more failed attempts double the wait time to 20 seconds.
+Another two failed attempts double the wait time to 40 seconds, until they log in successfully.
+
+You can change the number of consecutive failed attempts it takes for the wait time to double by changing the configuration `GSQL.LoginLimit.SecondaryThreshold`.
+For example, if you want every failed attempt to double the wait time after login protection has been triggered, run the following command:
+
+[.wrap,console]
+----
+$ gadmin config set GSQL.LoginLimit.SecondaryThreshold 1
+$ gadmin config apply
+$ gadmin restart gsql
+----
+
+If the user logs in successfully, the number of consecutive failed attempts is reset to 0, and the wait time is reset to 0 as well.
+The user will trigger login protection again if they have a sufficient number of failed login attempts. 
