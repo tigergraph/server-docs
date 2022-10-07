@@ -3,9 +3,9 @@
 
 When you use your credentials to log in to TigerGraph, your account is automatically protected with the default login protection configurations:
 
-* After two consecutive failed login attempts, you must wait 10 seconds before attempting to log in again.
-* Any more failed attempts after the second failed attempts doubles the amount of time you must wait to attempt to log in again.
-* After five failed login attempts, you are prompted to change your password
+* After five consecutive failed login attempts, you must wait 10 seconds before attempting to log in again.
+* After five consecutive failed login attempts, you are prompted to change your password.
+* Any more failed attempts after the fifth consecutive failed attempts doubles the amount of time you must wait to attempt to log in again.
 
 You can modify the relevant system configurations to modify the login protection.
 
@@ -50,8 +50,8 @@ Once the user successfully logs in, they no longer have to wait for the interval
 
 If a user has already failed to log in enough times to trigger login protection, successive login failures cause the wait time to double.
 By default, every two failed attempts after login protection is triggered causes the wait time to double.
-For example, if a user has already failed five times, and has triggered the 10-second login protection period.
-Two more failed attempts double the wait time to 20 seconds.
+
+In other words, if a user has already failed five times, and has triggered the 10-second login protection period, two more failed attempts double the wait time to 20 seconds.
 Another two failed attempts double the wait time to 40 seconds, until they log in successfully.
 
 You can change the number of consecutive failed attempts it takes for the wait time to double by changing the configuration `GSQL.LoginLimit.SecondaryThreshold`.
