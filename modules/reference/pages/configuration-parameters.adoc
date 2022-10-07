@@ -463,6 +463,13 @@ e.g. https://api.github.com |`nan`
 |GSQL.GrpcMessageMaxSizeMB |The maximum size of grpc message request of
 gsql |`40`
 
+|GSQL.LoginLimit.InitialWaitTimeSec|The amount of time in seconds a user has to wait for the subsequent login after the number of successive failed login attempts reaches the initial threshold. | `10`
+
+|GSQL.LoginLimit.InitialThreshold |The number of successive failed login attempts since the last successful login to apply the wait time for the subsequent login attempts. Set 0 to disable the rate limiting. | `5`
+
+|GSQL.LoginLimit.SecondaryThreshold | The number of successive failed login attempts after reaching the initial threshold that the wait time will be doubled for every this number of successive failed login attempts afterward.
+| `2`
+
 |GSQL.ManageCatalogTimeoutSec |GSQL connection timeout (second) to admin
 server when trying to |`nan`
 

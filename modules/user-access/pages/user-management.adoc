@@ -47,7 +47,9 @@ The user "frank" is created.
 ----
 
 
-== View roles of a user
+== View roles assignments and login attempts
+The `SHOW USER` command displays the role assignments, as well as the login attempts,  of the current user.
+If the current user hsa the `READ_USER` privilege
 
 === Syntax
 
@@ -62,14 +64,23 @@ SHOW USER
 
 === Procedure
 
-. From the GSQL shell, run the `SHOW USER` command:
-+
+From the GSQL shell, run the `SHOW USER` command:
+
 [source,gsql]
 ----
 GSQL > SHOW USER
+- Name: testUser
+    - Global Roles: superuser
+    - LastSuccessLogin: Thu Sep 22 12:43:07 UTC 2022
+    - NextValidLogin: Thu Sep 22 12:43:07 UTC 2022 <1>
+    - FailedAttempts: 0
+    - ShowAlterPasswordWarning: false
 ----
+<1> The next time the user is allowed to attempt login.
+For more information, see xref:security:login-protection.adoc[]
 
-If the user running the command has the `READ_USER` privilege, role information on all users will be displayed. Otherwise, only the current user's roles will be displayed.
+If the user running the command has the `READ_USER` privilege, information on all users is displayed.
+Otherwise, only the current user's information is displayed.
 
 == View privileges of a user
 
