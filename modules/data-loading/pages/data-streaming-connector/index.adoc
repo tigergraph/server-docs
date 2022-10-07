@@ -58,6 +58,16 @@ To resume a connector, run the below command and replace `<connector_name>` with
 $ gadmin connector resume <connector_name>
 ----
 
+=== Restart a connector
+Restarting a connector is equivalent to pausing and then resuming a connector.
+
+To restart a connector, run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector restart <connector_name>
+----
+
 === Delete a connector
 Deleting a connector removes a connector.
 It stops the connector from streaming, as well as deletes the data that has been streamed to the corresponding topics in Kafka that haven't been ingested by a loading job.
