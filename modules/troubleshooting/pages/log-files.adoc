@@ -1,0 +1,111 @@
+= Log Files
+
+The TigerGraph database captures key information on activities occurring across its different components through log functions that output to log files.
+These log files are not only helpful in xref:troubleshooting-guide.adoc[troubleshooting] but also serve as a resource for auditing.
+
+This page provides a general overview of the way log files are stored in TigerGraph.
+
+For information and examples specific to audit logging of RESTPP requests, queries, and user management tasks, see xref:audit-logs.adoc[].
+
+== TigerGraph log structure
+
+Logs in TigerGraph are stored at `<tigergraph root directory>/log/`, which by default is `/home/tigergraph/tigergraph/log`.
+
+Within this directory are separate directories for the various TigerGraph services:
+
+[source,console]
+----
+$ ls /home/tigergraph/tigergraph/log
+admin       dict  executor    gpe  gsql  informant  kafkaconn     nginx   ts3      zk
+controller  etcd  fileLoader  gse  gui   kafka      kafkastrm-ll  restpp  ts3serv
+----
+
+You can also use the `gadmin log` command to list log files:
+
+[source, console]
+----
+$ gadmin log
+ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN#1.out
+ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN.INFO
+CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.log
+CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.out
+...
+TS3    : /home/tigergraph/tigergraph/log/ts3/TS3_1.log
+TS3    : /home/tigergraph/tigergraph/log/ts3/TS3_1.out
+TS3SERV: /home/tigergraph/tigergraph/log/ts3serv/TS3SERV#1.out
+ZK     : /home/tigergraph/tigergraph/log/zk/ZK#1.out
+ZK     : /home/tigergraph/tigergraph/log/zk/zookeeper.log
+----
+
+Use the command `gadmin log <service name>` to just get the logs for a specific service:
+
+[source, console]
+----
+$ gadmin log gpe
+GPE    : /home/tigergraph/tigergraph/log/gpe/GPE_1#1.out
+GPE    : /home/tigergraph/tigergraph/log/gpe/log.INFO
+----
+
+The `log.INFO` file contains messages logged by the application code.
+The `.out` log contains the redirection of the process output, and is used for debugging significantly less frequently than `log.INFO`.
+
+[CAUTION]
+The log format differs between the `.out` and `INFO` logs.
+It also differs between certain TigerGraph services.
+An internal project to unify log formats is ongoing.
+
+Log formats also vary across the different components.
+In folders where logs are checked often, such as `restpp`, `gsql`, and `admin`,  there are symbolic links that help you quickly get to the most recent log file of that category:
+
+* `log.INFO`
+** Contains regular output and errors
+* `log.ERROR`
+** Contains errors only
+* `<component_name>.out`
+** Contains all output from the component process. Current `.out` logs have the form `<service name>.out`.
+Historical logs have the form `<service name>-old-YYYY-MM-DDTHH-MM-SS.fff.out`
+
+* `log.WARNING` or `log.DEBUG`
+** `log.WARNING` contains warnings and all error level messages
+** In the``gsql`` folder, `log.DEBUG` contains very specific information used only for certain error situations
+* `log.FATAL`
+** Contains outputs for any fatal level events
+
+
+
+== Log locations on a cluster
+
+In a TigerGraph cluster, each node only keeps logs of activities that took place on the node itself.
+For example, the GSQL logs on the m1 node only record events for m1 and are not replicated across the cluster.
+
+For GSQL specifically, the cluster elects a leader to which all GSQL requests will be forwarded.
+To check which node is the leader, start by checking the GSQL logs of the m1 node.
+Check the most recent lines of `log.INFO` and look for lines containing information about a leader switch.
+
+For example, the logs below recorded a GSQL leader switch from m2 to m1:
+
+[,console]
+----
+I@20210709 13:56:52.214  (GsqlHAHandler.java:231) GSQL leader switches from 'm2' to 'm1' ...
+E@20210709 13:56:52.215  (GsqlHAHandler.java:246) GSQL HA leader switches to 'm1', abort and clear all sessions now.
+If you want to lower the chance of leader switch by increasing timeout, please use 'gadmin config' to increase 'Controller.LeaderElectionHeartBeatMaxMiss' and/or 'Controller.LeaderElectionHeartBeatIntervalMS'.
+I@20210709 13:56:52.219  (SessionManager.java:197) Abort and clear all sessions...
+I@20210709 13:56:52.220  (SessionManager.java:204) All sessions aborted.
+I@20210709 13:56:52.224  (GsqlHAHandler.java:283) switched to new leader m1
+----
+
+
+== Open source TigerGraph components
+
+The open source components that TigerGraph includes (Kafka, Nginx, ZooKeeper, Kafkaconn, Kafkastream) follow their respective logging behavior instead of having an `INFO/WARNING/ERROR` log, in addition to having an `.out` file for process output redirection.
+For example, the Kafka logs have a `controller.log`, `kafka.log`, `kafka-request.log`, `state-change.log`, and `server.log`.
+
+== Log rotation
+
+TigerGraph also handles log rotation.
+When the log is rotated, the log.LEVEL symlink is updated to point to the newest log.
+The default configuration is to rotate under any of the following circumstances:
+
+* Log file max size exceeds 100mb
+* Log is older than 90 days
+* There are more than 100 files for that service
