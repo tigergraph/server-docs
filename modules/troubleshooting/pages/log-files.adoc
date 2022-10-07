@@ -9,7 +9,8 @@ For information and examples specific to audit logging of RESTPP requests, queri
 
 == TigerGraph log structure
 
-Logs in TigerGraph are stored at `<tigergraph root directory>/log/`, which by default is `/home/tigergraph/tigergraph/log`.
+Logs in TigerGraph are stored in TigerGraph's log root directory, which is configured at install time.
+You can find the location by running the console command `gadmin config get System.LogRoot`.
 
 Within this directory are separate directories for the various TigerGraph services:
 
@@ -67,11 +68,13 @@ Historical logs have the form `<service name>-old-YYYY-MM-DDTHH-MM-SS.fff.out`
 
 * `log.WARNING` or `log.DEBUG`
 ** `log.WARNING` contains warnings and all error level messages
-** In the``gsql`` folder, `log.DEBUG` contains very specific information used only for certain error situations
 * `log.FATAL`
 ** Contains outputs for any fatal level events
 
-
+[NOTE]
+All services do not create a `log.DEBUG` file by default.
+To change this, modify the parameter `<service>.BasicConfig.LogConfig.LogLevel`.
+For example, `GSQL.BasicConfig.LogConfig.LogLevel`. See xref:reference:configuration-parameters.adoc[] for more information.
 
 == Log locations on a cluster
 
