@@ -16,6 +16,8 @@ For example, to set the maximum limit of the number of heavy built-in queries to
 $ gadmin confit set RESTPP.WorkLoadManager.MaxHeavyBuiltinQueries 10
 ----
 
+You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
+
 == Limit number of concurrent queries
 You can use the `RESTPP.WorkLoadManager.MaxConcurrentQueries` parameter to set a limit of how many queries are allowed to be running concurrently.
 The count of these queries *does not include* the built-in heavy queries.
@@ -26,6 +28,8 @@ For example, to specify that there can only be 50 concurrent queries at a time, 
 ----
 $ gadmin confit set RESTPP.WorkLoadManager.MaxConcurrentQueries 50
 ----
+
+You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
 
 == Specify replica to run query on
 On a distributed cluster, you can specify on which replica you want a query to be run through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
