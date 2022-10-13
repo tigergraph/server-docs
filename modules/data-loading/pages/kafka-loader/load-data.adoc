@@ -20,12 +20,15 @@ Once you have the external Kafka cluster setup, you need to prepare the followin
 === Kafka data source configuration file
 
 The data source configuration file's content, structured as a JSON object, describes the Kafka server's global settings, including the data source IP address and port.
+There may be one or more brokers.
+The different broker IP addresses are separated by commas.
+
 A sample `kafka.conf` is shown in the following example:
 
 [source,javascript]
 ----
 {
-  "broker": "192.168.1.11:9092"
+   "broker": "192.168.1.11:9092,192.168.1.12:9092,192.168.1.13:9092"
 }
 ----
 
