@@ -190,7 +190,7 @@ DEFINE FILENAME f1 = "$k1:~/topic_partition_conf.json";
 
 Instead of specifying the config file path, you can also provide the topic-partition configuration as a string argument, as shown below:
 
-[source,text]
+[source.wrap,text]
 ----
 DEFINE FILENAME f1 = "$k1:~/topic_partition_config.json";
 DEFINE FILENAME f1 = "$k1:{\"topic\":\"zzz\",\"default_start_offset\":2,\"partition_list\":[]}";
@@ -204,7 +204,7 @@ Each filename variable can be assigned a string `<data_source_name>:<topic_parti
 
 In the example below, the config files for f3 and f4 are being set by the `RUN command`, whereas f1 is using the config which was specified in the `CREATE LOADING JOB` statement.
 
-[source,gsql]
+[source.wrap,gsql]
 ----
 RUN LOADING JOB job1 USING f1, f3="$k1:~/topic_part3_config.json", f4="$k1:~/topic_part4_config.json", EOF="true";
 ----
@@ -223,7 +223,7 @@ In streaming mode, loading will never stop until the job is aborted. In EOF mode
 
 To set EOF mode, an optional parameter is added to the `RUN LOADING JOB` syntax:
 
-[source,ebnf]
+[source.wrap,ebnf]
 ----
 RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
    [ USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
@@ -232,19 +232,22 @@ RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
 
 To learn about each option and parameter of the `RUN LOADING JOB` command, see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_options[Loading job options].
 
-== Kafka loader example
+== Examples
 
 Here is an example code for loading data through Kafka Loader:
 
+=== Loading CSV data
+
+[tabs]
+====
+GSQL script::
++
+--
 [source.wrap,gsql]
 ----
-USE GRAPH test_graph
-DROP JOB load_person
-DROP DATA_SOURCE k1
-
 // Create data_source kafka k1 = "kafka_config.json" for graph test_graph
 CREATE DATA_SOURCE KAFKA k1 FOR GRAPH test_graph
-SET k1 = "kafka_config.json"
+SET k1 = "kafka.conf"
 
 // Define the loading jobs
 CREATE LOADING JOB load_person FOR GRAPH test_graph {
@@ -257,4 +260,60 @@ CREATE LOADING JOB load_person FOR GRAPH test_graph {
 
 // Load the data
 RUN LOADING JOB load_person
+----
+--
+Data source configuration::
++
+--
+The following is the data source configuration file `kafka.conf`:
+
+.kafka.conf
+----
+{
+  "broker": "localhost:9092",
+  "kafka_config": {"session.timeout.ms":"20000"}
+}
+----
+--
+Topic-partition configurations::
++
+--
+The following is topic-partition configuration file `topic_partition_config.json`:
+
+.topic_partition_config.json
+----
+{
+  "topic": "topicName1",
+  "partition_list": [
+    {
+      "start_offset": -1,
+      "partition": 0
+    },
+    {
+      "start_offset": -1,
+      "partition": 1
+    },
+    {
+      "start_offset": -1,
+      "partition": 2
+    }
+  ]
+}
+----
+--
+====
+
+=== Loading JSON data
+
+The following is a sample loading job that loads JSON data from the Kafka cluster:
+
+[source.wrap,gsql]
+----
+CREATE LOADING JOB realTimeLoader FOR GRAPH storeGraph {
+	DEFINE FILENAME users = "$kafkaLoader:/home/tigergraph/config/topic-users.config";
+	DEFINE FILENAME transactions = "$kafkaLoader:/home/tigergraph/config/topic-transactions.config";
+	LOAD users TO VERTEX user VALUES ($"payload":"userid", $"payload":"regionid", $"payload":"gender") USING JSON_FILE="true";
+	LOAD transactions TO EDGE hasTransaction VALUES ($"payload":"user_id", $"payload":"transaction_id") USING JSON_FILE="true";
+	LOAD transactions TO VERTEX transaction VALUES ($"payload":"transaction_id", $"payload":"card_id", $"payload":"user_id", $"payload":"purchase_id", $"payload":"store_id") USING JSON_FILE="true";
+}
 ----
