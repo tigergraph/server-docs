@@ -3228,9 +3228,14 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsqls
  }'
 ----
 
-=== List running queries
+=== List all running queries
+`GET /showprocesslistall`
 
-`+GET /showprocesslist/{graph_name}+`
+This endpoint reports the statistics of all running queries across all graphs on a TigerGraph instance: the query's request ID, start time, expiration time, and the REST endpoint's URL.
+
+=== List running queries of a graph
+
+`GET /showprocesslist/{graph_name}`
 
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 
