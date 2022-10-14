@@ -36,32 +36,25 @@ connector.class=io.confluent.connect.jdbc.JdbcSourceConnector
 ==== Specify connection URL
 
 To stream data from BigQuery, Data Streaming Connector uses the https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers#current_jdbc_driver[BigQuery JDBC Driver].
-The connection URL requires the domain name or IP address of the BigQuery server, the port number, the ID of your BigQuery project, and your credentials for authentication.
+The connection URL requires the domain name or IP address of the BigQuery server (`\https://www.googleapis.com/bigquery/v2`), the port number, the ID of your BigQuery project, and your credentials for authentication.
 You can also supply other optional properties to the connection that are supported by https://storage.googleapis.com/simba-bq-release/jdbc/Simba%20Google%20BigQuery%20JDBC%20Connector%20Install%20and%20Configuration%20Guide_1.3.0.1001.pdf[the BigQuery JDBC connector]:
 
 [source.wrap,text]
 ----
-connection.url=jdbc:bigquery://<host_url>:<port_number>;<property1>=<value1>;<property2>=<value2>;...
+connection.url=jdbc:bigquery://https://www.googleapis.com/bigquery/v2:<port_number>;<property1>=<value1>;<property2>=<value2>;... <1>
 ----
+<1> Each pair of property and value is separated by a semicolon``;``.
 
+The following is a list of required or frequently used properties:
 
 |===
-|Parameter |Description
+|Property |Description
 
-|`host_url`
-|Domain name or IP address of the BigQuery server.
-Required.
-
-|`port_number`
-|Number of the TCP port to connect to.
-This is usually 443.
-Required.
-
-|`project_id`
+|`ProjectId`
 |ID of your Google Cloud Project for you BigQuery server.
 Required.
 
-|`AuthValue`
+|`OAuthType`
 a|Required. A number that specifies the type of authentication used by the connector:
 
 * `0`: Authentication with Google Service Account.
@@ -99,6 +92,16 @@ To do this, add a line in the configuration file that specifies the value conver
 [source.wrap,text]
 value.converter=com.tigergraph.kafka.connect.converters.TigerGraphCsvConverter
 
+By default, CSV values are separated by commas.
+If you want to specify the separator, use the `value.converter.csv.separator` configuration to specify the separator.
+For example, the following converter configurations use `|` as the separator.
+If you change the separator, make sure to use the same separator when you create the loading job.
+
+[source.wrap,text]
+value.converter=com.tigergraph.kafka.connect.converters.TigerGraphCsvConverter
+value.converter.csv.separator=|
+
+
 ==== Subsection configurations
 Subsection configurations are specified after the overall connector configurations.
 Each set of subsection configurations creates an instance of a connector by specifying a connector name and a Kafka topic that the connector streams messages to.
@@ -106,7 +109,8 @@ Each set of subsection configurations creates an instance of a connector by spec
 When streaming from BigQuery, each subsection also must have a SQL query statement used to query your BigQuery warehouse.
 The results of the query are streamed to the corresponding topic.
 
-NOTE: If you are querying `STRUCT` data or arrays, see
+NOTE: If you are querying `STRUCT` data or arrays, see <<_querying_struct_data_and_arrays>>.
+`BYTES` type values are automatically converted to UTF-8 strings.
 
 For example, the following subsection configurations create two instances of the connector, each streaming the results of their corresponding queries to `topic_0` and `topic_1`:
 
@@ -144,7 +148,10 @@ For example:
 SELECT basic.age, basic.gender FROM `project.dataset.table`
 ----
 
-If you want to retrieve the entire `STRUCT`, you need to first use `TO_JSON_STRING()` to convert the `STRUCT` data into JSON strings in the converted CSV streams, and then xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_flatten_a_json_object_in_a_csv_file[flatten the JSON strings] when loading the data into the graph.
+If you want to retrieve the entire `STRUCT`, you need to first use `TO_JSON_STRING()` to convert the `STRUCT` data into JSON strings in the converted CSV streams.
+
+For example, `SELECT TO_JSON_STRING(col) FROM table`.
+After converting the data into string format,  xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_flatten_a_json_object_in_a_csv_file[flatten the JSON strings] when loading the data into the graph.
 
 === Arrays
 
