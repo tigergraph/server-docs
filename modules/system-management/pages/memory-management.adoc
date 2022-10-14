@@ -134,3 +134,41 @@ Changes will take effect after the restart.
 
 == Manage query workload
 On a distributed cluster, you can specify on which nodes you want a query to be run through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
+
+== Limit query memory usage
+
+There are two ways to limit the memory usage of queries:
+
+* By system configuration.
+This affects all queries on your TigerGraph instance.
+* By HTTP request header.
+This affects one specific query run only and overrides the system configuration.
+
+=== By system configuration
+
+You can set a limit of how much memory a query is allowed to use on any single node in a cluster.
+If a query's memory usage exceeds this limit on any node in a cluster, the query is aborted automatically.
+
+To set a limit for memory usage on any node for a cluster, use the `gadmin config` command to configure the value of the parameter `GPE.QueryLocalMemLimitMB`.
+For example, to set the limit to 100 MB, run the following command:
+
+[source.wrap,console]
+----
+$ gadmin config set GPE.QueryLocalMemLimitMB 100
+----
+
+You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the GPE service] for the change to take effect.
+
+=== By HTTP header
+
+Another way to limit the query memory usage is to specify the memory limit at the time of the request through the HTTP header `GSQL-QueryLocalMemLimitMB` when using the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
+This applies to the specific request being run only, and overrides the system configuration.
+
+For example, to set the limit to 100 MB, make the following request:
+
+[source.wrap.console]
+----
+curl -X POST -H "GSQL-QueryLocalMemLimitMB: 100" -d '{"p":{"id":"Tom","type":"person"}}'
+"http://localhost:9000/query/social/hello"
+----
+

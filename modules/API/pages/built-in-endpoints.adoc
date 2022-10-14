@@ -3111,18 +3111,32 @@ containing a list of JSON `VERTEX`
 |`[{"id": "person1","type": "person"},{"id": "person2","type": "person"}]`
 |===
 
-==== Specify replica
+==== Headers
+The Run Query endpoint accepts a number of headers that allow you to configure the way the query is run:
 
-If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range one to the replication factor of the cluster. If you supply an invalid value for the header, the request will return an error.
 
-==== Specify thread limit
+|===
+|Name |Description
 
-When running a query through RESTPP,  you can specify a limit on the number of threads that the query is allowed to use on each node through the HTTP header `GSQL-THREAD-LIMIT`.
-The number of threads used by a query means the number of vCPUs used by the query.
+|`GSQL-REPLICA`
+|The replica where the query is to be run.
+The value of the header needs to be an integer within the range one to the replication factor of the cluster.
+If you supply an invalid value for the header, the request returns an error.
+
+A value of `0` specifies that the query be run on the primary copy;
+a value of `1` specifies that the query be run on the first replica, and so on.
+
+|`GSQL-THREAD-LIMIT`
+|Maximum limit on the number of threads that the query is allowed to use on each node.
 By default, a query will use all threads that are available on a machine.
 
 For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default.
 By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
+
+|`GSQL-QueryLocalMemLimitMB`
+|Maximum limit of how much memory a query is allowed to use on any single node in a cluster.
+By default, there is no limit to the amount of memory a query is allowed to consume until the overall free memory reaches a critical level.
+|===
 
 ==== Sample request
 
