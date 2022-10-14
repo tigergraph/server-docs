@@ -3233,7 +3233,10 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsqls
 `GET /showprocesslist/{graph_name}`
 
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
+This includes installed queries. interpreted queries, as well as built-in queries.
+
 If you are running a TigerGraph cluster, this endpoint only shows queries running on the node to which the request is sent, not all running queries on the cluster.
+
 
 This endpoint requires the `READ_DATA` privilege on the graph you are querying.
 
