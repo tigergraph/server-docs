@@ -1128,7 +1128,7 @@ None.
 
 `+POST /ddl/{graph_name}+`
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:basics:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
 If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename variable at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.
 
@@ -3228,15 +3228,19 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsqls
  }'
 ----
 
-=== List running queries
+=== List running queries of a graph
 
-`+GET /showprocesslist/{graph_name}+`
+`GET /showprocesslist/{graph_name}`
 
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
+This includes installed queries. interpreted queries, as well as built-in queries.
 
 If you are running a TigerGraph cluster, this endpoint only shows queries running on the node to which the request is sent, not all running queries on the cluster.
 
-==== Sample request:
+
+This endpoint requires the `READ_DATA` privilege on the graph you are querying.
+
+==== Sample request
 [tabs]
 ====
 Request::
@@ -3279,9 +3283,79 @@ Response::
 ----
 --
 ====
-==== Parameters:
+==== Parameters
 
 No Parameters.
+
+=== List all running queries
+`GET /showprocesslistall`
+
+This endpoint reports the statistics of all running queries across all graphs on a TigerGraph instance: the query's request ID, start time, expiration time, and the REST endpoint's URL.
+This includes installed queries. interpreted queries, as well as built-in queries.
+
+If you are running a TigerGraph cluster, this endpoint only shows queries running on the node to which the request is sent, not all running queries on the cluster.
+
+CAUTION: If a high volume of queries are running, invoking the endpoint can be an expensive operation that should be used with caution. 
+
+This endpoint requires the `READ_DATA` privilege on the global scope.
+
+==== Sample request
+[tabs]
+====
+Request::
++
+[.wrap,console]
+----
+$ curl -X GET "http://localhost:9000/showprocesslistall" |jq
+----
+Response::
++
+----
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   671  100   671    0     0   655k      0 --:--:-- --:--:-- --:--:--  655k
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "requestid": "15.RESTPP_1_1.1660165648633.N", <1>
+      "startTime": "2022-08-10 21:07:28.633",
+      "expirationTime": "2022-08-10 21:07:44.633", <2>
+      "url": "/query/Social/rngExample",
+      "elapsedTime": 3385
+    },
+    {
+      "requestid": "65551.RESTPP_1_1.1660165648638.N",
+      "startTime": "2022-08-10 21:07:28.638",
+      "expirationTime": "2022-08-10 21:07:44.638",
+      "url": "/query/Work_Net/rngExample",
+      "elapsedTime": 3380
+    },
+    {
+      "requestid": "131087.RESTPP_1_1.1660165648723.N",
+      "startTime": "2022-08-10 21:07:28.723",
+      "expirationTime": "2022-08-10 21:07:44.723",
+      "url": "/query/Entity_Resolution/rngExample",
+      "elapsedTime": 3295
+    }
+  ],
+  "code": "REST-0000"
+}
+----
+<1> Each request to run a query sent to the REST server has a unique ID that can be used to look up the request in the system logs.
+<2> The time at which the query will time out.
+====
+
+==== Parameters
+No parameters.
+
+
 
 === Abort a query
 
