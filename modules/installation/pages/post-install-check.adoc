@@ -44,14 +44,14 @@ After installation is done, you want to check that you are able to "move" via ss
 
 The usage is pretty simple, just pass the node you want to connect to like this `gssh m3` and you will be connected to it. 
 
-If this check fails, then you need to address it. Feel free to reach out to our Techinical Support Team by opening a https://tigergraph.zendesk.com/hc/en-us/[support ticket] to request assistance.
+If this check fails, then you need to address it. Feel free to reach out to our Technical Support Team by opening a https://tigergraph.zendesk.com/hc/en-us/[support ticket] to request assistance.
 
 
 === Port check
 
 WARNING: The checks described below require a TigerGraph Cluster stop and restart.
 
-Another important taks to perform after installing TigerGraph Cluster is to make sure that all the required TigerGraph ports are open and allowing communication. 
+Another important task to perform after installing TigerGraph Cluster is to make sure that all the required TigerGraph ports are open and allowing communication. 
 
 Run the following two bash scripts to perform an extensive port check
 
@@ -61,7 +61,7 @@ Run the following two bash scripts to perform an extensive port check
 ----
 #!/bin/bash
 
-echo "Colecting nodes IPs..."
+echo "Collecting nodes IPs..."
 ipAddr=$(echo $(gadmin config get System.HostList) | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 PEM=$(gadmin config get System.SSH.User.Privatekey)
 
@@ -94,13 +94,13 @@ gadmin start all
 
 ==== For dynamic port check
 
-WARNING: This will take a while before completeting, it's reccomended you run this in background to avoid session timeout. 
+WARNING: This will take a while before completing, it's recommended you run this in the background to avoid session timeout. 
 
 [,bash]
 ----
 #!/bin/bash
 
-echo "Colecting nodes IPs..."
+echo "Collecting nodes IPs..."
 ipAddr=$(echo $(gadmin config get System.HostList) | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 PEM=$(gadmin config get System.SSH.User.Privatekey)
 
@@ -132,5 +132,7 @@ gadmin start all
 
 Once done check both `service_port_check.out` and `dynamic_port.out` and make sure that all connection attempts are successful. 
 
-NOTE: Any unsucessfull connection attemt *must* be addressed. Feel free to reach out to our Techinical Support Team by opening a https://tigergraph.zendesk.com/hc/en-us/[support ticket] to request assistance.
+NOTE: Any unsuccessful connection attempt *must* be addressed. Feel free to reach out to our Technical Support Team by opening a https://tigergraph.zendesk.com/hc/en-us/[support ticket] to request assistance.
 
+
+  

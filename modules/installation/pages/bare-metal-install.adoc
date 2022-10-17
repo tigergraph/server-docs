@@ -2,7 +2,7 @@
 :description: Installing Single-machine and Multi-machine systems
 
 
-This guide describes how to install the TigerGraph platform on bare metal (phisical machine) either as a single node or as a multi-node cluster, interactively or non-interactively.
+This guide describes how to install the TigerGraph platform on bare metal (physical machine) either as a single node or as a multi-node cluster, interactively or non-interactively.
 
 NOTE: If you signed up for the Enterprise Free license, you also have access to the TigerGraph platform as a Docker image or a virtual machine (VirtualBox) image.
 Follow the instructions in xref:cloud:start:getting-started.adoc[Getting started] to start up TigerGraph in a Docker container or with VirtualBox.
@@ -15,11 +15,11 @@ Before you can install the TigerGraph system, you need the following:
 * A Linux superuser, it can be root or a sudo user, it must have:author: 
 
 ** Same login password on every machine.
-** Or same ssh key on every machine. (most used approach)
+** Or the same ssh key on every machine. (most used approach)
 * A license key provided by TigerGraph (not applicable to Enterprise Free)
 * A TigerGraph system package
  ** If you do not yet have a TigerGraph system package, you can https://www.tigergraph.com/get-tigergraph/[request one].
-* If you are installing a cluster, ensure that every machine has the same SSH port (22) and the port stays open during installation
+* If you are installing a cluster, ensure that every machine has the same SSH port (22) and that the port stays open during installation
 ** SSH port *is not* mandatory to be 22, we understand that this sometimes might be restricted by policy, therefore TigerGraph can use another SSH port. You just need to specify that while installing TigeGraph.
 
 === For Oracle Linux and RedHat distros
@@ -51,28 +51,28 @@ The installation process will prompt you for these steps. If you have already co
 
 === Port connectivity
 
-In a TigerGraph installation the communication (external and internal) happens via TCP and gRPC over a specific set of ports. Those ports can be divided two categories:
+In a TigerGraph installation, the communication (external and internal) happens via TCP and gRPC over a specific set of ports. Those ports can be divided into two categories:
 
 * Ports for external communication
 * Port for internal communication
-** Including dynamic port range
+** Including a dynamic port range
 
 Internal communications
 
-All ports repoted here: https://docs.tigergraph.com/tigergraph-server/current/reference/ports *must* be allowed for a correct TigerGraph installation and usage. *There are no exception*. 
+All ports reported here: https://docs.tigergraph.com/tigergraph-server/current/reference/ports *must* be allowed for a correct TigerGraph installation and usage. *There is no exception*. 
 
 NOTE: You can always change a port number in case the default one is restricted in your environment.
 
 === Ports for external communication
 
-The following are the ports you will be using for comminicating with TigerGraph:
+The following are the ports you will be used for communicating with TigerGraph:
 
 * 9000: serving RESTPP that accepts upstream TigerGraph Nginx requests 
 * 14240: serving TigerGraph Nginx
 
-If above ports are restricted in your evinroment and they cannot be enabled (for whatever reason) you can change them once TigerGraph is up and runnining by running the following commands as tigergraph user:
+If the above ports are restricted in your environment and cannot be enabled (for whatever reason) you can change them once TigerGraph is up and running by running the following commands as tigergraph user:
 
-For changing the port 9000 (RESTPP) to something else (e.g. 9090)
+For changing port 9000 (RESTPP) to something else (e.g. 9090)
 
 [source,bash]
 ----
@@ -92,11 +92,11 @@ $ gadmin restart -y
 
 === Ports for internal communication
 
-These are the ports used for intra-node communication between all TigerGraph services (e.g port 5500 used for by RESTPP to accept responses from GSE while serving a query). 
+These are the ports used for intra-node communication between all TigerGraph services (e.g port 5500 used by RESTPP to accept responses from GSE while serving a query). 
 
 You can find the full list of ports here: https://docs.tigergraph.com/tigergraph-server/current/reference/ports
 
-Under ports for internal communication the are also the *dynamic ports* (aka ephemral ports) that are used for only a short period of time for the duration of a communication session. Such short-lived ports are allocated automatically within a predefined range (in TigerGraph case from 49152 to 65535) of port numbers by the OS. After completion of the session, the port is destroyed and the port number becomes available for reuse.
+Under ports for internal communication, they are also the *dynamic ports* (aka ephemeral ports) that are used for only a short period of time for the duration of a communication session. Such short-lived ports are allocated automatically within a predefined range (in TigerGraph case from 49152 to 65535) of port numbers by the OS. After completion of the session, the port is destroyed and the port number becomes available for reuse.
 
 In TigerGraph, these ports will be used for backup and restore and by TigerGraph services, more specifically ZeroMQ (an async messaging library that provides a messaging queue without the need of a broker) uses intensively these dynamic ports range to operate the messaging queue (coming from Nginx) between the RESTPP server and the available GPE partitions.
 
@@ -104,13 +104,13 @@ In TigerGraph, these ports will be used for backup and restore and by TigerGraph
 
 NOTE: Starting from TigerGraph 3.x, the installation machine can be within or outside the cluster. If outside the cluster, the installation machine still needs to be a Linux machine.
 
-This is a *single* instance of TigerGraph that is installed and running as a standalone server (also known as single server) and not past of a Cluster. There is no data replication nor data partitoning.
+This is a *single* instance of TigerGraph that is installed and running as a standalone server (also known as a single server) and not part of a Cluster. There is no data replication or data partitioning.
 
-You can deploy a single server TigerGraph instance running on a single machine (phisical, VM, Cloud or Docker).
+You can deploy a single server TigerGraph instance running on a single machine (physical, VM, Cloud or Docker).
 
-WARNING: *Do not* use these kind of deployments in PRODUCTION environments as they lack high availalbility (HA). For PRODUCTION enviroments always use high avaialbility (HA). Consider using standalone installation for testing purposes only.
+WARNING: *Do not* use these kinds of deployments in PRODUCTION environments as they lack high availability (HA). For PRODUCTION environments always use high availability (HA). Consider using a single server installation for testing purposes only.
 
-When installing TigerGraph as single server (using the TigerGraph xref:tigergraph-installer.adoc[Installer]) you need to specify only `m1` IP and the Replication Factor must to be 1 - see below `install_conf.json` snippet example:
+When installing TigerGraph as a single server (using the TigerGraph xref:tigergraph-installer.adoc[Installer]) you need to specify only `m1` IP and the Replication Factor must be 1 - see below `install_conf.json` snippet example:
 
 [,javascript]
 ----
@@ -125,9 +125,9 @@ When installing TigerGraph as single server (using the TigerGraph xref:tigergrap
 }
 ----
 
-As you can see you can either use loop-back address (e.g. `127.0.0.1`) or the public IP of the machine. Also note that `ReplicationFactor` is set to 1
+As you can see you can either use loop-back address (e.g. `127.0.0.1`) or the public IP of the machine. Also, note that `ReplicationFactor` is set to 1
 
-In case you are using loop-back address IP for m1 then you do not need specify any sudo user for `SudoUser` nor authentication method in the `Method` section. 
+In case you are using loop-back address IP for m1 then you do not need to specify any sudo user for `SudoUser` or authentication method in the `Method` section. 
 
 If you opt for using the public IP, then you will need to provide a sudo user for `SudoUser` and a valid authentication method in the `Method` section.
 
@@ -148,8 +148,8 @@ TigerGraph Cluster installation enables the graph database to be partitioned and
 
 Here you will be able to configure:
 
-* How many partitions your TigerGraph Cluster will have. This means over how many nodes you want do partition your entire dataset (e.g. 2, 3)
-* How many replicas your TigerGraph Cluster will have. This means how many copies of your data you want to have to ensure High-Avaialbilty (HA) and at the same time how many nodes you can tolerate losing without having a down-time. In this case, the additional nodes that are copies of your data, will also contribute in the computational efficency of the entire TigerGraph Cluster for serving read-writes requests. 
+* The number of partitions your TigerGraph Cluster will have. This means over how many nodes you want to partition your entire dataset (e.g. 2, 3)
+* The number of replicas your TigerGraph Cluster will have. This means how many copies of your data you want to have to ensure High-Availability (HA) and at the same time how many nodes you can tolerate losing without having downtime. In this case, the additional nodes that are copies of your data will also contribute to the computational efficiency of the entire TigerGraph Cluster for serving read-writes requests. 
 
 === Checklist
 
@@ -157,21 +157,21 @@ Before you proceed with a TigerGraph Cluster installation make sure you have all
 
 * All provisioned machines must be in the same Region (e.g. having `m1` in Los Angles and `m2` in New York is not acceptable). 
 * All provisioned machines must have the same CPU, RAM and disk size.
-* All provisioned machines must have enough disk space avaialabe (≥ 50 GB) for TigerGraph Cluster installation.
+* All provisioned machines must have enough disk space available (≥ 50 GB) for TigerGraph Cluster installation.
 * All provisioned machines must be running SSD disk types
 * All provisioned machines must be running the same TigerGraph supported Linux distribution. For Oracle Linux and RedHat distribution check the required additional steps.
-* All provisioned machines must have all clock in-sync.
-* All provisioned machine must have a common sudo user that can autheticate in all .provisioned machine with the same password or the same key (e.g. `pem`).
-* All provisioned machines must allow password-less SSH fro non-root users.
+* All provisioned machines must have all clocks in-sync.
+* All provisioned machines must have a common sudo user that can authenticate in all provisioned machines with the same password or the same key (e.g. `pem`).
+* All provisioned machines must allow password-less SSH for non-root users.
 * All provisioned machines must have the SSH port (e.g. 22) open.
 * All provisioned machines must have all TigerGraph required ports open.
 * All provisioned machines must be serving only TigerGraph.
-* You only need one TigerGraph package avaiable on one machine.
+* You only need one TigerGraph package available on one machine.
 
 
 === Installation
 
-It is highly reccomended you use the *non-interactive* installation for this Cluster deployment as it is easier to visualize all the required configuration in one place and make sure the information passed are correct.
+It is highly recommended you use the *non-interactive* installation for this Cluster deployment as it is easier to visualize all the required configuration in one place and make sure the information passed are correct.
 
 *Step 1*: Extract the package by running the following command to create a folder named `tigergraph-<version>-offline`. The filename of your package may vary depending on the product edition and version.
 
@@ -180,14 +180,14 @@ It is highly reccomended you use the *non-interactive* installation for this Clu
 $ tar -xvzf tigergraph-<version>.tar.gz
 ----
 
-*Step 2:* Navigate to the `tigergraph-<version>-offline`` folder and open with your favorite editor the configuration file called `install_conf.json`
+*Step 2:* Navigate to the `tigergraph-<version>-offline`` folder and open with your favourite editor the configuration file called `install_conf.json`
 
 [#_step_3_edit_config]
 *Step 3*: Edit the configuration file according to your needs, pay extra attention to the followings entries:
 
-* *TigerGraph Username and Password*: You can leave the default value of `tigergraph` for both and change them password after installation or you can chose another name and password. In case the passed user already exists the installer will skip creating a new user.
+* *TigerGraph Username and Password*: You can leave the default value of `tigergraph` for both and change their password after installation or you can choose another name and password. In case the passed user already exists the installer will skip creating a new user.
 
-* *SSHPort*: By default the SSH port is `22`, if this port is open in all the provisioned machines you can leave it as it it. Otherwise change the port to the actual SSH port in your enviroment. Remember the SSH port number MUST be the same accross all the provisioned machines.
+* *SSHPort*: By default, the SSH port is `22`, if this port is open in all the provisioned machines you can leave it as it is. Otherwise change the port to the actual SSH port in your environment. Remember the SSH port number MUST be the same across all the provisioned machines.
 
 * *PrivateKeyFile* and *PublicKeyFile*: The TigerGraph installer will create those keys by default. If you want to pass your own keys you can add the absolute path here.
 
@@ -204,7 +204,7 @@ $ tar -xvzf tigergraph-<version>.tar.gz
 ----
 * *SudoUser*: Username of the sudo user who will be used to execute the installation on all nodes. This user MUST exist on all the provisioned machines 
 
-* *Authentication Method*: This refers to how the above Sudo user will authenticate between the provisioned machines. It can authenticate via password (chose the `P` method and pass the password) or via SSH key (choose the `K` method and pass the abosulte path for the SSH key). 
+* *Authentication Method*: This refers to how the above Sudo user will authenticate between the provisioned machines. It can authenticate via password (chose the `P` method and pass the password) or via SSH key (choose the `K` method and pass the absolute path for the SSH key). 
 
 * *ReplicationFactor*: Refer to xref:intro:continuous-availability-overview.adoc#_continuous_availability__definitions[Replication factor] for detailed description.
    **** If you would like to enable the High Availability (HA) feature, please make sure you have at least 3 nodes in the cluster and set the replication factor to be greater than 1. For example, if your cluster has 6 nodes, you could set the replication factor to be 2 or 3. If you set the replication factor to be 2, then the partitioning factor will be  6 / 2 = 3.  Therefore, 3 nodes will be used for one copy of the data, and the other 3 nodes will be used as a replica copy of the data.
@@ -215,3 +215,6 @@ You can refer to this xref:installation:installer.adoc#_install_conf_example[ins
 *Step 4*: Save the configuration changes and run `sudo ./install.sh -n` to install  the TigerGraph Cluster in non-interactive mode based on the configuration you passed in the `install_conf.json` file.
 
 NOTE: You can also install TigerGraph Cluster with the interactive installation method. See xref:installation:installar.adoc#_interactive_installation[here] for more details.
+
+
+  
