@@ -1,102 +1,108 @@
 = TigerGraph Release And Patch Process
 :description:This page explains TigerGraph's release process and patch naming conventions.
 
-== Overview of Releases
-
 TigerGraph is committed to providing the most scalable, most secure, and highest performing enterprise-grade graph database.
 
 To meet our commitment, we follow a release cadence that allows us to regularly deliver product and service improvements in the form of new features, enhancements, bug fixes and security patches.
 
-Our ultimate goal is to conduct Full releases monthly to ensure rapid product advancement.
-Between Full releases we may conduct Maintenance releases as necessary, which include bug fixes.
-That being said, we don’t recommend customers to adopt more than one release per quarter if there are no bug fixes or new features their workload depends on.
 
-In addition to Full releases and Maintenance releases, occasionally TigerGraph will provide a One-Off patch for a selected set of existing releases that may or may not impact all customers.
-These are used to address security vulnerabilities or critical bugs in a timely manner.
 
 In summary, the TigerGraph release types are:
 
-. Full releases
-. Maintenance releases
-. One-Off patches
+* Feature releases
+* Long-term support (LTS) releases
+* Maintenance releases
 
-This article describes the process we follow for these three types of releases.
+This document describes the process we follow for these three types of releases.
 
 
 == Naming Convention
-For Full and Maintenance releases, we use https://en.wikipedia.org/wiki/Software_versioning[sequence-based identifiers] in the format *major.minor.patch*.
+For all releases, we use https://en.wikipedia.org/wiki/Software_versioning[sequence-based identifiers] in the format *major.minor.patch*.
 
-Here, *major* is a number and increment for the most significant releases, *minor* is an incrementable number for less significant releases, and *patch* is a number for the patch release.
+Here, *major* is a number and increment for the most significant releases, *minor* is an incrementable number for less significant releases, and *patch* is a number for the maintenance release.
 
 For example, in the release version *3.5.2*, the major version is 3, the minor version is 5, and the patch version is 2.
 
 Our documentation (found at https://docs.tigergraph.com/https://docs.tigergraph.com/[docs.tigergraph.com]) is updated with a new branch when the major or minor version number changes.
 We do not provide a new documentation branch for patch releases. Instead, we may update the corresponding *major.minor* version’s documents.
 
-== Release Types and Action Plan
+== Release types
 
-=== Full Release
+=== Feature release
 
-A Full release is a planned product roadmap release, where either the major or the minor number in the release version name is changed.
-Either the minor number is increased, leaving the major number unchanged, or the major number is increased and the minor number is reset to 0.
+A feature release is a planned product roadmap release, where either the major or the minor number in the release version name is changed.
+Feature releases are for fast testing and adoption of new features to test in development environments.
+We do not suggest using feature releases in a production environment.
 
-A Full release's name is usually *major.minor.0*, abbreviated as *major.minor*.
+A feature release's name is usually *major.minor.0*, abbreviated as *major.minor*.
 It may include any of the following:
 
 * New features
 * Feature enhancements or updates
 * Bug fixes
 
-In addition, the following documentation deliverables accompany a Full release:
+In addition, the following documentation deliverables accompany a feature release:
 
 * xref:release-notes:index.adoc[] section included in the TigerGraph online documentation.
 * xref:installation:upgrade.adoc[Upgrade] section included in the TigerGraph online documentation.
-* Updated TigerGraph online documentation for each new Full release version.
+* Updated TigerGraph online documentation for each new feature release version.
 
-*Notification:* Full releases will be announced on our documentation website.
+==== Notification
+Full releases will be announced on our documentation website.
 TigerGraph’s Customer Success team will also proactively share the release notes with existing customers.
 
-*Upgrades:* Customers using a legacy release can refer to the upgrade section of the online documentation to plan a server upgrade or https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
+==== Maintenance
+Each feature release will get a maintenance release three months after the initial release.
 
-=== Maintenance Release
+=== LTS release
+Every third feature release is a long-term support (LTS) release.
+An LTS release is essentially a feature release that TigerGraph commits to maintaining for a longer period of time.
+Just like a feature release, an LTS release is also a planned product roadmap release, where either the major or the minor number in the release version name is increased.
 
-A Maintenance release is a release version that only includes fixes for the most recent one or two Full releases.
-It will only be created when a set of critical bug fixes has accumulated before the next planned Full release.
+An LTS release's name is usually *major.minor.0*, abbreviated as *major.minor*.
+It may include any of the following:
 
-Depending on the schedule, if we have a Full release planned at the same time, a Maintenance release may not be necessary.
-If a Maintenance release applies to version *major.minor.patch*, then its name will be *major.minor.(patch+1)*.
-If needed, additional Maintenance releases will be published to address any issues that are encountered during or after the release process.
+* New features
+* Feature enhancements or updates
+* Bug fixes
 
-*Notification:* Maintenance releases are announced on our documentation website in a subsection of the Release Notes.
+In addition, the following documentation deliverables accompany a feature release:
+
+* xref:release-notes:index.adoc[] section included in the TigerGraph online documentation.
+* xref:installation:upgrade.adoc[Upgrade] section included in the TigerGraph online documentation.
+* Updated TigerGraph online documentation for each new LTS release version.
+
+==== Notification
+LTS releases are announced on our documentation website.
+TigerGraph’s Customer Success team will also proactively share the release notes with existing customers.
+
+==== Maintenance
+Each LTS release will get a maintenance release three months after the initial release.
+After the first maintenance release, an LTS release continues to get maintenance releases every two month for at least four more releases.
+
+For example, with 3.8 as a LTS release, it gets a maintenance release - 3.8.1 -
+three months after 3.8.0.
+After 3.8.1, the 3.8 LTS release continues to get maintenance releases every two months until 3.8.5.
+This ensures that each LTS version continues to be maintained for at least 12 months.
+
+=== Maintenance release
+
+A maintenance release is a release version that only includes fixes for a feature release or an LTS release.
+
+==== Notification
+Maintenance releases are announced on our documentation website in a subsection of the Release Notes.
 TigerGraph’s Customer Success team will proactively share the release notes with existing customers.
 
-*Upgrades:* The Maintenance release upgrade process is the same as the upgrade guidance in a Full release, as documented in the xref:installation:upgrade.adoc[Upgrade] section of the documentation.
+==== Upgrades
+The maintenance release upgrade process is the same as the upgrade guidance in a Full release, as documented in the xref:installation:upgrade.adoc[Upgrade] section of the documentation.
 Depending on the urgency of the patch, our Customer Success team may reach out to customers to discuss the upgrade of a Patch release.
 
-=== One-Off patches
 
-In some instances, a One-Off patch is released for a Full or Maintenance release to address critical security issues or critical bugs.
-Unlike Maintenance releases, a one-off patch is usually an urgent point fix, meaning that it will not wait for other fixes.
+== Example scenarios
 
-One-off patches are released as the situation demands.
-They could be universal, applicable to all customers, or specific, applicable to a handful of customers who have deployed a TigerGraph product under a certain environment.
+=== Customer requires a stabilized version for production
 
-*Notification:* As a One-Off patch is being developed, the Customer Success team will reach out to the affected customers to inform them of the discovered issue and the immediate remediation plan while the patch is under development.
 
-*Application of the patch:* After the patch is developed and has gone through the release certification process, the technical support team will email customers instructions on downloading and applying the patch.
 
-*Post-release:* Since a One-Off patch is for timely fixing of urgent issues, post-release it will be merged immediately with the new Full and Maintenance releases.
-
-=== Support
-
-Customers who need assistance can open a support ticket at http://tigergraph.freshdesk.com[tigergraph.freshdesk.com] or https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
-
-== Managed Service
-
-For customers who subscribe to TigerGraph’s Managed Service, our Cloud Engineering team will apply upgrades for backward compatible changes or One-Off patches transparently when the release is available or during the customer-notified system maintenance window (in situations requiring system downtime).
-
-For releases with non-backward compatible changes, the TigerGraph Customer Success team will reach out to customers to discuss opt-out or opt-in choices.
-
-Should the customer choose to opt-in, our Cloud Engineering team will coordinate and perform the upgrade for the customer.
 
 
