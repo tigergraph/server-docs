@@ -1128,7 +1128,7 @@ None.
 
 `+POST /ddl/{graph_name}+`
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:ddl-and-loading:index.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
 If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename variable at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.
 
@@ -2554,6 +2554,8 @@ GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type
 ----
 
 This endpoint returns the edge of a specified type between a source vertex and a target vertex.
+If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+If the edge type is defined with a discriminator, this endpoint returns all edges of the edge type between the source and target vertices.
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
 
@@ -2606,21 +2608,76 @@ Response::
 
 | `select`
 | No
-| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values. If `select` is provided, the edges returned will only show the attributes provided.
+| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values.
+If `select` is provided, the edges returned will only show the attributes provided.
 
 | `timeout`
 | No
 | Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, the system-wide endpoint timeout setting is applied.
 |===
 
-=== Delete an edge
+=== Retrieve edge by source, target, edge type, and discriminator
 
-[source,bash]
+[.wrap,console]
+----
+GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}
+/{target_vertex_type}/{target_vertex_id}/{discriminator}
+----
+
+This endpoint allows you to retrieve an edge by its source, target, edge type, and
+xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+
+This endpoint requires the `READ_DATA` privilege on the types or attributes being queried.
+
+==== Sample request
+
+[tabs]
+====
+Single-attribute discriminator::
++
+--
+[.wrap,console]
+----
+curl -X GET 'http://localhost:9000/graph/multiedge/edges/Person/4/transfer/Person/30/2431'
+----
+--
+Composite discriminator::
++
+--
+[.wrap,console]
+----
+curl -X GET "http://localhost:9000/graph/multiedge/edges/Person/9/transfer2/Account/9/77,1117,2010-04-09%2003:57:01" <1>
+----
+<1> `%20` is the URL encoding for a space character.
+--
+====
+
+==== Parameters
+
+|===
+| Name | Required | Description
+
+| `select`
+| No
+| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values.
+If `select` is provided, the edges returned will only show the attributes provided.
+
+| `timeout`
+| No
+| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, the system-wide endpoint timeout setting is applied.
+|===
+
+=== Delete an edge by source, target, and edge type
+
+[source.wrap,bash]
 ----
 DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
 
 Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
+If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+If the edge type is defined with a discriminator, this endpoint deletes all edges of the edge type between the source and target vertices.
+
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] and `READ_DATA` on the types or attributes being queried.
 
@@ -2669,13 +2726,26 @@ Response::
 | Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
 |===
 
+=== Delete an edge by source, target, edge type and discriminator
+
+[source.wrap,console]
+----
+DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}
+/{target_vertex_type}/{target_vertex_id}/{discriminator}
+----
+
+
+
 == Queries
 
 === Get query metadata
 
 `GET /gsqlserver/gsql/queryinfo`
 
-Returns metadata details about a query. In particular, it lists the input parameters in the same order as they exist in the query (in the form of a JSON array of JSON objects) and outputs `PRINT` statement syntax. *This endpoint exists on port 14240 and requests are sent to the GSQL server.* Therefore, you should provide authentication credentials in the request.
+Returns metadata details about a query.
+In particular, it lists the input parameters in the same order as they exist in the query (in the form of a JSON array of JSON objects) and outputs `PRINT` statement syntax.
+*This endpoint exists on port 14240 and requests are sent to the GSQL server.*
+Therefore, you should provide authentication credentials in the request.
 
 ==== Sample request
 [tabs]
