@@ -2676,7 +2676,9 @@ DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_t
 
 Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
 If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+
 If the edge type is defined with a discriminator, this endpoint deletes all edges of the edge type between the source and target vertices.
+If you want to delete a specific edge by its discriminator, see <<_delete_an_edge_by_source_target_edge_type_and_discriminator>>.
 
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] and `READ_DATA` on the types or attributes being queried.
@@ -2722,7 +2724,7 @@ Response::
 | Name | Required | Description
 
 | `timeout`
-| no
+| No
 | Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
 |===
 
@@ -2734,6 +2736,43 @@ DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_t
 /{target_vertex_type}/{target_vertex_id}/{discriminator}
 ----
 
+This endpoint allows you to delete an edge by its source, target, edge type, and
+xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+
+This endpoint requires the `DELETE_DATA` privilege on the type of the edge being queried.
+
+==== Sample request
+
+[tabs]
+====
+Single-attribute discriminator::
++
+--
+[.wrap,console]
+----
+curl -X DELETE 'http://localhost:9000/graph/multiedge/edges/Person/4/transfer/Person/30/2431'
+----
+--
+Composite discriminator::
++
+--
+[.wrap,console]
+----
+curl -X DELETE "http://localhost:9000/graph/multiedge/edges/Person/9/transfer2/Account/9/77,1117,2010-04-09%2003:57:01" <1>
+----
+<1> `%20` is the URL encoding for a space character.
+--
+====
+
+==== Parameters
+
+|===
+| Name | Required | Description
+
+| `timeout`
+| no
+| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
+|===
 
 
 == Queries
