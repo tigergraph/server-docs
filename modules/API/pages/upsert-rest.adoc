@@ -1,0 +1,452 @@
+= Upsert data to graph
+
+This endpoint upserts vertices and/or edges into a graph.
+To upsert means that if a vertex or edge does not exist, it is inserted, and if it does exist, it is updated.
+
+Upserting vertices or edges require the user to have sufficient privileges.
+See xref:user-access:access-control-model.adoc[].
+
+== Endpoint URL
+
+`POST /graph/\{graph_name}`
+
+
+== Parameters
+The following table describes the URL parameters for the endpoint.
+
+[width="100%",cols="23%,9%,68%",options="header",]
+|===
+|Name |Required |Description
+|`ack` |No a|The value of this parameter can either be `"all"` or
+`"none"`.
+
+* `"all"`: request will return after all GPE instances have
+acknowledged the POST request
+* `"none"`: request will return immediately after
+RESTPP processed the POST request.
+
+Default value is `"none"`.
+
+|`new_vertex_only` |No |If `new_vertex_only` is set to true, the request will only insert new
+vertices and not update existing ones.
+Default value is `false`.
+
+|`update_vertex_only`|No |If `update_vertex_only` is set to true, the request will only update existing vertices and not insert new vertices.
+
+|`atomic_post`|No a|NOTE: This parameter is deprecated. Please use the `gsql-atomic-level` header instead.
+
+If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
+Default value is `false`.
+
+|`vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if both the `FROM` and
+`TO` vertices of the edge already exist.
+If the value is false, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
+
+This parameter does not affect vertices.
+Default value is `false`.
+
+|`source_vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if the `FROM` vertex of the edge already exists.
+If the value is `false`, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
+
+This parameter does not affect vertices. For non-directed edges, the behavior of this parameter is identical to `vertex_must_exist`.
+Default value is `false`.
+
+This parameter is mutually exclusive with the general `vertex_must_exist` parameter and will return an error if both are used.
+
+|`target_vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if the `TO` vertex of the edge already exists.
+If the value is `false`, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
+
+This parameter does not affect vertices. For non-directed edges, the behavior of this parameter is identical to `vertex_must_exist`.
+Default value is `false`.
+
+This parameter is mutually exclusive with the general `vertex_must_exist` parameter and will return an error if both are used.
+
+|
+|===
+
+== Response
+
+The response is the number of vertices and edges that were accepted. Additionally, if `new_vertex_only` is true, the response will include two more fields:
+
+* `skipped_vertices`: the number of vertices in the input data which already existed in the graph
+* `vertices_already_exist`: the id and type of the input vertices which were skipped
+
+If `vertex_must_exist` is true, the response will include two more fields:
+
+* `skipped_edges`: the number of edges in the input data rejected because of missing endpoint vertices
+* `miss_vertices`: the id and type of the endpoint vertices which were missing
+
+The example file `add_id6.json` (shown in the *Request Body* section) upserts one `User` __vertex with `id = "id6"`, one `Liked` __edge, and one `Liked_By` __edge. The `Liked` __edge is from `"id1` " to `"id6"`; the `Liked_By` __edge is from `"id6"` to _``"id1"``_.
+
+
+== Request body
+
+The payload data should be in JSON according to the schema shown below:
+
+.Request body schema
+[source,javascript]
+----
+{
+    "vertices": {
+       "<vertex_type>": {
+          "<vertex_id>": {
+             "<attribute>": {
+                "value": <value>,
+                "op": <opcode>
+             }
+          }
+       }
+    },
+    "edges": {
+       "<source_vertex_type>": {
+          "<source_vertex_id>": {
+             "<edge_type>": {
+                "<target_vertex_type>": {
+                   "<target_vertex_id>": {
+                      "<attribute>": {
+                         "value": <value>,
+                         "op": <opcode>
+                      }
+                   }
+                }
+             }
+          }
+       },
+      "<source_vertex_type>": {
+        "<source_vertex_id>": {
+          "<edge_type>": {
+            "<target_vertex_type>": {
+              "<target_vertex_id>": {
+                 "discriminator":{
+                    "<attribute>": {
+                        "value": <value>,
+                        "op": <opcode>
+                 }}
+              }
+           }
+        }
+     }
+  }
+    }
+}
+----
+
+
+The fields in angle brackets (`<>`) are placeholder names or values, to be replaced with actual values.
+The keys in angle parentheses, such as `<vertex_type>`, can be repeated to form a list of items.
+The keys which are not in angle brackets are exact texts that must be used as they are.
+The nested hierarchy means that vertices are grouped by type.
+Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
+
+=== Examples
+
+The first example below shows two `User` vertices having an attribute called `age`:
+
+.Upsert Example Data 1: Two User vertices
+[source,json]
+----
+{
+  "vertices": {
+    "User": {
+      "id6": {
+        "age": {
+           "value": 30
+         }
+      },
+      "id1": {
+        "age": {
+           "value": 22
+         }
+      }
+    }
+  }
+}
+----
+
+The second example starts with one `User` vertex.
+Since `id6` contains no attributes, it will remain the same it if already exists.
+If it doesn't yet exist, the request will create a vertex with ID `id6` with default attribute values.
+Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Liked_By` edge from `id6` to `id1`.
+
+.Upsert Example Data 2:add_id6.json
+[source,json]
+----
+{
+ "vertices": {
+    "User": {
+      "id6": {
+      }
+    }
+  },
+  "edges": {
+    "User":{
+      "id1": {
+        "Liked": {
+          "User": {
+            "id6" : {
+              "weight" : {
+                "value": 5.0
+              }
+            }
+          }
+        }
+      },
+      "id6": {
+        "Liked_By": {
+          "User": {
+            "id1" : {
+              "weight" : {
+                "value": 1.0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+----
+
+Follow the instructions in the Introduction section to xref:API:index.adoc#_formatting_data_in_json[format advanced data types].
+
+For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
+
+[source,bash]
+----
+{
+ "vertices": {
+    "User": {
+      "id4": {
+        "coordinates": {
+           "value": [51.3345, -7.2233]
+         },
+        "measurements": {
+           "value": {
+             "keyList": ["chest", "waist", "hip"]
+             "valueList": [35, 30, 35]
+           }
+         }
+      },
+      "id5": {
+        "coordinates": {
+           "value": [31.3245, -17.3292]
+         },
+        "measurements": {
+           "value": {
+             "keyList": ["chest", "waist", "hip"]
+             "valueList": [39, 35, 41]
+           }
+         }
+      }
+    }
+  }
+}
+----
+
+== Operation codes
+
+Each attribute value may be accompanied by an operation (op) code, which provides very sophisticated schemes for data update or insertion:
+
+|===
+| Type | op | Meaning
+
+| 1
+| `"ignore_if_exists"` or `"~"`
+| If the vertex/edge does not exist, use the payload value to initialize the attribute; but if the vertex/edge already exists, do not change this attribute.
+
+| 2
+| `"add"` or `"+"`
+| Add the payload value to the existing value.
+
+| 3
+| `"and"` or `"&"`
+| Update to the logical AND of the payload value and the existing value.
+
+| 4
+| `"or"` or `"\|"`
+| Update to the logical OR of the payload value and the existing value.
+
+| 5
+| `"max"` or `">"`
+| Update to the higher value between the payload value and the existing value.
+
+| 6
+| `"min"` or `"<"`
+| Update to the lower value between the payload value and the existing value.
+|===
+
+If an attribute is not given in the payload, the attribute stays unchanged if the vertex/edge already exists, or if the vertex/edge does not exist, a new vertex/edge is created and assigned the default value for that data type. The default value is 0 for `int/uint`, 0.0 for `float/double`, and `""`(empty string) for string.
+
+== Upserting vertices with composite keys
+
+If your vertex has composite keys, separate the attributes that make up the composite key with a comma (`,`) in the same order as they are defined in the schema.
+
+For example, suppose we have the following vertex definition:
+
+[.wrap,gsql]
+----
+CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name, id))
+CREATE VERTEX Composite_Movie (id UINT, title STRING, country STRING, year UINT, PRIMARY KEY (title,year,id))
+CREATE DIRECTED EDGE Composite_Roles (from Composite_Person,to Composite_Movie, role STRING)
+CREATE GRAPH Person_Movie(Composite_Person, Composite_Movie, Composite_Roles)
+----
+
+The following requests upserts two vertices with the defined composite key, as well as an edge of the type `Composite_Roles` between `Bob, 123` and `Harry Potter, 1990, 1337`:
+
+[.wrap,console]
+----
+curl -X POST "localhost:9000/graph/Person_Movie" -d '
+{
+  "vertices": {
+    "Composite_Person":{
+      "Bob,123":{
+        "name":{"value":"Bob"},
+        "id":{"value":123},
+        "age":{"value":25}
+      },
+      "Tom,456":{
+        "name":{"value":"Tom"},
+        "id":{"value":456},
+        "age":{"value":47}
+      }
+    }
+  },
+  "edges":{
+    "Composite_Person":{
+      "Bob,123":{
+        "Composite_Roles":{
+          "Composite_Movie":{
+            "Harry Potter,1990,1337":{
+              "role":{
+                "value":"Wizard"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+'
+----
+
+== Upserting edged with discriminators
+
+== Valid data types
+
+The RESTPP server validates the request before updating the values. The following schema violations will cause the entire request to fail and no change will be made to a graph:
+
+* For vertex upsert
+** Invalid vertex type
+** Invalid attribute data type
+* For edge upsert:
+** Invalid source vertex type
+** Invalid edge type
+** Invalid target vertex type
+** Invalid attribute data type.
+
+If an invalid attribute name is given, it is ignored.
+
+
+=== Example
+
+The following example submits an upsert request by using the payload data stored in `add_id6.json`.
+
+[source,bash]
+----
+curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph"
+
+{"accepted_vertices":1,"accepted_edges":2}
+----
+
+If we set the value of `vertex_must_exist` parameter to `true`, the endpoint will only insert edges whose endpoint vertices both exist. This includes the vertices being inserted in the same request.
+Therefore, inserting the content of `add_id6.json` to an empty graph would cause the edges to be rejected:
+
+[source,bash]
+----
+curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph?vertex_must_exist=true"
+
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "accepted_vertices": 1,
+      "accepted_edges": 0,
+      "skipped_edges": 2,
+      "edge_vertices_not_exist": [
+        {
+          "v_type": "User",
+          "v_id": "id1"
+        }
+      ]
+    }
+  ],
+  "code": "REST-0003"
+}
+----
+
+== Atomic upsert transaction
+
+By default, the `POST /graph/\{graph_name}` endpoint is not atomic. If something goes wrong during the process of the request, the request data can be partially consumed by the database.
+
+You can append a request header `gsql-atomic-level` to the request to set the request's atomicity level.
+The header parameter accepts the following values:
+
+* `atomic`: The request is an atomic transaction.
+An atomic transaction means that updates to the database contained in the request are all-or-nothing: either all changes are successful, or none is successful.
+* `nonatomic`: The request is not atomic.
+This is the default behavior of the endpoint.
+
+For example, suppose we have the following request to upsert two vertices:
+
+[tabs]
+====
+Request::
++
+--
+[source.wrap,console]
+----
+curl --data-binary @vertices.json http://localhost:9000/graph/social
+----
+--
+Request body::
++
+--
+Content of `vertices.json` is:
+[source,json]
+----
+{
+ "vertices": {
+    "person": {
+      "Velma": {
+        "age": {
+           "value": 30
+         }
+      },
+      "Kelly": {
+        "age": {
+           "value": 22
+         }
+      }
+    }
+  }
+}
+----
+--
+====
+
+With the request above, if the vertex `Kelly` fails to be upserted due to a machine failure, it is still possible that the vertex `Velma` is upserted to the database.
+
+If you add the `gsql-atomic-level` header to the request URL and set its value to `atomic`, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
+
+[source.wrap,console]
+----
+# This is an atomic request
+curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
+----
