@@ -37,6 +37,26 @@ $ gadmin backup create weekly
 
 This creates a backup file named `weekly-<timestamp>` at the xref:configurations.adoc[backup location you configured].
 
+To see a list of your backups run the command:
+
+[.wrap,console]
+----
+$ gadmin backup list
+----
+
+This will return the following output:
+
+[.wrap,console]
+----
+l$ gadmin backup list
++-------------------------+--------+---------------------+
+|           TAG           |  SIZE  |     CREATED AT      |
++-------------------------+--------+---------------------+
+| daily-2022-10-20T131744 |  11 GB | 2022-10-20 13:17:44 |
+| daily-2022-10-21T102552 |  12 GB | 2022-10-21 10:25:52 |
++-------------------------+--------+---------------------+
+---
+
 [#_metadata_backup_optional]
 === Metadata backup (Optional)
 
