@@ -1,3 +1,4 @@
+[#_create_data_source]
 === Create data source
 Now that the connector has started loading data into TigerGraph's internal Kafka cluster, you can create a data source and point it to the Kafka cluster:
 
@@ -27,9 +28,16 @@ For example, you can specify `group.id` to be `tigergraph` to specify  the group
 ----
 <1> Make sure to use the internal ID of the machine instead of `localhost` for the hostname of the broker.
 `localhost` only works for single-server instances. 
-. Run `CREATE DATA SOURCE` to create the data source:
+. Run `CREATE DATA SOURCE` to create the data source and assign the configuration file to the data source you just created:
 +
-[,gsql]
+[.wrap,gsql]
 ----
-CREATE DATA_SOURCE KAFKA datasource_name FOR GRAPH Graph_Name
+CREATE DATA_SOURCE KAFKA <datasource_name> FOR GRAPH <graph_name>
+SET <datasource_name> = <path_to_datasource_config>
+----
+For example:
++
+----
+CREATE DATA_SOURCE KAFKA k1 FOR GRAPH Social
+SET k1 = "/home/tigergraph/social/k1.config"
 ----

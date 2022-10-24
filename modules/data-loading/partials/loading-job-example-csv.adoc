@@ -5,11 +5,11 @@ For example, suppose we have the following two CSV files and schema:
 Schema::
 +
 --
-[,gsql]
+[.wrap,gsql]
 ----
-CREATE VERTEX person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
-CREATE UNDIRECTED EDGE friendship (FROM person, TO person, connect_day DATETIME)
-CREATE GRAPH social (person, friendship)
+CREATE VERTEX Person (PRIMARY_ID name STRING, name STRING, age INT, gender STRING, state STRING)
+CREATE UNDIRECTED EDGE Friendship (FROM Person, TO Person, connect_day DATETIME)
+CREATE GRAPH Social (Person, Friendship)
 ----
 --
 p.csv::
@@ -88,12 +88,14 @@ Loading job::
 --
 [.wrap,gsql]
 ----
-CREATE LOADING JOB load_person FOR GRAPH social {
-    DEFINE FILENAME f1 = "$k1:/home/mydata/topic_person.json";
+CREATE LOADING JOB load_person FOR GRAPH Social {
+    DEFINE FILENAME f1 = "$k1:/home/mydata/topic_person.json"; <1>
     DEFINE FILENAME f2 = "$k1:/home/mydata/topic_friend.json";
     LOAD f1 TO VERTEX person VALUES ($0, $0, $2, $1, $3) USING separator=",";
     LOAD f2 TO EDGE friendship VALUES ($0, $1, $2)  USING separator=",";
 }
 ----
+<1> `$k1` refers to a data source defined in the graph.
+See <<_create_data_source, Create data source>>
 --
 ====
