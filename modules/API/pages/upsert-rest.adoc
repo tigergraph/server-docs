@@ -111,22 +111,7 @@ The payload data should be in JSON according to the schema shown below:
                 }
              }
           }
-       },
-      "<source_vertex_type>": {
-        "<source_vertex_id>": {
-          "<edge_type>": {
-            "<target_vertex_type>": {
-              "<target_vertex_id>": {
-                 "discriminator":{
-                    "<attribute>": {
-                        "value": <value>,
-                        "op": <opcode>
-                 }}
-              }
-           }
-        }
-     }
-  }
+       }
     }
 }
 ----
@@ -330,7 +315,26 @@ curl -X POST "localhost:9000/graph/Person_Movie" -d '
 '
 ----
 
-== Upserting edged with discriminators
+== Upserting edges with discriminators
+
+Some edge types are defined with xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminators], which allow multiple instances of the same edge type between two vertices.
+
+To upsert an edge that was defined with a discriminator, insert them as a regular edge.
+However, the following rules apply:
+
+* You cannot leave off discriminator attributes when inserting an edge whose type was defined with discriminator attributes.
+* If you are updating an existing edge, you cannot update the attributes that are defined as part of the edge type discriminator.
+
+For example, if you have the following edge type definition:
+
+[source.wrap,console]
+----
+CREATE DIRECTED EDGE Study_At(From Person, To University, DISCRIMINATOR(class_year INT, class_month INT), major STRING))
+----
+
+When inserting an edge of type `Study_AT`, you cannot omit the `class_year` attribute or the `class_month` attribute.
+You cannot update these two attributes either.
+
 
 == Valid data types
 
