@@ -57,6 +57,160 @@ The installation process will prompt you for these steps. If you have already co
 
 NOTE: TigerGraph is available on the AWS Marketplace, for more details see https://aws.amazon.com/marketplace/seller-profile?id=293e0e5d-d8c3-4a99-b5c0-7d056d1b83a1[here]
 
+=== EC2 instance type 
+
+The first step is to provision the required EC2 instance/s that will be required for installing TigerGraph (either single-server or Cluster). Make sure the provisioned EC2 instances meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_]. A `t3.2xlarge` EC2 instance type is a good example. 
+
+Next you need to choose the Amazon Machine Image (AMI) where in addition to xref:hw-and-sw-requirements.adoc#_certified_operating_systems[supported Linux distros] you can use the Amazon Linux images which are supported as well.
+
+== VPC
+
+When creating the VPC you need to consider the followings:
+
+* CIDRs address type has to be IPv4 *only*
+* Enabiling DNS hostnames and DNS resolutions is highly reccomended
+* Assign 2 or more subnets
+* Route table with: 
+** all VPC subnet assotiation 
+** Routes over Internet Gateway (IGW)
+
+VPC Diagram example:
+
+image::vpc.jpeg["VPC diagram"]
+
+== Security Groups
+
+When defining your Security Group consider the concept of xref:bare-metal-install.adoc#_port_connectivity[Ports in TigerGraph Cluster]. 
+
+In your Inbound rules you want to define rules on:
+
+* Port 9000 and 14240: allow TCP traffic 
+** You can choose allow "All Traffic" or "Custom TCP"
+* Port 22: allow SSH connectivity
+
+Below is a good example of _restrictive_ Security Group 
+
+```
+aws ec2 describe-security-groups --group-ids sg-xxxxxxxxxxx --output table
+------------------------------------------------------------------------------------
+|                              DescribeSecurityGroups                              |
++----------------------------------------------------------------------------------+
+|                                  SecurityGroups                                  |
+|+----------------------+---------------------------------------------------------+|
+|   Description         |  Restrictive Security Group                              |
+|   GroupId             |  sg-xxxxxxxxxxx                                          |
+|   GroupName           |  my-restrictive-group                                    |
+|   OwnerId             |  123456789                                               |
+|   VpcId               |  vpc-xxxxxxxxxxx                                         |
+|+----------------------+---------------------------------------------------------+|
+|                                   IpPermissions                                  |
+||+-------------------------------------------------+----------------------------+||
+|||  FromPort                                       |  9000                      |||
+|||  IpProtocol                                     |  tcp                       |||
+|||  ToPort                                         |  9000                      |||
+||+-------------------------------------------------+----------------------------+||
+||||                                  IpRanges                                  ||||
+|||+--------------------------+-------------------------------------------------+|||
+||||  CidrIp                  |  10.1.0.0/16                                    ||||
+||||  Description             |  Allow inbound port 9000                        ||||
+|||+--------------------------+-------------------------------------------------+|||
+|||                                 IpPermissions                                |||
+||+------------------------------------------------------+-----------------------+||
+|||  FromPort                                            |                       |||
+|||  IpProtocol                                          |  -1                   |||
+|||  ToPort                                              |                       |||
+||+------------------------------------------------------+-----------------------+||
+||||                                  IpRanges                                  ||||
+|||+--------------------------+-------------------------------------------------+|||
+||||  CidrIp                  |  10.1.0.0/16                                    ||||
+||||  Description             |  Allow traffic from self                        ||||
+|||+--------------------------+-------------------------------------------------+|||
+||||                              UserIdGroupPairs                              ||||
+|||+-----------------------------------+------------------------+---------------+|||
+||||            Description            |        GroupId         |    UserId     ||||
+|||+-----------------------------------+------------------------+---------------+|||
+||||  Allow traffic from load balancer |  sg-02b6ced4c4129ec19  |  408336090050 ||||
+||||  Allow traffic from self          |  sg-09e15882b65d2205b  |  408336090050 ||||
+|||+-----------------------------------+------------------------+---------------+|||
+|||                                 IpPermissions                                |||
+||+---------------------------------------------------+--------------------------+||
+|||  FromPort                                         |  22                      |||
+|||  IpProtocol                                       |  tcp                     |||
+|||  ToPort                                           |  22                      |||
+||+---------------------------------------------------+--------------------------+||
+||||                                  IpRanges                                  ||||
+|||+---------------------------+------------------------------------------------+|||
+||||  CidrIp                   |  10.1.0.0/16                                   ||||
+||||  Description              |  Allow inbound port 22                         ||||
+|||+---------------------------+------------------------------------------------+|||
+|||                                 IpPermissions                                |||
+||+-----------------------------------------------+------------------------------+||
+|||  FromPort                                     |  14240                       |||
+|||  IpProtocol                                   |  tcp                         |||
+|||  ToPort                                       |  14240                       |||
+||+-----------------------------------------------+------------------------------+||
+||||                                  IpRanges                                  ||||
+|||+-------------------------+--------------------------------------------------+|||
+||||  CidrIp                 |  10.1.0.0/16                                     ||||
+||||  Description            |  Allow inbound port 14240                        ||||
+|||+-------------------------+--------------------------------------------------+|||
+|||                              IpPermissionsEgress                             |||
+||+-------------------------------------------------+----------------------------+||
+|||  FromPort                                       |  9000                      |||
+|||  IpProtocol                                     |  tcp                       |||
+|||  ToPort                                         |  9000                      |||
+||+-------------------------------------------------+----------------------------+||
+||||                                  IpRanges                                  ||||
+|||+-------------------------+--------------------------------------------------+|||
+||||  CidrIp                 |  10.1.0.0/16                                     ||||
+||||  Description            |  Allow outbound port 9000                        ||||
+|||+-------------------------+--------------------------------------------------+|||
+|||                              IpPermissionsEgress                             |||
+||+------------------------------------------------------+-----------------------+||
+|||  FromPort                                            |                       |||
+|||  IpProtocol                                          |  -1                   |||
+|||  ToPort                                              |                       |||
+||+------------------------------------------------------+-----------------------+||
+||||                                  IpRanges                                  ||||
+|||+--------------------------------------+-------------------------------------+|||
+||||  CidrIp                              |  0.0.0.0/0                          ||||
+||||  Description                         |  egress all                         ||||
+|||+--------------------------------------+-------------------------------------+|||
+||||                              UserIdGroupPairs                              ||||
+|||+----------------------+-----------------------------------------------------+|||
+||||  Description         |  Allow traffic to load balancer                     ||||
+||||  GroupId             |  sg-02b6ced4c4129ec19                               ||||
+||||  UserId              |  408336090050                                       ||||
+|||+----------------------+-----------------------------------------------------+|||
+|||                              IpPermissionsEgress                             |||
+||+---------------------------------------------------+--------------------------+||
+|||  FromPort                                         |  22                      |||
+|||  IpProtocol                                       |  tcp                     |||
+|||  ToPort                                           |  22                      |||
+||+---------------------------------------------------+--------------------------+||
+||||                                  IpRanges                                  ||||
+|||+---------------------------+------------------------------------------------+|||
+||||  CidrIp                   |  10.1.0.0/16                                   ||||
+||||  Description              |  Allow outbound port 22                        ||||
+|||+---------------------------+------------------------------------------------+|||
+|||                              IpPermissionsEgress                             |||
+||+-----------------------------------------------+------------------------------+||
+|||  FromPort                                     |  14240                       |||
+|||  IpProtocol                                   |  tcp                         |||
+|||  ToPort                                       |  14240                       |||
+||+-----------------------------------------------+------------------------------+||
+||||                                  IpRanges                                  ||||
+|||+-------------------------+--------------------------------------------------+|||
+||||  CidrIp                 |  10.1.0.0/16                                     ||||
+||||  Description            |  Allow outbound port 14240                       ||||
+|||+-------------------------+--------------------------------------------------+|||
+|||                                     Tags                                     |||
+||+----------------------------+-------------------------------------------------+||
+|||  Key                       |  Environment                                    |||
+|||  Value                     |  TG_DEV                                         |||
+||+----------------------------+-------------------------------------------------+||
+```
+
 
   
 

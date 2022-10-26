@@ -49,6 +49,7 @@ AllowUsers OLD-USER NEW-USER
 This adds firewall rules to allow TCP communication between nodes in the cluster.
 The installation process will prompt you for these steps. If you have already completed them, ignore and continue.
 
+[#_port_connectivity]
 === Port connectivity
 
 In a TigerGraph installation, the communication (external and internal) happens via TCP and gRPC over a specific set of ports. Those ports can be divided into two categories:
@@ -78,16 +79,16 @@ For changing port 9000 (RESTPP) to something else (e.g. 9090)
 ----
 $ gadmin config set RESTPP.NginxPort 9090
 $ gadmin config apply
-$ gadmin restart -y
+$ gadmin restart 
 ----
 
 For changing the port 14240 (Nginx) to something else (e.g. 8080)
 
 [source,bash]
 ----
-$ gadmin config set Nginx.port 8080
+$ gadmin config set Nginx.Port 8080
 $ gadmin config apply
-$ gadmin restart -y
+$ gadmin restart 
 ----
 
 === Ports for internal communication

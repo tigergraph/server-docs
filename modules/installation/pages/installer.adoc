@@ -2,7 +2,7 @@
 
 TigerGraph package comes with a bash installation script that can be run either in interactive mode or non-interactive mode
 
-The installer script (`install.sh`) will take care of installing all TigerGraph required components and packages and provide an up-and-running TigerGraph environment once completed. 
+The installer script (`install.sh`) will take care on installing all TigerGraph required components and packages and provide an up and running TigerGraph enviroment once completed. 
 
 ==== Installer options
 
@@ -37,12 +37,12 @@ The setup and configurations for xref:installation:hw-and-sw-requirements.adoc.#
 
 == Installer pre-check
 
-The first task that the TigerGraph Installer will run is the pre-check step 
+The first taks that the TigerGraph Installer will run is the pre-check step 
 
 [#_interactive_installation]
 == Interactive installation
 
-In this installation mode, you *do not* need to edit the `install_conf.json` configuration file as you will be asked *interactively* to pass the required information while you install TigerGraph. 
+In this installation mode, you *do not* need to edit the `install_conf.json` configuration file as you will be asked *interactivelly* to pass the required information while you install TigerGraph. 
 
 *Step 1*: Extract the package by running the following command to create a folder named `tigergraph-<version>-offline`. The filename of your package may vary depending on the product edition and version.
 
@@ -57,7 +57,7 @@ $ tar -xvzf tigergraph-<version>.tar.gz
 ----
 $ cd tigergraph-<version>-offline
 
-#sudo not required for standalone installation
+#sudo not requried for standalone installation
 $ sudo ./install.sh
 ----
 
@@ -81,7 +81,7 @@ The installer will ask for the following information. You may choose to hit Ente
 
 NOTE: This is the preferred way for installing TigerGraph, as it allows you to visualize the entire configuration in one place
 
-The `install.sh` script relies on its configuration JSON file called `install_conf.json` which holds all the configuration information required for installing TigerGraph. 
+The `install.sh` scripts relies on its configuration JSON file called `install_conf.json` which holds all the configuration information required for installing TigerGraph. 
 
 In this installation mode, you need to edit the `install_conf.json` and manually pass all your configuration information.
 
@@ -140,7 +140,7 @@ In order to let the `install.sh` script use the modifed `install_conf.json` file
 ----
 $ cd tigergraph-<version>-offline
 
-#sudo not required for standalone installation
+#sudo not requried for standalone installation
 $ sudo ./install.sh -n
 ----
 
@@ -154,7 +154,7 @@ $ sudo ./install.sh -n
   *** `"PrivateKeyFile"` (*optional*):  Absolute path to a valid private key file. If left empty, TigerGraph will generate one named `tigergraph.rsa` automatically.
   *** `"PublicKeyFile"`(*optional*): Absolute path to a valid public key file. If left empty, TigerGraph will generate one named `tigergraph.pub` automatically.
  ** `"RootDir"`
-  *** `"AppRoot"`: Absolute path to where the application folder will be.
+  *** `"AppRoot"`: Absolute path to where application folder will be.
   *** ``"DataRoot``": Absolute path to where the data folder will be.
   *** `"LogRoot"`: Absolute path to where the log folder will be.
 **** For production systems, it’s recommended that you use a separate disk partition to store log files to prevent out-of-space issues.
@@ -179,5 +179,3 @@ WARNING: If you alter the `RootDir` folder paths, make sure the new user created
 The user needs read/write/execute permissions on `AppRoot` and read/write permissions on the other folders at a minimum.
 
 
-
-  
