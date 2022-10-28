@@ -2197,6 +2197,13 @@ GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type
 This endpoint allows you to retrieve an edge by its source, target, edge type, and
 xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
 
+[NOTE]
+====
+If the discriminator has multiple attributes, use `,` as a separator.
+But if the attributes already have commas in a string discriminator, use `\` as an escape character to escape the commas.
+The backslash escape character can escape the escape character itself as well.
+====
+
 This endpoint requires the `READ_DATA` privilege on the types or attributes being queried.
 
 ==== Sample request
@@ -2308,6 +2315,13 @@ DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_t
 
 This endpoint allows you to delete an edge by its source, target, edge type, and
 xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+
+[NOTE]
+====
+If the discriminator has multiple attributes, use `,` as a separator.
+But if the attributes already have commas in a string discriminator, use `\` as an escape character to escape the commas.
+The backslash escape character can escape the escape character itself as well.
+====
 
 This endpoint requires the `DELETE_DATA` privilege on the type of the edge being queried.
 
