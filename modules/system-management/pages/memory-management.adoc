@@ -22,31 +22,75 @@ See xref:gsql-ref:querying:distributed-query-mode.adoc[].
 You can monitor memory usage by query and by machine.
 
 === Monitor query memory usage
-TigerGraph's Graph Processing Engine (GPE) records memory usage by query at different stages of the query and saves it to `$(gadmin config get System.LogRoot)/gpe/log.INFO`.
+TigerGraph's Graph Processing Engine (GPE) records memory usage by query at different stages of the query and saves it to the GPE logs at `$(gadmin config get System.LogRoot)/gpe/log.INFO`.
+This is an estimation of the query's memory usage *on a particular node* in a TigerGraph cluster.
+
 You can monitor how much memory a query is using by searching the log file for the request ID and filter for lines that contain `"QueryMem"`:
 
-[source,console]
+[source.wrap,console]
 ----
-$ grep -i <request_id> $(gadmin config get System.LogRoot)/gpe/log.INFO | grep -i "querymem"
+$ grun all 'grep -i <request_id> $(gadmin config get System.LogRoot)/gpe/log.INFO | grep -i "querymem"'
 ----
 
 You can also run a query first, and then run the following command immediately after to retrieve the most recent query logs and filter for `"QueryMem"`:
 
 [source,console]
 ----
-$ tail -n 50 $(gadmin config get System.LogRoot)/gpe/log.INFO |
-    grep -i "querymem"
+$ grep 'tail -n 50 $(gadmin config get System.LogRoot)/gpe/log.INFO |
+    grep -i "querymem"'
 ----
+
+==== Interpreting log response
 
 The logs show memory usage by the query at different stages of its execution.
-The number at the end of each line indicates the number of bytes of memory utilized by the query:
+The number at the end of each line indicates the number of bytes of memory utilized by the query.
 
-[source.wrap,console]
-----
-0415 01:33:40.885433  6553 gpr.cpp:195] Engine_MemoryStats|ldbc_snb::,196612.RESTPP_1_1.1618450420870.N,NNN,15,0,0|MONITORING Step(1) BeforeRun[GPR][QueryMem]: 116656
+[WARNING]
+====
+The reported query memory usage is only a partial estimation of the query's memory usage.
+When `STRING` and container type of local accumulators (ListAccum, MapAccum, ArrayAccum, HeapAccum, SetAccum, BagAccum) are used, the difference between the reported usage and the actual usage can differ greatly, as the memory tracker cannot accurately report the sizes of such types.
 
-I0415 01:33:42.716199  6553 gpr.cpp:241] Engine_MemoryStats|ldbc_snb::,196612.RESTPP_1_1.1618450420870.N,NNN,15,0,0|MONITORING Step(1) AfterRun[GPR][QueryMem]: 117000
+As such, it is not suggested to view the reported memory usage as the absolute amount of memory used by a query.
+The best way to evaluate the reported memory usage number is to compare the memory usage of different runs of the same query.
+If two runs of the same query report different numbers in terms of their memory usage, it is very likely that the query run reporting higher memory usage actually used more memory than the query run reporting lower memory usage.
+====
+
+For example, if we query for the memory usage for request ID `2.RESTPP_1_1.1665503463466.N` with the following command:
+
+[.wrap,console]
 ----
+$ grun all 'grep -i 2.RESTPP_1_1.1665503463466.N $(gadmin config get System.LogRoot)/gpe/log.INFO | grep -i "querymem"'
+----
+We get the following response from two different nodes in a cluster:
+
+[source,console]
+----
+I1011 08:51:03.478861 199860 gpr.cpp:206] Engine_MemoryStats|{request}|MONITORING Step{step} BeforeRun[GPR][QueryMem]{current_mem},watermark:{mem_watermark}|request:WorkerManager,4.GPE_1_2.1665503463470.N:2.RESTPP_1_1.1665503463466.N,NNN,15,0,0,0,S|step:1|current_mem:0|mem_watermark:0
+I1011 08:51:04.369922 199860 gpr.cpp:265] Engine_MemoryStats|{request}|MONITORING Step{step} AfterRun[GPR][QueryMem]{current_mem},watermark:{mem_watermark}|request:WorkerManager,4.GPE_1_2.1665503463470.N:2.RESTPP_1_1.1665503463466.N,NNN,15,0,0,0,S|step:1|current_mem:132960052|mem_watermark:157689448
+I1011 08:51:04.659490 199860 gpr.cpp:206] Engine_MemoryStats|{request}|MONITORING Step{step} BeforeRun[GPR][QueryMem]{current_mem},watermark:{mem_watermark}|request:WorkerManager,4.GPE_1_2.1665503463470.N:2.RESTPP_1_1.1665503463466.N,NNN,15,0,0,0,S|step:2|current_mem:132960052|mem_watermark:157689448
+I1011 08:51:04.819167 199860 gpr.cpp:265] Engine_MemoryStats|{request}|MONITORING Step{step} AfterRun[GPR][QueryMem]{current_mem},watermark:{mem_watermark}|request:WorkerManager,4.GPE_1_2.1665503463470.N:2.RESTPP_1_1.1665503463466.N,NNN,15,0,0,0,S|step:2|current_mem:178609044|mem_watermark:19465093
+----
+
+The following uses the third line as an example:
+
+[source,console]
+----
+I1011 08:51:04.659490 199860 gpr.cpp:206] \
+Engine_MemoryStats|{request}|MONITORING Step{step} BeforeRun[GPR][QueryMem]{current_mem}, \
+watermark:{mem_watermark}| \
+request:WorkerManager,4.GPE_1_2.1665503463470.N:2.RESTPP_1_1.1665503463466.N,NNN,15,0,0,0,S <1>
+|step:2| \ <2>
+current_mem:132960052 \ <3>
+|mem_watermark:157689448  <4>
+----
+<1> The request's full ID.
+Note `GPE_1_2` which tells you this line of log is coming from the second node in the primary replica.
+<2> Internally, a query's execution consists of many steps.
+This indicates the step at which the log is generated.
+This is helpful for TigerGraph Support during debugging - you likely can disregard this data.
+<3> The current amount of memory held by the query at the time the log is taken.
+<4> The maximum amount of memory held by the query during the course of its run.
+
 
 === Monitor system free memory percentage
 
