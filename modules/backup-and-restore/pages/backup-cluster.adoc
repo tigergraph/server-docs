@@ -8,6 +8,40 @@ The process also applies to single-server instances.
 Backing up a cluster is an online operation.
 Your database remains available during the backup.
 
+[NOTE]
+====
+A new API for Backup and Restore feature has been added to `gadmin` toolchain with improved stability and performance. The legacy Graph Backup and Restore(GBAR) tool remains available.
+====
+
+== Gadmin backup subcommands:
+
+[.wrap,console]
+----
+~$ gadmin backup -h
+Back up a cluster
+
+Usage:
+  gadmin backup [flags]
+  gadmin backup [command]
+
+Description:
+  Back up and restore a cluster
+
+Available Commands:
+  create      Create a cluster backup
+  list        List backups
+  remove      Remove backup
+  restore     Restore a cluster from backup
+
+Flags:
+  -h, --help   help for backup
+
+Global Flags:
+      --debug   enable debug log output to stdout
+
+Use "gadmin backup [command] --help" for more information about a command.
+----
+
 == Prerequisites
 * You have access to the TigerGraph Linux user account on your cluster.
 All commands must be run from the TigerGraph Linux user.
@@ -36,6 +70,81 @@ $ gadmin backup create weekly
 ----
 
 This creates a backup file named `weekly-<timestamp>` at the xref:configurations.adoc[backup location you configured].
+
+[.wrap,console]
+----
+$ gadmin backup create weekly
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Tag is weekly-2022-10-26T085124
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Backup timeout is 18000 seconds
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Backup path: /home/tigergraph/backup/weekly-2022-10-26T085124
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Staging path: /home/tigergraph/tigergraph/data/backup/weekly-2022-10-26T085124 (shared: false)
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Created backup directories
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Begin to check needed disk space...
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Exporting GSQL data... (async)
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Exporting GUI data... (async)
+[   Info] [Wed Oct 26 08:51:24 UTC 2022] Exporting GPE data... (async)
+[   Info] [Wed Oct 26 08:51:25 UTC 2022] GUI exported
+[   Info] [Wed Oct 26 08:51:25 UTC 2022] GSQL exported
+[   Info] [Wed Oct 26 08:51:25 UTC 2022] GPE exported
+[   Info] [Wed Oct 26 08:51:27 UTC 2022] Exporting GSE data... (async)
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] GSE exported
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculating the raw size of the exported data...
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the raw size of GSE_2_1
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the raw size of GSQL
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the raw size of GPE_1_1
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the raw size of GPE_2_1
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the raw size of GUI
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the raw size of GSE_1_1
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Archiving exported data...
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Archiving GUI data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Archiving GSE_2_1 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Archiving GSE_1_1 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Archiving GPE_2_1 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Archiving GPE_1_1 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Archiving GSQL data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculating the file size of the archives...
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the file size of GSQL.tar.lz4 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the file size of GSE_2_1.tar.lz4 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the file size of GPE_2_1.tar.lz4 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the file size of GUI.tar.lz4 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the file size of GSE_1_1.tar.lz4 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Calculate the file size of GPE_1_1.tar.lz4 data
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Backup completes, backup files are under the path: /home/tigergraph/backup/weekly-2022-10-26T085124
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Clean staging directory: /home/tigergraph/tigergraph/data/backup/weekly-2022-10-26T085124
+[   Info] [Wed Oct 26 08:51:28 UTC 2022] Clean staging directory /home/tigergraph/tigergraph/data/backup/weekly-2022-10-26T085124 successfully
+----
+
+== List Backup Files
+
+[source,console]
+----
+gbar backup list
+----
+This command lists all generated backup files in the storage place configured by the user. For each file, it shows the file’s full tag, its size in human-readable format, and its creation time.
+
+[.wrap,console]
+----
+$ gadmin backup list
++--------------------------+----------+---------------------+
+|           TAG            |  SIZE    |     CREATED AT      |
++--------------------------+----------+---------------------+
+| weekly-2022-10-22T133912 | 2.6 MB   | 2022-10-22 13:39:12 |
+| weekly-2022-10-23T133941 | 20.6 MB  | 2022-10-23 13:39:41 |
+| weekly-2022-10-24T134133 | 80.1 MB  | 2022-10-24 13:41:33 |
+| weekly-2022-10-25T134242 | 102.3 MB | 2022-10-25 13:42:42 |
++--------------------------+----------+---------------------+
+----
+
+== Remove a backup
+
+To remove a backup, run the `gadmin backup remove tag [tag...]` command:
+
+[source,console]
+----
+$ gadmin backup remove <backup_tag>
+----
+
+The command removes a backup from the backup storage path. To retrieve the tag of a backup, you can use the `gbar list` command.
 
 [#_metadata_backup_optional]
 === Metadata backup (Optional)
