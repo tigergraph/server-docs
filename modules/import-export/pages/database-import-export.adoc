@@ -47,6 +47,7 @@ exportOptions ::=
     -U, --USERS         Includes Permissions, Secrets, and Tokens
     -P, --PASSWORD      Encrypt with password. User will be prompted
         --SEPARATOR     Specify a column separator
+        --EOL           Specify a line separator
 ----
 
 CAUTION: The export directory should be empty before running the command.
@@ -81,11 +82,19 @@ Users will be prompted to enter a password when using this option.
 
 |`--SEPARATOR`
 |Specify the column separator character. Default is ASCII char 29.
+
+|`--EOL`
+|Specify the line separator character. Default is ASCII char 28.
 |===
 
 [NOTE]
 ====
 xref:user-access:ldap.adoc#_proxy_users[Proxy users] cannot be exported.
+====
+
+[NOTE]
+====
+ASCII char 30 (RS) and 31 (US) are reserved separators that cannot be used for data export.
 ====
 
 === Output
