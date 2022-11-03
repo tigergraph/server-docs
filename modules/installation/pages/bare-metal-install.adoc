@@ -1,26 +1,26 @@
-= Installation Guide for bare metal machines
+= On-premises Installation
 :description: Installing Single-machine and Multi-machine systems
 
 
-This guide describes how to install the TigerGraph platform on bare metal (physical machine) either as a single node or as a multi-node cluster, interactively or non-interactively.
+This guide describes how to install the TigerGraph on an on-premises machine.
+
+The installation guide covers installation as a single node or as a multi-node cluster, interactively or non-interactively.
 
 NOTE: If you signed up for the Enterprise Free license, you also have access to the TigerGraph platform as a Docker image or a virtual machine (VirtualBox) image.
-Follow the instructions in xref:cloud:start:getting-started.adoc[Getting started] to start up TigerGraph in a Docker container or with VirtualBox.
+Follow the instructions in xref:getting-started:index.adoc[Getting started] to start up TigerGraph in a Docker container or with VirtualBox.
 
-== Pre-requisites
+== Prerequisites
 
 Before you can install the TigerGraph system, you need the following:
 
 * Make sure the provisioned machines meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_]
-* A Linux superuser, it can be root or a sudo user, it must have:author: 
-
-** Same login password on every machine.
-** Or the same ssh key on every machine. (most used approach)
+* Make sure every machine in the cluster has a Linux superuser with the same username and password, or same username and SSH key.
 * A license key provided by TigerGraph (not applicable to Enterprise Free)
 * A TigerGraph system package
  ** If you do not yet have a TigerGraph system package, you can https://www.tigergraph.com/get-tigergraph/[request one].
-* If you are installing a cluster, ensure that every machine has the same SSH port (22) and that the port stays open during installation
-** SSH port *is not* mandatory to be 22, we understand that this sometimes might be restricted by policy, therefore TigerGraph can use another SSH port. You just need to specify that while installing TigeGraph.
+* If you are installing a cluster, ensure that every machine has the same SSH port and that the port stays open during installation
+** SSH port does not need to be 22.
+You can specify a custom port number during installation.
 
 === For Oracle Linux and RedHat distros
 
