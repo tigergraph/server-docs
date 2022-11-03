@@ -118,7 +118,19 @@ Using spinning disks (HDD) can cause several issues like:
 * Issues when restring TigerGraph
 * Low performance 
 
-NOTE: TigerGraph is not resposible for any issues caused by using spinning disk (HDD)
+TigerGraph suggests using different mount points for the App, Data, Log and Temp directories to avoid one single point of failure. This can be defined while installing TigerGraph (either via interactive mode or non-interactive mode).
+
+A good example can be the following differentation (referring to the `install_config.json`)
+
+```
+"RootDir": {
+      "AppRoot": "/mnt1/app",
+      "DataRoot": "/mnt2/data",
+      "LogRoot": "/mnt3/log" 
+      "TempRoot": "/mnt4/tmp"
+    },
+```
+You can opt for spinning disk (HDD) for the mount of the logs, the remaining ones have to be on Solid-State_drive (SSD).
 
 Another important point when choosing the Disk type is the disk IOPS capacity, we *strongly* suggest opting for ≥3000 IOPS
 
