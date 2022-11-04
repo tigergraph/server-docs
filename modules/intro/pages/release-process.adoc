@@ -1,11 +1,7 @@
-= TigerGraph Release And Patch Process
+= TigerGraph Release Cycle
 :description:This page explains TigerGraph's release process and patch naming conventions.
 
-TigerGraph is committed to providing the most scalable, most secure, and highest performing enterprise-grade graph database.
-
-To meet our commitment, we follow a release cadence that allows us to regularly deliver product and service improvements in the form of new features, enhancements, bug fixes and security patches.
-
-
+TigerGraph follows a release cadence that allows us to regularly deliver product and service improvements in the form of new features, enhancements, bug fixes and security patches.
 
 In summary, the TigerGraph release types are:
 
@@ -16,7 +12,7 @@ In summary, the TigerGraph release types are:
 This document describes the process we follow for these three types of releases.
 
 
-== Naming Convention
+== Naming convention
 For all releases, we use https://en.wikipedia.org/wiki/Software_versioning[sequence-based identifiers] in the format *major.minor.patch*.
 
 Here, *major* is a number and increment for the most significant releases, *minor* is an incrementable number for less significant releases, and *patch* is a number for the maintenance release.
@@ -54,6 +50,10 @@ TigerGraph’s Customer Success team will also proactively share the release not
 ==== Maintenance
 Each feature release will get a maintenance release three months after the initial release.
 
+NOTE: The schedule for maintenance releases is flexible.
+For example, if a critical issue is discovered, a maintenance release might come earlier than three months.
+If no issues are discovered, a maintenance release might come later.
+
 === LTS release
 Every third feature release is a long-term support (LTS) release.
 An LTS release is essentially a feature release that TigerGraph commits to maintaining for a longer period of time.
@@ -80,10 +80,14 @@ TigerGraph’s Customer Success team will also proactively share the release not
 Each LTS release will get a maintenance release three months after the initial release.
 After the first maintenance release, an LTS release continues to get maintenance releases every two month for at least four more releases.
 
-For example, with 3.8 as a LTS release, it gets a maintenance release - 3.8.1 -
-three months after 3.8.0.
-After 3.8.1, the 3.8 LTS release continues to get maintenance releases every two months until 3.8.5.
+For example, with 3.9 as a LTS release, it gets a maintenance release - 3.9.1 -
+three months after 3.9.0.
+After 3.9.1, the 3. LTS release continues to get maintenance releases every two months until 3.9.5.
 This ensures that each LTS version continues to be maintained for at least 12 months.
+
+NOTE: The schedule for maintenance releases is flexible.
+For example, if a critical issue is discovered, a maintenance release might come earlier than three months.
+If no issues are discovered, a maintenance release might come later.
 
 === Maintenance release
 
@@ -96,13 +100,3 @@ TigerGraph’s Customer Success team will proactively share the release notes wi
 ==== Upgrades
 The maintenance release upgrade process is the same as the upgrade guidance in a Full release, as documented in the xref:installation:upgrade.adoc[Upgrade] section of the documentation.
 Depending on the urgency of the patch, our Customer Success team may reach out to customers to discuss the upgrade of a Patch release.
-
-
-== Example scenarios
-
-=== Customer requires a stabilized version for production
-
-
-
-
-
