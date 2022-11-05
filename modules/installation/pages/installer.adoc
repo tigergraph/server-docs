@@ -2,34 +2,7 @@
 
 TigerGraph package comes with a bash installation script that can be run either in interactive mode or non-interactive mode
 
-The installer script (`install.sh`) will take care on installing all TigerGraph required components and packages and provide an up and running TigerGraph enviroment once completed. 
-
-==== Installer options
-
-[,bash]
-----
-# Command-line options for install.sh
-Usage:
-./install.sh [-n] [-u <user>] [-p <password>] [-r <tigergraph_root_dir>] [-l <license_key>] [-F] [-N]
-./install.sh -h
-Options:
-  -h  --  Show help information
-  -u  --  Username of Linux user to create [default: tigergraph]
-  -p  --  Password of Linux user to create [default: tigergraph]
-  -l  --  TigerGraph license key
-  -n  --  Non-interactive option: suppress prompts, and install
-          using default config
-  -F  --  Set iptables (firewall) rules to open TCP ports among cluster nodes
-  -N  --  Set NTP system time synchronization among cluster nodes
-
-[NOTE    ]: Using option '-n' will non-interactively install the platform
-            on single node or cluster with all configurations from
-            config file "install_config.json". In this case, the config
-            file should be modified before installation.
-
-[WARNING ]: Installer will fail if any option (except -F and -N)
-            is provided with option '-n' at the same time.
-----
+The installer script (`install.sh`) takes care on installing all TigerGraph required components and packages and provide an up and running TigerGraph environment once completed.
 
 == NTP and Firewall
 
@@ -37,55 +10,19 @@ The setup and configurations for xref:installation:hw-and-sw-requirements.adoc#_
 
 == Installer pre-check
 
-The first taks that the TigerGraph Installer will run is the pre-check step 
+The first task that the TigerGraph Installer will run is the pre-check step
 
-[#_interactive_installation]
-== Interactive installation
-
-In this installation mode, you *do not* need to edit the `install_conf.json` configuration file as you will be asked *interactivelly* to pass the required information while you install TigerGraph. 
-
-*Step 1*: Extract the package by running the following command to create a folder named `tigergraph-<version>-offline`. The filename of your package may vary depending on the product edition and version.
-
-[,console]
-----
-$ tar -xvzf tigergraph-<version>.tar.gz
-----
-
-*Step 2:* Navigate to the `tigergraph-<version>-offline`` folder and run the `install.sh` script with the following commands:
-
-[,console]
-----
-$ cd tigergraph-<version>-offline
-
-#sudo not requried for standalone installation
-$ sudo ./install.sh
-----
-
-The installer will ask for the following information. You may choose to hit Enter to skip and use the system default or enter a new value:
-
-* Your agreement to the License Terms and Conditions
-* Your license key (not applicable for Enterprise Free)
-* Username for the Linux user who will own and manage the TigerGraph platform
- ** The installer creates a Linux user with this username who is the only authorized user that can run `gadmin` commands to manage the TigerGraph Platform.
- ** If the installation and data folders are modified from their defaults, the newly created user must have appropriate permissions for these folders.
-    The installation folder requires read/write/execute access, and the other folders require read/write access.
-* Password for the Linux user who will own and manage the TigerGraph platform
-* Path to where the installation folder will be
-* Path to where the data folder will be
-* Path to where the log folder will be
-** For production systems, it’s recommended that you use a separate disk partition to store log files to prevent out-of-space issues.
-* Path to where the temp folder will be
-* The SSH port for your machine
 
 == Non-interactive installation
 
-NOTE: This is the preferred way for installing TigerGraph, as it allows you to visualize the entire configuration in one place
+This is the preferred way for installing TigerGraph, as it allows you to visualize the entire configuration in one place.
 
 The `install.sh` scripts relies on its configuration JSON file called `install_conf.json` which holds all the configuration information required for installing TigerGraph. 
 
 In this installation mode, you need to edit the `install_conf.json` and manually pass all your configuration information.
 
 This is an example of a *manually modified* `install_config.json` configuration file
+
 [#_install_conf_example]
 [,javascript]
 ----
@@ -174,14 +111,5 @@ If you use key-based authentication, the sudo user you are providing must have p
    **** If you would like to enable the High Availability (HA) feature, please make sure you have at least 3 nodes in the cluster and set the replication factor to be greater than 1. For example, if your cluster has 6 nodes, you could set the replication factor to be 2 or 3. If you set the replication factor to be 2, then the partitioning factor will be  6 / 2 = 3.  Therefore, 3 nodes will be used for one copy of the data, and the other 3 nodes will be used as a replica copy of the data.
    **** Ensure that the total number of nodes can be fully divided by the replication factor.  Otherwise, some nodes may not be utilized as parts of the HA cluster.
 
-
 WARNING: If you alter the `RootDir` folder paths, make sure the new user created to manage the platform has the appropriate permissions.
 The user needs read/write/execute permissions on `AppRoot` and read/write permissions on the other folders at a minimum.
-
-
-=== Suggested installation
-
-TigerGraph suggests to install TigerGraph with the following steps:
-
-* Install all needed tools with `./install_tools.sh`
-* Edit the `install_conf.json` according to your needs and install TigerGraph in non-interactive mode with `./install.sh -n -N -F`
