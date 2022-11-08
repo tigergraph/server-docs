@@ -4,8 +4,6 @@ The streaming connector supports the following file types:
 * CSV files.
 * JSON files.
 Each JSON object must be on a separate line.
-* Parquet files.
-** After Parquet files are ingested into TigerGraph's internal Kafka, they are converted to JSON format for loading.
 * Directories.
 * tar files.
 * zip files.
@@ -34,8 +32,7 @@ The default value matches all files.
 |`file.reader.type`
 a|The type of file reader to use.
 
-* If your files are in Parquet format, use `parquet`.
-* If they are in any other format, use `text`.
+* Use `text` for all supported formats.
 |`text`
 
 |`file.reader.delimited.separator`
