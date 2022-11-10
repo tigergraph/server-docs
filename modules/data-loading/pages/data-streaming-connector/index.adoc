@@ -96,6 +96,17 @@ $ gadmin connector delete <connector_name> -y <1>
 ----
 <1> You can use the `-y` option to skip the confirmation prompt.
 
+==== Save Kafka messages when deleting connector
+Use the `-s` or `--soft` flag to delete the connector only and leave the Kafka messages and offsets intact:
+
+[.wrap,console]
+----
+$ gadmin connector delete <connector_name> -y -s
+----
+
+If you do this, you can still run or resume a loading job on the messages that have already been streamed to TigerGraph's internal Kafka server.
+
+
 
 == Known issues
 Messages in TigerGraph's internal Kafka cluster are automatically removed from the topics at regular intervals.
