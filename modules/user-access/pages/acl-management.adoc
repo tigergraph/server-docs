@@ -13,10 +13,27 @@ They can choose to set an ACL password.
 Once a user's ACL password is set, changing the ACL of queries owned by the user requires entering the user's ACL password.
 
 ==== Syntax
+
+[tabs]
+====
+Interactive::
++
+--
+[.wrap,gsql]
+----
+ALTER [USER <username>] ACL PASSWORD
+----
+This will prompt you to enter your ALC password.
+--
+Non-interactive::
++
+--
 [.wrap,gsql]
 ----
 ALTER [USER <username>] ACL PASSWORD SET <new_acl_password>
 ----
+--
+====
 
 ==== Required privilege
 * None if a user is setting their own ACL password
@@ -145,8 +162,9 @@ If a query does not have a current owner due to upgrades from an older version o
 ==== Syntax
 [.wrap,gsql]
 ----
-CHANGE OWNER OF QUERY <query_name> TO <username> [SECURED BY <acl_password>]
+CHANGE OWNER OF QUERY <query_name> TO <username> [SECURED BY <acl_password>] <1>
 ----
+<1> If current ACL password is not supplied in the command, GSQL prompts the user for the ACL password if the query owner has an ACL password.
 
 ==== Required privilege
 * None if the query is owned by the current user
@@ -167,8 +185,9 @@ To grant an ACL privilege, the query owner must have the corresponding RBAC priv
 ==== Syntax
 [.wrap,gsql]
 ----
-GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> TO <role1> (, <role2> ...)* [SECURED BY <owner_acl_password>]
+GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> TO <role1> (, <role2> ...)* [SECURED BY <owner_acl_password>] <1>
 ----
+<1> If current ACL password is not supplied in the command, GSQL prompts the user for the ACL password if the query owner has an ACL password.
 
 ==== Required privilege
 * `READ_QUERY` for granting `READ` privilege on the query.
@@ -199,8 +218,9 @@ The effect of revoking ACL privileges from all roles in an entry by revoking fro
 ==== Syntax
 [.wrap,gsql]
 ----
-REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM <role1> (, <role2>, ... )* [SECURED BY <owner_acl_password>]
+REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM <role1> (, <role2>, ... )* [SECURED BY <owner_acl_password>] <1>
 ----
+<1> If current ACL password is not supplied in the command, GSQL prompts the user for the ACL password if the query owner has an ACL password.
 
 ==== Required privilege
 None. Only query owner can run the command.
@@ -223,8 +243,9 @@ The owner of a query can choose to revert access control governance of a query t
 ==== Syntax
 [.wrap,gsql]
 ----
-REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM ALL [SECURED BY <owner_acl_password>]
+REVOKE ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> FROM ALL [SECURED BY <owner_acl_password>] <1>
 ----
+<1> If current ACL password is not supplied in the command, GSQL prompts the user for the ACL password if the query owner has an ACL password.
 
 ==== Required privilege
 None.
@@ -248,8 +269,9 @@ If the query owner grants a type of ACL privilege on a query to `NOBODY`, no one
 ==== Syntax
 [.wrap,gsql]
 ----
-GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> TO NOBODY [ SECURED BY <owner_acl_password> ]
+GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> TO NOBODY [ SECURED BY <owner_acl_password> ] <1>
 ----
+<1> If current ACL password is not supplied in the command, GSQL prompts the user for the ACL password if the query owner has an ACL password.
 
 ==== Required privilege
 None.
