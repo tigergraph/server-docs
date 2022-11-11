@@ -398,6 +398,127 @@ Response::
 ----
 --
 ====
+
+=== Monitor system metrics (OpenMetrics)
+
+`GET :9167/metrics`
+
+You can monitor system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
+This endpoint exists on port 9167 by default.
+
+NOTE: This endpoint listens on the same port as the informant service in TigerGraph.
+If you change the informant port to a different one, this endpoint listens on that port instead.
+
+Every call to this endpoint retrieves all metrics.
+Metrics are updated every 60 seconds by default.
+This interval can be adjusted with the xref:reference:configuration-parameters.adoc[`System.Metrics`  parameters].
+
+
+This endpoint does not require any privilege.
+
+==== Parameters
+None.
+
+==== Sample request
+
+[tabs]
+====
+Request::
++
+--
+[.wrap.console]
+----
+$ curl http://localhost:6197/metrics
+----
+--
+Response::
++
+--
+[,text]
+----
+# HELP tigergraph_cpu_usage Percentage of CPU usage by component. Service name empty means usage of the whole node
+# TYPE tigergraph_cpu_usage gauge
+tigergraph_cpu_usage{host_id="m1",service_name=""} 62.04006576538086
+tigergraph_cpu_usage{host_id="m1",service_name="ADMIN"} 0.4452745020389557
+tigergraph_cpu_usage{host_id="m1",service_name="CTRL"} 0.3366197347640991
+tigergraph_cpu_usage{host_id="m1",service_name="DICT"} 0.13882260024547577
+tigergraph_cpu_usage{host_id="m1",service_name="ETCD"} 1.021435022354126
+tigergraph_cpu_usage{host_id="m1",service_name="GPE"} 7.542555809020996
+tigergraph_cpu_usage{host_id="m1",service_name="GSE"} 45.86964416503906
+tigergraph_cpu_usage{host_id="m1",service_name="GSQL"} 1.0639517307281494
+tigergraph_cpu_usage{host_id="m1",service_name="GUI"} 0.010601896792650223
+tigergraph_cpu_usage{host_id="m1",service_name="IFM"} 1.0899430513381958
+tigergraph_cpu_usage{host_id="m1",service_name="KAFKA"} 56.06120681762695
+tigergraph_cpu_usage{host_id="m1",service_name="KAFKACONN"} 1.8662768602371216
+tigergraph_cpu_usage{host_id="m1",service_name="KAFKASTRM-LL"} 0.9830034971237183
+tigergraph_cpu_usage{host_id="m1",service_name="NGINX"} 0
+tigergraph_cpu_usage{host_id="m1",service_name="RESTPP"} 13.063582420349121
+tigergraph_cpu_usage{host_id="m1",service_name="TS3"} 0.1956222653388977
+tigergraph_cpu_usage{host_id="m1",service_name="TS3SERV"} 0.1768123060464859
+tigergraph_cpu_usage{host_id="m1",service_name="ZK"} 0.25204044580459595
+# HELP tigergraph_diskspace_free Free Disk space in megabytes by directory.
+# TYPE tigergraph_diskspace_free gauge
+tigergraph_diskspace_free{host_id="m1",mount_point="/",path="/home/tigergraph",path_name="Home"} 188097.546875
+tigergraph_diskspace_free{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/data/gstore",path_name="Gstore"} 188097.546875
+tigergraph_diskspace_free{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/data/kafka",path_name="Kafka"} 188097.546875
+tigergraph_diskspace_free{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/log",path_name="Log"} 188097.546875
+# HELP tigergraph_diskspace_usage Disk usage in megabytes by directory.
+# TYPE tigergraph_diskspace_usage gauge
+tigergraph_diskspace_usage{host_id="m1",mount_point="/",path="/home/tigergraph",path_name="Home"} 7107.47509765625
+tigergraph_diskspace_usage{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/data/gstore",path_name="Gstore"} 579.0476684570312
+tigergraph_diskspace_usage{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/data/kafka",path_name="Kafka"} 1164.056640625
+tigergraph_diskspace_usage{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/log",path_name="Log"} 255.07992553710938
+# HELP tigergraph_memory_usage Memory usage in megabytes by component. Service name empty means usage of the whole node
+# TYPE tigergraph_memory_usage gauge
+tigergraph_memory_usage{host_id="m1",service_name=""} 6452
+tigergraph_memory_usage{host_id="m1",service_name="ADMIN"} 44
+tigergraph_memory_usage{host_id="m1",service_name="CTRL"} 33
+tigergraph_memory_usage{host_id="m1",service_name="DICT"} 35
+tigergraph_memory_usage{host_id="m1",service_name="ETCD"} 22
+tigergraph_memory_usage{host_id="m1",service_name="GPE"} 682
+tigergraph_memory_usage{host_id="m1",service_name="GSE"} 1129
+tigergraph_memory_usage{host_id="m1",service_name="GSQL"} 287
+tigergraph_memory_usage{host_id="m1",service_name="GUI"} 28
+tigergraph_memory_usage{host_id="m1",service_name="IFM"} 33
+tigergraph_memory_usage{host_id="m1",service_name="KAFKA"} 646
+tigergraph_memory_usage{host_id="m1",service_name="KAFKACONN"} 2182
+tigergraph_memory_usage{host_id="m1",service_name="KAFKASTRM-LL"} 401
+tigergraph_memory_usage{host_id="m1",service_name="NGINX"} 2
+tigergraph_memory_usage{host_id="m1",service_name="RESTPP"} 295
+tigergraph_memory_usage{host_id="m1",service_name="TS3"} 20
+tigergraph_memory_usage{host_id="m1",service_name="TS3SERV"} 21
+tigergraph_memory_usage{host_id="m1",service_name="ZK"} 116
+# HELP tigergraph_network_connections Number of open TCP connections.
+# TYPE tigergraph_network_connections gauge
+tigergraph_network_connections{host_id="m1",ip="10.128.0.203"} 477
+# HELP tigergraph_network_traffic Network traffic in bytes since the service started.
+# TYPE tigergraph_network_traffic gauge
+tigergraph_network_traffic{direction="incoming",host_id="m1",ip="10.128.0.203"} 4.579066608e+09
+tigergraph_network_traffic{direction="outgoing",host_id="m1",ip="10.128.0.203"} 4.579066608e+09
+# HELP tigergraph_service_status Tigergraph service status. Partiton or replica empty means no partition or replica for that service.
+# TYPE tigergraph_service_status gauge
+tigergraph_service_status{partition="",replica="1",service_name="ADMIN"} 6
+tigergraph_service_status{partition="",replica="1",service_name="CTRL"} 6
+tigergraph_service_status{partition="",replica="1",service_name="DICT"} 6
+tigergraph_service_status{partition="",replica="1",service_name="ETCD"} 6
+tigergraph_service_status{partition="",replica="1",service_name="GSQL"} 6
+tigergraph_service_status{partition="",replica="1",service_name="GUI"} 6
+tigergraph_service_status{partition="",replica="1",service_name="IFM"} 6
+tigergraph_service_status{partition="",replica="1",service_name="KAFKA"} 6
+tigergraph_service_status{partition="",replica="1",service_name="KAFKACONN"} 6
+tigergraph_service_status{partition="",replica="1",service_name="NGINX"} 6
+tigergraph_service_status{partition="",replica="1",service_name="RESTPP"} 6
+tigergraph_service_status{partition="",replica="1",service_name="TS3SERV"} 6
+tigergraph_service_status{partition="",replica="1",service_name="ZK"} 6
+tigergraph_service_status{partition="1",replica="",service_name="EXE"} 6
+tigergraph_service_status{partition="1",replica="",service_name="KAFKASTRM-LL"} 6
+tigergraph_service_status{partition="1",replica="",service_name="TS3"} 6
+tigergraph_service_status{partition="1",replica="1",service_name="GPE"} 6
+tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
+----
+--
+====
+
 === Show query performance
 
 `+GET /statistics/{graph_name}+`
