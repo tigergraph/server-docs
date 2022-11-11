@@ -401,10 +401,13 @@ Response::
 
 === Monitor system metrics (OpenMetrics)
 
-`GET :6197/metrics`
+`GET :9167/metrics`
 
 You can monitor system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
-This endpoint exists on port 6197.
+This endpoint exists on port 6197 by default.
+
+NOTE: This endpoint listens on the same port as the informant service in TigerGraph.
+If you change the informant port to a different one, this endpoint listens on that port instead. 
 
 Every call to this endpoint retrieves all metrics.
 Metrics are updated every 60 seconds by default.
