@@ -29,6 +29,16 @@ For example, to specify that there can only be 50 concurrent queries at a time, 
 $ gadmin confit set RESTPP.WorkLoadManager.MaxConcurrentQueries 50
 ----
 
+If the maximum number of concurrent queries is reached, newly submitted queries are placed in a queue, and begin to run as the currently running queries finish.
+You can adjust the size of the queue with the configuration parameter `RESTPP.WorkLoadManager.MaxDelayQueueSize`.
+
+For example, to specify that a maximum 20 queries may remain in the queue, run the following command:
+
+[.wrap,console]
+----
+$ gadmin confit set RESTPP.WorkLoadManager.MaxDelayQueueSize 20
+----
+
 You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
 
 == Specify replica to run query on
