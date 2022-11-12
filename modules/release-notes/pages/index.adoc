@@ -9,13 +9,6 @@ TigerGraph Server {page-component-version}.0 was released on Nov 15th, 2022.
 
 The following is a list of new features and improvements:
 
-=== Query Language
-* Added the xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[`DISCRIMINATOR` keyword] to enable defining edge types that allow multiple edge instances between two vertices.
-
-=== Data API Service
-* Added support for endpoints that xref:API:upsert-rest.adoc[insert], xref:tigergraph-server:API:built-in-endpoints.adoc#_retrieve_edge_by_source_target_edge_type_and_discriminator[retrieve], and xref:tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[delete edge instances] to handle situations where there are multiple instances of an edge type between two vertices.
-* Added xref:API:built-in-endpoints.adoc#_list_all_running_queries[the `POST /showprocessall`] endpoint, which lists all currently running queries on a node.
-
 === Developer tools - GraphStudio
 
 * Introduced xref:insights:intro:index.adoc[TigerGraph Insights], a no-code graph analyzer for making interactive visual dashboards.
@@ -23,17 +16,27 @@ The following is a list of new features and improvements:
 * Reworked the xref:gui:graphstudio:map-data-to-graph.adoc[data loading workflow] for adding data sources to a graph.
 * Added the ability to load data to a graph from Azure Blob Storage.
 
-
-=== Elasticity
-
-
 === Manageability
 * Added the ability to xref:syst em-management:workload-management.adoc#_limit_number_of_concurrent_queries[limit the number of concurrent built-in heavy queries] as well as xref:system-management:workload-management.adoc#_limit_number_of_concurrent_queries[concurrent queries].
 * Added the functionality to xref:system-management:memory-management.adoc#_limit_query_memory_usage[restrict the amount of memory a query is allowed to use].
 
+=== Query Language
+* Added the xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[`DISCRIMINATOR` keyword] to enable defining edge types that allow multiple edge instances between two vertices.
+
+=== Performance
+* Introduced the xref:gsql-ref:querying:query-optimizer/index.adoc[query optimizer], which performs cost-based optimization on queries based on pre-computed statistics.
+
+=== Data API Service
+* Added support for endpoints that xref:API:upsert-rest.adoc[insert], xref:tigergraph-server:API:built-in-endpoints.adoc#_retrieve_edge_by_source_target_edge_type_and_discriminator[retrieve], and xref:tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[delete edge instances] to handle situations where there are multiple instances of an edge type between two vertices.
+* Added xref:API:built-in-endpoints.adoc#_list_all_running_queries[the `POST /showprocessall`] endpoint, which lists all currently running queries on a node.
+
 
 === Security
+* xref:gsql-ref:querying:func/query-user-defined-functions.adoc[Strengthened the security requirements] for the management of user-defined functions (UDF).
+* Sensitive information such as ACL passwords are now masked when entering passwords interactively.
+* All personally identifiable information in data source configuration when using the Kafka loader or Data Streaming Connector are now masked.
 * Added xref:security:login-protection.adoc[login protection] and the ability for administrators to xref:security:password-policy.adoc[enable a password policy].
+
 
 === Stability
 
@@ -41,10 +44,11 @@ The following is a list of new features and improvements:
 
 === Ecosystem integration
 * Added the ability to xref:data-loading:data-streaming-connector/big-query.adoc[query and stream data from Google Big Query] to Data Streaming Connector.
+* Added the ability to configure how much memory Data Streaming Connectors are allowed to use through the `KafkaConnect.MaxMemorySizeMB` parameter.
 
 
 === Observability
-
+* Added xref:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics[the `/metrics` endpoint] to report system metrics in OpenMetrics format.
 * Added the ability to monitor queries through AdminPortal and view query performance over time.
 * Added the capability for the Graph Processing Engine (GPE) to xref:system-management:memory-management.adoc#_monitor_memory_usage[log the highest memory usage of a query during its execution].
 
