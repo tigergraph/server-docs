@@ -16,8 +16,15 @@ The following is a list of new features and improvements:
 * Reworked the xref:gui:graphstudio:map-data-to-graph.adoc[data loading workflow] for adding data sources to a graph.
 * Added the ability to load data to a graph from Azure Blob Storage.
 
+=== Developer tools - Graph Data Science Algorithm Library
+
+* Added xref:1.0@graph-ml:using-an-algorithm:index.adoc[Packaged Template Queries] as a significantly more streamlined way for developers to instantly install a set of data science algorithms for use on any graph.
+* Added the `CALL` function to call a pre-installed template query rather than having to copy it and install it manually.
+* Updated parameter names to be consistently more readable across all algorithms
+* Introduced versioning of the algorithm library for the first time
+
 === Manageability
-* Added the ability to xref:syst em-management:workload-management.adoc#_limit_number_of_concurrent_queries[limit the number of concurrent built-in heavy queries] as well as xref:system-management:workload-management.adoc#_limit_number_of_concurrent_queries[concurrent queries].
+* Added the ability to xref:system-management:workload-management.adoc#_limit_number_of_concurrent_queries[limit the number of concurrent built-in heavy queries] as well as xref:system-management:workload-management.adoc#_limit_number_of_concurrent_queries[concurrent queries].
 * Added the functionality to xref:system-management:memory-management.adoc#_limit_query_memory_usage[restrict the amount of memory a query is allowed to use].
 
 === Query Language
@@ -45,7 +52,7 @@ The following is a list of new features and improvements:
 === Ecosystem integration
 * Added the ability to xref:data-loading:data-streaming-connector/big-query.adoc[query and stream data from Google Big Query] to Data Streaming Connector.
 * Added the ability to configure how much memory Data Streaming Connectors are allowed to use through the `KafkaConnect.MaxMemorySizeMB` parameter.
-
+* Added the ability to shrink or expand a cluster using the `kubectl tg update` command in Kubernetes.
 
 === Observability
 * Added xref:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics[the `/metrics` endpoint] to report system metrics in OpenMetrics format.
