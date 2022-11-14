@@ -9,11 +9,11 @@ TigerGraph has a few built-in queries that are memory-intensive, here referred t
 These queries tend to be invoked by applications such as GraphStudio.
 You can set a limit of how many of these heavy queries are allowed to run concurrently by configuring the parameter `RESTPP.WorkLoadManager.MaxHeavyBuiltinQueries` with the xref:management-commands.adoc#_gadmin_config[`gadmin config` command].
 
-For example, to set the maximum limit of the number of heavy built-in queries to 10, run the following command:
+For example, to set the maximum number of heavy built-in queries to 10, run the following command:
 
 [source.wrap,console]
 ----
-$ gadmin confit set RESTPP.WorkLoadManager.MaxHeavyBuiltinQueries 10
+$ gadmin config set RESTPP.WorkLoadManager.MaxHeavyBuiltinQueries 10
 ----
 
 You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
@@ -22,11 +22,11 @@ You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the 
 You can use the `RESTPP.WorkLoadManager.MaxConcurrentQueries` parameter to set a limit of how many queries are allowed to be running concurrently.
 The count of these queries *does not include* the built-in heavy queries.
 
-For example, to specify that there can only be 50 concurrent queries at a time, excluding the heavy built-in queries, change the value of the configuration parameter to 10 with the xref:management-commands.adoc#_gadmin_config[`gadmin config` command]:
+For example, to specify that there can only be 50 concurrent queries at a time, excluding the heavy built-in queries, change the value of the configuration parameter to 50 with the xref:management-commands.adoc#_gadmin_config[`gadmin config` command]:
 
 [source.wrap,console]
 ----
-$ gadmin confit set RESTPP.WorkLoadManager.MaxConcurrentQueries 50
+$ gadmin config set RESTPP.WorkLoadManager.MaxConcurrentQueries 50
 ----
 
 You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
