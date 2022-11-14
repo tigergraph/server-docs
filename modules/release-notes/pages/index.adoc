@@ -9,18 +9,21 @@ TigerGraph Server {page-component-version}.0 was released on Nov 15th, 2022.
 
 The following is a list of new features and improvements:
 
+
+=== Developer tools - TigerGraph Insights
+* Introduced xref:insights:intro:index.adoc[TigerGraph Insights], a no-code graph analyzer for making interactive visual dashboards.
+
 === Developer tools - GraphStudio
 
-* Introduced xref:insights:intro:index.adoc[TigerGraph Insights], a no-code graph analyzer for making interactive visual dashboards.
 * Added support for multiple edge instances between two vertices in GraphStudio.
 * Reworked the xref:gui:graphstudio:map-data-to-graph.adoc[data loading workflow] for adding data sources to a graph.
 * Added the ability to load data to a graph from Azure Blob Storage.
 
 === Developer tools - Graph Data Science Algorithm Library
 
-* Added xref:1.0@graph-ml:using-an-algorithm:index.adoc[Packaged Template Queries] as a significantly more streamlined way for developers to instantly install a set of data science algorithms for use on any graph.
-* Added the `CALL` function to call a pre-installed template query rather than having to copy it and install it manually.
-* Updated parameter names to be consistently more readable across all algorithms.
+* Added xref:1.0@graph-ml:using-an-algorithm:index.adoc[Packaged Template Queries] as a more streamlined way for developers to install and manage the GDS algorithm library.
+* Added the CALL command to run queries with just-in-time compilation, yielding higher performance.
+* Updated parameter names to be more consistent across algorithms.
 * Introduced versioning of the algorithm library to follow the database version.
 
 === Manageability
@@ -28,7 +31,11 @@ The following is a list of new features and improvements:
 * Added the functionality to xref:system-management:memory-management.adoc#_limit_query_memory_usage[restrict the amount of memory a query is allowed to use].
 
 === Query Language
+* Added support for multiple edges instances of the same type between two vertices.
 * Added the xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[`DISCRIMINATOR` keyword] to enable defining edge types that allow multiple edge instances between two vertices.
+* GSQL no longer recognizes empty input for a query parameter of type `SET` to be an empty set; users must explicitly specify an empty set instead.
+** In GSQL, use square brackets `[]` to  specify an empty set.
+** In an HTTP request, use square brackets `[]` in the request body to specify an empty set.
 
 === Performance
 * Introduced the xref:gsql-ref:querying:query-optimizer/index.adoc[query optimizer], which performs cost-based optimization on queries based on pre-computed statistics.
@@ -39,14 +46,10 @@ The following is a list of new features and improvements:
 
 
 === Security
-* xref:gsql-ref:querying:func/query-user-defined-functions.adoc[Strengthened the security requirements] for the management of user-defined functions (UDF).
+* xref:gsql-ref:querying:func/query-user-defined-functions.adoc[Strengthened the security] for the management of user-defined functions (UDF).
 * Sensitive information such as ACL passwords are now masked when entering passwords interactively.
 * All personally identifiable information in data source configuration when using the Kafka loader or Data Streaming Connector are now masked.
 * Added xref:security:login-protection.adoc[login protection] and the ability for administrators to xref:security:password-policy.adoc[enable a password policy].
-
-
-=== Stability
-
 
 
 === Ecosystem integration
