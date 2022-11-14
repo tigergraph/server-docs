@@ -35,7 +35,8 @@ The following is a list of new features and improvements:
 * Added the xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[`DISCRIMINATOR` keyword] to enable defining edge types that allow multiple edge instances between two vertices.
 * GSQL no longer recognizes empty input for a query parameter of type `SET` to be an empty set; users must explicitly specify an empty set instead.
 ** In GSQL, use square brackets `[]` to  specify an empty set.
-** In an HTTP request, use square brackets `[]` in the request body to specify an empty set.
+** In an HTTP request, use square brackets `[]` in the request body of a POST request to specify an empty set.
+You can no longer specify an empty set using query strings in a GET request.
 
 === Performance
 * Introduced the xref:gsql-ref:querying:query-optimizer/index.adoc[query optimizer], which performs cost-based optimization on queries based on pre-computed statistics.
