@@ -9,7 +9,6 @@ TigerGraph Server {page-component-version}.0 was released on Nov 15th, 2022.
 
 The following is a list of new features and improvements:
 
-
 === Developer tools - TigerGraph Insights
 * Introduced xref:insights:intro:index.adoc[TigerGraph Insights], a no-code graph analyzer for making interactive visual dashboards.
 
@@ -62,19 +61,24 @@ You can no longer specify an empty set using query strings in a GET request.
 * Added xref:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics[the `/metrics` endpoint] to report system metrics in OpenMetrics format.
 * Added the ability to monitor queries through AdminPortal and view query performance over time.
 * Added the capability for the Graph Processing Engine (GPE) to xref:system-management:memory-management.adoc#_monitor_memory_usage[log the highest memory usage of a query during its execution].
-
-
+* Improved messaging for errors caused by wrong configurations for a Kafka loading job.
 
 [#_fixed_issues]
 == Fixed issues
+* Fixed an issue that could cause failure during cluster shrinking due to communication issues with the ETCD service.
+* Resolved several vulnerabilities caused by various dependencies.
+* Fixed an issue that could cause system to become unresponsive due to the executor service dysfunction.
+* Fixed an issue where exceedingly long queries (over 1000 lines) take a long time to be created and installed.
+* Fixed an issue that caused GBAR backup to be unable to reach AWS S3 on private network.
+* Fixed an issue where users cannot access the GraphQL service with database username/password credentials.
+* Fixed an issue that caused upgrades from versions earlier than 3.7 to fail.
+* Fixed an issue that could cause GPE dysfunction when calling a REST endpoint.
+* Fixed an issue that in rare cases produced inaccurate results when a query uses an `ACCUM` clause.
+* Fixed an issue where S3 loading jobs cannot be terminated if it is not run in EOF mode.
+* Fixed an issue that led to inconsistent edge counts being reported across different replicas.
+* Fixed an issue that led to GSE dysfunction during leader switch.
+* Fixed an issue where enabling verbose logging could cause GPE dysfunction.
 
-
-
-== Known Issues
-
-
-
-For a list of known issues for GraphStudio and Admin Portal, please see xref:gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
 
 == Release notes for previous versions
 * xref:3.7@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.7]
