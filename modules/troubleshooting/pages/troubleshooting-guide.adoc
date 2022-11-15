@@ -13,7 +13,7 @@ The Troubleshooting Guide teaches you how to monitor the status of your TigerGra
 
 == General
 
-Before any deeper investigation, always run these general system checks :
+Before any deeper investigation, always run these general system checks:
 
 [source,console]
 ----
@@ -33,7 +33,7 @@ $ grun all "date"      (Make sure the time across all nodes are synchronized
 
 === Location of Log Files
 
-The following command reveals the location of the log files :
+The following command reveals the location of the log files:
 
 [source,console]
 ----
@@ -200,7 +200,7 @@ Multiple situations can lead to slower than expected query performance:
 
 === Query Hangs
 
-When a query hangs or seems to run forever, it can be attributed to these possibilities :
+When a query hangs or seems to run forever, it can be attributed to these possibilities:
 
 * *Services are down* Please check that TigerGraph services are online and running. Run *`gadmin status`* and possibly check the logs for any issues that you find from the status check.
 * *Query is in an infinite loop* To verify this is the issue, check the GPE log.INFO file to see if graph iteration log lines are continuing to be produced. If they are, and the edgeMaps log the same number of edges every few iterations, you have an infinite loop in your query.  If this is the case, please restart GPE to stop the query : *`gadmin restart gpe -y`*. Proceed to refine your query and make sure your loops within the query are able to break out of the loop.
@@ -222,7 +222,7 @@ To confirm the reasoning within the log file, use GraphStudio to pick a few vert
 
 === Query Installation Failed
 
-Query Installation may fail for a handful of reasons. If a query fails to install, please check the GSQL log file. The default location for the GSQL log is here :
+Query Installation may fail for a handful of reasons. If a query fails to install, please check the GSQL log file. The default location for the GSQL log is here:
 
 [source,console]
 ----
@@ -320,7 +320,7 @@ Open up the latest *.log* file and you will be able to see details about each da
 
 image::screen-shot-2020-03-27-at-1.59.24-pm.png[]
 
-Here is an example of a loading job with errors :
+Here is an example of a loading job with errors:
 
 image::screen-shot-2020-03-25-at-3.58.24-pm.png[]
 
@@ -356,7 +356,7 @@ $ gadmin --config apply
 
 === Loading Hangs
 
-When a loading job seems to be stuck, here are things to check for :
+When a loading job seems to be stuck, here are things to check for:
 
 * *GPE is DOWN* You can check the status of GPE with this command : *`gadmin status gpe`* If GPE is down, you can find the logs necessary with this command : *`gadmin log -v gpe`*
 * *Memory is full* Run this command to check memory usage on the system : *`free -g`*
@@ -480,7 +480,7 @@ GSE : /home/tigergraph/tigergraph/logs/GSE_1_1/log.INFO
 
 === GSE Process Fails To Start
 
-If the GSE process fails to start, it is usually attributed to a license issue, please check these factors :
+If the GSE process fails to start, it is usually attributed to a license issue, please check these factors:
 
 * *License Expiration* `gadmin status license` This command will show you the expiration date of your license.
 * *Single Node License on a Cluster* If you are on a TigerGraph cluster, but using a license key intended for a single machine, this will cause issues. Please check with your point of contact to see which license type you have.
@@ -510,7 +510,7 @@ If GSE crashes, and there are no reports of OOM, please reach out to TigerGraph 
 
 === GSE High Memory Consumption
 
-If your system has unexpectedly high memory usage, here are possible causes :
+If your system has unexpectedly high memory usage, here are possible causes:
 
 * *Length of ID strings is too long* GSE will automatically deny IDs with a length longer than 16k. Memory issues could also arise if an ID string is too long ( > 500). One proposed solution to this is to hash the string.
 * *Too Many Vertex Types* Check the number of unique vertex types in your graph schema. If your graph schema requires more than 200 unique vertex types, please contact TigerGraph support.
@@ -525,7 +525,7 @@ image::https://lh6.googleusercontent.com/3vmIx6BF3S0YuwLQ9-PrKip5c-Bh15NymmAlGh8
 
 === GraphStudio Crash
 
-If you suspect GraphStudio has crashed, first run `gadmin status` to verify all the components are in good shape. Two known causes of GraphStudio crashes are :
+If you suspect GraphStudio has crashed, first run `gadmin status` to verify all the components are in good shape. Two known causes of GraphStudio crashes are:
 
 * *Huge JSON response* User-written queries can return very large JSON responses. If GraphStudio often crashes on large query responses, you can try reducing the size limit for JSON responses by changing the `GUI.RESTPPResponseMaxSizeBytes` configuration using xref:gadmin:management-with-gadmin.adoc#_gadmin_config[`gadmin config`]. The default limit is 33554432 bytes.
 
@@ -568,5 +568,99 @@ There is a list of known GraphStudio issues xref:gui:graphstudio:known-issues.ad
 == Further Debugging
 
 If after taking these actions you cannot solve the issue, https://tigergraph.zendesk.com/hc/en-us/[open a support ticket] to request assistance.
-For faster resolution, download and run the xref:attachment$gsupport_collect.sh[support script] and attach the output to your support ticket.
+
+For faster resolution, download and run the xref:attachment$gsupport_collect.sh[support script] (contents shown below) and attach the output to your support ticket.
 This only needs to be run from a single TigerGraph node.
+
+.gsupport_collect.sh
+[%collapsible]
+====
+[source,console]
+----
+#!/bin/bash
+
+# TigerGraph Support Collector v1.2
+# Revised 6/1/2022
+TIME_IN_PAST=86400 # 60 * 60 * 24 hours
+INSTALL_DIR="/home/tigergraph/tigergraph/app/cmd"
+supportdir="support_collection_$(date +%F_%H%M%S)"
+
+Usage(){
+  echo ""
+  echo "TigerGraph Support Collection Tool"
+  echo ""
+  echo "Usage: $(basename "$0") [-t <seconds]"
+  echo "  -t : time, in seconds, for historical log duration"
+  echo "       default is 86400 seconds (or 24 hours)"
+  echo " "
+  echo "Example:"
+  echo "  '$(basename "$0") -t 3600'  : Run this command for logs for last 3600 seconds (60 mins or 1 hour)"
+  exit 1
+}
+
+while [ -n "$1" ];
+do
+  case "$1" in
+    -t)
+      shift
+      TIME_IN_PAST=$1
+      ;;
+    *)
+      Usage
+      exit 0
+      ;;
+  esac
+  shift
+done
+
+if [ ! -e "${INSTALL_DIR}"/gcollect ]; then
+  echo "Can't access ${INSTALL_DIR}/gcollect. Check TigerGraph software installation"
+  exit 1
+fi
+echo "Collecting logs/config for last ${TIME_IN_PAST} seconds"
+gcollect -o ./"$supportdir" -t "${TIME_IN_PAST}" collect
+STATUS=$?
+
+if [ ${STATUS} -ne 0 ]; then
+  echo "Error: gcollect command failed to execute"
+  exit 1
+fi
+
+echo; echo "Collecting current state..."
+{
+  printf "\n===gssh===\n"
+  gssh
+  printf "\n===gstatusgraph==="
+  gstatusgraph
+  printf "===GPE binary checksum==="
+  grun_p all "md5sum $(gadmin config get System.AppRoot)/bin/tg_dbs_gped"
+  printf "\n===System Date==="
+  grun_p all "date"
+  printf "\n===TG Process State==="
+  grun all "ps aux | grep $(gadmin config get System.AppRoot)/bin/"
+  printf "\n===Top Processes==="
+  grun all "top -b -n 1 | head -n 25"
+  printf "\n===CPU Architecture Information==="
+  grun all "lscpu"
+  printf "\n===disks==="
+  grun all "lsblk -d -e 7 -o name,rota"
+} > "${supportdir}"/support.log 2>&1
+
+echo; echo "Compressing support bundle collection (this may take some time)..."
+tar -Jcf "$supportdir".tar.xz "$supportdir"; rm -rf "$supportdir"
+
+#ZenDesk has file upload limit of 50MB.
+#check the size of the bundle, if it is more than 50MB, then split file into multiple chunks
+
+collectionsize=$(du -s "$supportdir".tar.xz | cut -f1); uploads=$(((collectionsize/500000)+1))
+if [ $uploads -ne 1 ]; then
+  echo; echo "Due to upload size limits, the support bundle will be split into $(((collectionsize/500000)+1)) peices."
+  mkdir "$supportdir";
+  split --verbose -d -b 50M "$supportdir".tar.xz "$supportdir"/"$supportdir".tar.xz.part;
+  rm "$supportdir".tar.xz;
+  echo; echo "Support Collection has been saved under $supportdir directory."
+else
+  echo; echo "Support Collection has been saved as $supportdir.tar.xz"
+fi
+----
+====
