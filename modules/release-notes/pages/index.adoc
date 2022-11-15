@@ -65,11 +65,14 @@ You can no longer specify an empty set using query strings in a GET request.
 
 [#_fixed_issues]
 == Fixed issues
-* Fixed an issue that could cause failure during cluster shrinking due to communication issues with the ETCD service.
-* Resolved several vulnerabilities caused by various dependencies.
-* Fixed an issue that could cause system to become unresponsive due to the executor service dysfunction.
+* Fixed an issue that could cause cluster shrinking failure due to communication issues with the ETCD service.
+* Resolved several dependency vulnerabilities.
+* Fixed an issue that could cause the system to become unresponsive due to the executor service dysfunction.
+* Fixed an issue where exporting data with `\n` in its value might cause later imports to fail.
+* Fixed an issue that caused imports to fail if any data source in the graph has the backslash escape character in its configuration.
+* Fixed an issue where a query that declares and initializes a datetime variable with an expression that uses a input parameter would cause a syntax error.
 * Fixed an issue where exceedingly long queries (over 1000 lines) take a long time to be created and installed.
-* Fixed an issue that caused GBAR backup to be unable to reach AWS S3 on private network.
+* Fixed an issue that caused GBAR backup to be unable to reach AWS S3 on a private network.
 * Fixed an issue where users cannot access the GraphQL service with database username/password credentials.
 * Fixed an issue that caused upgrades from versions earlier than 3.7 to fail.
 * Fixed an issue that could cause GPE dysfunction when calling a REST endpoint.
