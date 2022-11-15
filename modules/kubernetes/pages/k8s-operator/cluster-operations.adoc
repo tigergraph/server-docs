@@ -107,7 +107,7 @@ If the update fails, delete the failed cluster, then create it again from the ba
 kubectl apply -f <path_to_cluster_backup> --namespace <namespace_name>
 ----
 
-Remember that an expansion operation creates new pods, so in the case of a failed expansion, the newly created pods should be removed.
+Remember that an expansion operation creates new pods, so in the case of a failed expansion, the newly created pods should be manually removed.
 
 For example, if expanding from a cluster size of 5 to 6 results in a failed expansion, delete cluster number `5` (cluster numbering begins with `0`).
 
