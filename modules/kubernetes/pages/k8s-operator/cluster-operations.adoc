@@ -81,3 +81,35 @@ To delete the PVCs created with a cluster, run the following command:
 ----
 $ kubectl delete pvc  -l app=<cluster_name> -n <namespace_name>
 ----
+
+
+[#_shrink_expand_cluster]
+== Shrink or expand a cluster
+Run the following commands to change the size of a cluster.
+Replace `<cluster_name>` with the name of the cluster, and `<namespace_name>` with the namespace where the cluster is provisioned:
+
+[.wrap,console]
+----
+$ kubectl tg update --cluster-name <cluster_name> --size <size> --ha <ha_factor> --namespace <namespace_name>
+----
+
+The `--ha` flag to change the High Availability factor is optional.
+
+[CAUTION]
+After shrinking a cluster, delete the PVC of the pods which were deleted.
+Otherwise, executing the expand command in the future will cause an error for the remaining data on the PVC.
+
+Running `kubectl tg update` automatically creates a backup of the cluster CR before the update.
+If the update fails, delete the failed cluster, then create it again from the backup file.
+
+[.wrap, console]
+----
+kubectl apply -f <path_to_cluster_backup> --namespace <namespace_name>
+----
+
+Remember that an expansion operation creates new pods, so in the case of a failed expansion, the newly created pods should be manually removed.
+
+For example, if expanding from a cluster size of 5 to 6 results in a failed expansion, delete cluster number `5` (cluster numbering begins with `0`).
+
+Run `kubectl get pvc -l app=<app_name> --namespace <namespace_name>` to list all PVCs and double-check their age.
+The newest PVC is the one to delete.
