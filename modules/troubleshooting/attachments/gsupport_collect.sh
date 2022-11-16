@@ -47,7 +47,6 @@ if [ ${STATUS} -ne 0 ]; then
   exit 1
 fi
 
-
 echo; echo "Collecting current state..."
 {
   printf "\n===gssh===\n"
