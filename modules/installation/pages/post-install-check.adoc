@@ -1,13 +1,17 @@
-= Post installation checks
+= Post-installation checks
 
-After installation is complete, you can switch to the Linux user who owns the platform (e.g. tigergraph) with the following command :
+This page details the commands that you can run to verify a successful installation.
+
+After installation is complete, you can switch to the Linux user who owns the platform with the following command:
 
 [,console]
 ----
 $ su <username>  # default username: tigergraph
 ----
 
-After switching to the correct user, you now have access to xref:system-management:management-with-gadmin.adoc[`gadmin` commands]. Confirm successful installation by running `gadmin status`. If the system is installed correctly and the license is activated, the command should report that all services are up and ready.
+After switching to the correct user, you now have access to xref:system-management:management-with-gadmin.adoc[`gadmin` commands].
+Confirm successful installation by running `gadmin status`.
+If the system is installed correctly and the license is activated, the command should report that all services are up and ready.
 
 [,console]
 ----
@@ -38,7 +42,7 @@ $ gadmin status
 
 NOTE: Since there is no graph data loaded yet, GSE and GPE will show `"Warmup"`.
 
-=== Check SSH connectivity between the TigerGraph nodes
+== Check SSH connectivity between the TigerGraph nodes
 
 After installation is done, you want to check that you are able to "move" via ssh between all the TigerGraph nodes. To do so you can use the command `gssh` which is a wrapper aroud the `ssh` command. 
 
@@ -47,7 +51,7 @@ The usage is pretty simple, just pass the node you want to connect to like this 
 If this check fails, then you need to address it. Feel free to reach out to our Technical Support Team by opening a https://tigergraph.zendesk.com/hc/en-us/[support ticket] to request assistance.
 
 
-=== Port check
+== Port check
 
 WARNING: The checks described below require a TigerGraph Cluster stop and restart.
 
@@ -55,7 +59,7 @@ Another important task to perform after installing TigerGraph Cluster is to make
 
 Run the following two bash scripts to perform an extensive port check
 
-==== For services port check
+=== For services port check
 
 [,bash]
 ----
@@ -84,7 +88,7 @@ echo "Starting TigerGraph again...."
 gadmin start all
 ----
 
-===== Usage:
+==== Usage
 
 1. Save the above script as `service_port_check.sh`
 
@@ -92,7 +96,7 @@ gadmin start all
 
 3. Run it with `bash service_port_check.sh >> service_port.out`
 
-==== For dynamic port check
+==== Dynamic port check
 
 WARNING: This will take a while before completing, it's recommended you run this in the background to avoid session timeout. 
 
@@ -122,7 +126,7 @@ echo "Starting TigerGraph again...."
 gadmin start all
 ----
 
-===== Usage:
+==== Usage
 
 1. Save the above script as `dynamic_port.sh`
 

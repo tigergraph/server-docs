@@ -1,9 +1,8 @@
-= On-premises Installation
+= Installation on Bare Metal
 :description: Installing Single-machine and Multi-machine systems.
 :sectnums:
 
-
-This guide describes how to install the TigerGraph on an on-premises machine.
+This guide describes how to install TigerGraph on bare-metal infrastructure.
 
 The installation guide covers installation as a single node or as a multi-node cluster, interactively or non-interactively.
 
@@ -12,27 +11,23 @@ Follow the instructions in xref:getting-started:index.adoc[Getting started] to s
 
 == Prerequisites
 
-* Your machines meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_]
+* Your machines meet the minimum xref:hw-and-sw-requirements.adoc[_Hardware and Software Requirements_].
 ** The installation machine can be within or outside the cluster.
 If outside the cluster, the installation machine still needs to be a Linux machine.
-* A license key provided by TigerGraph (not applicable to Enterprise Free)
-* A TigerGraph system package
-** If you do not yet have a TigerGraph system package, you can https://www.tigergraph.com/get-tigergraph/[request one].
+* A license key provided by TigerGraph, unless you are using Enterprise Free.
+* A https://www.tigergraph.com/get-tigergraph/[TigerGraph system package].
 * Every machine in the cluster has a Linux superuser with the same username and password, or same username and SSH key.
-* If you are installing a cluster, ensure that every machine has the same SSH port and that the port stays open during installation
+* If you are installing a cluster, ensure that every machine has the same SSH port and that the port stays open during installation.
 ** SSH port does not need to be 22.
 You can specify a custom port number during installation.
 * All xref:reference:ports.adoc[ports used for internal communication] *must* be allowed for a correct TigerGraph installation and usage.
-
-* All provisioned machines must be in the same Region (e.g. having `m1` in Los Angles and `m2` in New York is not acceptable).
+* All provisioned machines must be in the same region if installing on cloud.
 * All provisioned machines must have the same CPU, RAM and disk size.
 * All provisioned machines must have enough disk space available (≥ 50 GB) for TigerGraph Cluster installation.
-* All provisioned machines must be running SSD disk types
+* All provisioned machines must be running SSD disk types.
 * All provisioned machines must have all clocks in-sync.
-* All provisioned machines must allow password-less SSH for tigergraph user.
+* All provisioned machines must allow password-less SSH for the Linux superuser.
 * All provisioned machines must be serving only TigerGraph.
-* You only need one TigerGraph package available on one machine.
-
 
 === For Oracle Linux and RedHat distros
 
@@ -67,20 +62,6 @@ The installation process will prompt you for these steps. If you have already co
 In non-interactive installation, you specify all the desired configurations in a JSON file, and run the installation script with the configurations specified in the file.
 This is the recommended approach as it allows you to see all your configurations in one place and diagnose issues more easily.
 
-// TigerGraph allows the graph database to be partitioned and distributed (data partitioning) and replicated (high availability) across multiple server nodes.
-// If you are only installing on one machine, it is referred to as *single-server installation*.
-// If you are installing on multiple machines as a distributed cluster, it is referred to as a *cluster installation*.
-//
-// Here you will be able to configure:
-//
-// * The number of partitions of your TigerGraph cluster.
-// This means over how many nodes you want to partition your entire dataset (e.g. 2, 3)
-// * The number of replicas of your TigerGraph cluster.
-// This means how many copies of your data you want to have to ensure High-Availability (HA) and at the same time how many nodes you can tolerate losing without having downtime.
-// ** In this case, the additional nodes that are copies of your data will also contribute to the computational efficiency of the entire TigerGraph cluster for serving read-writes requests.
-//
-// It is highly recommended you use the *non-interactive* installation for this Cluster deployment as it is easier to visualize all the required configuration in one place and make sure the information passed are correct.
-
 === Extract package
 
 Extract the package by running the following command to create a folder named `tigergraph-<version>-offline`.
@@ -93,18 +74,19 @@ $ tar -xvzf tigergraph-<version>.tar.gz
 
 === Edit configuration file
 
-Navigate to the `tigergraph-<version>-offline`` folder and open the configuration file called `install_conf.json`.
+Navigate to the `tigergraph-<version>-offline` folder and open the configuration file called `install_conf.json`.
 
 Edit the configuration file according to your needs, pay extra attention to the followings entries:
 
-* *TigerGraph Username and Password*: You can leave the default value of `tigergraph` for both and change their password after installation or you can choose another name and password.
-In case the passed user already exists the installer will skip creating a new user.
+* *TigerGraph Username and Password*: You can leave the default value of `tigergraph` for both and change their password after installation, or you can choose another name and password.
+If the user already exists, the installer will skip creating a new user.
 
-* *SSHPort*: By default, the SSH port is `22`, if this port is open in all the provisioned machines you can leave it as it is. Otherwise change the port to the actual SSH port in your environment. Remember the SSH port number MUST be the same across all the provisioned machines.
-
-* *PrivateKeyFile* and *PublicKeyFile*: The TigerGraph installer will create those keys by default. If you want to pass your own keys you can add the absolute path here.
-
-* *NodeList*: Here you will be passing the list of your provisioned machines IPs with the following json format:
+* *SSHPort*: By default, the SSH port is `22`, if this port is open in all the provisioned machines you can leave it as it is.
+Otherwise change the port to the actual SSH port in your environment.
+The SSH port number *must* be the same across all the provisioned machines.
+* *PrivateKeyFile* and *PublicKeyFile*: The TigerGraph installer creates these keys by default, so these fields are optional.
+If you want to pass your own keys you can add the absolute paths here.
+* *NodeList*: The list of your provisioned machines IPs in the following JSON format:
 +
 [,javascript]
 ----
@@ -120,7 +102,7 @@ You can either use loop-back address (e.g. `127.0.0.1`) or the public IP of the 
 if you use loop-back address IP for m1, you do not need to specify any sudo user for `SudoUser` or authentication method in the `Method` section.
 * *SudoUser*: Username of the sudo user who will be used to execute the installation on all nodes.
 This user *must* exist on all the provisioned machines
-* *Authentication Method*: This refers to how the above Sudo user will authenticate between the provisioned machines.
+* *Authentication Method*: This refers to how the above sudo user will authenticate between the provisioned machines.
 It can authenticate via password (chose the `P` method and pass the password) or via SSH key (choose the `K` method and pass the absolute path for the SSH key).
 * *ReplicationFactor*: The number of replicas in your cluster.
 Refer to xref:intro:continuous-availability-overview.adoc#_continuous_availability__definitions[Replication factor] for detailed description.

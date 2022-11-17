@@ -1,8 +1,8 @@
-= Installation Guide for Cloud environments
+= Installation in Cloud Environments
 
-This guide describes how to install the TigerGraph platform on Cloud environments (AWS, GSE, Azure) either as a single node or as a multi-node cluster, interactively or non-interactively.
+This guide describes how to install the TigerGraph platform in Cloud environments (AWS, GSE, Azure) either as a single node or as a multi-node cluster, interactively or non-interactively.
 
-== Pre-requisites
+== Prerequisites
 
 Before you can install the TigerGraph system, you need the following:
 
@@ -13,18 +13,14 @@ Before you can install the TigerGraph system, you need the following:
 * If you are installing a cluster, the used security group must:
 ** Allow SSH connectivity over port 22 for the inbound rules.
 ** Not restrict intra-instance communications. If Firewall rules are restricive then TigerGraph ports must be allowed manually
-* Assign Static IPs for each cloud instance. This will ensure that the IP of each instance stays the same after the instance reboot and does not break the TigerGraph used IP configuration. 
-
+* Assign Static IPs for each cloud instance. This will ensure that the IP of each instance stays the same after the instance reboot and does not break the TigerGraph used IP configuration.
 * A Linux superuser, it can be root or a sudo user, it must have:
-
 ** Same login password on every machine.
 ** Or the same ssh key on every machine. (most used approach)
-
 * A license key provided by TigerGraph (not applicable to Enterprise Free)
 * A TigerGraph system package
  ** If you do not yet have a TigerGraph system package, you can https://www.tigergraph.com/get-tigergraph/[request one].
 
-NOTE: SSH port *is not* mandatory to be 22, we understand that this sometimes might be restricted by policy, therefore TigerGraph can use another SSH port. You just need to specify that while installing TigeGraph.
 
 === For Oracle Linux and RedHat distros
 
@@ -53,7 +49,7 @@ AllowUsers OLD-USER NEW-USER
 This adds firewall rules to allow TCP communication between nodes in the cluster.
 The installation process will prompt you for these steps. If you have already completed them, ignore and continue.
 
-== AWS
+== Installation on AWS
 
 NOTE: TigerGraph is available on the AWS Marketplace, for more details see https://aws.amazon.com/marketplace/seller-profile?id=293e0e5d-d8c3-4a99-b5c0-7d056d1b83a1[here]
 
