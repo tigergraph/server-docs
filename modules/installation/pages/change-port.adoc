@@ -1,0 +1,26 @@
+= Changing Ports
+
+The following are the ports you will be used for communicating with TigerGraph:
+
+* 9000: serving RESTPP that accepts upstream TigerGraph Nginx requests
+* 14240: serving TigerGraph Nginx
+
+If the above ports are restricted in your environment and cannot be enabled (for whatever reason) you can change them once TigerGraph is up and running by running the following commands as tigergraph user:
+
+For changing port 9000 (RESTPP) to something else (e.g. 9090)
+
+[source,bash]
+----
+$ gadmin config set RESTPP.NginxPort 9090
+$ gadmin config apply
+$ gadmin restart
+----
+
+For changing the port 14240 (Nginx) to something else (e.g. 8080)
+
+[source,bash]
+----
+$ gadmin config set Nginx.Port 8080
+$ gadmin config apply
+$ gadmin restart
+----
