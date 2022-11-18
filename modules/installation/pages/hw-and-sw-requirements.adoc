@@ -1,45 +1,140 @@
 = Hardware and Software Requirements
-:description: This section provides an overview of the system requirements for running TigerGraph in a production or development environment.
+:description: System requirements for running TigerGraph in a production or development environment.
 :pp: {plus}{plus}
+
+This page details the system requirements for running TigerGraph in a production or development environment.
 
 TigerGraph can be used for different scopes and the system requirements largely depend on the use of the software.
 This page provides a good reference, but actual hardware requirements will vary based on your data size and workload.
 
 == Hardware Requirements
 
-The TigerGraph system is optimized to take advantage of multiple cores.
-Performance is optimal when the memory is large enough to store the full graph and to perform computations.
+NOTE: The actual needs depend on data size and application requirements. Consult our solution architects for an estimate of memory and storage needs.
 
+Choosing the right Hardware, that is going to host the TigerGraph nodes, is crucial for a balanced cost/perfomance ratio. Below you can find our general suggestions:
+
+=== For personal use only (e.g. playground)
 |===
-| Component | Minimum | Recommended | Notes
+| Component | Specification 
 
-| CPU*
-a| * 4 cores for <500MB data
-* 8 cores for >500MB data
-| 16+ cores
-a|Supported CPU architectures:
+| CPU
+| 4 cores (≥ 2.10GHz)
 
-* x86-64
-
-| Memory*
+| RAM
 | 8 GB
-| ≥ 64GB
-| Performance is optimal when the memory is large enough to store the full graph and to perform computations.
 
-| Storage*
-| 20 GB
-| ≥ 1TB, RAID10 volumes for better I/O throughput.
-| SSD storage is recommended.
+| Storage
+| ≥ 50 GB (SSD)
 
 | Network
 | 1 Gigabit Ethernet adapter
-| 10 Gigabit Ethernet adapter for inter-node communication
-|
 |===
 
-*Actual needs (CPU, memory, storage) depend on data size and application requirements.
-Consult our solution architects for an estimate of memory and storage needs.
+=== For enviroments like DEV, UAT, SIT
+|===
+| Component | Specification 
 
+| CPU
+| ≥ 16 cores (≥ 3.00GHz)
+
+| RAM
+| ≥ 32 GB
+
+| Storage
+| ≥ 300 GB (SSD)
+
+| Network
+| 1 Gigabit Ethernet adapter
+|===
+
+=== For PROD environemnt 
+|===
+| Component | Specification 
+
+| CPU
+| ≥ 32 cores (≥ 3.40GHz)
+
+| RAM
+| ≥ 64 GB
+
+| Storage
+| ≥ 500 GB (SSD)
+
+| Network
+| 10 Gigabit Ethernet adapter
+|===
+
+
+== Key point
+
+=== CPU
+
+NOTE: The supported architeture is x84_64
+
+
+Choosing the right CPU type/model is important, for example *Intel Core i5* is good enough for lower enviroments like DEV, SIT, UAT. Instead for PRODUCTION you need more performat processors like *Intel Core i7*, *Intel Xeon Gold*, *AMD Epyc*.
+
+Another important point in chosing the CPU, is the clock speed. We highly reccomend using *≥ 3.00GHz* (if possible opt for ≥ 3.40GHz for PROD)
+
+Below is a good suggestion for PROD evinroment 
+```bash
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              24
+On-line CPU(s) list: 0-23
+Thread(s) per core:  1
+Core(s) per socket:  1
+Socket(s):           24
+NUMA node(s):        1
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               85
+Model name:          Intel(R) Xeon(R) Gold 6248R CPU @ 3.00GHz
+Stepping:            7
+CPU MHz:             2992.969
+```
+
+=== RAM (Memory)
+
+RAM size is crucial in TigerGraph for exeptional performance in Read and Writes. The RAM size is based on multiple factors:
+
+* Dataset partitioning (number of partition in your TigerGraph Cluster)
+* Type of workload (e.g. OLAP/OLTP queries, intensive CRUD operation....)
+* Query SLAs
+
+Given the fact that TigerGraph is a modern technology, therefore we *do not* reccomend using less than 8GB RAM. Most of our users use above 32GB RAM. 
+
+RAM is not only size but also type, in fact we *strongly* reccomend using types of DDR SDRAM family, e.g. DDR4 SDRAM is a suggested type.
+
+=== Disk 
+
+Using Solid-State-Drive (SSD) is *mandatory* for TigerGraph as its designed to run on Solid-State-Drive (SSD).
+
+Using spinning disks (HDD) can cause several issues like:
+
+* Timeouts between internal components of TigerGraph
+* Issue when taking backups
+* Issues when restring TigerGraph
+* Low performance 
+
+TigerGraph suggests using different mount points for the App, Data, Log and Temp directories to avoid one single point of failure. This can be defined while installing TigerGraph (either via interactive mode or non-interactive mode).
+
+
+A good example can be the following differentiation (referring to the `install_config.json`)
+
+
+```
+"RootDir": {
+"AppRoot": "/mnt1/app",
+"DataRoot": "/mnt2/data",
+"LogRoot": "/mnt3/log"
+"TempRoot": "/mnt4/tmp"
+},
+```
+You can opt for a spinning disk (HDD) for the amount of the logs, the remaining ones have to be on Solid-State_drive (SSD).
+
+Another important point when choosing the Disk type is the disk IOPS capacity, we *strongly* suggest opting for ≥3000 IOPS
 
 
 [#_certified_operating_systems]
@@ -50,17 +145,49 @@ It can run on a variety of Linux 64-bit distributions.
 The software has been tested on the operating systems listed below:
 
 .List of supported OS
-* RedHat 7.0 to 7.9 (x64)
-* RedHat 8.0 to 8.6 (x64)
-* Centos 7.0 to 7.4 (x64)
-* Centos 8.0 to 8.2 (x64)
-* Ubuntu 16.04 LTS, Ubuntu 18.04 LTS, Ubuntu 20.04 LTS
-* Oracle Linux 8
-* Debian 10 and 11
+
+|===
+| Distro | Supported 
+
+| RedHat 7.0 to 8.3
+| ✓
+
+| CentOs 6.5 to 8.0
+| ✓
+
+| Amazon Linux 2016.03 to 2018.03
+| ✓
+
+| Ubuntu 16.04 LTS
+| ✓
+
+| Ubuntu 18.04 LTS
+| ✓
+
+| Ubuntu 20.04 LTS
+| ✓
+
+| Debian 8
+| ✓
+
+| Suse 12
+| ✓
+
+| Oracle Linux 8.0 to 8.4
+| ✓
+
+| Windows (all version)
+| X
+
+| MacOS (Intel and M1 chip)
+| X
+|===
+
 
 When a range of versions is given, it means that the software has been tested on the oldest and newest versions.
 We continually evaluate the operating systems on the market and work to update our set of supported operating systems as needed.
-The TigerGraph installer will install its own copies of Java JDK and GCC, accessible only to the TigerGraph user account, to avoid interfering with any other applications on the same server.
+
+The TigerGraph installer installs its own copies of Java JDK and GCC, accessible only to the TigerGraph Linux user, to avoid interfering with any other applications on the same server.
 
 == Prerequisite Software
 
@@ -78,12 +205,12 @@ Before offline installation, the TigerGraph system needs a few basic software pa
 * `more`
 * `netcat`
 * `netstat`
+* `net-tools`
 * `ssh`/`sshd` (Only required for cluster installation)
 * `sshpass`
 * `tar`
- ** if you intend to use password login method (P method) instead of ssh key login method (K method) to install the TigerGraph platform.
 
-If they are not present, contact your system administrator to have them installed on your target system. For example, they can be installed with one of the following commands.
+NOTE: If they are not present, the TigerGraph installer will exit with an error reporting which package/s are missing. Contact your system administrator to have them installed on your target system. For example, they can be installed with one of the following commands.
 
 [source,console]
 ----
@@ -97,10 +224,12 @@ sudo apt install tar curl cron iproute util-linux net-tools netcat coreutils ope
 sudo apt install tar curl cron iproute2 util-linux net-tools netcat coreutils openssh-client openssh-server sshpass
 ----
 
+[#_ntp]
 === NTP
 
 If you are running TigerGraph on a multi-node cluster, you *must* install, configure and run the NTP (Network Time Protocol) daemon service. This service will synchronize system time among all cluster nodes.
 
+[#_fw]
 === Firewall
 
 If you are running TigerGraph on a multi-node cluster, you *must* configure the iptables/firewall rules to make all TCP ports open among all cluster nodes.

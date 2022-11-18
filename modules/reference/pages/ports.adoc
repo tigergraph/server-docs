@@ -120,3 +120,7 @@ TigerGraph requires three external ports to be exposed: 22, 9000, and 14240. All
 |Dynamic ports
 |Required for backup and restore as well as communication between TigerGraph services.
 |===
+
+Under ports for internal communication, they are also the *dynamic ports* (aka ephemeral ports) that are used for only a short period of time for the duration of a communication session.
+Such short-lived ports are allocated automatically within a predefined range (in TigerGraph case from 49152 to 65535) of port numbers by the OS.
+After completion of the session, the port is destroyed and the port number becomes available for reuse.
