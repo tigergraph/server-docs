@@ -1,12 +1,12 @@
 ==== Specify parsing rules
 The streaming connector supports the following file types:
 
-* CSV files
+* CSV files.
 * JSON files.
 Each JSON object must be on a separate line.
-* directories
-* tar files
-* zip files
+* Directories.
+* tar files.
+* zip files.
 
 For URIs that point to directories and compressed files, the connector looks for all files inside the directory or the compressed file that match the `file.regexp` parameter.
 By default, this includes both CSV and JSON files.
@@ -30,8 +30,9 @@ The default value matches all files.
 |`true`
 
 |`file.reader.type`
-|The type of file reader to use.
-The only supported value is `text`.
+a|The type of file reader to use.
+
+* Use `text` for all supported formats.
 |`text`
 
 |`file.reader.delimited.separator`

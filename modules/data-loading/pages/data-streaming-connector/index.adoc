@@ -20,6 +20,7 @@ The data streaming connector supports the following data systems:
 * xref:data-streaming-connector/kafka.adoc[Apache Kafka]
 * xref:data-streaming-connector/aws-s3.adoc[AWS S3]
 * xref:data-streaming-connector/azure-blob.adoc[Azure Blob Storage (ABS)]
+* xref:data-streaming-connector/big-query.adoc[Google BigQuery]
 
 
 == Manage connectors
@@ -94,6 +95,19 @@ To delete a connector,  run the below command and replace `<connector_name>` wit
 $ gadmin connector delete <connector_name> -y <1>
 ----
 <1> You can use the `-y` option to skip the confirmation prompt.
+
+==== Save Kafka messages when deleting connector
+When there are new files in a folder the connector streams from, you might want to recreate a connector for those file updates to be included.
+When you delete and recreate a connector, you can keep the messages that have already been streamed to the internal Kafka cluster.
+The recreated connector streams from where it left off before and does not duplicate data.
+
+Use the `-s` or `--soft` flag to delete the connector only and leave the Kafka messages and offsets intact:
+
+[.wrap,console]
+----
+$ gadmin connector delete <connector_name> -s
+----
+
 
 
 == Known issues

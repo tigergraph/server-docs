@@ -3,140 +3,87 @@
 :page-aliases: change-log.adoc, release-notes.adoc
 :fn-preview: footnote:preview[Features in the preview stage should not be used for production purposes. General Availability (GA) versions of the feature will be available in a later release.]
 
-TigerGraph Server {page-component-version}.0 was released on Sep 15th, 2022.
+TigerGraph Server {page-component-version}.0 was released on Nov 15th, 2022.
 
 == New Features
 
 The following is a list of new features and improvements:
 
-=== Developer tools
+=== Developer tools - TigerGraph Insights
+* Introduced xref:insights:intro:index.adoc[TigerGraph Insights], a no-code graph analyzer for making interactive visual dashboards.
 
-* Introduced xref:gsql-shell:web.adoc[GSQL Shell], a web-based version of the GSQL client that allows you to run GSQL commands from your browser with keyboard shortcuts and autocomplete.
-* Introduced xref:master@home:ROOT:index.adoc#_tigergraph_suite[TigerGraph Suite], a family of applications including GraphStudio, Admin Portal, GSQL Shell, and GraphQL Service to empower your graph journey.
+=== Developer tools - GraphStudio
 
-=== Elasticity
-* Added the ability to xref:ha:set-up-elastic-cluster.adoc[launch on-demand elastic clusters for on-prem instances (Preview)].
+* Added support for multiple edge instances between two vertices in GraphStudio.
+* Reworked the xref:gui:graphstudio:map-data-to-graph.adoc[data loading workflow] for adding data sources to a graph.
+* Added the ability to load data to a graph from Azure Blob Storage.
+
+=== Developer tools - Graph Data Science Algorithm Library
+
+* Added xref:graph-ml:using-an-algorithm:index.adoc[Packaged Template Queries] as a more streamlined way for developers to install and manage the GDS algorithm library.
+* Added the CALL command to run queries with just-in-time compilation, yielding higher performance.
+* Updated parameter names to be more consistent across algorithms.
+* Introduced versioning of the algorithm library to follow the database version.
 
 === Manageability
-* Improved the stability and performance of backup and restore, and added a xref:backup-and-restore:index.adoc[new API for backing up and restoring database clusters].
-** The xref:backup-and-restore:gbar-legacy.adoc[legacy Graph Backup and Restore(GBAR)] tool remains available.
-* Added Debian 10 & 11 to the xref:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[list of supported operating systems].
-* Added the ability to xref:kubernetes:expansion.adoc[expand], xref:kubernetes:shrinking.adoc[shrink] and xref:kubernetes:upgrade.adoc[upgrade] a TigerGraph instance running in a Kubernetes cluster.
-* Added support for AWS Elastic Kubernetes Service (EKS) to the xref:kubernetes:k8s-operator/index.adoc[].
-* Expanded xref:gui:admin-portal:dashboard.adoc[metrics] available at a glance through Admin Portal.
-* Enhanced ease of use by enabling drag-and-drop xref:gui:graphstudio:map-data-to-graph.adoc[data mapping in GraphStudio] and in-browser JSON file upload.
-* Added new xref:gui:graphstudio:actions.adoc[] page in the GraphStudio GUI for easy, secure commands to clear and rebuild graph data.
+* Added the ability to xref:system-management:workload-management.adoc#_limit_number_of_concurrent_queries[limit the number of concurrent built-in heavy queries] as well as xref:system-management:workload-management.adoc#_limit_number_of_concurrent_queries[concurrent queries].
+* Added the functionality to xref:system-management:memory-management.adoc#_limit_query_memory_usage[restrict the amount of memory a query is allowed to use].
+
+=== Query Language
+* Added support for multiple edges instances of the same type between two vertices.
+* Added the xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[`DISCRIMINATOR` keyword] to enable defining edge types that allow multiple edge instances between two vertices.
+* GSQL no longer recognizes empty input for a query parameter of type `SET` to be an empty set; users must explicitly specify an empty set instead.
+** In GSQL, use square brackets `[]` to  specify an empty set.
+** In an HTTP request, use square brackets `[]` in the request body of a POST request to specify an empty set.
+You can no longer specify an empty set using query strings in a GET request.
+
+=== Performance
+* Introduced the xref:gsql-ref:querying:query-optimizer/index.adoc[query optimizer], which performs cost-based optimization on queries based on pre-computed statistics.
+
+=== Data API Service
+* Added support for endpoints that xref:API:upsert-rest.adoc[insert], xref:tigergraph-server:API:built-in-endpoints.adoc#_retrieve_edge_by_source_target_edge_type_and_discriminator[retrieve], and xref:tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[delete edge instances] to handle situations where there are multiple instances of an edge type between two vertices.
+* Added xref:API:built-in-endpoints.adoc#_list_all_running_queries[the `GET /showprocesslistall`] endpoint, which lists all currently running queries on a node.
+
 
 === Security
-* Enhanced the xref:user-access:access-control-model.adoc#_role_based_access_control[role-based access control] system to allow data CRUD privileges to be granted at the type and attribute level (Preview).
-** Local roles are deprecated as of the 3.7 release and will be dropped in a future version.
-* Added the ability to enable a xref:security:password-policy.adoc[password policy] to mandate the minimal complexity of passwords.
-* TigerGraph Server download packages are now xref:security:index.adoc#_pgp_key[signed with our PGP key].
+* xref:gsql-ref:querying:func/query-user-defined-functions.adoc[Strengthened the security] for the management of user-defined functions (UDF).
+* Sensitive information such as ACL passwords are now masked when entering passwords interactively.
+* All personally identifiable information in data source configuration when using the Kafka loader or Data Streaming Connector are now masked.
+* Added xref:security:login-protection.adoc[login protection] and the ability for administrators to xref:security:password-policy.adoc[enable a password policy].
 
-=== Stability
-* Added protection from out-of-memory issues caused by a high number of concurrent resource-intensive built-in queries with the xref:reference:configuration-parameters.adoc#_restpp[`RESTPP.WorkLoadManager.MaxHeavyBuiltinQueries` parameter].
 
 === Ecosystem integration
-* Added the ability to xref:data-loading:data-streaming-connector/azure-blob.adoc[stream data from Azure Blob Storage] to a xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
-* Added the ability to xref:data-loading:data-streaming-connector/aws-s3.adoc[stream data from AWS S3] to xref:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector].
-* Deleting a Data Streaming Connector now deletes the data in the topics created by the connector that haven't been loaded into the database by a loading job.
+* Added the ability to xref:data-loading:data-streaming-connector/big-query.adoc[query and stream data from Google Big Query] to Data Streaming Connector.
+* Added the ability to configure how much memory Data Streaming Connectors are allowed to use through the `KafkaConnect.MaxMemorySizeMB` parameter.
+* Added the ability to shrink or expand a cluster using the `kubectl tg update` command in Kubernetes.
 
 === Observability
-* Improved logging for privilege checks.
-Every time a user performs an action that requires any privilege, a xref:security:audit-privileged-actions.adoc[detailed log of the action and the user] is generated.
-** You must xref:user-access:enabling-user-authentication.adoc[enable authentication] for privilege checking to happen.
-* GSQL command to display loading job status (`SHOW LOADING STATUS`) now supports all loading jobs, including loading jobs created with xref:data-loading:data-streaming-connector/index.adoc[] and xref:data-loading:kafka-loader/index.adoc[Kafka Loader].
-
-
-=== Query Language Enhancement
-* xref:gsql-ref:ddl-and-loading:functions/token/index.adoc[Token functions for attribute expressions] can now also be used in expressions in the `WHERE` clause.
-
-
+* Added xref:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics[the `/metrics` endpoint] to report system metrics in OpenMetrics format.
+* Added the ability to monitor queries through AdminPortal and view query performance over time.
+* Added the capability for the Graph Processing Engine (GPE) to xref:system-management:memory-management.adoc#_monitor_memory_usage[log the highest memory usage of a query during its execution].
+* Improved messaging for errors caused by wrong configurations for a Kafka loading job.
 
 [#_fixed_issues]
 == Fixed issues
-* Fixed a number of security vulnerabilities from package dependencies.
-* Improved error messaging when a query uses `TYPEDEF TUPLE` with an unsupported data type.
-* Fixed an issue where unauthorized users could access certain local files on the server through a REST endpoint.
-* Fixed an issue where running multiple resource-intensive queries simultaneously would cause GPE dysfunction due to critical memory level handling.
-* Improved error messaging when query installation fails because certain services are not in ready state.
-* Fixed an issue that caused users to be unable to terminal an S3 loading job if the loading job did not use end-of-file mode.
-* Made folder permissions more restrictive after cluster expansion and shrinking.
-* Fixed an issue where creating a secret in a primary cluster could cause sync to stop.
-* Fixed an issue that caused restoring a cluster to fail when the backup file is on S3.
-* Fixed an issue where a heap accumulators (HeapAccum) might not be sorted when output in a group-by accumulator (GroupByAccum).
-* Fixed an issue that caused file permissions to be incorrect after cluster resizing.
-* Fixed an issue that caused imbalanced distribution of Kafka data when a cluster has a replication factor of two.
-* Fixed an issue where the `POST /requesttoken` endpoint did not return `Content-Type`.
-* Fixed an issue that caused RESTPP dysfunction when it received a bearer token that was too short.
-* Fixed an issue where the database did not properly authorize requests made from JDBC driver.
-* Fixed an issue where GraphStudio data mapping would not detect disallowed data mapping to user-defined tuple (UDT) types.
-* Fixed an issue where SumAccum in GroupByAccum cannot be converted to a MaxAccum directly
-* Fixed an issue where loading large files through Data Streaming Connector might cause out-of-memory issues.
-* Fixed an issue where loading jobs created with the Kafka loader could not show accurate progress in GraphStudio data loading.
-* Fixed an issue where query installation in GraphStudio failed entirely if one of the queries being installed contains errors, instead of allowing valid queries to continue installation.
-* Fixed an issue where the function `instr()` could not accept certain special characters as substring arguments.
+* Fixed an issue that could cause cluster shrinking failure due to communication issues with the ETCD service.
+* Resolved several dependency vulnerabilities.
+* Fixed an issue that could cause the system to become unresponsive due to the executor service dysfunction.
+* Fixed an issue where exporting data with `\n` in its value might cause later imports to fail.
+* Fixed an issue that caused imports to fail if any data source in the graph has the backslash escape character in its configuration.
+* Fixed an issue where a query that declares and initializes a datetime variable with an expression that uses a input parameter would cause a syntax error.
+* Fixed an issue where exceedingly long queries (over 1000 lines) take a long time to be created and installed.
+* Fixed an issue that caused GBAR backup to be unable to reach AWS S3 on a private network.
+* Fixed an issue where users cannot access the GraphQL service with database username/password credentials.
+* Fixed an issue that caused upgrades from versions earlier than 3.7 to fail.
+* Fixed an issue that could cause GPE dysfunction when calling a REST endpoint.
+* Fixed an issue that in rare cases produced inaccurate results when a query uses an `ACCUM` clause.
+* Fixed an issue where S3 loading jobs cannot be terminated if it is not run in EOF mode.
+* Fixed an issue that led to inconsistent edge counts being reported across different replicas.
+* Fixed an issue where enabling verbose logging could cause GPE dysfunction.
 
-
-
-== Dropped feature
-* The `-OPTIMIZE` flag for `INSTALL QUERY` was deprecated in 3.5 and is dropped in this 3.7 release.
-
-== Known Issues
-
-
-|===
-|In version |Description |Status
-
-|3.7.0
-|Running a query that returns results that are too large in size may cause GraphStudio to become unresponsive.
-|Unresolved
-
-|3.7.0
-|Running a query that calls the `setAttr()` function could cause GPE dysfunction in rare cases.
-|Unresolved
-
-|3.7.0
-|When a solution is exported, the key and secret used to authenticate a connector to AWS S3 are not encrypted in the exported file.
-|Unresolved
-
-|3.7.0
-|Creating a query that has too many hops and requires intensive semantic checking could cause the GSQL client to become unresponsive.
-|Unresolved
-|3.7.0
-|Renaming a vertex type revokes privileges granted on the vertex type.
-|Unresolved
-
-|3.7.0
-|Query user-defined functions cannot be synced to a DR cluster in cross-region replication.
-|Unresolved
-
-
-|3.7.0
-|Frequent backups of large volumes of data could lead to failure during a backup.
-|Unresolved
-
-|3.7.0
-|If a graph on an instance contains a loading job that uses `gsql_split_by_space()` token function, exporting the graph might lead to GPE dysfunction.
-|Unresolved
-
-|3.7.0
-|Calling `vertex.edgeAttribute()` function with `STRING COMPRESS` data type causes GPE crash
-|Unresolved
-
-|3.7.0
-|When vertices are automatically created during edge loading, the primary key of the vertices created are not written to vertex attributes.
-|Unresolved
-
-|3.7.0
-|Calling the `setAttr()` function in an interpreted query causes GPE dysfunction.
-|Unresolved
-
-|===
-
-For a list of known issues for GraphStudio and Admin Portal, please see xref:gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
 
 == Release notes for previous versions
+* xref:3.7@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.7]
 * xref:3.6@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.6]
 * xref:3.5@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.5]
 * xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
@@ -152,29 +99,3 @@ If you have a create a token request that puts the credentials in the query stri
 * `GET /gsqlserver/gsql/queryinfo` endpoint on port 14240 now returns the query input parameters in the same order as they are in the query instead of an unordered list.
 * Deploying TigerGraph in Kubernetes now requires more service account permissions than previous versions.
 For details, see Prerequisites section in xref:kubernetes:quickstart-with-gke.adoc[], xref:kubernetes:quickstart-with-aks.adoc[], and xref:kubernetes:quickstart-with-eks.adoc[].
-
-== Compatibility with TigerGraph 3.1
-
-The following changes were made to the built-in roles in TigerGraph's Role-based Access Control
-
-* The built-in role `queryreader` can no longer run queries that include updates to the database.
-** To emulate the old `queryreader` role, create a role with all `queryreader` privileges, and also grant the `WRITE_DATA` privilege to the new role.
-* The built-in role `admin` can no longer create users
-** To emulate the old `admin` role, create a global role with all `admin` privileges, and also grant the `WRITE_USER` privilege to the new role.
-* To learn more about role management and the privileges of built-in roles, see:
-** xref:user-access:role-management.adoc[]
-** xref:reference:list-of-privileges.adoc[]
-
-== Compatibility with TigerGraph 2
-
-Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to deliver significant improvements. While we make every effort to maintain backward compatibility, in selected cases APIs have changed or deprecated features have been dropped, in order to advance the overall product.
-
-*Data migration*: A tool is available to migrate the data in TigerGraph 2.6 to TigerGraph 3.0. Please contact TigerGraph Support for assistance.
-
-*Query and API compatibility*:
-
-* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.
-Please see xref:system-management:management-with-gadmin.adoc[Managing with gadmin].
-* Some features which were previously deprecated have been dropped. Please see xref:release-notes:v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
-
-include::v3.0-removal-of-previously-deprecated-features.adoc[]

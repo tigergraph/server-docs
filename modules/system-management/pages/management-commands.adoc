@@ -103,9 +103,11 @@ dict          gsql          kafkaconn     ts3serv
 etcd          gui           kafkastrm-ll  zk
 ----
 
+[#_gadmin_config]
 === gadmin config
 
-`gadmin config` commands are used to manage the configuration for the TigerGraph system. To get a complete list of configuration parameters that are available, see xref:reference:configuration-parameters.adoc[Configuration Parameters].
+`gadmin config` commands are used to manage the configuration for the TigerGraph system.
+To get a complete list of configuration parameters that are available, see xref:reference:configuration-parameters.adoc[Configuration Parameters].
 
 `gadmin config` has many sub-entries as well, they will be listed below.
 
@@ -632,9 +634,13 @@ Description:
   partition, or if the service has no replicas(e.g. EXE_1). Same for parititons.
 
 Flags:
-  -y, --confirm   confirm to restart service
-  -h, --help      help for restart
-      --no-dep    restart service without dependency
+Flags:
+      --auto-restart   auto restart the service on crash
+  -y, --confirm        confirm to restart service
+  -h, --help           help for restart
+      --no-dep         restart service without dependency
+      --timeout int    request timeout(in MilliSecond) to restart the service
+      --wait-online    wait until the services go online, the time limit can be specified by '--timeout'
 
 Global Flags:
       --debug   enable debug log output to stdout
@@ -675,9 +681,11 @@ Flags:
       --auto-restart         auto restart the service on crash
       --dry-run              dry run and output command to start the service
   -h, --help                 help for start
+      --ignore-error         ignore errors when starting services
       --no-dep               start service without dependency
+      --timeout int          request timeout(in MilliSecond) to start the service
+      --wait-online          wait until the services go online, the time limit can be specified by '--timeout'
       --with-config string   start with given config file and dump it to each node (only for executor)
-      --ignore-error         starting services with ignore-error will start all possible services, and ensure that the platform can still start and run normally when some services or some nodes are down
 
 Global Flags:
       --debug   enable debug log output to stdout
@@ -803,9 +811,10 @@ Description:
   infrastructure. Use 'gadmin stop all' to stop all services.
 
 Flags:
-  -y, --confirm   confirm to stop service
-  -h, --help      help for stop
-  --ignore-error  stopping services with ignore-error will stop all possible services, and ensure that the platform can still stop and run normally when some services or some nodes are down
+  -y, --confirm        confirm to stop service
+  -h, --help           help for stop
+      --ignore-error   ignore errors when stoping services
+      --timeout int    request timeout(in MilliSecond) to stop the service
 
 Global Flags:
       --debug   enable debug log output to stdout

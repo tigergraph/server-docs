@@ -398,6 +398,127 @@ Response::
 ----
 --
 ====
+
+=== Monitor system metrics (OpenMetrics)
+
+`GET :9167/metrics`
+
+You can monitor system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
+This endpoint exists on port 9167 by default.
+
+NOTE: This endpoint listens on the same port as the informant service in TigerGraph.
+If you change the informant port to a different one, this endpoint listens on that port instead.
+
+Every call to this endpoint retrieves all metrics.
+Metrics are updated every 60 seconds by default.
+This interval can be adjusted with the xref:reference:configuration-parameters.adoc[`System.Metrics`  parameters].
+
+
+This endpoint does not require any privilege.
+
+==== Parameters
+None.
+
+==== Sample request
+
+[tabs]
+====
+Request::
++
+--
+[.wrap.console]
+----
+$ curl http://localhost:6197/metrics
+----
+--
+Response::
++
+--
+[,text]
+----
+# HELP tigergraph_cpu_usage Percentage of CPU usage by component. Service name empty means usage of the whole node
+# TYPE tigergraph_cpu_usage gauge
+tigergraph_cpu_usage{host_id="m1",service_name=""} 62.04006576538086
+tigergraph_cpu_usage{host_id="m1",service_name="ADMIN"} 0.4452745020389557
+tigergraph_cpu_usage{host_id="m1",service_name="CTRL"} 0.3366197347640991
+tigergraph_cpu_usage{host_id="m1",service_name="DICT"} 0.13882260024547577
+tigergraph_cpu_usage{host_id="m1",service_name="ETCD"} 1.021435022354126
+tigergraph_cpu_usage{host_id="m1",service_name="GPE"} 7.542555809020996
+tigergraph_cpu_usage{host_id="m1",service_name="GSE"} 45.86964416503906
+tigergraph_cpu_usage{host_id="m1",service_name="GSQL"} 1.0639517307281494
+tigergraph_cpu_usage{host_id="m1",service_name="GUI"} 0.010601896792650223
+tigergraph_cpu_usage{host_id="m1",service_name="IFM"} 1.0899430513381958
+tigergraph_cpu_usage{host_id="m1",service_name="KAFKA"} 56.06120681762695
+tigergraph_cpu_usage{host_id="m1",service_name="KAFKACONN"} 1.8662768602371216
+tigergraph_cpu_usage{host_id="m1",service_name="KAFKASTRM-LL"} 0.9830034971237183
+tigergraph_cpu_usage{host_id="m1",service_name="NGINX"} 0
+tigergraph_cpu_usage{host_id="m1",service_name="RESTPP"} 13.063582420349121
+tigergraph_cpu_usage{host_id="m1",service_name="TS3"} 0.1956222653388977
+tigergraph_cpu_usage{host_id="m1",service_name="TS3SERV"} 0.1768123060464859
+tigergraph_cpu_usage{host_id="m1",service_name="ZK"} 0.25204044580459595
+# HELP tigergraph_diskspace_free Free Disk space in megabytes by directory.
+# TYPE tigergraph_diskspace_free gauge
+tigergraph_diskspace_free{host_id="m1",mount_point="/",path="/home/tigergraph",path_name="Home"} 188097.546875
+tigergraph_diskspace_free{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/data/gstore",path_name="Gstore"} 188097.546875
+tigergraph_diskspace_free{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/data/kafka",path_name="Kafka"} 188097.546875
+tigergraph_diskspace_free{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/log",path_name="Log"} 188097.546875
+# HELP tigergraph_diskspace_usage Disk usage in megabytes by directory.
+# TYPE tigergraph_diskspace_usage gauge
+tigergraph_diskspace_usage{host_id="m1",mount_point="/",path="/home/tigergraph",path_name="Home"} 7107.47509765625
+tigergraph_diskspace_usage{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/data/gstore",path_name="Gstore"} 579.0476684570312
+tigergraph_diskspace_usage{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/data/kafka",path_name="Kafka"} 1164.056640625
+tigergraph_diskspace_usage{host_id="m1",mount_point="/",path="/home/tigergraph/tigergraph/log",path_name="Log"} 255.07992553710938
+# HELP tigergraph_memory_usage Memory usage in megabytes by component. Service name empty means usage of the whole node
+# TYPE tigergraph_memory_usage gauge
+tigergraph_memory_usage{host_id="m1",service_name=""} 6452
+tigergraph_memory_usage{host_id="m1",service_name="ADMIN"} 44
+tigergraph_memory_usage{host_id="m1",service_name="CTRL"} 33
+tigergraph_memory_usage{host_id="m1",service_name="DICT"} 35
+tigergraph_memory_usage{host_id="m1",service_name="ETCD"} 22
+tigergraph_memory_usage{host_id="m1",service_name="GPE"} 682
+tigergraph_memory_usage{host_id="m1",service_name="GSE"} 1129
+tigergraph_memory_usage{host_id="m1",service_name="GSQL"} 287
+tigergraph_memory_usage{host_id="m1",service_name="GUI"} 28
+tigergraph_memory_usage{host_id="m1",service_name="IFM"} 33
+tigergraph_memory_usage{host_id="m1",service_name="KAFKA"} 646
+tigergraph_memory_usage{host_id="m1",service_name="KAFKACONN"} 2182
+tigergraph_memory_usage{host_id="m1",service_name="KAFKASTRM-LL"} 401
+tigergraph_memory_usage{host_id="m1",service_name="NGINX"} 2
+tigergraph_memory_usage{host_id="m1",service_name="RESTPP"} 295
+tigergraph_memory_usage{host_id="m1",service_name="TS3"} 20
+tigergraph_memory_usage{host_id="m1",service_name="TS3SERV"} 21
+tigergraph_memory_usage{host_id="m1",service_name="ZK"} 116
+# HELP tigergraph_network_connections Number of open TCP connections.
+# TYPE tigergraph_network_connections gauge
+tigergraph_network_connections{host_id="m1",ip="10.128.0.203"} 477
+# HELP tigergraph_network_traffic Network traffic in bytes since the service started.
+# TYPE tigergraph_network_traffic gauge
+tigergraph_network_traffic{direction="incoming",host_id="m1",ip="10.128.0.203"} 4.579066608e+09
+tigergraph_network_traffic{direction="outgoing",host_id="m1",ip="10.128.0.203"} 4.579066608e+09
+# HELP tigergraph_service_status Tigergraph service status. Partiton or replica empty means no partition or replica for that service.
+# TYPE tigergraph_service_status gauge
+tigergraph_service_status{partition="",replica="1",service_name="ADMIN"} 6
+tigergraph_service_status{partition="",replica="1",service_name="CTRL"} 6
+tigergraph_service_status{partition="",replica="1",service_name="DICT"} 6
+tigergraph_service_status{partition="",replica="1",service_name="ETCD"} 6
+tigergraph_service_status{partition="",replica="1",service_name="GSQL"} 6
+tigergraph_service_status{partition="",replica="1",service_name="GUI"} 6
+tigergraph_service_status{partition="",replica="1",service_name="IFM"} 6
+tigergraph_service_status{partition="",replica="1",service_name="KAFKA"} 6
+tigergraph_service_status{partition="",replica="1",service_name="KAFKACONN"} 6
+tigergraph_service_status{partition="",replica="1",service_name="NGINX"} 6
+tigergraph_service_status{partition="",replica="1",service_name="RESTPP"} 6
+tigergraph_service_status{partition="",replica="1",service_name="TS3SERV"} 6
+tigergraph_service_status{partition="",replica="1",service_name="ZK"} 6
+tigergraph_service_status{partition="1",replica="",service_name="EXE"} 6
+tigergraph_service_status{partition="1",replica="",service_name="KAFKASTRM-LL"} 6
+tigergraph_service_status{partition="1",replica="",service_name="TS3"} 6
+tigergraph_service_status{partition="1",replica="1",service_name="GPE"} 6
+tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
+----
+--
+====
+
 === Show query performance
 
 `+GET /statistics/{graph_name}+`
@@ -1128,7 +1249,8 @@ None.
 
 `+POST /ddl/{graph_name}+`
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:ddl-and-loading:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+
+This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:basics:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
 If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename variable at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.
 
@@ -1539,444 +1661,14 @@ curl -u tigergraph:tigergraph \
 [#_upsert_data_to_graph]
 === Upsert data to graph
 
-`POST /graph/\{graph_name}`
+The endpoint for upserting data to graph is more complicated than most other REST endpoints and is documented on a separate page.
+See xref:upsert-rest.adoc[].
 
-This endpoint upserts vertices and/or edges into a graph.
-To upsert means that if a vertex or edge does not exist, it is inserted, and if it does exist, it is updated.
-
-Upserting vertices or edges require the user to have sufficient privileges.
-See xref:user-access:access-control-model.adoc[].
-
-==== Atomic upsert transaction
-
-By default, the `POST /graph/\{graph_name}` endpoint is not atomic. If something goes wrong during the process of the request, the request data can be partially consumed by the database.
-
-You can append a request header `gsql-atomic-level` to the request to set the request's atomicity level.
-The header parameter accepts the following values:
-
-* `atomic`: The request is an atomic transaction.
-An atomic transaction means that updates to the database contained in the request are all-or-nothing: either all changes are successful, or none is successful.
-* `nonatomic`: The request is not atomic.
-This is the default behavior of the endpoint.
-
-For example, suppose we have the following request to upsert two vertices:
-
-[tabs]
-====
-Request::
-+
---
-[source.wrap,console]
-----
-curl --data-binary @vertices.json http://localhost:9000/graph/social
-----
---
-Request body::
-+
---
-Content of `vertices.json` is:
-[source,json]
-----
-{
- "vertices": {
-    "person": {
-      "Velma": {
-        "age": {
-           "value": 30
-         }
-      },
-      "Kelly": {
-        "age": {
-           "value": 22
-         }
-      }
-    }
-  }
-}
-----
---
-====
-
-With the request above, if the vertex `Kelly` fails to be upserted due to a machine failure, it is still possible that the vertex `Velma` is upserted to the database.
-
-If you add the `gsql-atomic-level` header to the request URL and set its value to `atomic`, the request becomes atomic and if any part of the request body fails to be upserted, nothing will be upserted:
-
-[source.wrap,console]
-----
-# This is an atomic request
-curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
-----
-
-==== Parameters
-[width="100%",cols="23%,9%,68%",options="header",]
-|===
-|Name |Required |Description
-|`ack` |No a|The value of this parameter can either be `"all"` or
-`"none"`.
-
-* `"all"`: request will return after all GPE instances have
-acknowledged the POST request
-* `"none"`: request will return immediately after
-RESTPP processed the POST request.
-
-Default value is `"none"`.
-
-|`new_vertex_only` |No |If `new_vertex_only` is set to true, the request will only insert new
-vertices and not update existing ones.
-Default value is `false`.
-
-|`update_vertex_only`|No |If `update_vertex_only` is set to true, the request will only update existing vertices and not insert new vertices.
-
-|`atomic_post`|No a|NOTE: This parameter is deprecated. Please use the `gsql-atomic-level` header instead.
-
-If `atomic_post` is set to true, the request becomes an atomic transaction - either all updates are successful or no updates are successful.
-Default value is `false`.
-
-|`vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if both the `FROM` and
-`TO` vertices of the edge already exist.
-If the value is false, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
-
-This parameter does not affect vertices.
-Default value is `false`.
-
-|`source_vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if the `FROM` vertex of the edge already exists.
-If the value is `false`, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
-
-This parameter does not affect vertices. For non-directed edges, the behavior of this parameter is identical to `vertex_must_exist`.
-Default value is `false`.
-
-This parameter is mutually exclusive with the general `vertex_must_exist` parameter and will return an error if both are used.
-
-|`target_vertex_must_exist` |No |If the value is `true`, the request will only insert an *edge* if the `TO` vertex of the edge already exists.
-If the value is `false`, the request will always insert new edges, and create the necessary vertices with default values for their attributes.
-
-This parameter does not affect vertices. For non-directed edges, the behavior of this parameter is identical to `vertex_must_exist`.
-Default value is `false`.
-
-This parameter is mutually exclusive with the general `vertex_must_exist` parameter and will return an error if both are used.
-
-|
-|===
-
-The response is the number of vertices and edges that were accepted. The API uses JSON format to describe the vertices and edges to be upserted.
-The JSON code can be stored in a text file or specified directly in a command line.
-There is a maximum size for a `POST` data payload (see the xref:API:index.adoc#_size_and_time_limits[*Size Limits*] section).
-The JSON format for describing a vertex set or edge set is summarized below.
-
-==== Request body
-
-The payload data should be in JSON according to the schema shown below:
-
-.Request body schema
-[source,bash]
-----
-{
-    "vertices": {
-       "<vertex_type>": {
-          "<vertex_id>": {
-             "<attribute>": {
-                "value": <value>,
-                "op": <opcode>
-             }
-          }
-       }
-    },
-    "edges": {
-       "<source_vertex_type>": {
-          "<source_vertex_id>": {
-             "<edge_type>": {
-                "<target_vertex_type>": {
-                   "<target_vertex_id>": {
-                      "<attribute>": {
-                         "value": <value>,
-                         "op": <opcode>
-                      }
-                   }
-                }
-             }
-          }
-       }
-    }
-}
-----
-The fields in angle brackets (`<>`) are placeholder names or values, to be replaced with actual values.
-The keys in angle parentheses, such as `<vertex_type>`, can be repeated to form a list of items.
-The keys which are not in angle brackets are exact texts that must be used as they are.
-The nested hierarchy means that vertices are grouped by type.
-Edges, on the other hand, are first grouped by source vertex type, then vertex ID, then edge type.
-
-
-The first example below shows two `User` vertices having an attribute called `age`:
-
-.Upsert Example Data 1: Two User vertices
-[source,json]
-----
-{
-  "vertices": {
-    "User": {
-      "id6": {
-        "age": {
-           "value": 30
-         }
-      },
-      "id1": {
-        "age": {
-           "value": 22
-         }
-      }
-    }
-  }
-}
-----
-
-The second example starts with one `User` vertex.
-Since `id6` contains no attributes, it will remain the same it if already exists.
-If it doesn't yet exist, the request will create a vertex with ID `id6` with default attribute values.
-Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Liked_By` edge from `id6` to `id1`.
-
-.Upsert Example Data 2:add_id6.json
-[source,json]
-----
-{
- "vertices": {
-    "User": {
-      "id6": {
-      }
-    }
-  },
-  "edges": {
-    "User":{
-      "id1": {
-        "Liked": {
-          "User": {
-            "id6" : {
-              "weight" : {
-                "value": 5.0
-              }
-            }
-          }
-        }
-      },
-      "id6": {
-        "Liked_By": {
-          "User": {
-            "id1" : {
-              "weight" : {
-                "value": 1.0
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-----
-
-Follow the instructions in the Introduction section to xref:API:index.adoc#_formatting_data_in_json[format advanced data types].
-
-For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
-
-[source,bash]
-----
-{
- "vertices": {
-    "User": {
-      "id4": {
-        "coordinates": {
-           "value": [51.3345, -7.2233]
-         },
-        "measurements": {
-           "value": {
-             "keyList": ["chest", "waist", "hip"]
-             "valueList": [35, 30, 35]
-           }
-         }
-      },
-      "id5": {
-        "coordinates": {
-           "value": [31.3245, -17.3292]
-         },
-        "measurements": {
-           "value": {
-             "keyList": ["chest", "waist", "hip"]
-             "valueList": [39, 35, 41]
-           }
-         }
-      }
-    }
-  }
-}
-----
-
-==== Composite keys
-
-If your vertex has composite keys, separate the attributes that make up the composite key with a comma (`,`) in the same order as they are defined in the schema.
-
-For example, suppose we have the following vertex definition:
-
-[.wrap,gsql]
-----
-CREATE VERTEX Composite_Person(id UINT, name STRING, age UINT, primary key (name, id))
-CREATE VERTEX Composite_Movie (id UINT, title STRING, country STRING, year UINT, PRIMARY KEY (title,year,id))
-CREATE DIRECTED EDGE Composite_Roles (from Composite_Person,to Composite_Movie, role STRING)
-CREATE GRAPH Person_Movie(Composite_Person, Composite_Movie, Composite_Roles)
-----
-
-The following requests upserts two vertices with the defined composite key, as well as an edge of the type `Composite_Roles` between `Bob, 123` and `Harry Potter, 1990, 1337`:
-
-[.wrap,console]
-----
-curl -X POST "localhost:9000/graph/Person_Movie" -d '
-{
-  "vertices": {
-    "Composite_Person":{
-      "Bob,123":{
-        "name":{"value":"Bob"},
-        "id":{"value":123},
-        "age":{"value":25}
-      },
-      "Tom,456":{
-        "name":{"value":"Tom"},
-        "id":{"value":456},
-        "age":{"value":47}
-      }
-    }
-  },
-  "edges":{
-    "Composite_Person":{
-      "Bob,123":{
-        "Composite_Roles":{
-          "Composite_Movie":{
-            "Harry Potter,1990,1337":{
-              "role":{
-                "value":"Wizard"
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-'
-----
-
-==== Operation codes
-
-Each attribute value may be accompanied by an operation (op) code, which provides very sophisticated schemes for data update or insertion:
-
-|===
-| Type | op | Meaning
-
-| 1
-| `"ignore_if_exists"` or `"~"`
-| If the vertex/edge does not exist, use the payload value to initialize the attribute; but if the vertex/edge already exists, do not change this attribute.
-
-| 2
-| `"add"` or `"+"`
-| Add the payload value to the existing value.
-
-| 3
-| `"and"` or `"&"`
-| Update to the logical AND of the payload value and the existing value.
-
-| 4
-| `"or"` or `"\|"`
-| Update to the logical OR of the payload value and the existing value.
-
-| 5
-| `"max"` or `">"`
-| Update to the higher value between the payload value and the existing value.
-
-| 6
-| `"min"` or `"<"`
-| Update to the lower value between the payload value and the existing value.
-|===
-
-If an attribute is not given in the payload, the attribute stays unchanged if the vertex/edge already exists, or if the vertex/edge does not exist, a new vertex/edge is created and assigned the default value for that data type. The default value is 0 for `int/uint`, 0.0 for `float/double`, and `""`(empty string) for string.
-
-==== Valid data types
-
-The RESTPP server validates the request before updating the values. The following schema violations will cause the entire request to fail and no change will be made to a graph:
-
-* For vertex upsert
-** Invalid vertex type
-** Invalid attribute data type
-* For edge upsert:
-** Invalid source vertex type
-** Invalid edge type
-** Invalid target vertex type
-** Invalid attribute data type.
-
-If an invalid attribute name is given, it is ignored.
-
-==== Output response
-
-The response is the number of vertices and edges that were accepted. Additionally, if `new_vertex_only` is true, the response will include two more fields:
-
-* `skipped_vertices`: the number of vertices in the input data which already existed in the graph
-* `vertices_already_exist`: the id and type of the input vertices which were skipped
-
-If `vertex_must_exist` is true, the response will include two more fields:
-
-* `skipped_edges`: the number of edges in the input data rejected because of missing endpoint vertices
-* `miss_vertices`: the id and type of the endpoint vertices which were missing
-
-The example file `add_id6.json` (shown in the *Request Body* section) upserts one `User` __vertex with `id = "id6"`, one `Liked` __edge, and one `Liked_By` __edge. The `Liked` __edge is from `"id1` " to `"id6"`; the `Liked_By` __edge is from `"id6"` to _``"id1"``_.
-
-==== Example
-
-The following example submits an upsert request by using the payload data stored in `add_id6.json`.
-
-[source,bash]
-----
-curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph"
-
-{"accepted_vertices":1,"accepted_edges":2}
-----
-
-If we set the value of `vertex_must_exist` parameter to `true`, the endpoint will only insert edges whose endpoint vertices both exist. This includes the vertices being inserted in the same request.
-Therefore, inserting the content of `add_id6.json` to an empty graph would cause the edges to be rejected:
-
-[source,bash]
-----
-curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph?vertex_must_exist=true"
-
-{
-  "version": {
-    "edition": "enterprise",
-    "api": "v2",
-    "schema": 0
-  },
-  "error": false,
-  "message": "",
-  "results": [
-    {
-      "accepted_vertices": 1,
-      "accepted_edges": 0,
-      "skipped_edges": 2,
-      "edge_vertices_not_exist": [
-        {
-          "v_type": "User",
-          "v_id": "id1"
-        }
-      ]
-    }
-  ],
-  "code": "REST-0003"
-}
-----
 == Vertices
-
-[NOTE]
-====
-To support multiple graphs within one system, the graph data REST endpoint URLs include an optional graph name.
-====
 
 === Insert vertices
 
-To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
+To insert vertices or edges, use the xref:upsert-rest.adoc[Upsert data to graph] endpoint.
 
 === List vertices
 
@@ -2268,7 +1960,7 @@ Response::
 
 === Insert edges
 
-To insert vertices or edges, use the xref:API:built-in-endpoints.adoc#_upsert_data_to_graph[Upsert data to graph] endpoint.
+To insert vertices or edges, use the xref:upsert-rest.adoc[Upsert data to graph] endpoint.
 
 === List edges of a vertex
 
@@ -2554,6 +2246,8 @@ GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type
 ----
 
 This endpoint returns the edge of a specified type between a source vertex and a target vertex.
+If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+If the edge type is defined with a discriminator, this endpoint returns all edges of the edge type between the source and target vertices.
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
 
@@ -2606,21 +2300,85 @@ Response::
 
 | `select`
 | No
-| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values. If `select` is provided, the edges returned will only show the attributes provided.
+| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values.
+If `select` is provided, the edges returned will only show the attributes provided.
 
 | `timeout`
 | No
 | Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, the system-wide endpoint timeout setting is applied.
 |===
 
-=== Delete an edge
+=== Retrieve edge by source, target, edge type, and discriminator
 
-[source,bash]
+[.wrap,console]
+----
+GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}
+/{target_vertex_type}/{target_vertex_id}/{discriminator}
+----
+
+This endpoint allows you to retrieve an edge by its source, target, edge type, and
+xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+
+[NOTE]
+====
+If the discriminator has multiple attributes, use `,` as a separator.
+But if the attributes already have commas in a string discriminator, use `\` as an escape character to escape the commas.
+The backslash escape character can escape the escape character itself as well.
+====
+
+This endpoint requires the `READ_DATA` privilege on the types or attributes being queried.
+
+==== Sample request
+
+[tabs]
+====
+Single-attribute discriminator::
++
+--
+[.wrap,console]
+----
+curl -X GET 'http://localhost:9000/graph/multiedge/edges/Person/4/transfer/Person/30/2431'
+----
+--
+Composite discriminator::
++
+--
+[.wrap,console]
+----
+curl -X GET "http://localhost:9000/graph/multiedge/edges/Person/9/transfer2/Account/9/77,1117,2010-04-09%2003:57:01" <1>
+----
+<1> `%20` is the URL encoding for a space character.
+--
+====
+
+==== Parameters
+
+|===
+| Name | Required | Description
+
+| `select`
+| No
+| Attributes of the selected edges to return. The parameter takes a list, which is a string of comma-separated values.
+If `select` is provided, the edges returned will only show the attributes provided.
+
+| `timeout`
+| No
+| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, the system-wide endpoint timeout setting is applied.
+|===
+
+=== Delete an edge by source, target, and edge type
+
+[source.wrap,bash]
 ----
 DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
 
 Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
+If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+
+If the edge type is defined with a discriminator, this endpoint deletes all edges of the edge type between the source and target vertices.
+If you want to delete a specific edge by its discriminator, see <<_delete_an_edge_by_source_target_edge_type_and_discriminator>>.
+
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] and `READ_DATA` on the types or attributes being queried.
 
@@ -2665,9 +2423,63 @@ Response::
 | Name | Required | Description
 
 | `timeout`
+| No
+| Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
+|===
+
+=== Delete an edge by source, target, edge type and discriminator
+
+[source.wrap,console]
+----
+DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}
+/{target_vertex_type}/{target_vertex_id}/{discriminator}
+----
+
+This endpoint allows you to delete an edge by its source, target, edge type, and
+xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+
+[NOTE]
+====
+If the discriminator has multiple attributes, use `,` as a separator.
+But if the attributes already have commas in a string discriminator, use `\` as an escape character to escape the commas.
+The backslash escape character can escape the escape character itself as well.
+====
+
+This endpoint requires the `DELETE_DATA` privilege on the type of the edge being queried.
+
+==== Sample request
+
+[tabs]
+====
+Single-attribute discriminator::
++
+--
+[.wrap,console]
+----
+curl -X DELETE 'http://localhost:9000/graph/multiedge/edges/Person/4/transfer/Person/30/2431'
+----
+--
+Composite discriminator::
++
+--
+[.wrap,console]
+----
+curl -X DELETE "http://localhost:9000/graph/multiedge/edges/Person/9/transfer2/Account/9/77,1117,2010-04-09%2003:57:01" <1>
+----
+<1> `%20` is the URL encoding for a space character.
+--
+====
+
+==== Parameters
+
+|===
+| Name | Required | Description
+
+| `timeout`
 | no
 | Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
 |===
+
 
 == Queries
 
@@ -2675,7 +2487,10 @@ Response::
 
 `GET /gsqlserver/gsql/queryinfo`
 
-Returns metadata details about a query. In particular, it lists the input parameters in the same order as they exist in the query (in the form of a JSON array of JSON objects) and outputs `PRINT` statement syntax. *This endpoint exists on port 14240 and requests are sent to the GSQL server.* Therefore, you should provide authentication credentials in the request.
+Returns metadata details about a query.
+In particular, it lists the input parameters in the same order as they exist in the query (in the form of a JSON array of JSON objects) and outputs `PRINT` statement syntax.
+*This endpoint exists on port 14240 and requests are sent to the GSQL server.*
+Therefore, you should provide authentication credentials in the request.
 
 ==== Sample request
 [tabs]
@@ -3111,18 +2926,32 @@ containing a list of JSON `VERTEX`
 |`[{"id": "person1","type": "person"},{"id": "person2","type": "person"}]`
 |===
 
-==== Specify replica
+==== Headers
+The Run Query endpoint accepts a number of headers that allow you to configure the way the query is run:
 
-If you have a TigerGraph HA cluster, you can specify a query to run on a particular replica with the HTTP header `GSQL-REPLICA`. The value of the header needs to be an integer within the range one to the replication factor of the cluster. If you supply an invalid value for the header, the request will return an error.
 
-==== Specify thread limit
+|===
+|Name |Description
 
-When running a query through RESTPP,  you can specify a limit on the number of threads that the query is allowed to use on each node through the HTTP header `GSQL-THREAD-LIMIT`.
-The number of threads used by a query means the number of vCPUs used by the query.
+|`GSQL-REPLICA`
+|The replica where the query is to be run.
+The value of the header needs to be an integer within the range one to the replication factor of the cluster.
+If you supply an invalid value for the header, the request returns an error.
+
+A value of `0` specifies that the query be run on the primary copy;
+a value of `1` specifies that the query be run on the first replica, and so on.
+
+|`GSQL-THREAD-LIMIT`
+|Maximum limit on the number of threads that the query is allowed to use on each node.
 By default, a query will use all threads that are available on a machine.
 
 For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default.
 By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
+
+|`GSQL-QueryLocalMemLimitMB`
+|Maximum limit of how much memory a query is allowed to use on any single node in a cluster.
+By default, there is no limit to the amount of memory a query is allowed to consume until the overall free memory reaches a critical level.
+|===
 
 ==== Sample request
 
@@ -3228,15 +3057,19 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsqls
  }'
 ----
 
-=== List running queries
+=== List running queries of a graph
 
-`+GET /showprocesslist/{graph_name}+`
+`GET /showprocesslist/{graph_name}`
 
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
+This includes installed queries. interpreted queries, as well as built-in queries.
 
 If you are running a TigerGraph cluster, this endpoint only shows queries running on the node to which the request is sent, not all running queries on the cluster.
 
-==== Sample request:
+
+This endpoint requires the `READ_DATA` privilege on the graph you are querying.
+
+==== Sample request
 [tabs]
 ====
 Request::
@@ -3279,9 +3112,79 @@ Response::
 ----
 --
 ====
-==== Parameters:
+==== Parameters
 
 No Parameters.
+
+=== List all running queries
+`GET /showprocesslistall`
+
+This endpoint reports the statistics of all running queries across all graphs on a TigerGraph instance: the query's request ID, start time, expiration time, and the REST endpoint's URL.
+This includes installed queries. interpreted queries, as well as built-in queries.
+
+If you are running a TigerGraph cluster, this endpoint only shows queries running on the node to which the request is sent, not all running queries on the cluster.
+
+CAUTION: If a high volume of queries are running, invoking the endpoint can be an expensive operation that should be used with caution. 
+
+This endpoint requires the `READ_DATA` privilege on the global scope.
+
+==== Sample request
+[tabs]
+====
+Request::
++
+[.wrap,console]
+----
+$ curl -X GET "http://localhost:9000/showprocesslistall" |jq
+----
+Response::
++
+----
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   671  100   671    0     0   655k      0 --:--:-- --:--:-- --:--:--  655k
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "requestid": "15.RESTPP_1_1.1660165648633.N", <1>
+      "startTime": "2022-08-10 21:07:28.633",
+      "expirationTime": "2022-08-10 21:07:44.633", <2>
+      "url": "/query/Social/rngExample",
+      "elapsedTime": 3385
+    },
+    {
+      "requestid": "65551.RESTPP_1_1.1660165648638.N",
+      "startTime": "2022-08-10 21:07:28.638",
+      "expirationTime": "2022-08-10 21:07:44.638",
+      "url": "/query/Work_Net/rngExample",
+      "elapsedTime": 3380
+    },
+    {
+      "requestid": "131087.RESTPP_1_1.1660165648723.N",
+      "startTime": "2022-08-10 21:07:28.723",
+      "expirationTime": "2022-08-10 21:07:44.723",
+      "url": "/query/Entity_Resolution/rngExample",
+      "elapsedTime": 3295
+    }
+  ],
+  "code": "REST-0000"
+}
+----
+<1> Each request to run a query sent to the REST server has a unique ID that can be used to look up the request in the system logs.
+<2> The time at which the query will time out.
+====
+
+==== Parameters
+No parameters.
+
+
 
 === Abort a query
 
