@@ -277,8 +277,7 @@ response |`8500`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|GPE.BasicConfig.Env |The runtime environment variables, separated by
-`;'
+|GPE.BasicConfig.Env |The runtime environment variables, separated by `;`
 |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=34; MALLOC_CONF=prof:true,prof_active:false`
 
 |GPE.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
@@ -288,8 +287,8 @@ filename |`90`
 |GPE.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
 
-|GPE.BasicConfig.LogConfig.LogLevel |The log level(``OFF'', ``BRIEF'',
-``DEBUG'', ``VERBOSE''), default is BRIEF |`BRIEF`
+|GPE.BasicConfig.LogConfig.LogLevel |The log level (`OFF`, `BRIEF`,
+`DEBUG`, `VERBOSE`), default is `BRIEF` |`BRIEF`
 
 |GPE.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
@@ -300,16 +299,16 @@ System.LogRoot) of log directory for GPE |`gpe`
 |GPE.BasicConfig.Nodes |The node list for GPE
 |`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
 
-|GPE.Disk.CompressMethod |The compress method of GPE disk data |`nan`
+|GPE.Disk.CompressMethod |The compression method of GPE disk data |`nan`
 
-|GPE.Disk.DiskStoreRelativePath |The path(relative to temp root) to
+|GPE.Disk.DiskStoreRelativePath |The path (relative to temp root) to
 store GPE temporary disk data |`gpe/disks`
 
 |GPE.Disk.LoadThreadNumber |The number of threads to load from disk |`1`
 
 |GPE.Disk.SaveThreadNumber |The number of threads to save to disk |`1`
 
-|GPE.EdgeDataMemoryLimit |The memory limit of edge data |`-1`
+|GPE.EdgeDataMemoryLimit |The memory limit for edge data. |`-1`
 
 |GPE.GPE2GPEResponsePort |The GPE port for receiving response back from
 other GPEs |`7501`
@@ -351,10 +350,11 @@ acknowledgements the leader broker must receive from ISR brokers before
 responding to the request. |`1`
 
 |GPE.LeaderElectionTTLSec |The time-to-live of a GPE election
-participant.A GPE will be kicked out of election if one GPE is not
+participant. A GPE will be kicked out of election if one GPE is not
 responsive after the TTL. |`30`
 
-|GPE.MemoryLimitMB |The total topology memory limit GPE |`0`
+|GPE.MemoryLimitMB |The total topology memory limit.
+For graphs with large topology data, this parameter can limit the system memory used for topology data in order to free up memory for query processing. |`0`
 
 |GPE.NumberOfHashBucketInBit |The number of bits used to represent hash
 bucket counts. |`5`
@@ -363,7 +363,7 @@ bucket counts. |`5`
 
 |GPE.StopTimeoutMS |Stop GPE timeout |`300000`
 
-|GPE.VertexDataMemoryLimit |The memory limit of vertex data |`-1`
+|GPE.VertexDataMemoryLimit |The memory limit for vertex data in the topology.|`-1`
 |===
 
 == GSE
