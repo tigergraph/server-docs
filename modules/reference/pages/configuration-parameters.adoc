@@ -354,7 +354,10 @@ participant. A GPE will be kicked out of election if one GPE is not
 responsive after the TTL. |`30`
 
 |GPE.MemoryLimitMB |The total topology memory limit.
-For graphs with large topology data, this parameter can limit the system memory used for topology data in order to free up memory for query processing. |`0`
+For graphs with large topology data, this parameter can limit the system memory used for topology data in order to free up memory for query processing.
+
+This parameter takes precedence over the `EdgeDataMemoryLimit` and `VertexDataMemoryLimit` parameters.
+|`-1`
 
 |GPE.NumberOfHashBucketInBit |The number of bits used to represent hash
 bucket counts. |`5`
