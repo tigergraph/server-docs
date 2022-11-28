@@ -287,7 +287,7 @@ System_GSystem|GSystemWatcher|Health|ProcMaxGB|0|ProcAlertGB|0|
 CurrentGB|1|SysMinFreePct|10|SysAlertFreePct|30|FreePct|69
 ----
 
-When free memory drops below 10 percent (`SysMinFreePct`), all queries are aborted. This threshold is adjustable through xref:gadmin:management-with-gadmin.adoc#_gadmin_config[`gadmin config`].
+When free memory drops below 10 percent (`SysMinFreePct`), all queries are aborted. This threshold is adjustable through xref:system-management:management-with-gadmin.adoc#_gadmin_config[`gadmin config`].
 
 ==== *How to retrieve information on queries aborted due to memory usage*
 
@@ -527,7 +527,7 @@ image::https://lh6.googleusercontent.com/3vmIx6BF3S0YuwLQ9-PrKip5c-Bh15NymmAlGh8
 
 If you suspect GraphStudio has crashed, first run `gadmin status` to verify all the components are in good shape. Two known causes of GraphStudio crashes are:
 
-* *Huge JSON response* User-written queries can return very large JSON responses. If GraphStudio often crashes on large query responses, you can try reducing the size limit for JSON responses by changing the `GUI.RESTPPResponseMaxSizeBytes` configuration using xref:gadmin:management-with-gadmin.adoc#_gadmin_config[`gadmin config`]. The default limit is 33554432 bytes.
+* *Huge JSON response* User-written queries can return very large JSON responses. If GraphStudio often crashes on large query responses, you can try reducing the size limit for JSON responses by changing the `GUI.RESTPPResponseMaxSizeBytes` configuration using xref:system-management:management-with-gadmin.adoc#_gadmin_config[`gadmin config`]. The default limit is 33554432 bytes.
 
 [source, console]
 ----
