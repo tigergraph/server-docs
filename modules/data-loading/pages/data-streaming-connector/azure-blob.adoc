@@ -74,13 +74,10 @@ Provide the credentials using the following configs:
 
 [.wrap]
 ----
-file.reader.settings.fs.azure.account.oauth2.client.id="4a3d45fa-8974-48e6-af97-2614b1a24be8" <1>
-file.reader.settings.fs.azure.account.oauth2.client.secret="Ydt7Q~TRfxvuMxEDgn4mwGKg9TLhaKywkGjwn" <2>
-file.reader.settings.fs.azure.account.oauth2.client.endpoint="https://login.microsoftonline.com/718f143b-b1ef-468b-a3a8-c95651fdd511/oauth2/token"<3>
+file.reader.settings.fs.azure.account.oauth2.client.id="<client-ID>"
+file.reader.settings.fs.azure.account.oauth2.client.secret="<client-secret>"
+file.reader.settings.fs.azure.account.oauth2.client.endpoint="https://login.microsoftonline.com/<tenant-ID>/oauth2/token"
 ----
-<1> Client ID.
-<2> Client secret.
-<3> Tenant ID.
 --
 ====
 
@@ -118,9 +115,9 @@ file.reader.settings.fs.defaultFS="abfss://example_container@example_account.dfs
 
 file.reader.settings.fs.azure.account.auth.type="OAuth"
 file.reader.settings.fs.azure.account.oauth.provider.type="org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-file.reader.settings.fs.azure.account.oauth2.client.id="examplefa-8974-48e6-af97-2614b1a24be8"
-file.reader.settings.fs.azure.account.oauth2.client.secret="example~TRfxvuMxEDgn4mwGKg9TLhaKywkGjwn"
-file.reader.settings.fs.azure.account.oauth2.client.endpoint="https://login.microsoftonline.com/exampleb-b1ef-468b-a3a8-c95651fdd511/oauth2/token"
+file.reader.settings.fs.azure.account.oauth2.client.id="<example>"
+file.reader.settings.fs.azure.account.oauth2.client.secret="<example>"
+file.reader.settings.fs.azure.account.oauth2.client.endpoint="https://login.microsoftonline.com/<example>/oauth2/token"
 
 file.reader.settings.fs.abfs.impl="org.apache.hadoop.fs.azurebfs.AzureBlobFileSystem"
 file.reader.settings.fs.abfss.impl="org.apache.hadoop.fs.azurebfs.SecureAzureBlobFileSystem"
