@@ -113,3 +113,14 @@ For example, if expanding from a cluster size of 5 to 6 results in a failed expa
 
 Run `kubectl get pvc -l app=<app_name> --namespace <namespace_name>` to list all PVCs and double-check their age.
 The newest PVC is the one to delete.
+
+== Upgrade cluster version
+
+Upgrades are only supported from a lower version to a higher version.
+
+Assume the current cluster version is 3.7.0. You can upgrade the cluster to 3.8.0 with this command:
+
+[.wrap,console]
+----
+kubectl tg update --cluster-name <cluster_name> --version 3.8.0  --namespace <namespace_name>
+----
