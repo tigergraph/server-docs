@@ -137,7 +137,7 @@ DROP DATA_SOURCE ALL
 
 The `SHOW DATA_SOURCE` command will display a summary of all existing data_sources for which the user has privilege:
 
-[,console]
+[source.wrap,console]
 ----
 $ GSQL SHOW DATA_SOURCE *
 
@@ -182,7 +182,7 @@ Similar to the data source configuration file described prior, the contents are 
 [,typescript]
 ----
 {
-    "file.uris": "s3://my-bucket/data.csv"
+    "file.uris": "s3a://my-bucket/data.csv"
 }
 ----
 
@@ -197,7 +197,7 @@ The following example configuration file contains multiple paths:
 [.wrap,typescript]
 ----
 {
-    "file.uris": "s3://my-bucket1/data1.csv,s3://my-bucket1/data2.csv,s3://my-bucket2/data3.csv"
+    "file.uris": "s3a://my-bucket1/data1.csv,s3a://my-bucket1/data2.csv,s3a://my-bucket2/data3.csv"
 }
 ----
 
@@ -206,7 +206,7 @@ Instead of specifying the config file path, you can also directly provide the S3
 [,gsql]
 ----
 DEFINE FILENAME f1 = "$s1:~/files.config";
-DEFINE FILENAME f1 = "$s1:{\"file.uris\":\"s3://my-bucket/data.csv\"}";
+DEFINE FILENAME f1 = "$s1:{\"file.uris\":\"s3a://my-bucket/data.csv\"}";
 ----
 
 ==== Configure s3 file loader
@@ -220,7 +220,7 @@ The following is a sample full configuration file:
 ----
 {
     "tasks.max": 1,
-    "file.uris": "s3://my-bucket/data.csv",
+    "file.uris": "s3a://my-bucket/data.csv",
     "file.regexp": ".*",
     "file.recursive": false,
     "file.scan.interval.ms": 60000,
@@ -244,8 +244,9 @@ These expressions have the form `+${XX}+` where XX represents a pattern from htt
 [TIP]
 ====
 If you want to ingest data dynamically, i.e. directories/files created every day and avoid adding new URIs every time, you can include expressions in URIs to do that.
-For example, for the URI``+s3://my-bucket/${yyyy}+``, it is converted to``s3://my-bucket/2019``when running the loader.
-You can use as many as you like in the URIs, for instance:``+s3://my-bucket/${yyyy}/${MM}/${DD}/${HH}-${mm}+``
+
+For example, the URI``+s3a://my-bucket/${yyyy}+`` is converted to ``s3a://my-bucket/2023`` when running the loader.
+You can use as many as you like in the URIs, for instance:``+s3a://my-bucket/${yyyy}/${MM}/${DD}/${HH}-${mm}+``
 ====
 
 * `file.regexp` (default is `.*` which matches all files): the regular expression to filter which files to read.
@@ -334,7 +335,7 @@ See xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_inspecting_and_man
 
 == S3 loader example
 
-Here is an example code for loading data through the S3 Loader:
+Here is an example of loading data through the S3 Loader:
 
 [,gsql]
 ----
