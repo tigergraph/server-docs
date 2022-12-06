@@ -43,7 +43,8 @@ Usage: gbar backup [options] -t <backup_tag>
 The `-y` option forces GBAR to skip interactive prompt questions by selecting the default answer.
 There is currently one interactive question:
 
-* At the start of restore, GBAR will always ask if it is okay to stop and reset the TigerGraph services: (y/N)? The default answer is yes.
+* At the start of the restore process, GBAR always asks if it is okay to stop and reset the TigerGraph services.
+The default answer is yes.
 
 == Configure GBAR
 
@@ -91,7 +92,7 @@ gadmin config apply -y
 [NOTE]
 ====
 * You can specify the number of parallel processes for backup and restore.
-* You must provide username and password using `GSQL_USERNAME` and `GSQL_PASSWORD` environment variables.
+* You must provide the username and password using `GSQL_USERNAME` and `GSQL_PASSWORD` environment variables.
 
  $ GSQL_USERNAME=tigergraph GSQL_PASSWORD=tigergraph gbar backup -t daily
 ====
@@ -107,7 +108,7 @@ To perform a backup, run the following command as the TigerGraph Linux user:
 gbar backup -t <backup_tag>
 ----
 
-Depending on your configuration settings, your backup archive will be output to your local backup path and/or your AWS S3 bucket.
+Depending on your configuration settings, your backup archive is output to your local backup path and/or your AWS S3 bucket.
 If you are running a cluster, there will be a backup archive on every node in the same path.
 
 A backup archive is stored as several files in a folder, rather than as a single file.
@@ -172,9 +173,10 @@ When GBAR restore begins, it first searches for a backup archive exactly matchin
 Then it decompresses the backup files to a working directory.
 Next, GBAR compares the TigerGraph system version in the backup archive with the current system's version, to make sure that the backup archive is compatible with that current system.
 It will then shut down the TigerGraph servers (GSE, RESTPP, etc.) temporarily.
-Then, GBAR makes a copy of the current graph data, as a precaution.
+
+GBAR then makes a copy of the current graph data, as a precaution.
 Next, GBAR copies the backup graph data into the GPE and GSE and notifies the Dictionary to load the configuration data.
-Also, GBAR notifies the GST to load backup user data and copy the backup user-defined token/functions to the right location.
+GBAR also notifies the GST to load backup user data and copy the backup user-defined token/functions to the right location.
 When these actions are all done, GBAR restarts the TigerGraph servers.
 
 
@@ -184,10 +186,14 @@ To remove a backup, run the `gbar remove` command:
 
 [source,console]
 ----
-$ gbar remove <backup_tag>
+$ gbar remove <backup_tag>-<timestamp>
 ----
 
-The command removes a backup from the backup storage path. To retrieve the tag of a backup, you can use the `gbar list` command.
+The command removes a backup from the backup storage path.
+To retrieve the full tag of a backup with the timestamp, use the `gbar list` command.
+
+Please note that the backup tag entered when you create a backup automatically includes a timestamp that is shown in the results of `gbar list`.
+The `gbar remove` command must use the full tag, including the timestamp.
 
 == Clean up temporary files
 
