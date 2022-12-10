@@ -62,7 +62,9 @@ You are only allowed to perform workloads that do not modify the data.
 For example, you can run OLAP queries that are read-only.
 
 If you attempt to perform an operation that would modify the data, the system blocks the operation to ensure that the primary cluster isn't affected by the elastic cluster in any way.
-For example, if a query modifies data, the query is automatically aborted when it runs. 
+
+For example, if a query modifies data, the query is automatically aborted when it runs.
+You also cannot expand a cluster that has shared storage.
 
 Whenever your workload is finished, you can shut down the elastic cluster.
 You can launch another cluster whenever you need.
