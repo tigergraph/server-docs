@@ -10,16 +10,16 @@ TigerGraph Server {page-component-version}.0 was released on Nov 15th, 2022.
 The following is a list of new features and improvements:
 
 === Developer tools - TigerGraph Insights
-* Introduced xref:insights:intro:index.adoc[TigerGraph Insights], a no-code graph analyzer for making interactive visual dashboards.
+* Introduced xref:insights:intro:index.adoc[TigerGraph Insights], an intuitive, no-code tool for building interactive graph analytics dashboards.
 
 === Developer tools - Machine Learning Workbench
 * Introduced a new TigerGraph Cloud integration with xref:ml-workbench:intro:index.adoc[Machine Learning Workbench].
 * Launched a new dedicated Machine Learning Workbench starter kit with ready-to-use tutorial Jupyter notebooks.
-
+ 
 === Developer tools - GraphStudio
 
 * Added support for multiple edge instances between two vertices in GraphStudio.
-* Reworked the xref:gui:graphstudio:map-data-to-graph.adoc[data loading workflow] for adding data sources to a graph.
+* Simplified the xref:gui:graphstudio:map-data-to-graph.adoc[data loading workflow] for adding data sources to a graph.
 * Added the ability to load data to a graph from Azure Blob Storage.
 
 === Developer tools - Graph Data Science Algorithm Library
@@ -34,7 +34,7 @@ The following is a list of new features and improvements:
 * Added the functionality to xref:system-management:memory-management.adoc#_limit_query_memory_usage[restrict the amount of memory a query is allowed to use].
 
 === Query Language
-* Added support for multiple edges instances of the same type between two vertices.
+* Added support for multiple edge instances of the same type between two vertices.
 * Added the xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[`DISCRIMINATOR` keyword] to enable defining edge types that allow multiple edge instances between two vertices.
 * GSQL no longer recognizes empty input for a query parameter of type `SET` to be an empty set; users must explicitly specify an empty set instead.
 ** In GSQL, use square brackets `[]` to  specify an empty set.
@@ -46,13 +46,13 @@ You can no longer specify an empty set using query strings in a GET request.
 
 === Data API Service
 * Added support for endpoints that xref:API:upsert-rest.adoc[insert], xref:tigergraph-server:API:built-in-endpoints.adoc#_retrieve_edge_by_source_target_edge_type_and_discriminator[retrieve], and xref:tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[delete edge instances] to handle situations where there are multiple instances of an edge type between two vertices.
-* Added xref:API:built-in-endpoints.adoc#_list_all_running_queries[the `GET /showprocesslistall`] endpoint, which lists all currently running queries on a node.
+* Added the xref:API:built-in-endpoints.adoc#_list_all_running_queries[`GET /showprocesslistall` endpoint], which lists all currently running queries on a node.
 
 
 === Security
 * xref:gsql-ref:querying:func/query-user-defined-functions.adoc[Strengthened the security] for the management of user-defined functions (UDF).
-* Sensitive information such as ACL passwords are now masked when entering passwords interactively.
-* All personally identifiable information in data source configuration when using the Kafka loader or Data Streaming Connector are now masked.
+* Sensitive information such as ACL passwords is now masked when entering passwords interactively.
+* All personally identifiable information in data source configuration when using the Kafka loader or Data Streaming Connector is now masked.
 * Added xref:security:login-protection.adoc[login protection] and the ability for administrators to xref:security:password-policy.adoc[enable a password policy].
 
 
@@ -62,7 +62,7 @@ You can no longer specify an empty set using query strings in a GET request.
 * Added the ability to shrink or expand a cluster using the `kubectl tg update` command in Kubernetes.
 
 === Observability
-* Added xref:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics[the `/metrics` endpoint] to report system metrics in OpenMetrics format.
+* Added the xref:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics[`/metrics` endpoint] to report system metrics in OpenMetrics format.
 * Added the ability to monitor queries through AdminPortal and view query performance over time.
 * Added the capability for the Graph Processing Engine (GPE) to xref:system-management:memory-management.adoc#_monitor_memory_usage[log the highest memory usage of a query during its execution].
 * Improved messaging for errors caused by wrong configurations for a Kafka loading job.
