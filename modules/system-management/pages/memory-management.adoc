@@ -122,7 +122,7 @@ There are three memory states:
 Healthy:: There is a healthy amount of free memory.
 All system operations run normally for best performance.
 Alert:: There is a shortage of free memory.
-TigerGraph's GPE system enables mechanisms to alleviate the memory pressure by moving some data onto disks and restricting the maximum allowed threads for rebuilding.
+TigerGraph's GPE system enables mechanisms to alleviate the memory pressure by moving some data onto disks and trying to use the maximum allowed threads for rebuilding.
 This starts to slow down the processing of new requests until the long-running queries finish and release memory.
 Critical:: There is a critical shortage of free memory.
 TigerGraph's GPE starts to abort queries to ensure system stability.
