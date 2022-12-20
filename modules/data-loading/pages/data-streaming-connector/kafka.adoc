@@ -83,12 +83,12 @@ This controls the format of the values in messages written to or read from Kafka
 
 |`value.converter.schema.registry.url`|
 URL of the schema registry service.
-Required if  `value.converter` is `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverterWithoutSchemaRegistry`.
+Required if  `value.converter` is `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter`.
 For details, see https://docs.confluent.io/platform/current/schema-registry/connect.html#example-converter-properties[Confluent documentation].|`\http://localhost:8081`
 |===
 
 Other configuration options are available to fine-tune the connector.
-You can find all configuration options in https://kafka.apache.org/documentation/#georeplication-mirrormaker[Kafka MirrorMaker Configurations].
+All configuration options are in https://kafka.apache.org/documentation/#georeplication-mirrormaker[Kafka MirrorMaker Configurations].
 
 ==== SSL/SASL configurations (optional)
 If the source cluster has configured SSL or SASL protocols, you need to provide SSL/SASL configurations to the connector in order to communicate with the source cluster.
@@ -173,7 +173,8 @@ The following subsection configurations are available:
 
 |`tasks.max`
 |
-The maximum number of tasks that to be created for this connector. The connector may create fewer tasks if it cannot achieve this level of parallelism.
+The maximum number of tasks that to be created for this connector.
+The connector may create fewer tasks if it cannot achieve this level of parallelism.
 The value for this configuration should not be larger than the number of partitions of the topic(s) in source Kafka.
 The default value is 1.
 |===
@@ -221,7 +222,8 @@ Data::
 --
 ====
 
-To create the loading job, we start by creating a data source configuration file and point it to the Kafka cluster and create the data source:
+To create the loading job, we start by creating a data source configuration file.
+We then point it to the Kafka cluster and create the data source:
 
 [tabs]
 ====
