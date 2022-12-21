@@ -50,7 +50,6 @@ The number at the end of each line indicates the number of bytes of memory utili
 The reported query memory usage is only a partial estimation of the query's memory usage.
 When `STRING` and container type of local accumulators (ListAccum, MapAccum, ArrayAccum, HeapAccum, SetAccum, BagAccum) are used, the difference between the reported usage and the actual usage can differ greatly, as the memory tracker cannot accurately report the sizes of such types.
 
-As such, it is not suggested to view the reported memory usage as the absolute amount of memory used by a query.
 The best way to evaluate the reported memory usage number is to compare the memory usage of different runs of the same query.
 If two runs of the same query report different numbers in terms of their memory usage, it is very likely that the query run reporting higher memory usage actually used more memory than the query run reporting lower memory usage.
 ====
@@ -86,8 +85,8 @@ current_mem:132960052 \ <3>
 <1> The request's full ID.
 Note `GPE_1_2` which tells you this line of log is coming from the second node in the primary replica.
 <2> Internally, a query's execution consists of many steps.
-This indicates the step at which the log is generated.
-This is helpful for TigerGraph Support during debugging - you likely can disregard this data.
+This indicates the step at which the log is generated, which is helpful for TigerGraph Support during debugging.
+You can usually disregard this data.
 <3> The current amount of memory held by the query at the time the log is taken.
 <4> The maximum amount of memory held by the query during the course of its run.
 
@@ -95,7 +94,7 @@ This is helpful for TigerGraph Support during debugging - you likely can disrega
 === Monitor system free memory percentage
 
 ==== Through Admin Portal
-If you have access to Admin Portal, you can monitor memory usage by node through the cluster monitoring tool in xref:gui:admin-portal:dashboard.adoc[Dashboard].
+If you have access to Admin Portal, you can monitor memory usage by node through the cluster monitoring tool in the xref:gui:admin-portal:dashboard.adoc[Dashboard].
 
 ==== Through Linux commands
 The following is a list of Linux commands to measure system memory and check for out-of-memory errors:
@@ -123,7 +122,8 @@ There are three memory states:
 Healthy:: There is a healthy amount of free memory.
 All system operations run normally for best performance.
 Alert:: There is a shortage of free memory.
-TigerGraph's GPE starts to slow down processing new requests to allow long-running queries to finish and release memory.
+TigerGraph's GPE system enables mechanisms to alleviate the memory pressure by moving some data onto disks and trying to use the maximum allowed threads for rebuilding.
+This starts to slow down the processing of new requests until the long-running queries finish and release memory.
 Critical:: There is a critical shortage of free memory.
 TigerGraph's GPE starts to abort queries to ensure system stability.
 
@@ -134,7 +134,7 @@ By default, the thresholds are only effective when a machine has more than 30 GB
 The free memory threshold that causes TigerGraph to enter the Alert state.
 Default value is 30%.
 `SysMinFreePct`::
-The free memory threshold that causes TigerGraph to enter Critical state.
+The free memory threshold that causes TigerGraph to enter the Critical state.
 Default value is 10%.
 
 === Configure memory state thresholds
