@@ -3468,7 +3468,7 @@ Response::
 
 | `isRegularExpression`
 | No
-|
+| Enables regular expression searching for the function name. For example, `gds.*` returns all queries that begin with `gds`.
 |===
 
 
@@ -3477,6 +3477,7 @@ Response::
 `POST /gsql/library?graph=<graph name>&functionName=pkg1.pkg2.templateName`
 
 This endpoint runs a query on a given graph.
+Query parameters are passed in JSON format in the body of the POST request.
 
 ==== Sample request
 [tabs]
@@ -3544,7 +3545,6 @@ Response::
 | The graph that the query will be run on.
 |===
 
-Query parameters are passed in JSON format in the body of the POST request.
 
 == Path-Finding Algorithms
 
