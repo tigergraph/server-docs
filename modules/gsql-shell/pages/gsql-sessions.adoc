@@ -72,4 +72,6 @@ This session parameter does not affect syntactic errors: GSQL will always exit o
 | `syntax_version` | The version of GSQL to be used for this session. Accepted values are `v1` or `v2`.
 
 | `export_timeout` | The timeout limit for the command `EXPORT GRAPH ALL` in milliseconds. The default value is around 138 hours.
+
+| `query_timeout` | If a query runs longer than the systemwide timeout (the default is 16 seconds), the query will abort. To customize this timeout limit for a GSQL session, set this value to an integer.
 |===
