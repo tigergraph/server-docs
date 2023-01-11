@@ -108,7 +108,151 @@ Use the `-s` or `--soft` flag to delete the connector only and leave the Kafka m
 $ gadmin connector delete <connector_name> -s
 ----
 
+== Create the loading job
 
+The loading job creation happens entirely in GSQL.
+
+=== Specify a graph and config file
+
+[source.wrap, gsql]
+----
+USE GRAPH test_graph
+CREATE DATA_SOURCE STREAM s1 = "ds_config.json" for graph test_graph
+----
+
+In this example, we create a data source of type `STREAM` and name it `s1`.
+We set our data source as the `ds_config.json` file.
+
+.JSON config file examples
+[tabs]
+====
+Amazon S3::
++
+--
+[source.wrap, json]
+----
+{
+    "type": "s3",
+    "access.key": "<access key>",
+    "secret.key": "<secret key>"
+}
+----
+--
+Google Cloud Storage::
++
+--
+[source.wrap, json]
+----
+{
+  "type": "gcs",
+  "project_id": "<project id>",
+  "private_key_id": "<private key id>",
+  "private_key": "<private key>",
+  "client_email": "<email address>"
+}
+----
+--
+Azure::
++
+--
+[source.wrap, json]
+----
+{
+    "type" : "abs",
+    "account.key" : "<acount key>"
+}
+----
+--
+====
+
+Key names accept a separator of either `.` or `_`, so for example, a key could also be named `access_key`.
+
+=== Create the loading job
+
+[source, gsql]
+----
+LOAD file_Comment
+    TO VERTEX Comment VALUES ($"id", $"creationDate", $"locationIP", $"browserUsed", $"content", $"length"),
+    TO EDGE HAS_CREATOR VALUES ($"id", $"CreatorPersonId")
+    USING JSON_FILE="TRUE";
+----
+
+=== Define the filename
+
+[source,gsql]
+----
+DEFINE FILENAME file_name = "[data source name]:[URI];
+DEFINE FILENAME file_name = "[data source name]:[json config file];
+DEFINE FILENAME file_name = "[data source name]:[json content];
+----
+
+Here are some examples with remote URIs:
+
+[source, gsql]
+----
+DEFINE FILENAME uri_s3 = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
+DEFINE FILENAME uri_gcs = "$s1:gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person";
+DEFINE FILENAME uri_abs = "$s1:abfss://person@yandblobstorage.dfs.core.windows.net/persondata.csv;"
+----
+
+=== Define the parameters
+
+These are the parameters that should be in the JSON configuration file.
+
+xfile.uris  - required, the URI or URI split by comma.
+
+file.type - text for csv and json, parquet for parquet file.
+
+partition - When load data, each partition is distributed evenly across each node. If one FILENAME name container much more data than others, consider using larger parition number for it, default value is ceiling(nodes / number of filenames)
+
+eol - End of line character. default is from loading job and is \n by default
+
+header - default is from loading job and is false
+
+=== Sample loading job syntax
+
+In this example, the dataset is the LDBC_SNB dataset, which has a
+
+[source.wrap, gsql]
+----
+USE GRAPH test_graph
+CREATE DATA_SOURCE STREAM s1 = "ds_config.json" for graph test_graph
+
+CREATE LOADING JOB stream_csv FOR GRAPH test_graph {
+    DEFINE FILENAME file_Comment = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
+    DEFINE FILENAME file_Person = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Person";
+    DEFINE FILENAME file_Comment_hasCreator_Person = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment_hasCreator_Person";
+    LOAD file_Comment
+    TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+    LOAD file_Person
+    TO VERTEX Person VALUES ($1, $2, $3, $4, $5, $0, $6, $7, SPLIT($8,";"), SPLIT($9,";")) USING header="true", separator="|";
+    LOAD file_Comment_hasCreator_Person
+    TO EDGE HAS_CREATOR VALUES ($1, $2) USING header="true", separator="|";
+}
+----
+
+=== Run the loading job
+
+Use the command `RUN LOADING JOB` to run the loading job.
+
+[source, gsql]
+----
+RUN LOADING JOB stream_csv
+----
+
+By default, new files or new lines in files in an external data source are not automatically loaded into TigerGraph once the loading job stops.
+The data streaming connector also supports continuous loading with an `EOF` flag, short for "terminate loading at the end of the file."
+
+If you run this command with the `EOF` flag set to `false`, the loading job is kept active and any new data in the external data source will be loaded automatically.
+
+[source, gsql]
+----
+RUN LOADING JOB stream_csv USING EOF="false"
+----
+
+[NOTE]
+Continuous loading works only on an incremental basis. Only new lines in existing files and new files are loaded with continuous loading.
+If any existing lines are changed or deleted, these changes will *not* be part of the loading job.
 
 == Known issues
 Messages in TigerGraph's internal Kafka cluster are automatically removed from the topics at regular intervals.
