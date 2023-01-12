@@ -85,6 +85,10 @@ This controls the format of the values in messages written to or read from Kafka
 URL of the schema registry service.
 Required if  `value.converter` is `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter`.
 For details, see https://docs.confluent.io/platform/current/schema-registry/connect.html#example-converter-properties[Confluent documentation].|`\http://localhost:8081`
+
+| `sync.topic.configs.enabled`
+|Whether to replicate topic configurations from the source cluster (default: true).
+Usually set to `false` as the config of the source Kafka topic is not necessary to sync data.
 |===
 
 Other configuration options are available to fine-tune the connector.
