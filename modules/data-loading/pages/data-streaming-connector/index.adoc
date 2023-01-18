@@ -264,7 +264,7 @@ If any existing lines are changed or deleted, these changes will *not* be part o
 
 For example, consider a file `test.txt` in cloud storage that is part of a loading job.
 
-.test.txt
+.data.txt
 [source,text]
 ----
 line-1
@@ -273,7 +273,38 @@ line-2
 
 Lines 1 and 2 are loaded successfully into the loading job.
 If a user edits the file and adds a new line, `line-3`, the stream loader notices the new modification and adds the file to the loading queue again.
+Lines that have already been loaded are skipped.
 
+.modified-data.txt
+[source,text]
+----
+line-1
+line-2
+line-3
+----
+
+If a user edits the file and deletes or modifies a line before the end, like so, the entire file is loaded again, causing potentially repeated data.
+
+.modified-data.txt
+[source,text]
+----
+line-one
+line-two
+line-3
+----
+
+The data loaded into Tigergraph thus looks like this:
+
+.Data in TigerGraph
+[source,text]
+----
+line-1
+line-2
+line-3
+line-one
+line-two
+line-3
+----
 
 
 == Known issues
