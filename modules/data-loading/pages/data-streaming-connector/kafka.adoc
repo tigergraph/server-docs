@@ -87,8 +87,9 @@ Required if  `value.converter` is `com.tigergraph.kafka.connect.converters.Tiger
 For details, see https://docs.confluent.io/platform/current/schema-registry/connect.html#example-converter-properties[Confluent documentation].|`\http://localhost:8081`
 
 | `sync.topic.configs.enabled`
-|Whether to replicate topic configurations from the source cluster (default: true).
-Usually set to `false` as the config of the source Kafka topic is not necessary to sync data.
+|Whether to replicate topic configurations from the source cluster. This is set to `true` by default in the Kafka source code.
+In a TigerGraph context, set it to `false` as the config of the source Kafka topic is not necessary to sync data.
+Only set this to `true` when using Cross-Region Replication (CRR).
 |===
 
 Other configuration options are available to fine-tune the connector.

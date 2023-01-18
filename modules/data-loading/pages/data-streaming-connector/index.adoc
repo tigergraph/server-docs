@@ -121,7 +121,7 @@ CREATE DATA_SOURCE STREAM s1 = "ds_config.json" FOR GRAPH test_graph
 ----
 
 In this example, we create a data source of type `STREAM` and name it `s1`.
-We set our data source as the `ds_config.json` file.
+We associate our data source with the `ds_config.json` file.
 
 .JSON config file examples
 [tabs]
@@ -240,8 +240,13 @@ Use the command `RUN LOADING JOB` to run the loading job.
 RUN LOADING JOB stream_csv
 ----
 
-By default, new files or new lines in files in an external data source are not automatically loaded into TigerGraph once the loading job stops.
-The data streaming connector also supports continuous loading with an `EOF` flag, short for "terminate loading at the end of the file."
+==== Continuous file loading
+
+By default, after a loading job stops, changes to files in an external data source are not automatically loaded into TigerGraph.
+
+The data streaming connector also supports continuous loading in stream mode.
+This is controlled with the `EOF` flag.
+If the `EOF` flag is set to `true`, the continuous loading will stop when the loader encounters an end-of-file (EOF) character in the data.
 
 If you run this command with the `EOF` flag set to `false`, the loading job is kept active and any new data in the external data source will be loaded automatically.
 
@@ -250,9 +255,26 @@ If you run this command with the `EOF` flag set to `false`, the loading job is k
 RUN LOADING JOB stream_csv USING EOF="false"
 ----
 
+In stream mode, an end-of-file character causes the loader to pull all of the files in the target directory again and check when they were last edited.
+Any files that were modified more recently than the files already in the data loading queue are loaded again.
+
 [NOTE]
 Continuous loading works only on an incremental basis. Only new lines in existing files and new files are loaded with continuous loading.
 If any existing lines are changed or deleted, these changes will *not* be part of the loading job.
+
+For example, consider a file `test.txt` in cloud storage that is part of a loading job.
+
+.test.txt
+[source,text]
+----
+line-1
+line-2
+----
+
+Lines 1 and 2 are loaded successfully into the loading job.
+If a user edits the file and adds a new line, `line-3`, the stream loader notices the new modification and adds the file to the loading queue again.
+
+
 
 == Known issues
 Messages in TigerGraph's internal Kafka cluster are automatically removed from the topics at regular intervals.
