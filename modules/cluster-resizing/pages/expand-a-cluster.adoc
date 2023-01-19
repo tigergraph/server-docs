@@ -13,13 +13,13 @@ WARNING: If your TigerGraph cluster uses a seeded license, please contact mailto
 == Before you begin
 
 * TigerGraph must already be installed on the new nodes as single-node instances in *exactly the same version* as the cluster.
-* Ensure that there is some data loaded into your cluster.
-Cluster expansion will fail if the cluster has no data.
 * Ensure that the cluster is not using shared storage.
 Cluster expansion does not support shared storage.
 * Ensure that no loading jobs, queries, or REST requests are running on the new node or the cluster.
 * Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the expansion completes.
 * If the original cluster is a single node installation, make sure the IP used is not a https://en.wikipedia.org/wiki/Localhost[local loopback address] such as 127.0.0.1.
+* No data is needed in the cluster for expansion.
+
 +
 [NOTE]
 ====
@@ -31,6 +31,7 @@ $ gadmin config set System.HostList '[{"Hostname":"'$(ip a | grep "inet " | awk 
 $ gadmin config apply -y
 $ gadmin restart all -y
 ----
+
 ====
 
 == Procedure
