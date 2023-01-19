@@ -5,7 +5,7 @@
 TigerGraph Data Streaming Connector is a link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and other data systems.
 
 == Architecture overview
-Data Streaming Connector streams data from a source data system into TigerGraph's internal Kafka cluster in the form of Kafka messages in specified topics.
+The connector streams data from a source data system into TigerGraph's internal Kafka cluster in the form of Kafka messages in specified topics.
 The messages are then ingested by a xref:kafka-loader/index.adoc[Kafka loading job] and loaded into the database.
 
 .Data streaming connector architecture
@@ -31,7 +31,7 @@ You can also use `gadmin` commands to view status of all existing connectors.
 === List connectors
 You can list all running connectors or view detailed configuration of a specific connector.
 
-To view a list of all connectors, run `gadmin connector list` from your bash terminal as the TigerGraph Linux user.
+To view a list of all connectors, run `gadmin connector list` from your terminal as the TigerGraph Linux user.
 
 To view configuration details of a specific connector, run `gadmin connector list <name_of_connector>` and replace `<name_of_connector>` with the name of the connector you want to inspect.
 By default, this command displays most configurations of the connector, but redacts  the credentials used to authenticate the connector.
@@ -42,7 +42,7 @@ If you use `gadmin config` to change the configuration parameter `Controller.Con
 Pausing a connector stops the connector from streaming data from the data source.
 The data that has been streamed to TigerGraph's internal Kafka can still be loaded into the graph store via a loading job.
 
-To pause a connector, run the below command and replace `<connector_name>` with the name of the connector:
+To pause a connector, run `gadmin connector pause <connector_name>`.
 
 [,console]
 ----
@@ -255,56 +255,54 @@ If you run this command with the `EOF` flag set to `false`, the loading job is k
 RUN LOADING JOB stream_csv USING EOF="false"
 ----
 
-In stream mode, an end-of-file character causes the loader to pull all of the files in the target directory again and check when they were last edited.
-Any files that were modified more recently than the files already in the data loading queue are loaded again.
-
 [NOTE]
 Continuous loading works only on an incremental basis. Only new lines in existing files and new files are loaded with continuous loading.
 If any existing lines are changed or deleted, these changes will *not* be part of the loading job.
 
-For example, consider a file `test.txt` in cloud storage that is part of a loading job.
+For example, consider a file `data.txt` in cloud storage that is part of a loading job.
 
 .data.txt
 [source,text]
 ----
 line-1
-line-2
 ----
 
-Lines 1 and 2 are loaded successfully into the loading job.
-If a user edits the file and adds a new line, `line-3`, the stream loader notices the new modification and adds the file to the loading queue again.
-Lines that have already been loaded are skipped.
+The line of data is loaded successfully into the loading job for ingestion to TigerGraph.
+If a user edits the file and adds a new line, the stream loader notices the new modification and loads new lines, starting from where it previously left off.
+The actual data on each line is not compared to what was already loaded.
 
-.modified-data.txt
+.data.txt after a new line is added to the end
 [source,text]
 ----
 line-1
 line-2
-line-3
 ----
 
-If a user edits the file and deletes or modifies a line before the end, like so, the entire file is loaded again, causing potentially repeated data.
+In this case, the new line `line-2` is successfully loaded into the loading job for ingestion to TigerGraph.
 
-.modified-data.txt
+If a user edits the file and adds a line before the end, like so, the entire file is loaded again, causing potentially repeated data.
+
+.data.txt after a new line is added before the end
 [source,text]
 ----
-line-one
-line-two
-line-3
+line-1
+added-line
+line-2
 ----
 
-The data loaded into Tigergraph thus looks like this:
+The data loaded into TigerGraph thus looks like this.
+Because two lines had already been loaded, the first two lines are skipped, even though the second contains new data.
+The third line from the file is then loaded, resulting in a repeat of what was already loaded in the last pass.
 
 .Data in TigerGraph
 [source,text]
 ----
 line-1
 line-2
-line-3
-line-one
-line-two
-line-3
+line-2
 ----
+
+To avoid this, only use stream loading jobs when there is no chance of data being altered or added to the middle of a file.
 
 
 == Known issues
