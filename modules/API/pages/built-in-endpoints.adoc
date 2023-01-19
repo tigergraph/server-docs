@@ -3188,8 +3188,9 @@ No parameters.
 
 `GET /showdelayedlistall`
 
-When a query request is sent while another query is still running, it is sent to a "delayed" queue.
-Use this endpoint to get a list of all queries that have been requested but have not started running yet.
+When queries beyond the maximum concurrent query amount (specified in the `RESTPP.WorkLoadManager.MaxConcurrentQueries` parameter) are submitted, they are sent to the delay or overflow queue.
+This overflow queue length is limited by the `RESTPP.WorkLoadManager.MaxDelayQueueSize` parameter.
+Use this endpoint to get a list of all queries waiting in the delay/overflow queue.
 
 Query timeout time is not affected by the time spent in the delayed queue.
 
