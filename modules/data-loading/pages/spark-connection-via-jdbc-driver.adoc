@@ -10,4 +10,20 @@ image::screen-shot-2019-09-19-at-5.53.40-pm.png["Diagram showing streaming and s
 The Github Link to the JDBC Driver is https://github.com/tigergraph/ecosys/tree/master/tools/etl/tg-jdbc-driver +
 The README file there provides more details.
 
+[WARNING]
+====
+TigerGraph JDBC connector is streaming in data via REST endpoints.
+No data throttle mechanism is in place yet.
+When the incoming concurrent JDBC connection number exceeds the configured hardware capacity limit, the overload may cause the system to stop responding.
+
+If you use spark job to connect TigerGraph via JDBC, we recommend your concurrent spark loading jobs be capped at 10 with the following per job configuration.
+This limits the concurrent JDBC connections to 40.
+
+----
+—num-executors 2  /* 2 executors per job */
+—executor-cores 2 /* 1 executor take 2 cores */
+----
+
+====
+
 Note that the TigerGraph JDBC Driver has more use cases than just as a Spark Connection. You can use TigerGraph's JDBC Driver for your Java and Python applications. This is an open source project.
