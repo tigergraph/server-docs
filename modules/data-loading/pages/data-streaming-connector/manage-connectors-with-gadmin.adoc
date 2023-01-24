@@ -1,0 +1,86 @@
+= Manage Connectors with gadmin
+
+== Manage connectors
+
+After creating a connector, you can choose to delete it or pause it.
+You can also use `gadmin` commands to view status of all existing connectors.
+
+=== List connectors
+You can list all running connectors or view detailed configuration of a specific connector.
+
+To view a list of all connectors, run `gadmin connector list` from your terminal as the TigerGraph Linux user.
+
+To view configuration details of a specific connector, run `gadmin connector list <name_of_connector>` and replace `<name_of_connector>` with the name of the connector you want to inspect.
+By default, this command displays most configurations of the connector, but redacts  the credentials used to authenticate the connector.
+
+If you use `gadmin config` to change the configuration parameter `Controller.Connect.RedactSensitiveConfigValue` to `false` , the command displays the connector's authentication credentials.
+
+=== Pause a connector
+Pausing a connector stops the connector from streaming data from the data source.
+The data that has been streamed to TigerGraph's internal Kafka can still be loaded into the graph store via a loading job.
+
+To pause a connector, run `gadmin connector pause <connector_name>`.
+
+[,console]
+----
+$ gadmin connector pause <connector_name>
+----
+
+=== Resume a connector
+Resuming a connector resumes streaming for a paused connector.
+
+To resume a connector, run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector resume <connector_name>
+----
+
+=== Restart a connector
+Restarting a connector is equivalent to pausing and then resuming a connector.
+
+To restart a connector, run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector restart <connector_name>
+----
+
+=== Delete a connector
+Deleting a connector removes a connector.
+It stops the connector from streaming, as well as deletes the data that has been streamed to the corresponding topics in Kafka that haven't been ingested by a loading job.
+See the diagram in Figure 1 for details.
+
+
+This does not delete the Kafka topics themselves, just the data in the topics associated to the connector.
+This also does not affect the data that has already been loaded into the database by a loading job, it only deletes the messages in TigerGraph's internal Kafka server.
+
+This action cannot be undone and a removed connector cannot be resumed.
+
+When you create the same connector, with the same connector name and configurations, the connector loads all data from the source again to the same topics.
+
+
+CAUTION: There is a known issue for deleting connectors with created with folder URIs.
+Deleting the connector does not delete the connect offsets for topics that are mapped to a folder URI.
+If you create the same connector, with the same name and same URI to a folder, the connector only loads from where it left off before.
+A workaround for this issue is to create a connector with the same configurations, but with a different name.
+
+To delete a connector,  run the below command and replace `<connector_name>` with the name of the connector:
+
+[,console]
+----
+$ gadmin connector delete <connector_name> -y <1>
+----
+<1> You can use the `-y` option to skip the confirmation prompt.
+
+==== Save Kafka messages when deleting connector
+When there are new files in a folder the connector streams from, you might want to recreate a connector for those file updates to be included.
+When you delete and recreate a connector, you can keep the messages that have already been streamed to the internal Kafka cluster.
+The recreated connector streams from where it left off before and does not duplicate data.
+
+Use the `-s` or `--soft` flag to delete the connector only and leave the Kafka messages and offsets intact:
+
+[.wrap,console]
+----
+$ gadmin connector delete <connector_name> -s
+----
