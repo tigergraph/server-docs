@@ -5,15 +5,11 @@
 Once you have defined a graph schema, you can load data into the graph store.
 The data loading process varies based on where the data files are located relative to the TigerGraph server.
 
-If you are loading from files that exist locally on a TigerGraph server, xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[create a loading job] in GSQL to load from the files directly.
+If you are loading from files that exist locally on a TigerGraph server, xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[create and run a loading job] in GSQL to load from the files directly.
 
-Loading data from an outside source, such as cloud storage, is a multi-step process:
+Loading data from an outside source, such as cloud storage, requires one additional step of first defining the data source for GSQL to work with.
 
-. Define a data source.
-. Create a loading job.
-. Run the loading job.
-
-== GSQL loading jobs
+== Set up a data source for a data streaming loading job
 
 GSQL uses a user-provided configuration file to automatically set up a streaming data connection and a loading job for data in these external cloud data hosts:
 
@@ -25,7 +21,11 @@ Go to the xref:data-streaming-connector/index.adoc[] main page for instructions 
 
 == Manual connector setup
 For data stored in the following data systems, you need to perform a few more steps to set up data streaming.
+Using `gadmin` server commands, you first create a connector to interpret the data source, then define the data source, create the loading job, and run it.
+
 Each of these pages has its own separate instructions.
 
 * xref:data-streaming-connector/kafka.adoc[Apache Kafka]
 * xref:data-streaming-connector/big-query.adoc[Google BigQuery]
+
+These methods rely on the xref:kafka-loader/index.adoc[TigerGraph Kafka Loader].
