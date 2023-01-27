@@ -1,0 +1,710 @@
+= Backup and Restore
+
+The Backup and Restore functionality of the Kubernetes operator is robust, allowing for incremental and scheduled backups as well as detailed logging.
+
+Backup and restore jobs work by internally creating TigerGraphBackup, TigerGraphRestore, and TigerGraphScheduledBackup functions that carry out jobs according to the user settings.
+This concept is important for understanding the relationship between the console commands you enter and the results from Kubernetes.
+
+== Prerequisites
+
+You must have the TigerGraph Kubectl Plugin installed and a working cluster available.
+
+
+The `kubectl tg backup` command requires `kubectl`, `helm`, `jq`, and `yq` to be installed.
+
+== Backup command syntax and options
+
+[source.wrap,bash]
+----
+kubectl tg backup [create|update] [OPTIONS]
+
+Options:
+  -h|--help: show this message
+  -n|--namespace :              set namespace to deploy TG cluster, default namespace is current namespace
+  -c|--cluster-name :           (required)set cluster-name to deploy TG cluster
+  --tag :                       (required)specify the tag of backup files. e.g. if you specify --tag daily, the backup file will be daily-20xx-xx-xxTxxxxxx
+  --staging-path :              specify where to store the temporary files
+  --timeout :                   the backup timeout in seconds,default: 18000
+  --compress-process-number :   the number of concurrent process for compression during backup
+                                value 0 means the number of processes used to compress equals
+                                the number of the node's CPU cores. And the default value is 0
+  --incremental :               perform incremental backup
+  --full :                      perform full backup
+  --destination :               set the destination to store backup files, support local and s3 now
+  Followings are about the configuration of different destination:
+  If destination is local,you should provide:
+    --local-path :              set the local path where to store backup files
+  If destination is s3:
+    --s3-bucket :               S3 Bucket name
+    --aws-access-key-id :       the aws access key id
+    --aws-secret-access-key :   the aws secret access key
+----
+
+== Create a backup
+
+=== Back up to local storage
+
+Use the following command to back up a cluster and store backup files in local storage.
+In this example, the cluster is called `test-cluster`.
+
+[source.wrap, console]
+----
+ kubectl tg backup create --cluster-name test-cluster --tag testlocal -n tigergraph
+  --destination local \
+  --local-path /home/tigergraph/backup
+----
+
+You can also customize the timeout, staging path, and the compress process number.
+
+[source.wrap, console]
+----
+ kubectl tg backup create --cluster-name test-cluster --tag testlocal -n tigergraph
+  --destination local \
+  --local-path /home/tigergraph/backup  --staging-path /home/tigergraph/temp \
+  --timeout 18000 --compress-process-number 0
+----
+
+=== Back up to S3 bucket
+
+Use the following command to back up a cluster and store the backup files in S3.
+In this example, the cluster is called `test-cluster`.
+
+You will need the S3 bucket name, access key id and S3 secret.
+
+[source.wrap, console]
+----
+kubectl tg backup create --cluster-name test-cluster --tag testS3 -n tigergraph
+--destination s3Bucket \
+--s3-bucket tgbackup --aws-access-key-id $ACCESS_KEY_ID \
+--aws-secret-access-key $SECRET_ACCESS_KEY
+----
+
+You can also customize the timeout, staging path, and the compress process number.
+
+[source.wrap, console]
+----
+kubectl tg backup create --cluster-name test-cluster --tag testS3 -n tigergraph
+--destination s3Bucket \
+--s3-bucket tgbackup --aws-access-key-id $ACCESS_KEY_ID \
+--aws-secret-access-key $SECRET_ACCESS_KEY \
+--staging-path /home/tigergraph/temp \
+--timeout 18000 --compress-process-number 0
+----
+
+== Incremental backup
+
+=== Update an existing backup
+
+If you have already created one backup with `kubectl tg backup create` , you can use `kubectl tg backup update` to change the configurations of backup. Once you run the update command, the backup will start immediately with the updated configurations.
+
+[NOTE]
+====
+A cluster and a tag correspond to a backup configuration. For example:
+
+* `--cluster-name test-cluster --tag tests3` corresponds to a CR named `test-cluster-backup-tests3`.
+* `--cluster-name test-cluster --tag testlocal` corresponds to a CR named `test-cluster-backup-testlocal`.
+
+These two have the same target cluster but different tags, so they correspond to different CRs.
+====
+
+You have already created a backup using `kubectl tg backup create`:
+
+[source.wrap, console]
+----
+kubectl tg backup create --cluster-name test-cluster --tag testlocal -n tigergraph --destination local --local-path /home/tigergraph/backup  --staging-path /home/tigergraph/temp  --timeout 18000 --compress-process-number 0
+----
+
+To change the timeout, run:
+
+[source.wrap, console]
+----
+kubectl tg backup update --cluster-name test-cluster --tag testlocal -n tigergraph --timeout 20000
+----
+
+The timeout will be changed to `20000`, and a backup process with timeout `20000` will start immediately.
+
+
+If you have a full backup config, use `kubectl tg backup update --cluster-name CLUSTER --tag TAG --incremental` to change it to incremental backup.
+
+If you have an incremental backup config, use `kubectl tg backup update --cluster-name CLUSTER --tag TAG --full` to change it to full backup.
+
+=== Back up again
+If you have already created one backup by kubectl tg backup create .
+
+[source.wrap, console]
+----
+ kubectl tg backup create --cluster-name test-cluster --tag testlocal -n tigergraph
+  --destination local \
+  --local-path /home/tigergraph/backup
+----
+
+And you want to do it again without modifying any configuration, run:
+
+[source.wrap, console]
+----
+kubectl tg backup update --cluster-name test-cluster --tag testlocal -n tigergraph
+----
+
+=== Show backup process status
+
+We provide the command `kubectl tg backup status` to show the status of the backup process.
+If you see an error or warning, you can refer to the debugging section below and find the reason.
+
+You can use
+`kubectl tg backup status --namespace tigergraph`
+to show all backup processes in the `tigergraph` namespace.
+
+The output is like this:
+
+[source.wrap, console]
+----
+kubectl tg backup status
+NAME                        CLUSTER        TAG     STORAGE   INCREMENTAL   STARTTIME   COMPLETIONTIME
+test-cluster-backup-daily   test-cluster   daily   local                   3d12h
+test-cluster-backup-local   test-cluster   local   local                   16s         5s
+----
+
+If the `COMPLETIONTIME` field is not empty, the backup process is successful.
+
+You can also see details of a single backup process:
+
+[source.wrap, console]
+----
+kubectl tg backup status --cluster-name test-cluster --tag daily
+
+Name:         test-cluster-backup-daily
+Namespace:    default
+Labels:       <none>
+Annotations:  <none>
+API Version:  graphdb.tigergraph.com/v1alpha1
+Kind:         TigerGraphBackup
+Metadata:
+Creation Timestamp:  2022-12-13T09:52:38Z
+Generation:          1
+...
+Resource Version:  905382
+UID:               6c97ae4a-e7fb-49e1-8c45-e8e09286865b
+Spec:
+Backup Config:
+Compress Process Number:  0
+Tag:                      daily
+Timeout:                  18000
+Cluster Name:               test-cluster
+Destination:
+Local:
+Path:   /home/tigergraph/backup
+Storage:  local
+Status:
+Conditions:
+Last Transition Time:  2022-12-16T13:44:24Z
+Message:               Failed to backup cluster
+Reason:                BackupFailed
+Status:                True
+Type:                  Failed
+Start Time:              2022-12-16T13:44:03Z
+Target Ready:            true
+Events:
+Type     Reason                Age                   From              Message
+----     ------                ----                  ----              -------
+Normal   Target cluster ready  31m (x35 over 3d12h)  TigerGraphBackup  Target cluster is ready for backup
+Warning  Backup job failed     31m (x12 over 3d12h)  TigerGraphBackup  Failed to backup cluster test-cluster
+You can see the Events that Backup job failed, which means this backup job is failed.
+----
+
+== Schedule backups
+
+=== Create and manage a backup schedule
+
+[source.wrap, console]
+----
+USAGE:
+kubectl tg backup-schedule [create|update|list|pause|resume] [OPTIONS]
+Options:
+-h|--help: show this message
+-n|--namespace :              set namespace to deploy TG cluster, default namespace is current namespace
+-c|--cluster-name :           (required)set cluster-name to deploy TG cluster, no default
+--tag :                       (required)specify the tag of backup files. e.g. if you specify --tag daily, the backup file will be daily-20xx-xx-xxTxxxxxx
+--staging-path :              specify where to store the temporary files
+--timeout :                   the backup timeout in seconds,default: 18000
+--compress-process-number :   the number of concurrent process for compression during backup
+value 0 means the number of processes used to compress equals
+the number of the node's CPU cores. And the default value is 0
+--schedule :                  specify the schedule of backup in cron format. e.g. '* * * * *' is backup every minute
+--incremental :               do incremental backup
+--full :                      do full backup (full backup is performed by default)
+--max-retry :                 set max times of retry for each backup
+--max-backup-file :           set the max number of files you want to retain
+--max-reserved-day :          set the max number of days you want to retain these backups
+--destination :               set the destination to store backup files, support local and s3 now
+Followings are about the configuration of different destination:
+If destination is local,you should provide:
+--local-path :              set the local path where to store backup files
+If destination is s3:
+--s3-bucket :               S3 Bucket name
+--aws-access-key-id :       the aws access key id
+--aws-secret-access-key :   the aws secret access key
+----
+
+Just like backup, a cluster and a tag correspond to a backup-schedule configuration, which is called a CR (custom resource) in Kubernetes.
+
+Use a cron expression to specify schedule.Crontab.guru - The cron schedule expression editor
+
+For example, `--schedule '0 0 * * *'` means backup once per day at 00:00.
+
+[NOTE]
+You must use ' to wrap the expression to avoid  filename expansion.
+
+=== Create a backup schedule
+
+==== Example 1:
+A backup schedule that backups test-cluster once per day at 00:00, storing backup files in local storage:
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule create --cluster-name test-cluster -n tigergraph \
+--tag localdaily --schedule '0 0 * * *' \
+--destination local --local-path /home/tigergraph/backup
+----
+
+==== Example 2:
+A backup schedule that backups test-cluster once per hour at minute 0, storing backup files in S3 bucket
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule create --cluster-name test-cluster -n tigergraph \
+--tag s3daily --schedule '0 * * * *' --destination s3Bucket\
+--s3-bucket tgbackup --aws-access-key-id $ACCESS_KEY_ID \
+--aws-secret-access-key $SECRET_ACCESS_KEY
+----
+
+=== Create a backup schedule in incremental mode
+
+Notes: for incremental backup ,you can refer to  K8S Backup & Restore | perform incremental backup[inlineExtension] .
+Make sure that there is already a full backup for the cluster.
+
+Use the `--incremental` flag to schedule incremental backup.
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule create --cluster-name test-cluster -n tigergraph \
+--tag localdaily --schedule '0 0 * * *' --incremental\
+--destination local --local-path /home/tigergraph/backup
+----
+
+=== Update a backup schedule
+
+Since a cluster and a tag correspond to a backup-schedule configuration, if you want to update an existing backup schedule configuration, specify its cluster name and tag.
+
+For example, to change the schedule to back up once per day at 12:00:
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule update --cluster-name test-cluster -n tigergraph \
+--tag localdaily --schedule '0 12 * * *'
+----
+
+[NOTE]
+If there is a backup job running when you change the configuration, the running job won’t be affected.
+The new configuration will take effect in the next schedule.
+
+=== List all backup schedules
+You can list all existing backup schedules in a namespace:
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule list --namespace tigergraph
+----
+
+==== Delete a backup schedule
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule delete --cluster-name test-cluster --tag daily \
+--namespace tigergraph
+----
+
+=== Show backup schedule status
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule status --cluster-name test-cluster --tag daily --namespace tigergraph
+
+
+Name:         test-cluster-schedule-daily
+Namespace:    default
+Labels:       <none>
+Annotations:  <none>
+API Version:  graphdb.tigergraph.com/v1alpha1
+Kind:         TigerGraphBackupSchedule
+Metadata:
+Creation Timestamp:  2022-12-20T02:40:10Z
+Generation:          1
+Resource Version:  1696649
+UID:               f8c95418-bcb3-495b-b5e4-5083789ce11a
+Spec:
+Backup Template:
+Backup Config:
+Compress Process Number:  0
+Tag:                      daily
+Timeout:                  18000
+Cluster Name:               test-cluster
+Destination:
+Local:
+Path:   /home/tigergraph/backup
+Storage:  local
+Schedule:     * * * * *
+Status:
+Conditions:
+Last Transition Time:  2022-12-20T02:42:01Z
+Message:               Backup job is active
+Reason:                BackupActive
+Status:                True
+Type:                  Active
+Job Counter:
+Successful Jobs:     1
+Last Schedule Time:    2022-12-20T02:42:00Z
+Last Successful Time:  2022-12-20T02:41:11Z
+
+Events:
+Type    Reason                   Age                From                      Message
+----    ------                   ----               ----                      -------
+Normal  Backup schedule created  2m1s               TigerGraphBackupSchedule  Create a new backup schedule success.
+Normal  Backup job succeed       60s                TigerGraphBackupSchedule  Last scheduled job succeed
+Normal  Backup job created       10s (x2 over 71s)  TigerGraphBackupSchedule  Schedule a new backup job
+----
+
+The Events section tells you whether the scheduled job was successful.
+
+== Pause or resume a backup schedule
+
+To pause a running backup schedule:
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule pause --cluster-name test-cluster -n tigergraph \
+--tag localdaily
+----
+
+The next backup job will not be scheduled until the schedule is resumed.
+
+To resume a paused schedule:
+
+[source.wrap, console]
+----
+kubectl tg backup-schedule resume --cluster-name test-cluster -n tigergraph \
+--tag localdaily
+----
+
+
+== Backup controls
+
+There are three options to support different implementations of backups:
+
+  --max-retry :                 set max times of retry for each backup
+  --max-backup-file :           set the max number of files you want to retain
+  --max-reserved-day :          set the max number of days you want to retain these backups
+
+You can use them to control the backup job and manage backup files.
+
+=== Maximum number of backup files
+
+Over time, backup files will accumulate and take up disk space.
+Set `--max-backup-file` and `--max-reserved-day`, and the `TigerGraphBackupSchedule` process will help you delete outdated backups automatically based on the strategy you set.
+
+Assume your backup schedule has `--tag daily`.
+If you set `--max-backup-file` to `10`, when a scheduled backup process is completed, a cleaning process runs to remove outdated backups also tagged `daily`.
+Ten backups tagged `daily` are retained, while backups not tagged `daily` will not be affected.
+
+If  you set `--max-reserved-day` to `7`, backups tagged `daily` that were created more than seven days ago will be removed.
+
+[NOTE]
+If the backup process takes too much time, lasting longer than the interval between backups, any missed backups will not be created.
+For example, assume your backup schedule is `0 * * * *`, which creates a backup job once per hour at minute 0.
+If your backup takes 1.5 hours, a backup job will start at 00:00 and end at 01:30, missing the scheduled job at 01:00.
+
+
+== Manage existing backups
+
+=== Delete a backup job
+You can use the following command to delete a backup job.
+
+[source.wrap, console]
+----
+kubectl tg backup delete --cluster-name test-cluster --tag test --namespace tigergraph
+----
+
+=== List backups
+
+[source.wrap, console]
+----
+kubectl tg backup list [OPTIONS]
+
+Options:
+--cluster-name :  (required)set name of the target cluster
+-n, --namespace : set namespace of target cluster
+--tag :           specify the tag of backup
+--json :          output in json format
+--meta :          get the metadata of backup
+----
+
+Run the following commands to list all backups of test-cluster:
+
+[source.wrap, console]
+----
+kubectl tg backup list --cluster-name test-cluster -n tigergraph
+----
+Append the `--json` flag to return the list in JSON format.
+
+If you want to perform a cross-cluster restore, you should get metadata of a backup:
+
+[source.wrap, console]
+----
+kubectl tg backup list --cluster-name test-cluster -n tigergraph --tag tests3 --meta
+----
+
+=== Remove a backup
+
+You can remove individual backups that you don’t want to keep:
+
+[source.wrap, console]
+----
+kubectl tg backup remove --cluster-name test-cluster --namespace tigergraph \
+--tag <backup-tag>
+----
+
+
+== Restore from a backup
+
+[source.wrap, console]
+----
+kubectl tg restore [OPTIONS]
+
+Options:
+-h|--help: show this message
+-n|--namespace :              set namespace to deploy TG cluster, default namespace is current namespace
+-c|--cluster-name :           set cluster-name to deploy TG cluster, no default
+--tag :                       specify the tag of backup files. you can use kubectl tg backup list to get all existing backups
+--metadata :                  specify the metadata file of backup. you should this if you want a cross-cluster restore
+--cluster-template :          configure the cluster you want to create from exported CR
+--staging-path :              specify where to store the temporary files
+--source :                    set the source to get backup files, support local and s3 now
+Followings are about the configuration of different destination:
+If destination is local,you should provide:
+--local-path :              set the local path where to store backup files
+If destination is s3:
+--s3-bucket :               S3 Bucket name
+--aws-access-key-id :       the aws access key id
+--aws-secret-access-key :   the aws secret access key
+[source.wrap, console]
+----
+
+You can restore your cluster from the backup created by the same cluster.
+This works with backups stored in either local storage or an S3 bucket.
+
+We also support cross-cluster restore which means, restore Cluster B from backup created Cluster A. This only supports S3 bucket now.
+
+Notes: now we just supports restore cluster having the same size and ha as the cluster which created the backup. If you create backup in Cluster A whose size is 4, you cannot restore Cluster B whose size is 8 from the backup created by Cluster A.
+
+=== Restore in the same cluster
+
+Assume that you have created a backup for test-cluster using kubectl tg backup create.
+Use the following command to get the tags for all backups:
+
+[source.wrap, console]
+----
+kubectl tg backup list --cluster-name test-cluster -n tigergraph
+
+
++------------------------------+------+---------+--------+---------------------+
+|             TAG              | TYPE | VERSION |  SIZE  |     CREATED AT      |
++------------------------------+------+---------+--------+---------------------+
+| daily-2022-11-02T103601      | FULL | 3.9.0   | 1.7 MB | 2022-11-02 10:36:02 |
+| daily-2022-11-02T104925      | FULL | 3.9.0   | 1.7 MB | 2022-11-02 10:49:25 |
+| daily-2022-11-09T081545      | FULL | 3.9.0   | 1.7 MB | 2022-11-09 08:15:46 |
+| daily-2022-11-09T081546      | FULL | 3.9.0   | 1.7 MB | 2022-11-09 08:15:53 |
++------------------------------+------+---------+--------+---------------------+
+----
+
+Choose a backup you want to restore from and provide the storage information of the backup.
+If you want to use a backup stored in local storage, provide the flags `--source local` and `--local-path`.
+
+If you want to use a backup stored in S3, provide the flags `--source s3Bucket` and `--s3-bucket --aws-access-key-id  --aws-secret-access-key`.
+
+=== Restore a backup from local storage
+
+[source.wrap, console]
+----
+kubectl tg restore --cluster-name test-cluster -n tigergraph --tag daily-2022-11-02T103601\
+--source local --local-path /home/tigergraph/backup
+----
+
+=== Restore a backup from an S3 bucket
+
+[source.wrap, console]
+----
+kubectl tg restore --namespace tigergraph --cluster-name test-cluster \
+--tag tests3-2022-10-31T031005 \
+--source s3Bucket --s3-bucket tg-backup --aws-access-key-id AWS_ACCESS_KEY \
+--aws-secret-access-key AWS_SECRET
+----
+
+=== Cross-cluster restore
+
+Cross-cluster restoration is when you restore a existing cluster from a backup created by another cluster.
+
+Assume that you have created a backup for a cluster called `source-cluster`, and the backup is stored in an S3 bucket.
+Your target cluster, here named `target-cluster` must have the same size, ha and version as `source-cluster`.
+
+First, get the metadata of the backup for `source-cluster`. This command stores the data printed to the console in a file called `backup-metadata` (no extension).
+
+[source.wrap, console]
+----
+kubectl tg backup list --cluster-name source-cluster --namespace tigergraph \
+--tag tests3-2022-10-31T031005 --meta > backup-metadata
+----
+
+
+Then use the metadata to restore `target-cluster`.
+
+[source.wrap, console]
+----
+kubectl tg restore --namespace tigergraph --cluster-name target-cluster \
+--metadata backup-metadata \
+--source s3Bucket --s3-bucket tg-backup --aws-access-key-id AWS_ACCESS_KEY \
+--aws-secret-access-key AWS_SECRET
+----
+
+=== Clone a cluster
+Cloning a cluster is when you create a new cluster and restore it from a backup created by another cluster.
+
+Assume that you have created a backup for `source-cluster`, and the backup is stored in an S3 bucket.
+You want to “clone” the cluster to a new cluster that has no existing data.
+
+The `kubectl tg restore` command can help create a new cluster based on the configuration of `source-cluster` and restore it from the backup.
+
+First get the CR of the cluster.
+
+[source.wrap, console]
+----
+kubectl tg export --cluster-name source-cluster -n tigergraph
+[source.wrap, console]
+----
+For this example, we assume the output file is located at /home/test-cluster_backup_1668069319.yaml
+
+Next get the backup metadata.
+
+[source.wrap, console]
+----
+kubectl tg backup list --cluster-name source-cluster --namespace tigergraph\
+--tag tests3-2022-10-31T031005 --meta > backup-metadata
+----
+
+Use the cluster template and metadata to create a copy of the source cluster
+
+[source.wrap, console]
+----
+ kubectl tg restore --namespace tigergraph --cluster-name new-cluster \
+  --metadata backup-metadata --cluster-template /home/test-cluster_backup_1668069319.yaml \
+  --source s3Bucket --s3-bucket tg-backup --aws-access-key-id AWS_ACCESS_KEY \
+  --aws-secret-access-key AWS_SECRET
+----
+
+A new cluster named new-cluster will be created and initialized.
+Once new-cluster is ready, a restore job will be created.
+
+=== Show restore job status
+
+Use `kubectl tg restore status` to show the status of all restore processes.
+
+[source.wrap, console]
+----
+kubectl tg restore status
+
+NAME                                           STARTTIME   COMPLETIONTIME   CLUSTER        TAG
+test-cluster-restore-daily-2022-12-20t024802   30s                          test-cluster   daily-2022-12-20T024802
+----
+
+Add the `--namespace` flag to show details of a single job.
+
+[source.wrap, console]
+----
+kubectl tg restore status --namespace <namespace>  --cluster-name test-cluster --tag daily-2022-12-20T024802
+----
+
+=== Delete a restore job
+
+[source.wrap, console]
+----
+kubectl tg restore delete --namespace $NAMESPACE --cluster-name test-cluster --tag daily-2022-12-20T024802
+----
+
+== Debug problems with the backup
+
+Do not run multiple backup and restore jobs for the same cluster at the same time.
+
+This could cause the following issues:
+
+* If there is already a backup job running and you create another TigerGraphBackup to backup the same cluster, the controller will wait for the running job to finish before creating backup job for the new TigerGraphBackup.
+
+* If there is already a restore job running and you create another TigerGraphRestore to restore the same cluster, the controller will wait for the running job to finish before creating restore job for the new TigerGraphRestore.
+
+* If there is already a backup job running and you create another TigerGraphRestore, or if there is already a restore job running and you create another TigerGraphBackup. The job created later will fail.
+
+If the cluster you want to backup or restore is not ready (for example, the cluster is not initialized or the cluster is shrinking or upgrading), the backup/restore controller will wait for the cluster to be normal before creating backup/restore job.
+
+The backup & restore job creates pods to execute the logic.
+You can use `kubectl get pods -n NAMESPACE` to get all pods.
+Up to three pods are kept for each cluster.
+
+The backup pods follow the naming pattern `<cluster name>-backup-<tag>-backup-job-<suffix>`.
+Restore pods follow a similar pattern: `<cluster name>-backup-<tag>-restore-job-<suffix>`.
+
+If the status of the pods is `Error`, use `kubectl logs <pod name>  -n <namespace>` to get more detailed logs and an explanation of the error message.
+
+Consider an output of `kubectl get pods` that looks like this:
+
+[source.wrap, console]
+----
+kubectl get pods
+
+NAME                                                      READY   STATUS      RESTARTS        AGE
+test-cluster-0                                            1/1     Running     0               5d13h
+test-cluster-1                                            1/1     Running     0               5d13h
+test-cluster-2                                            1/1     Running     0               5d13h
+test-cluster-backup-local-backup-job-7sbcs                0/1     Completed   0               2d
+test-cluster-backup-local-backup-job-7xd58                0/1     Error       0               5d13h
+test-cluster-init-job-9zhnw                               0/1     Completed   0               5d13h
+tigergraph-operator-controller-manager-8495786677-hxgvx   2/2     Running     0               5d20h
+tigergraph-operator-controller-manager-8495786677-kwx9m   2/2     Running     1 (5d20h ago)   5d20h
+tigergraph-operator-controller-manager-8495786677-nzzg4   2/2     Running     0               5d20h
+----
+
+The pod named `test-cluster-backup-test-backup-job-7xd58` has a status of `Error`.
+
+Run `kubectl logs` again and specify the cluster with an error to get a detailed log:
+
+[source.wrap, console]
+----
+kubectl logs test-cluster-backup-job-7xd58
+
+Warning: Permanently added '[test-cluster-internal-service.default]:10022' (ED25519) to the list of known hosts.
+Fri Dec 16 13:44:19 UTC 2022
+Start configure backup
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+Use Local Storage
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+Apply config
+[Warning] No difference from staging config, config apply is skipped.
+[   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+Create backup
+[  Error] NotReady (check backup dependency service online get error: NotReady (GPE is not available; NotReady (GSE is not available)))
+----
+
+This log explains that the error was caused by the Graph Processing Engine (GPE) not being in a ready state.
+
+[NOTE]
+If you use a mix of scheduled and manual backups, add the option `--all-containers=true`, since a backup job created by the `TigerGraphBackupSchedule` process is different from a backup job created by the `TigerGraphBackup` process.
+You need this option to output all log.
