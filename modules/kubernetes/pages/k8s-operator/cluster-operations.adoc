@@ -113,3 +113,34 @@ For example, if expanding from a cluster size of 5 to 6 results in a failed expa
 
 Run `kubectl get pvc -l app=<app_name> --namespace <namespace_name>` to list all PVCs and double-check their age.
 The newest PVC is the one to delete.
+
+== Update cluster resources
+
+[.wrap, console]
+----
+kubectl tg update --cluster-name test001 --cpu 4 --memory 8Gi  --namespace tigergraph
+----
+
+The values after the `--cpu` and `--memory` flags must follow the format specified in the official Kubernetes document for  link:https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/[Resource Management for Pods and Containers].
+
+After updating resources, wait for the cluster status to change to Normal or True.
+Check this with the following command:
+
+`kubectl tg status --cluster-name ${YOUR_CLUSTER_NAME} -n ${YOUR_NAME_SPACE}`
+
+
+== Upgrade cluster version
+
+Upgrades are only supported from a lower version to a higher version.
+
+Assume the current cluster version is 3.7.0. You can upgrade the cluster to 3.8.0 with this command:
+
+[.wrap,console]
+----
+kubectl tg update --cluster-name <cluster_name> --version 3.8.0  --namespace <namespace_name>
+----
+
+After updating the version of the cluster, wait for the cluster status to change to Normal.
+Check this with the following command:
+
+`kubectl tg status --cluster-name ${YOUR_CLUSTER_NAME} -n ${YOUR_NAME_SPACE}`
