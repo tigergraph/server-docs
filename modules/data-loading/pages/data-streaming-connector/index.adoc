@@ -21,9 +21,43 @@ Multiple connectors can run at the same time, streaming data from various source
 
 TigerGraph automatically sets up the streaming connector and Kafka job when an external data source is specified during loading job creation.
 
+
 == Create the loading job
 
 Loading jobs for the Data Streaming Connector are created and run in GSQL.
+
+=== Sample loading job syntax
+
+This example uses the LDBC_SNB dataset in CSV format.
+
+[source.wrap, gsql]
+----
+USE GRAPH test_graph
+CREATE DATA_SOURCE STREAM s1 = "ds_config.json" FOR GRAPH test_graph
+
+CREATE LOADING JOB stream_csv FOR GRAPH test_graph {
+    DEFINE FILENAME file_Comment = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
+    DEFINE FILENAME file_Person = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Person";
+    DEFINE FILENAME file_Comment_hasCreator_Person = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment_hasCreator_Person";
+    LOAD file_Comment
+    TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+    LOAD file_Person
+    TO VERTEX Person VALUES ($1, $2, $3, $4, $5, $0, $6, $7, SPLIT($8,";"), SPLIT($9,";")) USING header="true", separator="|";
+    LOAD file_Comment_hasCreator_Person
+    TO EDGE HAS_CREATOR VALUES ($1, $2) USING header="true", separator="|";
+}
+----
+
+In short, the steps are:
+
+. Specify a graph, in this case `test_graph`.
+. Create a data source for GSQL to use, here named `s1`, and associate it with a JSON configuration file.
+. Create the loading job.
+. Set up the files. In this example there are three files, one for Comment vertices, one for Person vertices, and one for edges showing that the comments have Person creators.
+Each of the files is stored in a different S3 data source. Credentials for accessing the data source are found in the configuration file from step 2.
+. Load each file to the appropriate data type in the graph (vertices or edges). As part of the `LOAD` command, specify which columns of the CSV file to use.
+
+The following sections give more details about each of these steps.
 
 === Specify a graph and config file
 
@@ -72,7 +106,7 @@ Azure Blob Storage::
 ----
 {
     "type" : "abs",
-    "account.key" : "<acount key>"
+    "account.key" : "<account key>"
 }
 ----
 --
@@ -80,15 +114,29 @@ Azure Blob Storage::
 
 Key names accept a separator of either `.` or `_`, so for example, a key could also be named `access_key`.
 
-=== Create the loading job
+=== Define the attributes where data will be loaded
 
-[source, gsql]
+In this stage, we define which attributes of vertices and edges will receive data from the external data source.
+
+When loading a CSV, column names are specified by their indices rather than header text.
+
+[source.wrap, gsql]
 ----
 LOAD file_Comment
-    TO VERTEX Comment VALUES ($"id", $"creationDate", $"locationIP", $"browserUsed", $"content", $"length"),
-    TO EDGE HAS_CREATOR VALUES ($"id", $"CreatorPersonId")
-    USING JSON_FILE="TRUE";
+    TO VERTEX Comment VALUES ($0, $1),
+    TO EDGE HAS_CREATOR VALUES ($0, $1);
 ----
+
+In contrast, for JSON and Parquet files, value names are specified by the key.
+
+[source.wrap, gsql]
+----
+LOAD file_Comment
+    TO VERTEX Comment VALUES ($"id", $"content"),
+    TO EDGE HAS_CREATOR VALUES ($"id", $"CreatorPersonId")
+        USING JSON_FILE="TRUE";
+----
+
 
 === Define the filename
 
@@ -136,47 +184,6 @@ The default is `.*`, which permits all filenames.
 * `archive.type` - The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, and `none` (loading from an uncompressed file).
 The default is `auto`.
 
-When loading a CSV, column names are specified by their indices rather than header text.
-
-[source.wrap, gsql]
-----
-LOAD file_Comment
-    TO VERTEX Comment VALUES ($0, $1),
-    TO EDGE HAS_CREATOR VALUES ($0, $1);
-----
-
-In contrast, for JSON and Parquet files, value names are specified by the key.
-
-[source.wrap, gsql]
-----
-LOAD file_Comment
-    TO VERTEX Comment VALUES ($"id", $"content"),
-    TO EDGE HAS_CREATOR VALUES ($"id", $"CreatorPersonId")
-        USING JSON_FILE="TRUE";
-----
-
-
-=== Sample loading job syntax
-
-In this CSV example, the dataset is the LDBC_SNB dataset.
-
-[source.wrap, gsql]
-----
-USE GRAPH test_graph
-CREATE DATA_SOURCE STREAM s1 = "ds_config.json" for graph test_graph
-
-CREATE LOADING JOB stream_csv FOR GRAPH test_graph {
-    DEFINE FILENAME file_Comment = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
-    DEFINE FILENAME file_Person = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Person";
-    DEFINE FILENAME file_Comment_hasCreator_Person = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment_hasCreator_Person";
-    LOAD file_Comment
-    TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
-    LOAD file_Person
-    TO VERTEX Person VALUES ($1, $2, $3, $4, $5, $0, $6, $7, SPLIT($8,";"), SPLIT($9,";")) USING header="true", separator="|";
-    LOAD file_Comment_hasCreator_Person
-    TO EDGE HAS_CREATOR VALUES ($1, $2) USING header="true", separator="|";
-}
-----
 
 === Run the loading job
 
