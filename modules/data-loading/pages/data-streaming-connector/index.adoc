@@ -96,9 +96,9 @@ The filename should be in one of these three formats:
 
 [source,gsql]
 ----
-DEFINE FILENAME file_name = "[data source name]:[URI];
-DEFINE FILENAME file_name = "[data source name]:[json config file];
-DEFINE FILENAME file_name = "[data source name]:[inline json content];
+DEFINE FILENAME file_name = "[data source name]:[URI]";
+DEFINE FILENAME file_name = "[data source name]:[json config file]";
+DEFINE FILENAME file_name = "[data source name]:[inline json content]";
 ----
 
 Here are some examples with remote URIs.
@@ -108,30 +108,57 @@ If the filename is in URI format and refers to a folder or prefix, all files in 
 ----
 DEFINE FILENAME uri_s3 = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
 DEFINE FILENAME uri_gcs = "$s1:gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person";
-DEFINE FILENAME uri_abs = "$s1:abfss://person@yandblobstorage.dfs.core.windows.net/persondata.csv;"
+DEFINE FILENAME uri_abs = "$s1:abfss://person@yandblobstorage.dfs.core.windows.net/persondata.csv";
 ----
 
 === Define the parameters
 
 These are the parameters that should be in the JSON configuration file.
 
-* `xfile.uris`  - required, the URI or URIs split by comma.
+* `file.uris` - required, the URI or URIs split by comma.
 
 * `file.type` - `text` for CSV and JSON, `parquet` for Parquet file.
+If the file extension is `parquet`, then the `file.type` default is Parquet, but if not, the default is `text`.
+This is an optional parameter.
 
 * `partition` - When loading data, each partition is distributed evenly across each node.
 If one `FILENAME` name contains much more data than others, consider using larger partition number for it.
 The default value is calculated by `ceiling(nodes / number of filenames)`
+This is an optional parameter.
 
-* `eol` - End of line character.
-The default is `\n`.
+* `batch.size` - The batch size of the loading job, referring to the number of CSV lines or JSON objects will be loaded. The default is `10000`.
+* `recursive` - If a directory of files is loaded as an input, this parameter determines whether the data loader will load files recursively from subdirectories.
+The default is `true`.
+* `regexp` - A regular expression that acts as a filename filter, allowing only files that match the expression to be loaded.
+The default is `.*`, which permits all filenames.
 
-* `header` - Whether or not the data contains a header line at the start.
-The default is `false`.
+* `default` - The default value for any field left empty. Default is `""`, an empty string.
+* `archive.type` - The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, and `none` (loading from an uncompressed file).
+The default is `auto`.
+
+When loading a CSV, column names are specified by their indices rather than header text.
+
+[source.wrap, gsql]
+----
+LOAD file_Comment
+    TO VERTEX Comment VALUES ($0, $1),
+    TO EDGE HAS_CREATOR VALUES ($0, $1);
+----
+
+In contrast, for JSON and Parquet files, value names are specified by the key.
+
+[source.wrap, gsql]
+----
+LOAD file_Comment
+    TO VERTEX Comment VALUES ($"id", $"content"),
+    TO EDGE HAS_CREATOR VALUES ($"id", $"CreatorPersonId")
+        USING JSON_FILE="TRUE";
+----
+
 
 === Sample loading job syntax
 
-In this example, the dataset is the LDBC_SNB dataset.
+In this CSV example, the dataset is the LDBC_SNB dataset.
 
 [source.wrap, gsql]
 ----
