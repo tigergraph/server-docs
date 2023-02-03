@@ -103,6 +103,56 @@ dict          gsql          kafkaconn     ts3serv
 etcd          gui           kafkastrm-ll  zk
 ----
 
+=== gadmin backup
+
+See the xref:backup-and-restore:index.adoc[] documentation for a complete guide on using these commands to back up a cluster.
+
+[source, console]
+----
+$ gadmin backup -h
+
+Back up a cluster
+
+Usage:
+gadmin backup [flags]
+gadmin backup [command]
+
+Description:
+Back up and restore a cluster
+
+Available Commands:
+create      Create a cluster backup
+list        List backups
+remove      Remove backup
+restore     Restore a cluster from backup
+
+Flags:
+-h, --help   help for backup
+
+Global Flags:
+--debug   enable debug log output to stdout
+
+Use "gadmin backup [command] --help" for more information about a command.
+----
+
+==== gadmin backup create
+
+Run `gadmin backup create <tag>` to create a backup of the current cluster with a custom tag as the name.
+A timestamp is added after the tag.
+
+==== gadmin backup list
+
+Show the list of all previous backups with `gadmin backup list`.
+
+==== gadmin backup remove
+
+Remove a backup from the list of backups with `gadmin backup remove <tag>`. Provide the full tag, including the timestamp.
+
+==== gadmin backup restore
+
+Run `gadmin backup restore <tag>` to restore a backup. Provide the full tag, including the timestamp.
+
+
 [#_gadmin_config]
 === gadmin config
 
