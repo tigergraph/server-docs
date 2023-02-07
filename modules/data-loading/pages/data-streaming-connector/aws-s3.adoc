@@ -33,22 +33,39 @@ For connecting to AWS S3, its value is
 `com.tigergraph.kafka.connect.filesystem.aws.S3SourceConnector`.
 
 ==== Provide AWS credentials
-The connector uses the standard simple credential provider and uses your https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html[access key] for authentication.
+The connector can use two methods for authentication.
 
-The following fields are required for authentication:
+* The standard simple credentials provider and your https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html[access key].
+* AWS Identity and Access Management (IAM) roles.
+
+
+The configuration fields are as follows:
 
 * `file.reader.settings.fs.s3a.aws.credentials.provider`: Comma-separated class names of credential provider classes which implement
 `com.amazonaws.auth.AWSCredentialsProvider`.
 ** This field should be set to `org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider`.
+** If you want to load data from S3 via an IAM role, set this to `com.amazonaws.auth.InstanceProfileCredentialsProvider` and leave the access key and access key secrets blank.
 * `file.reader.settings.fs.s3a.access.key`: AWS access key ID.
 * `file.reader.settings.fs.s3a.secret.key`: AWS access key secret.
 
+==== Example credential configurations
+
+.Simple credentials provider
 [.wrap,text]
 ----
 file.reader.settings.fs.s3a.aws.credentials.provider=org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
 file.reader.settings.fs.s3a.access.key=A2V************J
 file.reader.settings.fs.s3a.secret.key=wEV************************************8
 ----
+
+.IAM roles
+[.wrap, text]
+----
+file.reader.settings.fs.s3a.aws.credentials.provider=com.amazonaws.auth.InstanceProfileCredentialsProvider
+file.reader.settings.fs.s3a.access.key=
+file.reader.settings.fs.s3a.secret.key=
+----
+
 
 ==== Other configurations
 The connector uses Hadoop S3A to connect to S3 buckets.
