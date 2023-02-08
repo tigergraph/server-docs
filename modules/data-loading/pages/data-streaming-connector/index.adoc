@@ -4,11 +4,10 @@
 
 TigerGraph Data Streaming Connector is a link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and AWS, Azure, and GCP.
 
-For data coming from a separate Kafka instance or in Google BigQuery, you need to perform a few more steps to set up data streaming.
-Each of these pages has its own separate instructions.
+For data coming from a separate Kafka instance, you need to perform a few more steps to set up data streaming.
+This process has its own separate instructions.
 
-* xref:data-streaming-connector/kafka.adoc[Apache Kafka]
-* xref:data-streaming-connector/big-query.adoc[Google BigQuery]
+* xref:data-streaming-connector/kafka.adoc[Apache Kafka streaming connector]
 
 == Architecture overview
 The connector streams data from a source data system into TigerGraph's internal Kafka cluster in the form of Kafka messages in specified topics.
@@ -33,7 +32,7 @@ This example uses the LDBC_SNB dataset in CSV format.
 [source.wrap, gsql]
 ----
 USE GRAPH test_graph
-CREATE DATA_SOURCE STREAM s1 = "ds_config.json" FOR GRAPH test_graph
+CREATE DATA_SOURCE s1 = "ds_config.json" FOR GRAPH test_graph
 
 CREATE LOADING JOB stream_csv FOR GRAPH test_graph {
     DEFINE FILENAME file_Comment = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
@@ -64,10 +63,16 @@ The following sections give more details about each of these steps.
 [source.wrap, gsql]
 ----
 USE GRAPH test_graph
-CREATE DATA_SOURCE STREAM s1 = "ds_config.json" FOR GRAPH test_graph
+CREATE DATA_SOURCE s1 = "ds_config.json" FOR GRAPH test_graph
 ----
 
-In this example, we create a data source of type `STREAM` and name it `s1`.
+In this example, we create a data source and name it `s1`.
+
+Older versions of TigerGraph required a keyword after `DATA_SOURCE` such as `STREAM` or `KAFKA`.
+This is still supported, but no longer required. Therefore, `CREATE DATA_SOURCE STREAM s1` is equally valid.
+
+
+
 We associate our data source with the `ds_config.json` file.
 
 .JSON config file examples
@@ -110,7 +115,41 @@ Azure Blob Storage::
 }
 ----
 --
+Google BigQuery::
++
+--
+[source.wrap, json]
+----
+{
+    "type":"bigquery",
+    "ProjectId":"tigergraph-dev",
+    "OAuthType":2,
+    "separator":"|",
+    "parameters" : {
+        "OAuthRefreshToken":"<refresh token>",
+        "OAuthClientId":"<client ID>.apps.googleusercontent.com",
+        "OAuthClientSecret":"<client secret>"
+    }
+}
+----
+For more information on authorization types for Google BigQuery, see this PDF guide: link:https://storage.googleapis.com/simba-bq-release/jdbc/Simba%20Google%20BigQuery%20JDBC%20Connector%20Install%20and%20Configuration%20Guide_1.3.0.1001.pdf[Magnitude Simba Google BigQuery
+JDBC Data Connector].
+--
 ====
+
+JSON data can also be sent inline. Inline syntax is required for JSON configurations on TigerGraph Cloud instances.
+
+.Inline JSON data format when creating a data source
+[source.wrap, gsql]
+----
+CREATE DATA_SOURCE s1 = """{
+    "type": "s3",
+    "access.key": "<access key>",
+    "secret.key": "<secret key>"
+}""" FOR GRAPH test_graph
+----
+
+String literals can be enclosed with a double quote `"`, triple double quotes `"""` and triple single quotes `'''`.
 
 Key names accept a separator of either `.` or `_`, so for example, a key could also be named `access_key`.
 
