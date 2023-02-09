@@ -4,6 +4,8 @@
 :fn-preview: footnote:preview[Features in the preview stage should not be used for production purposes. General Availability (GA) versions of the feature will be available in a later release.]
 
 TigerGraph Server {page-component-version}.0 was released on June 17th, 2022.
+The most recent update is 3.6.3, which was released on February 9th, 2023.
+
 The latest maintenance release of TigerGraph 3.6 is available on TigerGraph Cloud.
 
 == New Features
@@ -51,6 +53,50 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 [#_fixed_issues]
 == Fixed issues
 
+=== Fixed in 3.6.3
+TigerGraph Server 3.6.3 was released on February 9, 2023.
+
+==== Security
+
+* Fixed security vulnerabilities in Moment, JQuery UI, Eclipse Jersey, and ApacheHTTPClient.
+* Fixed security vulnerabilities in the Docker client.
+* Redacted sensitive data by default in the gadmin connector list command output. Introduced the `-v` or `--verbose` flags to show the full output.
+* Improved clarity of `write_role` and `read_role` privileges to prevent misunderstandings and improve security.
+* Strongly enhanced security of UDF file handling. UDF files are disabled by default and need to be manually enabled each use, preventing malicious uses.
+* Fixed an issue where two conflicting authorization tokens could be created on the same graph, causing an error.
+* Fixed an issue where an empty user ID could cause an error in rare cases.
+* Fixed an issue where an uncommonly short authorization token could cause an error.
+* Improved security of the base tigergraph folder on a server installation, preventing unauthorized modification.
+
+==== Graph Engine
+
+* Fixed an issue where in rare cases a data filter would cause previously-entered data mappings to be deleted
+* Fixed an issue that sometimes caused a crash when exporting a graph that included a recursive query.
+* Improved handling of data sources that included the `\` character.
+* Fixed an issue where the edge count between different replicas could in rare cases be inconsistent.
+* Fixed an issue where in rare cases data would be written incorrectly at the time of an engine restart.
+* Fixed an issue where in rare cases an accumulator could return unexpected results.
+* Fixed an issue that could cause a data loading failure or invalid vertex IDs after a GSE restart when some vertices were deleted.
+* Fixed an issue with edge parallel processing where an unusually high number of edge transactions could cause a crash or missing data resulting from invalid edge data access.
+
+==== Backup and Restore
+
+* Improved the query install stage during backup and restore, increasing stability and improving error handling.
+
+==== Kafka
+
+* Rebalanced Kafka replication to avoid placing too many replicas on the same node, which could lead to memory errors.
+* Fixed an issue with too much memory usage during large file loading with Kafka.
+
+==== GraphStudio and Admin Portal
+
+* Fixed an issue where users without the WRITE QUERY privilege could still draft queries in GraphStudio.
+* Fixed an issue where certain file names in GraphStudio could in rare cases cause an error during data loading.
+
+==== API
+
+* Added the Content Type in the response header for the requesttoken endpoint for consistency with other endpoints.
+
 === Fixed in 3.6.2
 TigerGraph Server 3.6.2 was released on August 16th, 2022.
 
@@ -96,44 +142,9 @@ TigerGraph Server 3.6.1 was released on July 7th, 2022.
 
 == Known Issues
 
-
-|===
-|In version |Description |Status
-
-|3.6.0
-|If a graph on an instance contains a loading job that uses `gsql_split_by_space()` token function, exporting the graph might lead to GPE dysfunction.
-|Unresolved
-
-|3.6.0
-|Accumulating a `DATETIME` object returned from the `to_datetime()` function to a BagAccum inside an ArrayAccum causes GPE dysfunction.
-|Unresolved
-
-|3.6.0
-|Calling `vertex.edgeAttribute()` function with `STRING COMPRESS` data type causes GPE crash
-|Unresolved
-
-|3.6.0
-|Interpreting a query that uses bitwise accumulators causes GPE dysfunction.
-|Unresolved
-
-|3.6.0
-|When vertices are automatically created during edge loading, the primary key of the vertices created are not written to vertex attributes.
-|Unresolved
-
-
-|3.6.0
-|Running a query with `edgeAttribute()` or `neighborAttribute()` function when accumulator containing universal vertex types is referenced in the same statement may cause GPE dysfunction.
-|Unresolved
-
-
-|3.6.0
-|Calling the `setAttr()` function in an interpreted query causes GPE dysfunction.
-|Unresolved
-
-|3.6.0
-|High-frequency schema changes can cause GPE dysfunction in rare cases.
-|Resolved in 3.6.1.
-|===
+* In rare cases, a GSE component in a cluster may get stuck in a refresh state after its status changes from leader to follower and back again in a very short time.
+* GSE memory consumption in a cluster may be higher for the leader than a follower during data loading.
+* In rare cases, system logs may briefly indicate a mismatched edge count between replicas on a cluster that is continuously loading and dropping edges. This mismatch corrects itself automatically as the system keeps running. Use the xref:tigergraph-server:API:built-in-endpoints.adoc[`/rebuildnow` endpoint] with `force=True` to force a rebuild and correct the issue.
 
 For a list of known issues for GraphStudio and Admin Portal, please see xref:gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
 
