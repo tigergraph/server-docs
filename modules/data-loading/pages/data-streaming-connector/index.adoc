@@ -103,6 +103,7 @@ Google Cloud Storage::
   "client_email": "<email address>"
 }
 ----
+The serivce key json can be created and downloaded following the link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys[Google Cloud tutorial]. The json file can be directly used after changing the "type" entry to "gcs".
 --
 Azure Blob Storage::
 +
@@ -124,7 +125,6 @@ Google BigQuery::
     "type":"bigquery",
     "ProjectId":"tigergraph-dev",
     "OAuthType":2,
-    "separator":"|",
     "parameters" : {
         "OAuthRefreshToken":"<refresh token>",
         "OAuthClientId":"<client ID>.apps.googleusercontent.com",
@@ -142,6 +142,17 @@ JSON data can also be sent inline. Inline syntax is required for JSON configurat
 .Inline JSON data format when creating a data source
 [source.wrap, gsql]
 ----
+CREATE DATA_SOURCE s1 = "{
+    type: s3,
+    access.key: <access key>,
+    secret.key: <secret key>
+}" FOR GRAPH test_graph
+----
+
+Or
+
+[source.wrap, gsql]
+----
 CREATE DATA_SOURCE s1 = """{
     "type": "s3",
     "access.key": "<access key>",
@@ -149,7 +160,7 @@ CREATE DATA_SOURCE s1 = """{
 }""" FOR GRAPH test_graph
 ----
 
-String literals can be enclosed with a double quote `"`, triple double quotes `"""` and triple single quotes `'''`.
+String literals can be enclosed with a double quote `"`, triple double quotes `"""` and triple single quotes `'''`. `"` in json can be omitted if the key name does not contain colon `:` and comma `,`.
 
 Key names accept a separator of either `.` or `_`, so for example, a key could also be named `access_key`.
 
@@ -181,47 +192,108 @@ LOAD file_Comment
 
 The filename should be in one of these three formats:
 
+[tabs]
+====
+Amazon S3 / Google Cloud Storage / Azure Blob Storage ::
++
+--
+
 [source,gsql]
 ----
-DEFINE FILENAME file_name = "[data source name]:[URI]";
-DEFINE FILENAME file_name = "[data source name]:[json config file]";
-DEFINE FILENAME file_name = "[data source name]:[inline json content]";
+DEFINE FILENAME file_name = "$[data source name]:[URI]";
+DEFINE FILENAME file_name = "$[data source name]:[json config file]";
+DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
 ----
 
 Here are some examples with remote URIs.
 If the filename is in URI format and refers to a folder or prefix, all files in that folder or with that prefix are loaded.
+The filename can be feed in as a parameter when running loading jobs.
 
 [source, gsql]
 ----
 DEFINE FILENAME uri_s3 = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
 DEFINE FILENAME uri_gcs = "$s1:gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person";
 DEFINE FILENAME uri_abs = "$s1:abfss://person@yandblobstorage.dfs.core.windows.net/persondata.csv";
+DEFINE FILENAME parquet_s3 = """$s1:{"file.uris":"s3://s3-loading-test/tg_ldbc_snb/sf0.1_parquet/dynamic/Comment", "file.type":"parquet"}""";
+DEFINE FILENAME csv_gcs="""$s1:{
+    "file.uris": "gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person",
+    "file.type": "text",
+    "partition": 6
+  }""";
+DEFINE FILENAME uri_s3 = "$s1:myfile.json";
 ----
+where the content in `myfile.json` following the same format as the json content.
 
 === Define the parameters
 
 These are the parameters that should be in the JSON configuration file.
 
-* `file.uris` - required, the URI or URIs split by comma.
+* `file.uris` (required) - the URI or URIs split by comma.
 
-* `file.type` - `text` for CSV and JSON, `parquet` for Parquet file.
+* `file.type` (optional) - `text` for CSV and JSON, `parquet` for Parquet file.
 If the file extension is `parquet`, then the `file.type` default is Parquet, but if not, the default is `text`.
-This is an optional parameter.
 
-* `partition` - When loading data, each partition is distributed evenly across each node.
+* `partition` (optional) - When loading data, each partition is distributed evenly across each node.
 If one `FILENAME` name contains much more data than others, consider using larger partition number for it.
-The default value is calculated by `ceiling(nodes / number of filenames)`
-This is an optional parameter.
+The default value is calculated by `ceiling(nodes / number of filenames)`.
 
-* `batch.size` - The batch size of the loading job, referring to the number of CSV lines or JSON objects will be loaded. The default is `10000`.
-* `recursive` - If a directory of files is loaded as an input, this parameter determines whether the data loader will load files recursively from subdirectories.
+* `batch.size` (optional) - The batch size of the loading job, referring to the number of CSV lines or JSON objects will be loaded. The default is `10000`.
+* `recursive` (optional) - If a directory of files is loaded as an input, this parameter determines whether the data loader will load files recursively from subdirectories.
 The default is `true`.
-* `regexp` - A regular expression that acts as a filename filter, allowing only files that match the expression to be loaded.
+* `regexp` (optional) - A regular expression that acts as a filename filter, allowing only files that match the expression to be loaded.
 The default is `.*`, which permits all filenames.
 
-* `default` - The default value for any field left empty. Default is `""`, an empty string.
-* `archive.type` - The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, and `none` (loading from an uncompressed file).
+* `default` (optional) - The default value for any field left empty. Default is `""`, an empty string.
+* `archive.type` (optional) - The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, and `none` (loading from an uncompressed file).
 The default is `auto`.
+
+--
+
+--
+Google BigQuery::
++
+--
+
+[source,gsql]
+----
+DEFINE FILENAME file_name = "$[data source name]:[SQL]";
+DEFINE FILENAME file_name = "$[data source name]:[json config file]";
+DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
+----
+
+Here are some examples with the SQL.
+[source,gsql]
+----
+DEFINE FILENAME bq_sql = "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate, locationIP, browserUsed, language, email  FROM `tigergraph-ldbc-benchmark.snb_bi_sf01.Person`";
+DEFINE FILENAME bq_inline_json = """$s1:{
+	"query":"SELECT id, creationDate, locationIP, browserUsed, content, length, CreatorPersonId FROM `tigergraph-ldbc-benchmark.snb_bi_sf01.Comment`",
+	"partition":4
+}""";
+DEFINE FILENAME bq_inline_json = """$s1:myfile.json""";
+----
+where the content in `myfile.json` following the same format as the json content.
+
+--
+
+====
+
+=== Creating the loading job
+The instruction for creating loading job is the same as file loading [link]. Note:
+1. Parquet files require JSON_FILE set to `TRUE` and the column names must be used 
+
+[source, gsql]
+----
+LOAD file_Person TO VERTEX Person VALUES ($"id", $"firstName") USING JSON_FILE="TRUE"
+----
+
+2. For Google BigQuery, the SQL results are joined by the separator to form the csv file
+
+[source, gsql]
+----
+TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+----
+
+3. For CSV files, only column index is supported 
 
 
 === Run the loading job
