@@ -3,7 +3,7 @@
 
 == How can I verify if data is replicated between primary and Disaster Recovery (DR) clusters?
 
-You can run `gstatusgraph` from the GSQL shell on both the primary and DR cluster.
+You can run `gstatusgraph` from the Linux terminal on both the primary and DR cluster.
 The count for vertices and edges should match if data is in sync.
 Note that if there are running loading jobs, DR might show a lower count, in which case check again when the loading job is done.
 
@@ -15,7 +15,7 @@ However, the data loaded by these loading jobs is replicated over DR.
 
 == I've run a `DROP ALL` command on primary and now new added data is not replicated in DR.
 
-`DROP ALL` command will stop cross-region replication (CRR), you will need to restore re-establish the feature again.
+`DROP ALL` will stop cross-region replication (CRR). You will need to re-establish the feature again.
 Here is a list of all commands and operations that will stop CRR:
 
 * `gsql drop all` which clears all data and schema
