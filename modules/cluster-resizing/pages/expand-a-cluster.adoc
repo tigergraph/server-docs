@@ -12,12 +12,18 @@ WARNING: If your TigerGraph cluster uses a seeded license, please contact mailto
 
 == Before you begin
 
-* TigerGraph must already be installed on the new nodes as single-node instances in *exactly the same version* as the cluster.
+[NOTE]
+====
+If you are expanding to a single-node installation, TigerGraph must already be installed on the new node in *exactly the same version* as the original.
+For expansion to a target cluster, the target cluster should be running a cluster installation of TigerGraph Server *exactly the same version* as the original that you are expanding from.
+You must expand to all nodes in the target cluster, not a portion of them.
+====
+
 * Ensure that there is some data loaded into your cluster.
 Cluster expansion will fail if the cluster has no data.
 * Ensure that the cluster is not using shared storage.
 Cluster expansion does not support shared storage.
-* Ensure that no loading jobs, queries, or REST requests are running on the new node or the cluster.
+* Ensure that no loading jobs, queries, or REST requests are running on the original or the expansion target.
 * Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the expansion completes.
 * If the original cluster is a single node installation, make sure the IP used is not a https://en.wikipedia.org/wiki/Localhost[local loopback address] such as 127.0.0.1.
 +
