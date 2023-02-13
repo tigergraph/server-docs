@@ -428,7 +428,7 @@ Request::
 --
 [.wrap.console]
 ----
-$ curl http://localhost:6197/metrics
+$ curl http://localhost:9167/metrics
 ----
 --
 Response::
@@ -3184,7 +3184,64 @@ Response::
 ==== Parameters
 No parameters.
 
+=== Show all delayed queries
 
+`GET /showdelayedlistall`
+
+When queries beyond the maximum concurrent query amount (specified in the `RESTPP.WorkLoadManager.MaxConcurrentQueries` parameter) are submitted, they are sent to the delay or overflow queue.
+This overflow queue length is limited by the `RESTPP.WorkLoadManager.MaxDelayQueueSize` parameter.
+Use this endpoint to get a list of all queries waiting in the delay/overflow queue.
+
+Query timeout time is not affected by the time spent in the delayed queue.
+
+==== Sample request
+[tabs]
+====
+Request::
++
+[.wrap,console]
+----
+$ curl -X GET "http://localhost:9000/showdelayedlistall" |jq
+----
+Response::
++
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 2
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "requestidPartial": "1670970545942",
+      "startTime": "2022-12-13 22:29:05.942",
+      "url": "/query/ldbc_snb/LTQ1?gap=60&qtf=vwlm_a_007",
+      "elapsedTime": 2023
+    },
+    {
+      "requestidPartial": "1670970545943",
+      "startTime": "2022-12-13 22:29:05.943",
+      "url": "/query/ldbc_snb/LTQ1?gap=60&qtf=vwlm_a_008",
+      "elapsedTime": 2022
+    },
+    {
+      "requestidPartial": "1670970545942",
+      "startTime": "2022-12-13 22:29:05.942",
+      "url": "/query/ldbc_snb/LTQ1?gap=60&qtf=vwlm_a_004",
+      "elapsedTime": 2023
+    },
+  ],
+  "code": "REST-0000"
+}
+----
+====
+
+[NOTE]
+The /abortquery API is not available for queries in the queue.
+The `expirationTime` attribute is also not available.
 
 === Abort a query
 

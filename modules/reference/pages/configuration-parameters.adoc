@@ -10,7 +10,7 @@ See xref:system-management:management-with-gadmin.adoc[] for how to set a parame
 |===
 |Name |Description |Example
 |Admin.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+`;` |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
 
 |Admin.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number
 of days to retain old log files based on the timestamp encoded in their
@@ -20,13 +20,13 @@ filename |`90`
 megabytes of the log file before it gets rotated |`100`
 
 |Admin.BasicConfig.LogConfig.LogLevel |The log
-level(``INFO'',``WARN'',``ERROR''), default is INFO |`INFO`
+level(`INFO`,`WARN`,`ERROR`), default is `INFO` |`INFO`
 
 |Admin.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number
 of old log files to retain |`100`
 
 |Admin.BasicConfig.LogDirRelativePath |The relative path (to the
-System.LogRoot) of log directory for Admin |`admin`
+System.LogRoot) of the log directory for Admin |`admin`
 
 |Admin.BasicConfig.Nodes |The node list for Admin
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
@@ -50,7 +50,7 @@ their filename |`90`
 megabytes of the log file before it gets rotated |`100`
 
 |Controller.BasicConfig.LogConfig.LogLevel |The log
-level(``DEBUG'',``INFO'',``WARN'',``ERROR'',``PANIC'',``FATAL''),
+level(`DEBUG`,`INFO`,`WARN`,`ERROR`,`PANIC`,`FATAL`),
 default is INFO |`INFO`
 
 |Controller.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
@@ -66,8 +66,11 @@ System.LogRoot) of log directory for Controller |`controller`
 System.DataRoot) of config repo where the service config files are
 stored |`configs`
 
-|Controller.Connect.PruneIntervalMin |The waittime between each prune
-job which removes data already loaded by GSQL in kafka |`1`
+|Controller.Connect.PrunerEnabled |Whether to automatically remove data that was already loaded by GSQL in Kafka.
+|`True`
+
+|Controller.Connect.PruneIntervalMin |The wait time, in minutes, between each prune
+job that removes data already loaded by GSQL in Kafka. Accepts an integer from 1 to 59, inclusive.| `1`
 
 |Controller.Connect.RedactSensitiveConfigValue|Whether to redact sensitive information when displaying the configurations of a connector. |`true`
 
@@ -82,10 +85,10 @@ interval(milliseconds) at which each service should call controller
 leader election service to be considered alive. |`6000`
 
 |Controller.LeaderElectionHeartBeatMaxMiss |The maximum number of
-heartbeat can be missed before one service is considered dead by
+heartbeats that can be missed before one service is considered dead by the
 controller |`5`
 
-|Controller.Port |The serving grpc port for Controller |`9188`
+|Controller.Port |The serving gRPC (Google Remote Procedure Call) port for Controller |`9188`
 |===
 
 == Dict
@@ -94,7 +97,7 @@ controller |`5`
 |===
 |Name |Description |Example
 |Dict.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+`;` |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
 
 |Dict.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
@@ -121,7 +124,7 @@ System.LogRoot) of log directory for Dict |`dict`
 |===
 |Name |Description |Example
 |ETCD.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`ETCD_UNSUPPORTED_ARCH=arm64`
+`;` |`ETCD_UNSUPPORTED_ARCH=arm64`
 
 |ETCD.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
@@ -131,21 +134,21 @@ filename |`90`
 megabytes of the log file before it gets rotated |`100`
 
 |ETCD.BasicConfig.LogConfig.LogLevel |The log
-level(``DEBUG'',``INFO'',``WARN'',``ERROR'',``PANIC'',``FATAL''),
-default is INFO |`INFO`
+level(`DEBUG`,`INFO`,`WARN`,`ERROR`,`PANIC`,`FATAL`),
+default is `INFO` |`INFO`
 
 |ETCD.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
 
 |ETCD.BasicConfig.LogDirRelativePath |The relative path (to the
-System.LogRoot) of log directory for ETCD |`etcd`
+System.LogRoot) of the log directory for ETCD |`etcd`
 
 |ETCD.BasicConfig.Nodes |The node list for ETCD
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 
 |ETCD.ClientPort |The port of ETCD to listen for client traffic |`20000`
 
-|ETCD.DataRelativePath |The data dir of etcd under $DataRoot |`etcd`
+|ETCD.DataRelativePath |The data dir of etcd under `$DataRoot` |`etcd`
 
 |ETCD.ElectionTimeoutMS |Time (in milliseconds) for an election to
 timeout |`1000`
@@ -187,8 +190,8 @@ their filename |`90`
 megabytes of the log file before it gets rotated |`100`
 
 |Executor.BasicConfig.LogConfig.LogLevel |The log
-level(``DEBUG'',``INFO'',``WARN'',``ERROR'',``PANIC'',``FATAL''),
-default is INFO |`INFO`
+level(`DEBUG`,`INFO`,`WARN`,`ERROR`,`PANIC`,`FATAL`),
+default is `INFO` |`INFO`
 
 |Executor.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
@@ -222,7 +225,7 @@ file transfer |`10`
 |===
 |Name |Description |Example
 |FileLoader.BasicConfig.Env |The runtime environment variables,
-separated by `;' |`nan`
+separated by `;` |`nan`
 
 |FileLoader.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
@@ -231,8 +234,8 @@ their filename |`90`
 |FileLoader.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
 
-|FileLoader.BasicConfig.LogConfig.LogLevel |The log level(``OFF'',
-``BRIEF'', ``DEBUG'', ``VERBOSE''), default is BRIEF |`BRIEF`
+|FileLoader.BasicConfig.LogConfig.LogLevel |The log level(`OFF`,
+`BRIEF`, `DEBUG`, `VERBOSE`), default is `BRIEF` |`BRIEF`
 
 |FileLoader.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
@@ -260,7 +263,7 @@ loading timeout (s) for FileLoader |`600`
 |FileLoader.Factory.HandlerCount |FileLoader’s handler count |`4`
 
 |FileLoader.Factory.StatsIntervalSec |FileLoader’s time interval to
-collect stats (e.g. QPS) |`60`
+collect stats (e.g. QPS) |`60`
 
 |FileLoader.GPEResponseBasePort |The port of FileLoader to accept GPE
 response |`8400`
@@ -268,7 +271,7 @@ response |`8400`
 |FileLoader.GSEResponseBasePort |The port of FileLoader to accept GSE
 response |`8500`
 
-|FileLoader.ReplicaNumber |The number of replica of fileloader per node
+|FileLoader.ReplicaNumber |The number of replicas of Fileloader per node
 |`1`
 |===
 
@@ -892,7 +895,7 @@ the key from file) |`nan`
 |===
 |Name |Description |Example
 |RESTPP.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+`;' |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; REPORT_FIRST_N_LINES=$REPORT_FIRST_N_LINES`
 
 |RESTPP.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number
 of days to retain old log files based on the timestamp encoded in their
