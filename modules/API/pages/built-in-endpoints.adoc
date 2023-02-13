@@ -3444,7 +3444,7 @@ Response::
 
 | `isRegularExpression`
 | No
-| Enables regular expression searching for the function name. For example, `gds.*` returns all queries that begin with `gds`.
+| Enables regular expression searching for the function name, following link:https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html[Java regular expression patterns]. For example, `gds.*` returns all queries that begin with `gds`.
 |===
 
 
@@ -3464,7 +3464,7 @@ Request::
 [source.wrap,bash]
 ----
 curl -X POST --user tigergraph:tigergraph \
-  --url 'http://127.0.0.1:8123/gsql/library?functionName=gds.community.louvain&graph=poc_graph' \
+  --url 'http://127.0.0.1:14240/gsql/library?functionName=gds.community.louvain&graph=poc_graph' \
   --data '{
             "v_type": [
               "members"
@@ -3488,7 +3488,7 @@ Response::
 {
   "error": false,
   "message": "",
-  "results": {    <--- query's response
+  "results": {
     "error": false,
     "message": "",
     "version": {
@@ -3514,11 +3514,11 @@ Response::
 
 | `functionName`
 | Yes
-| The template name that will be returned in the response
+| The template query that will be run on the given graph.
 
 | `graph`
 | Yes
-| The template query that will be run on the given graph.
+| The graph name that the template query will run on.
 |===
 
 
