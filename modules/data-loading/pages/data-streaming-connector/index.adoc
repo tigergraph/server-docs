@@ -2,7 +2,7 @@
 
 :description: A guide to TigerGraph's Streaming Data Connector.
 
-TigerGraph Data Streaming Connector is a link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and AWS, Azure, and GCP.
+The TigerGraph Data Streaming Connector is an integrated link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and external data sources.
 
 For data coming from a separate Kafka instance, you need to perform a few more steps to set up data streaming.
 This process has its own separate instructions.
@@ -24,6 +24,7 @@ TigerGraph automatically sets up the streaming connector and Kafka job when an e
 == Create the loading job
 
 Loading jobs for the Data Streaming Connector are created and run in GSQL.
+Refer to the full xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[] documentation for more detail about loading jobs in general.
 
 === Sample loading job syntax
 
@@ -103,7 +104,8 @@ Google Cloud Storage::
   "client_email": "<email address>"
 }
 ----
-The serivce key json can be created and downloaded following the link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys[Google Cloud tutorial]. The json file can be directly used after changing the "type" entry to "gcs".
+The service key JSON file can be created and downloaded following the link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys[Google Cloud tutorial].
+After following the tutorial, the JSON file can be used after changing the `type` entry to `gcs`.
 --
 Azure Blob Storage::
 +
@@ -137,7 +139,8 @@ JDBC Data Connector].
 --
 ====
 
-JSON data can also be sent inline. Inline syntax is required for JSON configurations on TigerGraph Cloud instances.
+JSON data can also be sent inline.
+Inline syntax is required for JSON configurations on TigerGraph Cloud instances.
 
 .Inline JSON data format when creating a data source
 [source.wrap, gsql]
@@ -149,8 +152,10 @@ CREATE DATA_SOURCE s1 = "{
 }" FOR GRAPH test_graph
 ----
 
-Or
+String literals can be enclosed with a double quote `"`, triple double quotes `"""`, or triple single quotes `'''`.
+Double quotes `"` in the JSON can be omitted if the key name does not contain a colon `:` or comma `,`.
 
+.Alternate quote syntax for inline JSON data
 [source.wrap, gsql]
 ----
 CREATE DATA_SOURCE s1 = """{
@@ -160,24 +165,25 @@ CREATE DATA_SOURCE s1 = """{
 }""" FOR GRAPH test_graph
 ----
 
-String literals can be enclosed with a double quote `"`, triple double quotes `"""` and triple single quotes `'''`. `"` in json can be omitted if the key name does not contain colon `:` and comma `,`.
-
-Key names accept a separator of either `.` or `_`, so for example, a key could also be named `access_key`.
+Key names accept a separator of either a period `.` or underscore `_`, so for example, a key could also be named `access_key`.
 
 === Define the attributes where data will be loaded
 
 In this stage, we define which attributes of vertices and edges will receive data from the external data source.
 
-When loading a CSV, column names are specified by their indices rather than header text.
+When loading a CSV, column names are specified by their numerical indices rather than header text.
+
+In this example, the first and second columns in the CSV are loaded to vertices of `Comment` type and the third and fourth columns are loaded to edges of `HAS_CREATOR` type.
+
 
 [source.wrap, gsql]
 ----
 LOAD file_Comment
     TO VERTEX Comment VALUES ($0, $1),
-    TO EDGE HAS_CREATOR VALUES ($0, $1);
+    TO EDGE HAS_CREATOR VALUES ($2, $3);
 ----
 
-In contrast, for JSON and Parquet files, value names are specified by the key.
+In contrast, when using JSON or Parquet files, value names are specified by the key.
 
 [source.wrap, gsql]
 ----
@@ -190,8 +196,10 @@ LOAD file_Comment
 
 === Define the filename
 
-The filename should be in one of these three formats:
+Filenames can be defined with a URI to a separate file, a supplied JSON-formatted file, or JSON-formatted inline content supplied in the command.
+Use the following examples to create the `DEFINE FILENAME` command based on your data type.
 
+====
 .Amazon S3 / Google Cloud Storage / Azure Blob Storage
 [source,gsql]
 ----
@@ -199,53 +207,6 @@ DEFINE FILENAME file_name = "$[data source name]:[URI]";
 DEFINE FILENAME file_name = "$[data source name]:[json config file]";
 DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
 ----
-
-Here are some examples of different `DEFINE FILENAME` statements.
-If the filename is in URI format and refers to a folder or prefix, all files in that folder or with that prefix are loaded.
-The filename can be used as a parameter when running loading jobs.
-
-[source, gsql]
-----
-DEFINE FILENAME uri_s3 = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
-DEFINE FILENAME uri_gcs = "$s1:gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person";
-DEFINE FILENAME uri_abs = "$s1:abfss://person@yandblobstorage.dfs.core.windows.net/persondata.csv";
-
-DEFINE FILENAME parquet_s3 = """$s1:{"file.uris":"s3://s3-loading-test/tg_ldbc_snb/sf0.1_parquet/dynamic/Comment", "file.type":"parquet"}""";
-DEFINE FILENAME csv_gcs="""$s1:{
-    "file.uris": "gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person",
-    "file.type": "text",
-    "partition": 6
-  }""";
-
-DEFINE FILENAME uri_s3 = "$s1:myfile.json";
-----
-
-JSON content, either provided inline in the `DEFINE FILENAME` statement or in a separate JSON file, must follow the same format as shown in the example.
-
-=== Define the parameters
-
-These are the parameters that should be in the JSON configuration file.
-
-* `file.uris` (required) - the URI or URIs split by comma.
-
-* `file.type` (optional) - `text` for CSV and JSON, `parquet` for Parquet file.
-If the file extension is `parquet`, then the `file.type` default is Parquet, but if not, the default is `text`.
-
-* `partition` (optional) - When loading data, each partition is distributed evenly across each node.
-If one `FILENAME` name contains much more data than others, consider using larger partition number for it.
-The default value is calculated by `ceiling(number of nodes / number of filenames)`.
-
-* `batch.size` (optional) - The batch size of the loading job, referring to the number of CSV lines or JSON objects will be loaded. The default is `10000`.
-* `recursive` (optional) - If a directory of files is loaded as an input, this parameter determines whether the data loader will load files recursively from subdirectories.
-The default is `true`.
-* `regexp` (optional) - A regular expression that acts as a filename filter, allowing only files that match the expression to be loaded.
-The default is `.*`, which permits all filenames.
-
-* `default` (optional) - The default value for any field left empty.
-The default is `""`, an empty string.
-* `archive.type` (optional) - The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, and `none` (loading from an uncompressed file).
-The default is `auto`.
-
 
 .Google BigQuery
 [source,gsql]
@@ -255,40 +216,105 @@ DEFINE FILENAME file_name = "$[data source name]:[json config file]";
 DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
 ----
 
-Here are some examples with the SQL.
-[source,gsql]
+Here are some examples with Google BigQuery getting data from a SQL query.
+[source.wrap,gsql]
 ----
-DEFINE FILENAME bq_sql = "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate, locationIP, browserUsed, language, email  FROM `tigergraph-ldbc-benchmark.snb_bi_sf01.Person`";
+DEFINE FILENAME bq_sql = "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate, locationIP, browserUsed, language, email FROM `tigergraph-ldbc-benchmark.snb_bi_sf01.Person`";
+
 DEFINE FILENAME bq_inline_json = """$s1:{
 	"query":"SELECT id, creationDate, locationIP, browserUsed, content, length, CreatorPersonId FROM `tigergraph-ldbc-benchmark.snb_bi_sf01.Comment`",
 	"partition":4
 }""";
+
 DEFINE FILENAME bq_inline_json = """$s1:myfile.json""";
 ----
-where the content in `myfile.json` following the same format as the json content.
+If you use a separate JSON file, it must follow the same format as the inline example shown.
+====
 
+Here are some examples of different `DEFINE FILENAME` statements.
+If the filename is in URI format and refers to a folder or prefix, all files in that folder or with that prefix are loaded.
 
-=== Creating the loading job
+The filename can be used as a parameter when running loading jobs.
+
+[source, gsql]
+----
+DEFINE FILENAME uri_s3 = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
+DEFINE FILENAME uri_gcs = "$s1:gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person";
+DEFINE FILENAME uri_abs = "$s1:abfss://person@yandblobstorage.dfs.core.windows.net/persondata.csv";
+
+DEFINE FILENAME parquet_s3 = """$s1:{"file.uris":"s3://s3-loading-test/tg_ldbc_snb/sf0.1_parquet/dynamic/Comment", "file.type":"parquet"}""";
+
+DEFINE FILENAME csv_gcs="""$s1:{
+    "file.uris": "gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person",
+    "file.type": "text",
+    "partition": 6
+  }""";
+
+DEFINE FILENAME uri_s3 = "$s1:myfile.json";
+----
+
+//JSON content, either provided inline in the `DEFINE FILENAME` statement or in a separate JSON file, must follow the same format as shown in the example.
+
+=== Define the parameters
+
+These are the parameters that should be in the JSON-formatted configuration.
+
+[options=header]
+|===
+
+|Parameter |Description |Required |Default value
+
+|`file.uris` |The URI or URIs split by a comma. |Required | N/A
+
+|`file.type`| The file type. Use `text` for CSV and JSON and `parquet` for Parquet files.
+| Optional | If the file extension is `parquet`, then the `file.type` default is Parquet, but if not, the default is `text`.
+
+|`partition` | The number of partitions to use. When loading data, each partition is distributed evenly across each node.
+If one filename contains much more data than others, consider using a larger partition number.
+| Optional | The default value is calculated by `ceiling(number of nodes / number of filenames)`.
+
+|`batch.size` | The batch size of the loading job, referring to the number of CSV lines or JSON objects that will be loaded.
+| Optional | `10000`
+
+|`recursive` | If a directory of files is loaded as an input, this parameter determines whether the data loader will load files recursively from subdirectories.
+| Optional | `true`
+
+|`regexp` | Whether to interpret filenames as containing regular expressions to filter filenames to be loaded. Uses link:https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html[Java regular expression patterns].
+|Optional | `.*`, which permits all filenames.
+
+| `default` | The default value for any field left empty.
+| Optional | `""`, an empty string.
+
+| `archive.type` | The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, and `none` (loading from an uncompressed file).
+| Optional | `auto`
+
+|===
+
+=== Create the loading job
 
 The process for creating the loading job is the same as file loading (see the documentation for xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[]).
 
-There are three
-
-1. Parquet files require JSON_FILE set to `TRUE` and the column names must be used 
+Parquet files require `JSON_FILE` set to `TRUE` and the key names must be included.
+In this example, the file `file_Person` is a Parquet file.
 
 [source, gsql]
 ----
 LOAD file_Person TO VERTEX Person VALUES ($"id", $"firstName") USING JSON_FILE="TRUE"
 ----
 
-2. For Google BigQuery, the SQL results are joined by the separator to form the csv file
+For Google BigQuery, SQL results are joined by a specified separator to form CSV-formatted content.
 
 [source, gsql]
 ----
-TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+LOAD bq_sql TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
 ----
 
-3. For CSV files, only column index is supported 
+For provided CSV files, use the column index alone.
+
+[source, gsql]
+----
+LOAD file_csv to VERTEX Person VALUES ($0, $1, $2)
+----
 
 
 === Run the loading job
@@ -305,7 +331,7 @@ RUN LOADING JOB stream_csv
 By default, after a loading job stops, changes to files in an external data source are not automatically loaded into TigerGraph.
 
 The data streaming connector also supports continuous loading in stream mode.
-This is controlled with the `EOF` flag.
+This is controlled with the `EOF` flag for the `RUN LOADING JOB` command.
 If the `EOF` flag is set to `true`, the continuous loading will stop when the loader encounters an end-of-file (EOF) character in the data.
 
 If you run this command with the `EOF` flag set to `false`, the loading job is kept active and any new data in the external data source will be loaded automatically.

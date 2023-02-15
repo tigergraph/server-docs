@@ -5,9 +5,11 @@
 Once you have defined a graph schema, you can load data into the graph store.
 The data loading process varies based on where the data files are located relative to the TigerGraph server.
 
-If you are loading from files that exist locally on a TigerGraph server, xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[create and run a loading job] in GSQL to load from the files directly.
+If you are loading from files that exist locally on a TigerGraph server, xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[create and run a loading job] in GSQL to load the files.
 
 Loading data from an outside source, such as cloud storage, requires one additional step of first defining the data source for GSQL to work with.
+This process is described in this documentation section.
+We refer to this as "data streaming" because TigerGraph can be configured to automatically load new data as it appears in the outside source.
 
 == Set up a data source for a data streaming loading job
 
@@ -16,16 +18,14 @@ GSQL uses a user-provided configuration file to automatically set up a streaming
 * Google Cloud Storage (GCS)
 * AWS S3
 * Azure Blob Storage (ABS)
+* Google BigQuery
 
 Go to the xref:data-streaming-connector/index.adoc[] main page for instructions on setting up the loading job.
 
 == Manual connector setup
-For data stored in the following data systems, you need to perform a few more steps to set up data streaming.
+For data stored in an external Kafka cluster, you need to perform a few more steps to set up data streaming.
 Using `gadmin` server commands, you first create a connector to interpret the data source, then define the data source, create the loading job, and run it.
 
-Each of these pages has its own separate instructions.
+See the xref:data-streaming-connector/kafka.adoc[Kafka cluster streaming] page for more information.
 
-* xref:data-streaming-connector/kafka.adoc[Apache Kafka]
-* xref:data-streaming-connector/big-query.adoc[Google BigQuery]
-
-These methods rely on the xref:kafka-loader/index.adoc[TigerGraph Kafka Loader].
+This method relies on the xref:kafka-loader/index.adoc[TigerGraph Kafka Loader].
