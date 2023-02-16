@@ -167,49 +167,27 @@ CREATE DATA_SOURCE s1 = """{
 
 Key names accept a separator of either a period `.` or underscore `_`, so for example, a key could also be named `access_key`.
 
-=== Define the attributes where data will be loaded
-
-In this stage, we define which attributes of vertices and edges will receive data from the external data source.
-
-When loading a CSV, column names are specified by their numerical indices rather than header text.
-
-In this example, the first and second columns in the CSV are loaded to vertices of `Comment` type and the third and fourth columns are loaded to edges of `HAS_CREATOR` type.
-
-
-[source.wrap, gsql]
-----
-LOAD file_Comment
-    TO VERTEX Comment VALUES ($0, $1),
-    TO EDGE HAS_CREATOR VALUES ($2, $3);
-----
-
-In contrast, when using JSON or Parquet files, value names are specified by the key.
-
-[source.wrap, gsql]
-----
-LOAD file_Comment
-    TO VERTEX Comment VALUES ($"id", $"content"),
-    TO EDGE HAS_CREATOR VALUES ($"id", $"CreatorPersonId")
-        USING JSON_FILE="TRUE";
-----
-
-
 === Define the filename
 
 Filenames can be defined with a URI to a separate file, a supplied JSON-formatted file, or JSON-formatted inline content supplied in the command.
 Use the following examples to create the `DEFINE FILENAME` command based on your data type.
 
+[tabs]
 ====
-.Amazon S3 / Google Cloud Storage / Azure Blob Storage
+AWS/GCP/ABS::
++
+--
 [source,gsql]
 ----
 DEFINE FILENAME file_name = "$[data source name]:[URI]";
 DEFINE FILENAME file_name = "$[data source name]:[json config file]";
 DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
 ----
-
-.Google BigQuery
-[source,gsql]
+--
+BigQuery::
++
+--
+[source, gsql]
 ----
 DEFINE FILENAME file_name = "$[data source name]:[SQL]";
 DEFINE FILENAME file_name = "$[data source name]:[json config file]";
@@ -229,6 +207,7 @@ DEFINE FILENAME bq_inline_json = """$s1:{
 DEFINE FILENAME bq_inline_json = """$s1:myfile.json""";
 ----
 If you use a separate JSON file, it must follow the same format as the inline example shown.
+--
 ====
 
 Here are some examples of different `DEFINE FILENAME` statements.
@@ -288,32 +267,42 @@ If one filename contains much more data than others, consider using a larger par
 | `archive.type` | The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, and `none` (loading from an uncompressed file).
 | Optional | `auto`
 
+| `tasks.max` | The number of threads used to download data. | Optional | `1`
+
 |===
 
-=== Create the loading job
 
-The process for creating the loading job is the same as file loading (see the documentation for xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[]).
 
-Parquet files require `JSON_FILE` set to `TRUE` and the key names must be included.
-In this example, the file `file_Person` is a Parquet file.
+=== Define the attributes where data will be loaded
 
-[source, gsql]
+In this stage, we define which attributes of vertices and edges will receive data from the external data source.
+
+When loading a CSV, column names are specified by their numerical indices rather than header text.
+
+In this example, the first and second columns in the CSV are loaded to vertices of `Comment` type and the third and fourth columns are loaded to edges of `HAS_CREATOR` type.
+
+[source.wrap, gsql]
 ----
-LOAD file_Person TO VERTEX Person VALUES ($"id", $"firstName") USING JSON_FILE="TRUE"
+LOAD file_Comment
+    TO VERTEX Comment VALUES ($0, $1),
+    TO EDGE HAS_CREATOR VALUES ($2, $3);
+----
+
+In contrast, when using JSON or Parquet files, value names are specified by the key. Parquet files require `USING JSON_FILE` set to `TRUE`.
+
+[source.wrap, gsql]
+----
+LOAD file_Comment
+    TO VERTEX Comment VALUES ($"id", $"content"),
+    TO EDGE HAS_CREATOR VALUES ($"id", $"CreatorPersonId")
+        USING JSON_FILE="TRUE";
 ----
 
 For Google BigQuery, SQL results are joined by a specified separator to form CSV-formatted content.
 
-[source, gsql]
+[source.wrap, gsql]
 ----
 LOAD bq_sql TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
-----
-
-For provided CSV files, use the column index alone.
-
-[source, gsql]
-----
-LOAD file_csv to VERTEX Person VALUES ($0, $1, $2)
 ----
 
 
