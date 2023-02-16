@@ -16,8 +16,8 @@ The `kubectl tg backup` command requires `kubectl`, `helm`, `jq`, and `yq` to be
 
 [source.wrap,bash]
 ----
-kubectl tg backup [create|update] [OPTIONS]
-
+USAGE:
+  kubectl tg backup [create|update] [OPTIONS]
 Options:
   -h|--help: show this message
   -n|--namespace :              set namespace to deploy TG cluster, default namespace is current namespace
@@ -36,11 +36,12 @@ Options:
     --local-path :              set the local path where to store backup files
   If destination is s3:
     --s3-bucket :               S3 Bucket name
-    --aws-access-key-id :       the aws access key id
-    --aws-secret-access-key :   the aws secret access key
+    --aws-secret :              name of secret for aws, the secret should contain  accessKeyID and secretAccessKey
 ----
 
 == Create a backup
+
+The Kubernetes operator only supports TigerGraph clusters running version 3.9 or later.
 
 === Back up to local storage
 
@@ -71,12 +72,23 @@ In this example, the cluster is called `test-cluster`.
 
 You will need the S3 bucket name, access key id and S3 secret.
 
+First, create a secret in k8s containing access key id and secret key:
+
+[source.wrap, console]
+----
+kubectl create secret generic aws-secret \
+--from-literal=accessKeyID=AWSACCESSKEY \
+--from-literal=secretAccessKey='AWSSECRETKEY'
+----
+
+Next, run `kubectl tg backup create` to create a backup to S3.
+
 [source.wrap, console]
 ----
 kubectl tg backup create --cluster-name test-cluster --tag testS3 -n tigergraph
 --destination s3Bucket \
---s3-bucket tgbackup --aws-access-key-id $ACCESS_KEY_ID \
---aws-secret-access-key $SECRET_ACCESS_KEY
+--s3-bucket tgbackup  \
+--aws-secret aws-secret
 ----
 
 You can also customize the timeout, staging path, and the compress process number.
@@ -85,17 +97,34 @@ You can also customize the timeout, staging path, and the compress process numbe
 ----
 kubectl tg backup create --cluster-name test-cluster --tag testS3 -n tigergraph
 --destination s3Bucket \
---s3-bucket tgbackup --aws-access-key-id $ACCESS_KEY_ID \
---aws-secret-access-key $SECRET_ACCESS_KEY \
+--s3-bucket tgbackup \
+--aws-secret aws-secret \
 --staging-path /home/tigergraph/temp \
 --timeout 18000 --compress-process-number 0
 ----
 
-== Incremental backup
+
+=== Incremental backup
+
+If you want to perform an incremental backup, ensure that there already exists at least one backup for the cluster.
+Otherwise the incremental backup will fail.
+
+Use the command `kubectl tg backup list` to check if you have a full backup.
+
+To perform an incremental backup, run `kubectl tg backup create` and include the option `--incremental`.
+
+
+[source.wrap, console]
+----
+kubectl tg backup create --cluster-name test-cluster --tag testlocal -n tigergraph
+--incremental \
+--destination local \
+--local-path /home/tigergraph/backup
+----
 
 === Update an existing backup
 
-If you have already created one backup with `kubectl tg backup create` , you can use `kubectl tg backup update` to change the configurations of backup. Once you run the update command, the backup will start immediately with the updated configurations.
+If you have already created one backup with `kubectl tg backup create` , you can use `kubectl tg backup update` to change the backup configuration. Once you run the update command, the backup will start immediately with the updated configurations.
 
 [NOTE]
 ====
@@ -114,7 +143,7 @@ You have already created a backup using `kubectl tg backup create`:
 kubectl tg backup create --cluster-name test-cluster --tag testlocal -n tigergraph --destination local --local-path /home/tigergraph/backup  --staging-path /home/tigergraph/temp  --timeout 18000 --compress-process-number 0
 ----
 
-To change the timeout, run:
+To change the timeout, run `tg backup update` with the following configuration:
 
 [source.wrap, console]
 ----
@@ -245,9 +274,9 @@ If destination is s3:
 --aws-secret-access-key :   the aws secret access key
 ----
 
-Just like backup, a cluster and a tag correspond to a backup-schedule configuration, which is called a CR (custom resource) in Kubernetes.
+A cluster and tag can have a corresponding backup-schedule configuration, which is called a CR (custom resource) in Kubernetes.
 
-Use a cron expression to specify schedule.Crontab.guru - The cron schedule expression editor
+Use a cron expression to specify the schedule. Consult the link:https://crontab.guru/[Crontab Guru] site for cron expression reference.
 
 For example, `--schedule '0 0 * * *'` means backup once per day at 00:00.
 
@@ -269,12 +298,23 @@ kubectl tg backup-schedule create --cluster-name test-cluster -n tigergraph \
 ==== Example 2:
 A backup schedule that backups test-cluster once per hour at minute 0, storing backup files in S3 bucket
 
+First, create a secret in k8s containing the access key ID and secret key:
+
+[source.wrap, console]
+----
+kubectl create secret generic aws-secret \
+--from-literal=accessKeyID=AWSACCESSKEY \
+--from-literal=secretAccessKey='AWSSECRETKEY'
+----
+
+Then create a backup schedule:
+
 [source.wrap, console]
 ----
 kubectl tg backup-schedule create --cluster-name test-cluster -n tigergraph \
 --tag s3daily --schedule '0 * * * *' --destination s3Bucket\
---s3-bucket tgbackup --aws-access-key-id $ACCESS_KEY_ID \
---aws-secret-access-key $SECRET_ACCESS_KEY
+--s3-bucket tgbackup \
+--aws-secret aws-secret
 ----
 
 === Create a backup schedule in incremental mode
@@ -477,25 +517,24 @@ kubectl tg backup remove --cluster-name test-cluster --namespace tigergraph \
 
 [source.wrap, console]
 ----
-kubectl tg restore [OPTIONS]
+USAGE:
+  kubectl tg restore [OPTIONS]
 
 Options:
--h|--help: show this message
--n|--namespace :              set namespace to deploy TG cluster, default namespace is current namespace
--c|--cluster-name :           set cluster-name to deploy TG cluster, no default
---tag :                       specify the tag of backup files. you can use kubectl tg backup list to get all existing backups
---metadata :                  specify the metadata file of backup. you should this if you want a cross-cluster restore
---cluster-template :          configure the cluster you want to create from exported CR
---staging-path :              specify where to store the temporary files
---source :                    set the source to get backup files, support local and s3 now
-Followings are about the configuration of different destination:
-If destination is local,you should provide:
---local-path :              set the local path where to store backup files
-If destination is s3:
---s3-bucket :               S3 Bucket name
---aws-access-key-id :       the aws access key id
---aws-secret-access-key :   the aws secret access key
-[source.wrap, console]
+  -h|--help: show this message
+  -n|--namespace :              set namespace to deploy TG cluster, default namespace is current namespace
+  -c|--cluster-name :           set cluster-name to deploy TG cluster, no default
+  --tag :                       specify the tag of backup files. you can use kubectl tg backup list to get all existing backups
+  --metadata :                  specify the metadata file of backup. you should this if you want a cross-cluster restore
+  --cluster-template :          configure the cluster you want to create from exported CR
+  --staging-path :              specify where to store the temporary files
+  --source :                    set the source to get backup files, support local and s3 now
+  Followings are about the configuration of different destination:
+  If destination is local,you should provide:
+    --local-path :              set the local path where to store backup files
+  If destination is s3:
+    --s3-bucket :               S3 Bucket name
+    --aws-secret :              name of secret for aws, the secret should contain  accessKeyID and secretAccessKey
 ----
 
 You can restore your cluster from the backup created by the same cluster.
@@ -507,13 +546,12 @@ Notes: now we just supports restore cluster having the same size and ha as the c
 
 === Restore in the same cluster
 
-Assume that you have created a backup for test-cluster using kubectl tg backup create.
+Assume that you have created a backup for `test-cluster` using `kubectl tg backup create`.
 Use the following command to get the tags for all backups:
 
-[source.wrap, console]
+[source, console]
 ----
 kubectl tg backup list --cluster-name test-cluster -n tigergraph
-
 
 +------------------------------+------+---------+--------+---------------------+
 |             TAG              | TYPE | VERSION |  SIZE  |     CREATED AT      |
@@ -528,7 +566,7 @@ kubectl tg backup list --cluster-name test-cluster -n tigergraph
 Choose a backup you want to restore from and provide the storage information of the backup.
 If you want to use a backup stored in local storage, provide the flags `--source local` and `--local-path`.
 
-If you want to use a backup stored in S3, provide the flags `--source s3Bucket` and `--s3-bucket --aws-access-key-id  --aws-secret-access-key`.
+If you want to use a backup stored in S3, provide the flags `--source s3Bucket`, `--s3-bucket`, and `--aws-secret`.
 
 === Restore a backup from local storage
 
@@ -540,12 +578,25 @@ kubectl tg restore --cluster-name test-cluster -n tigergraph --tag daily-2022-11
 
 === Restore a backup from an S3 bucket
 
-[source.wrap, console]
+You can choose a backup you want to restore from and provide the storage information of the backup.
+
+First, create a secret in Kubernetes containing the access key ID and secret key:
+
+[source.wrap,console]
+----
+kubectl create secret generic aws-secret \
+--from-literal=accessKeyID=AWSACCESSKEY \
+--from-literal=secretAccessKey='AWSSECRETKEY'
+----
+
+Then restore the backup:
+
+[source.wrap,console]
 ----
 kubectl tg restore --namespace tigergraph --cluster-name test-cluster \
 --tag tests3-2022-10-31T031005 \
---source s3Bucket --s3-bucket tg-backup --aws-access-key-id AWS_ACCESS_KEY \
---aws-secret-access-key AWS_SECRET
+--source s3Bucket --s3-bucket tg-backup \
+--aws-secret aws-secret
 ----
 
 === Cross-cluster restore
@@ -563,15 +614,23 @@ kubectl tg backup list --cluster-name source-cluster --namespace tigergraph \
 --tag tests3-2022-10-31T031005 --meta > backup-metadata
 ----
 
+Then, if you haven't already, create a secret in Kubernetes containing the access key ID and secret key:
 
-Then use the metadata to restore `target-cluster`.
+[source.wrap, console]
+----
+kubectl create secret generic aws-secret \
+--from-literal=accessKeyID=AWSACCESSKEY \
+--from-literal=secretAccessKey='AWSSECRETKEY'
+----
+
+Then use the metadata and secret to restore `target-cluster`.
 
 [source.wrap, console]
 ----
 kubectl tg restore --namespace tigergraph --cluster-name target-cluster \
---metadata backup-metadata \
---source s3Bucket --s3-bucket tg-backup --aws-access-key-id AWS_ACCESS_KEY \
---aws-secret-access-key AWS_SECRET
+  --metadata backup-metadata \
+  --source s3Bucket --s3-bucket tg-backup \
+  --aws-secret aws-secret
 ----
 
 === Clone a cluster
