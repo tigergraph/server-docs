@@ -1,23 +1,36 @@
-= Kubernetes
-:page-aliases: README.adoc, readme.adoc
-:description: Overview of running TigerGraph on Kubernetes.
+= Kubernetes Operator
+:description: Introduction to TigerGraph Kubernetes Operator.
 
-TigerGraph supports deployment on Kubernetes.
-You can deploy TigerGraph single servers and clusters using Kubernetes on any cloud provider of your choice.
+NOTE: This feature is in the preview stage and should not be used in production.
 
-CAUTION: Each command in the following list starts a Job in your Kubernetes cluster.
-You should not start another job until the previous job has finished.
+The TigerGraph Kubernetes Operator provides native integration of TigerGraph Server with link:https://kubernetes.io/docs/home/[Kubernetes], a platform for managing containers across networked resource clusters.
+The operator enables you to automate processes such as the creation, status checking, resizing and deletion of TigerGraph clusters.
 
-* Quickstart
-** xref:quickstart-with-gke.adoc[Quickstart with GKE]
-** xref:quickstart-with-eks.adoc[Quickstart with EKS]
-** xref:quickstart-with-aks.adoc[Quickstart with AKS]
-* Cluster resizing
-** xref:expansion.adoc[]
-** xref:shrinking.adoc[]
-* xref:upgrade.adoc[]
+By reducing the complexity of running a TigerGraph cluster, it lets you focus on the desired state of your clusters and saves you time from the details of manual deployment and life-cycle management.
+
+The Operator provides the following features:
+
+* xref:cluster-operations.adoc#_create_tigergraph_clusters[Cluster provisioning]
+* xref:cluster-operations.adoc#_delete_tigergraph_clusters[Cluster deletion]
+* xref:cluster-operations.adoc#_list_tigergraph_clusters[Listing clusters]
+* xref:cluster-operations.adoc#_check_cluster_status[Checking cluster status]
+* xref:cluster-operations.adoc#_shrink_expand_cluster[Shrink or expand a cluster]
+* xref:backup-and-restore.adoc[]
+
+== Getting started
+
+Install the Operator and provision your first cluster using the Operator to get started:
+
+* xref:installation.adoc[]
+* xref:cluster-operations.adoc#_create_tigergraph_clusters[Create clusters]
+
+== Supported cloud platforms
+The TigerGraph Kubernetes Operator is platform-agnostic.
+You should be able to use the Operator on any cloud platform that provides a Kubernetes service.
+TigerGraph has verified the full functionality of the operator on the Kubernetes services of the following platform:
+
+* Google Kubernetes Engine (GKE)
+* Azure Kubernetes Service (AKS)
+* AWS Elastic Kubernetes Service (EKS)
 
 
-TigerGraph provides its custom Kubernetes Operator to help you automate TigerGraph operations such as the creation, status checking and deletion of TigerGraph clusters.
-
-* xref:k8s-operator/index.adoc[]
