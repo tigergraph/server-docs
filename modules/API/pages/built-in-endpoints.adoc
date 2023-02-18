@@ -3444,7 +3444,7 @@ Response::
 
 === Get information about a template query
 
-`GET /gsql/library?functionName=pkg1.pkg2.<template name>`
+`GET /gsql/library?functionName=<package>.<package>.<template name>`
 
 This endpoint returns the query definition, query name, and query parameters for a template query.
 
@@ -3456,7 +3456,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET --user tigergraph:tigergraph --url 'http://localhost:14240/gsqlserver/library?functionName=gds.community.louvain'
+curl -X GET --user tigergraph:tigergraph --url 'http://localhost:14240/gsqlserver/gsql/library?functionName=gds.community.louvain'
 ----
 --
 Response::
@@ -3507,7 +3507,7 @@ Response::
 
 === Run a template query
 
-`POST /gsql/library?graph=<graph name>&functionName=pkg1.pkg2.templateName`
+`POST /gsql/library?graph=<graph name>&functionName=<package>.<package>.<template name>`
 
 This endpoint runs a template query on a given graph.
 Query parameters are passed in JSON format in the body of the POST request.
@@ -3521,7 +3521,7 @@ Request::
 [source.wrap,bash]
 ----
 curl -X POST --user tigergraph:tigergraph \
-  --url 'http://127.0.0.1:14240/gsql/library?functionName=gds.community.louvain&graph=poc_graph' \
+  --url 'http://localhost:14240/gsql/library?functionName=gds.community.louvain&graph=poc_graph' \
   --data '{
             "v_type": [
               "members"
