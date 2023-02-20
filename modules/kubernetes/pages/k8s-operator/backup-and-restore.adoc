@@ -458,7 +458,7 @@ Ten backups tagged `daily` are retained, while backups not tagged `daily` will n
 If  you set `--max-reserved-day` to `7`, backups tagged `daily` that were created more than seven days ago will be removed.
 
 [NOTE]
-If the backup process takes too much time, lasting longer than the interval between backups, any missed backups will not be created.
+If the backup process takes too much time, longer than the interval between backups, any backups scheduled to start while the first backup is taking place will not be created.
 For example, assume your backup schedule is `0 * * * *`, which creates a backup job once per hour at minute 0.
 If your backup takes 1.5 hours, a backup job will start at 00:00 and end at 01:30, missing the scheduled job at 01:00.
 
