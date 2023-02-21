@@ -241,9 +241,8 @@ To set EOF mode, an optional parameter is added to the `RUN LOADING JOB` syntax:
 
 [source.wrap,ebnf]
 ----
-RUN LOADING JOB [-noprint] [-dryrun] [-n [i],j] jobname
-   [ USING filevar [="filepath_string"][, filevar [="filepath_string"]]*
-   [, CONCURRENCY="cnum"][,BATCH_SIZE="bnum"]][, EOF="true"]
+RUN LOADING JOB [USING (<using-param> | <using-param> [, <using-param>]*)]
+<using-param> ::= filevar [="filepath_string"] | CONCURRENCY="cnum" | BATCH_SIZE="bnum" | EOF=("true"|"false")
 ----
 
 To learn about each option and parameter of the `RUN LOADING JOB` command, see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_options[Loading job options].
