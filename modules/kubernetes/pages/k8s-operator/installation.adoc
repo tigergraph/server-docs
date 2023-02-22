@@ -2,7 +2,7 @@
 :description: Instructions on how to install TigerGraph Kubernetes Operator.
 :sectnums:
 
-This page describes the steps to install TigerGraph Kubernetes Operator on your Kubernetes cluster.
+This page describes the steps to install and uninstall the TigerGraph Kubernetes Operator on your Kubernetes cluster.
 
 NOTE: The Operator only needs to be installed once for each cluster.
 If you run into errors saying that Custom Resource Definition (CRD) already exists, it is likely that someone else who has access to your cluster has already installed the operator.
@@ -47,4 +47,15 @@ $ kubectl tg init --helm-repo <private_repo_url> -p <secret_name>
 ----
 
 
+== Uninstalling the Kubernetes Operator
 
+
+Run the following command to uninstall the Operator:
+
+[.wrap,console]
+----
+$ kubectl tg uninstall
+----
+
+This command only uninstalls the Operator.
+The clusters created by the Operator and the Custom Resource Definitions (CRD) defined when you first installed the Operator are not deleted by this command.
