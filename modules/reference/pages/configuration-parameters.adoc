@@ -469,6 +469,9 @@ e.g. https://api.github.com |`nan`
 |GSQL.GrpcMessageMaxSizeMB |The maximum size of grpc message request of
 gsql |`40`
 
+|GSQL.HA.BufferedReaderBufferSizeBytes |Customizes the buffer size (in bytes) for messages sent between GSQL servers in a HA cluster. |`8192` (bytes). If it is set below `8192`, GSQL will reset it to `8192`.
+Must be a positive 32-bit integer (less than `2147483647`).
+
 |GSQL.LoginLimit.InitialWaitTimeSec|The amount of time in seconds a user has to wait for the subsequent login after the number of successive failed login attempts reaches the initial threshold. | `10`
 
 |GSQL.LoginLimit.InitialThreshold |The number of successive failed login attempts since the last successful login to apply the wait time for the subsequent login attempts. Set 0 to disable the rate limiting. | `5`
