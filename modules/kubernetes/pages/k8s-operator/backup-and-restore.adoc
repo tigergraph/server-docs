@@ -453,7 +453,7 @@ Set `--max-backup-file` and `--max-reserved-day`, and the `TigerGraphBackupSched
 
 Assume your backup schedule has `--tag daily`.
 If you set `--max-backup-file` to `10`, when a scheduled backup process is completed, a cleaning process runs to remove outdated backups also tagged `daily`.
-Ten backups tagged `daily` are retained, while backups not tagged `daily` will not be affected.
+The ten newest backups tagged `daily` are retained, while backups not tagged `daily` will not be affected.
 
 If  you set `--max-reserved-day` to `7`, backups tagged `daily` that were created more than seven days ago will be removed.
 
