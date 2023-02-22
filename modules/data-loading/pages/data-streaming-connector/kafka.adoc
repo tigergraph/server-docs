@@ -1,4 +1,4 @@
-= Stream Data From an External Kafka Cluster
+= Stream from an External Kafka Cluster
 :sectnums:
 
 You can create a data connector to stream data from an external Kafka cluster (source cluster) to a destination cluster, which is often TigerGraph's internal Kafka cluster.
@@ -85,6 +85,14 @@ This controls the format of the values in messages written to or read from Kafka
 URL of the schema registry service.
 Required if  `value.converter` is `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter`.
 For details, see https://docs.confluent.io/platform/current/schema-registry/connect.html#example-converter-properties[Confluent documentation].|`\http://localhost:8081`
+
+| `sync.topic.configs.enabled`
+|Whether to replicate topic configurations from the source cluster. This is set to `true` by default in the Kafka source code.
+In a TigerGraph context, set it to `false` as the config of the source Kafka topic is not necessary to sync data.
+Only set this to `true` when using Cross-Region Replication (CRR).
+| `false`
+
+
 |===
 
 Other configuration options are available to fine-tune the connector.

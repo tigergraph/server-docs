@@ -2,39 +2,30 @@
 :description: Introduction to data loading and data loaders in TigerGraph.
 :page-aliases: README.adoc, data-loading.adoc, readme.adoc
 
-If you have defined a graph schema, you can load data into the graph store.
-Loading data is a multistep process:
+Once you have defined a graph schema, you can load data into the graph store.
+The data loading process varies based on where the data files are located relative to the TigerGraph server.
 
-. Create a connector.
-. Define a data source.
-. Create a loading job.
-. Run the loading job.
+If you are loading from files that exist locally on a TigerGraph server, xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[create and run a loading job] in GSQL to load the files.
 
-The first two steps are only applicable if you are loading data using a connector.
-If you are loading from files that exist locally on a TigerGraph server, you do not need to create a connector, xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[create a loading job] to load from the files directly.
+Loading data from an outside source, such as cloud storage, requires one additional step of first defining the data source for GSQL to work with.
+This process is described in this documentation section.
+We refer to this as "data streaming" because TigerGraph can be configured to automatically load new data as it appears in the outside source.
 
+== Set up a data source for a data streaming loading job
 
-To learn about the GSQL statements used in defining a loading job, see xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[GSQL language reference: Creating a loading job.]
+GSQL uses a user-provided configuration file to automatically set up a streaming data connection and a loading job for data in these external cloud data hosts:
 
-== Connectors
-Connectors are interfaces built in to the TigerGraph system that enable users to use the same high-level GSQL protocol for high-speed parallel data loading, whether the data reside directly on the network file system, or come from one of several supported data sources.
+* Google Cloud Storage (GCS)
+* AWS S3
+* Azure Blob Storage (ABS)
+* Google BigQuery
 
-With TigerGraph's connector offerings, you can perform data loading tasks such as the following:
+Go to the xref:data-streaming-connector/index.adoc[] main page for instructions on setting up the loading job.
 
-* xref:data-streaming-connector/aws-s3.adoc[]
-* xref:data-streaming-connector/gcp.adoc[]
-* xref:data-streaming-connector/azure-blob.adoc[]
-* xref:data-streaming-connector/big-query.adoc[]
-* xref:data-streaming-connector/kafka.adoc[]
+== Manual connector setup
+For data stored in an external Kafka cluster, you need to perform a few more steps to set up data streaming.
+Using `gadmin` server commands, you first create a connector to interpret the data source, then define the data source, create the loading job, and run it.
 
-== Data source
+See the xref:data-streaming-connector/kafka.adoc[Kafka cluster streaming] page for more information.
 
-A data source is an object in GSQL that contains metadata about the source of the data where a loading job loads data from.
-You must define a data source whenever you use a connector to load data.
-
-== Data ingestion from Kafka
-
-Connectors often stream data to a Kafka server first - often TigerGraph's internal Kafka server.
-After the data has already been streamed to a Kafka server, users then create a Kafka loading job to load the data into a graph.
-
-To create a Kafka loading job, see xref:kafka-loader/index.adoc[].
+This method relies on the xref:kafka-loader/index.adoc[TigerGraph Kafka Loader].

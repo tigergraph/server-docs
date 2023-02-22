@@ -1,113 +1,388 @@
-= Data Streaming Connector
-:description: A guide to TigerGraph's Streaming Data Connector.
-:sectnums:
+= GSQL Data Streaming Connector
 
-TigerGraph Data Streaming Connector is a link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and other data systems.
+:description: A guide to TigerGraph's Streaming Data Connector.
+
+The TigerGraph Data Streaming Connector is an integrated link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and external data sources.
+
+For data coming from a separate Kafka instance, you need to perform a few more steps to set up data streaming.
+This process has its own separate instructions.
+
+* xref:data-streaming-connector/kafka.adoc[Apache Kafka streaming connector]
 
 == Architecture overview
-Data Streaming Connector streams data from a source data system into TigerGraph's internal Kafka cluster in the form of Kafka messages in specified topics.
-The messages are then ingested by a xref:kafka-loader/index.adoc[Kafka loading job] and loaded into the database.
+The connector streams data from a source data system into TigerGraph's internal Kafka cluster in the form of Kafka messages in specified topics.
+The messages are then ingested by a Kafka loading job and loaded into the database.
 
 .Data streaming connector architecture
 image::data-streaming-connector.png[Data streaming connector streams from data source to TigerGraph's internal Kafka, and a loading job ingests the Kafka messages into the database.]
 
 Multiple connectors can run at the same time, streaming data from various sources into the TigerGraph system concurrently.
 
-== Supported data systems
-The data streaming connector supports the following data systems:
-
-* xref:data-streaming-connector/gcp.adoc[Google Cloud Storage (GCS)]
-* xref:data-streaming-connector/kafka.adoc[Apache Kafka]
-* xref:data-streaming-connector/aws-s3.adoc[AWS S3]
-* xref:data-streaming-connector/azure-blob.adoc[Azure Blob Storage (ABS)]
-* xref:data-streaming-connector/big-query.adoc[Google BigQuery]
+TigerGraph automatically sets up the streaming connector and Kafka job when an external data source is specified during loading job creation.
 
 
-== Manage connectors
+== Create the loading job
 
-After creating a connector, you can choose to delete it or pause it.
-You can also use `gadmin` commands to view status of all existing connectors.
+Loading jobs for the Data Streaming Connector are created and run in GSQL.
+Refer to the full xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[] documentation for more detail about loading jobs in general.
 
-=== List connectors
-You can list all running connectors or view detailed configuration of a specific connector.
+=== Sample loading job syntax
 
-To view a list of all connectors, run `gadmin connector list` from your bash terminal as the TigerGraph Linux user.
+This example uses the LDBC_SNB dataset in CSV format.
 
-To view configuration details of a specific connector, run `gadmin connector list <name_of_connector>` and replace `<name_of_connector>` with the name of the connector you want to inspect.
-By default, this command displays most configurations of the connector, but redacts  the credentials used to authenticate the connector.
-
-If you use `gadmin config` to change the configuration parameter `Controller.Connect.RedactSensitiveConfigValue` to `false` , the command displays the connector's authentication credentials.
-
-=== Pause a connector
-Pausing a connector stops the connector from streaming data from the data source.
-The data that has been streamed to TigerGraph's internal Kafka can still be loaded into the graph store via a loading job.
-
-To pause a connector, run the below command and replace `<connector_name>` with the name of the connector:
-
-[,console]
+[source.wrap, gsql]
 ----
-$ gadmin connector pause <connector_name>
+USE GRAPH test_graph
+CREATE DATA_SOURCE s1 = "ds_config.json" FOR GRAPH test_graph
+
+CREATE LOADING JOB stream_csv FOR GRAPH test_graph {
+    DEFINE FILENAME file_Comment = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
+    DEFINE FILENAME file_Person = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Person";
+    DEFINE FILENAME file_Comment_hasCreator_Person = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment_hasCreator_Person";
+    LOAD file_Comment
+    TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+    LOAD file_Person
+    TO VERTEX Person VALUES ($1, $2, $3, $4, $5, $0, $6, $7, SPLIT($8,";"), SPLIT($9,";")) USING header="true", separator="|";
+    LOAD file_Comment_hasCreator_Person
+    TO EDGE HAS_CREATOR VALUES ($1, $2) USING header="true", separator="|";
+}
 ----
 
-=== Resume a connector
-Resuming a connector resumes streaming for a paused connector.
+In short, the steps are:
 
-To resume a connector, run the below command and replace `<connector_name>` with the name of the connector:
+. Specify a graph, in this case `test_graph`.
+. Create a data source for GSQL to use, here named `s1`, and associate it with a JSON configuration file.
+. Create the loading job.
+. Set up the files. In this example there are three files, one for Comment vertices, one for Person vertices, and one for edges showing that the comments have Person creators.
+Each of the files is stored in a different S3 data source. Credentials for accessing the data source are found in the configuration file from step 2.
+. Load each file to the appropriate data type in the graph (vertices or edges). As part of the `LOAD` command, specify which columns of the CSV file to use.
 
-[,console]
+The following sections give more details about each of these steps.
+
+=== Specify a graph and config file
+
+[source.wrap, gsql]
 ----
-$ gadmin connector resume <connector_name>
-----
-
-=== Restart a connector
-Restarting a connector is equivalent to pausing and then resuming a connector.
-
-To restart a connector, run the below command and replace `<connector_name>` with the name of the connector:
-
-[,console]
-----
-$ gadmin connector restart <connector_name>
-----
-
-=== Delete a connector
-Deleting a connector removes a connector.
-It stops the connector from streaming, as well as deletes the data that has been streamed to the corresponding topics in Kafka that haven't been ingested by a loading job.
-See the diagram in Figure 1 for details.
-
-
-This does not delete the Kafka topics themselves, just the data in the topics associated to the connector.
-This also does not affect the data that has already been loaded into the database by a loading job, it only deletes the messages in TigerGraph's internal Kafka server.
-
-This action cannot be undone and a removed connector cannot be resumed.
-
-When you create the same connector, with the same connector name and configurations, the connector loads all data from the source again to the same topics.
-
-
-CAUTION: There is a known issue for deleting connectors with created with folder URIs.
-Deleting the connector does not delete the connect offsets for topics that are mapped to a folder URI.
-If you create the same connector, with the same name and same URI to a folder, the connector only loads from where it left off before.
-A workaround for this issue is to create a connector with the same configurations, but with a different name.
-
-To delete a connector,  run the below command and replace `<connector_name>` with the name of the connector:
-
-[,console]
-----
-$ gadmin connector delete <connector_name> -y <1>
-----
-<1> You can use the `-y` option to skip the confirmation prompt.
-
-==== Save Kafka messages when deleting connector
-When there are new files in a folder the connector streams from, you might want to recreate a connector for those file updates to be included.
-When you delete and recreate a connector, you can keep the messages that have already been streamed to the internal Kafka cluster.
-The recreated connector streams from where it left off before and does not duplicate data.
-
-Use the `-s` or `--soft` flag to delete the connector only and leave the Kafka messages and offsets intact:
-
-[.wrap,console]
-----
-$ gadmin connector delete <connector_name> -s
+USE GRAPH test_graph
+CREATE DATA_SOURCE s1 = "ds_config.json" FOR GRAPH test_graph
 ----
 
+In this example, we create a data source and name it `s1`.
+
+Older versions of TigerGraph required a keyword after `DATA_SOURCE` such as `STREAM` or `KAFKA`.
+This is still supported, but no longer required. Therefore, `CREATE DATA_SOURCE STREAM s1` is equally valid.
+
+
+
+We associate our data source with the `ds_config.json` file.
+
+.JSON config file examples
+[tabs]
+====
+Amazon S3::
++
+--
+
+AWS uses the standard IAM credential provider and uses your link:https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html[access key] for authentication.
+
+Access keys can be used for an individual user or for an IAM role. See link:https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-roles.html[Using IAM Roles for Amazon EC2] for more information. 
+
+[source.wrap, json]
+----
+{
+    "type": "s3",
+    "access.key": "<access key>",
+    "secret.key": "<secret key>"
+}
+----
+--
+Google Cloud Storage::
++
+--
+[source.wrap, json]
+----
+{
+  "type": "gcs",
+  "project_id": "<project id>",
+  "private_key_id": "<private key id>",
+  "private_key": "<private key>",
+  "client_email": "<email address>"
+}
+----
+The service key JSON file can be created and downloaded following the link:https://cloud.google.com/iam/docs/creating-managing-service-account-keys[Google Cloud tutorial].
+After following the tutorial, the JSON file can be used after changing the `type` entry to `gcs`.
+--
+Azure Blob Storage::
++
+--
+[source.wrap, json]
+----
+{
+    "type" : "abs",
+    "account.key" : "<account key>"
+}
+----
+--
+Google BigQuery::
++
+--
+[source.wrap, json]
+----
+{
+    "type":"bigquery",
+    "ProjectId":"tigergraph-dev",
+    "OAuthType":2,
+    "parameters" : {
+        "OAuthRefreshToken":"<refresh token>",
+        "OAuthClientId":"<client ID>.apps.googleusercontent.com",
+        "OAuthClientSecret":"<client secret>"
+    }
+}
+----
+For more information on authorization types for Google BigQuery, see this PDF guide: link:https://storage.googleapis.com/simba-bq-release/jdbc/Simba%20Google%20BigQuery%20JDBC%20Connector%20Install%20and%20Configuration%20Guide_1.3.0.1001.pdf[Magnitude Simba Google BigQuery
+JDBC Data Connector].
+--
+====
+
+JSON data can also be sent inline.
+Inline syntax is required for JSON configurations on TigerGraph Cloud instances.
+
+.Inline JSON data format when creating a data source
+[source.wrap, gsql]
+----
+CREATE DATA_SOURCE s1 = "{
+    type: s3,
+    access.key: <access key>,
+    secret.key: <secret key>
+}" FOR GRAPH test_graph
+----
+
+String literals can be enclosed with a double quote `"`, triple double quotes `"""`, or triple single quotes `'''`.
+Double quotes `"` in the JSON can be omitted if the key name does not contain a colon `:` or comma `,`.
+
+.Alternate quote syntax for inline JSON data
+[source.wrap, gsql]
+----
+CREATE DATA_SOURCE s1 = """{
+    "type": "s3",
+    "access.key": "<access key>",
+    "secret.key": "<secret key>"
+}""" FOR GRAPH test_graph
+----
+
+Key names accept a separator of either a period `.` or underscore `_`, so for example, a key could also be named `access_key`.
+
+=== Define the filename
+
+Filenames can be defined with a URI to a separate file, a supplied JSON-formatted file, or JSON-formatted inline content supplied in the command.
+Use the following examples to create the `DEFINE FILENAME` command based on your data type.
+
+[tabs]
+====
+AWS/GCP/ABS::
++
+--
+[source,gsql]
+----
+DEFINE FILENAME file_name = "$[data source name]:[URI]";
+DEFINE FILENAME file_name = "$[data source name]:[json config file]";
+DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
+----
+--
+BigQuery::
++
+--
+[source, gsql]
+----
+DEFINE FILENAME file_name = "$[data source name]:[SQL]";
+DEFINE FILENAME file_name = "$[data source name]:[json config file]";
+DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
+----
+
+Here are some examples with Google BigQuery getting data from a SQL query.
+[source.wrap,gsql]
+----
+DEFINE FILENAME bq_sql = "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate, locationIP, browserUsed, language, email FROM `tigergraph-ldbc-benchmark.snb_bi_sf01.Person`";
+
+DEFINE FILENAME bq_inline_json = """$s1:{
+	"query":"SELECT id, creationDate, locationIP, browserUsed, content, length, CreatorPersonId FROM `tigergraph-ldbc-benchmark.snb_bi_sf01.Comment`",
+	"partition":4
+}""";
+
+DEFINE FILENAME bq_inline_json = """$s1:myfile.json""";
+----
+If you use a separate JSON file, it must follow the same format as the inline example shown.
+--
+====
+
+Here are some examples of different `DEFINE FILENAME` statements.
+If the filename is in URI format and refers to a folder or prefix, all files in that folder or with that prefix are loaded.
+
+The filename can be used as a parameter when running loading jobs.
+
+[source, gsql]
+----
+DEFINE FILENAME uri_s3 = "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
+DEFINE FILENAME uri_gcs = "$s1:gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person";
+DEFINE FILENAME uri_abs = "$s1:abfss://person@yandblobstorage.dfs.core.windows.net/persondata.csv";
+
+DEFINE FILENAME parquet_s3 = """$s1:{"file.uris":"s3://s3-loading-test/tg_ldbc_snb/sf0.1_parquet/dynamic/Comment", "file.type":"parquet"}""";
+
+DEFINE FILENAME csv_gcs="""$s1:{
+    "file.uris": "gs://tg_ldbc_snb/sf0.1_csv/dynamic/Person",
+    "file.type": "text",
+    "partition": 6
+  }""";
+
+DEFINE FILENAME uri_s3 = "$s1:myfile.json";
+----
+
+//JSON content, either provided inline in the `DEFINE FILENAME` statement or in a separate JSON file, must follow the same format as shown in the example.
+
+=== Define the parameters
+
+These are the parameters that should be in the JSON-formatted configuration.
+
+[options=header]
+|===
+
+|Parameter |Description |Required |Default value
+
+|`file.uris` |The URI or URIs split by a comma. |Required | N/A
+
+|`file.type`| The file type. Use `text` for CSV and JSON and `parquet` for Parquet files.
+| Optional | If the file extension is `parquet`, then the `file.type` default is Parquet, but if not, the default is `text`.
+
+|`partition` | The number of partitions to use. When loading data, each partition is distributed evenly across each node.
+If one filename contains much more data than others, consider using a larger partition number.
+| Optional | The default value is calculated by `ceiling(number of nodes / number of filenames)`.
+
+|`batch.size` | The batch size of the loading job, referring to the number of CSV lines or JSON objects that will be loaded.
+| Optional | `10000`
+
+|`recursive` | If a directory of files is loaded as an input, this parameter determines whether the data loader will load files recursively from subdirectories.
+| Optional | `true`
+
+|`regexp` | Whether to interpret filenames as containing regular expressions to filter filenames to be loaded. Uses link:https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html[Java regular expression patterns].
+|Optional | `.*`, which permits all filenames.
+
+| `default` | The default value for any field left empty.
+| Optional | `""`, an empty string.
+
+| `archive.type` | The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, and `none` (loading from an uncompressed file).
+| Optional | `auto`
+
+| `tasks.max` | The number of threads used to download data. | Optional | `1`
+
+|===
+
+
+
+=== Define the attributes where data will be loaded
+
+In this stage, we define which attributes of vertices and edges will receive data from the external data source.
+
+When loading a CSV, column names are specified by their numerical indices rather than header text.
+
+In this example, the first and second columns in the CSV are loaded to vertices of `Comment` type and the third and fourth columns are loaded to edges of `HAS_CREATOR` type.
+
+[source.wrap, gsql]
+----
+LOAD file_Comment
+    TO VERTEX Comment VALUES ($0, $1),
+    TO EDGE HAS_CREATOR VALUES ($2, $3);
+----
+
+In contrast, when using JSON or Parquet files, value names are specified by the key. Parquet files require `USING JSON_FILE` set to `TRUE`.
+
+[source.wrap, gsql]
+----
+LOAD file_Comment
+    TO VERTEX Comment VALUES ($"id", $"content"),
+    TO EDGE HAS_CREATOR VALUES ($"id", $"CreatorPersonId")
+        USING JSON_FILE="TRUE";
+----
+
+For Google BigQuery, SQL results are joined by a specified separator to form CSV-formatted content.
+
+[source.wrap, gsql]
+----
+LOAD bq_sql TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+----
+
+
+=== Run the loading job
+
+Use the command `RUN LOADING JOB` to run the loading job.
+
+[source, gsql]
+----
+RUN LOADING JOB stream_csv
+----
+
+==== Continuous file loading
+
+By default, after a loading job stops, changes to files in an external data source are not automatically loaded into TigerGraph.
+
+The data streaming connector also supports continuous loading in stream mode.
+This is controlled with the `EOF` flag for the `RUN LOADING JOB` command.
+If the `EOF` flag is set to `true`, the continuous loading will stop when the loader encounters an end-of-file (EOF) character in the data.
+
+If you run this command with the `EOF` flag set to `false`, the loading job is kept active and any new data in the external data source will be loaded automatically.
+
+[source, gsql]
+----
+RUN LOADING JOB stream_csv USING EOF="false"
+----
+
+[NOTE]
+Continuous loading works only on an incremental basis. Only new lines in existing files and new files are loaded with continuous loading.
+If any existing lines are changed or deleted, these changes will *not* be part of the loading job.
+
+For example, consider a file `data.txt` in cloud storage that is part of a loading job.
+
+.data.txt
+[source,text]
+----
+line-1
+----
+
+The line of data is loaded successfully into the loading job for ingestion to TigerGraph.
+If a user edits the file and adds a new line, the stream loader notices the new modification and loads new lines, starting from where it previously left off.
+The actual data on each line is not compared to what was already loaded.
+
+.data.txt after a new line is added to the end
+[source,text]
+----
+line-1
+line-2
+----
+
+In this case, the new line `line-2` is successfully loaded into the loading job for ingestion to TigerGraph.
+
+If a user edits the file and adds a line before the end, like so, the entire file is loaded again, causing potentially repeated data.
+
+.data.txt after a new line is added before the end
+[source,text]
+----
+line-1
+added-line
+line-2
+----
+
+The data loaded into TigerGraph thus looks like this.
+Because two lines had already been loaded, the first two lines are skipped, even though the second contains new data.
+The third line from the file is then loaded, resulting in a repeat of what was already loaded in the last pass.
+
+.Data in TigerGraph
+[source,text]
+----
+line-1
+line-2
+line-2
+----
+
+To avoid this, only use stream loading jobs when there is no chance of data being altered or added to the middle of a file.
 
 
 == Known issues
