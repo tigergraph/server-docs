@@ -5,6 +5,22 @@
 TigerGraph supports deployment on Kubernetes.
 You can deploy TigerGraph single servers and clusters using Kubernetes on any cloud provider of your choice.
 
+TigerGraph provides its custom Kubernetes Operator to help you automate TigerGraph operations such as the creation, status checking and deletion of TigerGraph clusters.
+
+xref:k8s-operator/index.adoc[Kubernetes Operator Overview]
+
+The Operator provides two main benefits over Kubernetes Classic:
+
+* *Custom Resources*: Define custom resources that represent your application's state and behavior.
+This allows you to manage a TigerGraph cluster in a more natural and intuitive way.
+
+* *Automation*: Automate many of the tasks involved in managing a cluster, such as deployment, resource updates, upgrades, cluster size changes, backup, and restore.
+
+
+== Kubernetes Classic (Deprecated)
+
+Previous versions of TigerGraph used a different implementation of Kubernetes. This is still functional, but no longer supported. For long-term support and enhancement, use the Operator instead.
+
 CAUTION: Each command in the following list starts a Job in your Kubernetes cluster.
 You should not start another job until the previous job has finished.
 
@@ -15,9 +31,5 @@ You should not start another job until the previous job has finished.
 * Cluster resizing
 ** xref:expansion.adoc[]
 ** xref:shrinking.adoc[]
-* xref:upgrade.adoc[]
+** xref:upgrade.adoc[]
 
-
-TigerGraph provides its custom Kubernetes Operator to help you automate TigerGraph operations such as the creation, status checking and deletion of TigerGraph clusters.
-
-* xref:k8s-operator/index.adoc[]
