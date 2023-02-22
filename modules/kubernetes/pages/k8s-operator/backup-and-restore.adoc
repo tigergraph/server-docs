@@ -5,12 +5,18 @@ The Backup and Restore functionality of the Kubernetes operator allows for incre
 Backup and restore jobs work by internally creating TigerGraphBackup, TigerGraphRestore, and TigerGraphScheduledBackup functions that carry out jobs according to the user settings.
 This concept is important for understanding the relationship between the console commands you enter and the results from Kubernetes.
 
+
 == Prerequisites
 
 You must have the TigerGraph Kubectl Plugin installed and a working cluster available.
 
 
 The `kubectl tg backup` command requires `kubectl`, `helm`, `jq`, and `yq` to be installed.
+
+[NOTE]
+====
+The Kubernetes operator only supports backup and restore operations in TigerGraph version 3.9.0 or later.
+====
 
 == Backup command syntax and options
 
