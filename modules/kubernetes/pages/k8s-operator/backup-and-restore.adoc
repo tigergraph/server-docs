@@ -21,8 +21,8 @@ USAGE:
 Options:
   -h|--help: show this message
   -n|--namespace :              set namespace to deploy TG cluster, default namespace is current namespace
-  -c|--cluster-name :           (required)set cluster-name to deploy TG cluster
-  --tag :                       (required)specify the tag of backup files. e.g. if you specify --tag daily, the backup file will be daily-20xx-xx-xxTxxxxxx
+  -c|--cluster-name :           (required) specify the cluster to be backed up
+  --tag :                       (required) specify the tag of backup files. e.g. if you specify --tag daily, the backup file will be daily-20xx-xx-xxTxxxxxx
   --staging-path :              specify where to store the temporary files
   --timeout :                   the backup timeout in seconds,default: 18000
   --compress-process-number :   the number of concurrent processes for compression during backup;
@@ -33,10 +33,10 @@ Options:
   --destination :               set the destination to store backup files
   The following parameters are used to configure a destination.
   If destination is local,you should provide:
-    --local-path :              set the local path where to store backup files
+  --local-path <path>  :    Save the backup at the local path <path>
   If destination is s3:
-    --s3-bucket :               S3 Bucket name
-    --aws-secret :              name of secret for aws, the secret should contain  accessKeyID and secretAccessKey
+  --s3-bucket <bucket name>  :   Set the s3 bucket name of the destination
+  --aws-secret <secret>  :    Set the AWS secret, containing accessKeyID and secretAccessKey
 ----
 
 == Create a backup
@@ -668,8 +668,8 @@ Use the cluster template and metadata to create a copy of the source cluster.
   --aws-secret-access-key AWS_SECRET
 ----
 
-A new cluster named new-cluster will be created and initialized.
-Once new-cluster is ready, a restore job will be created.
+A new cluster named `new-cluster` will be created and initialized.
+Once `new-cluster` is ready, a restore job will be created.
 
 === Show restore job status
 
