@@ -428,7 +428,7 @@ Request::
 --
 [.wrap.console]
 ----
-$ curl http://localhost:6197/metrics
+$ curl http://localhost:9167/metrics
 ----
 --
 Response::
@@ -3184,7 +3184,64 @@ Response::
 ==== Parameters
 No parameters.
 
+=== Show all delayed queries
 
+`GET /showdelayedlistall`
+
+When queries beyond the maximum concurrent query amount (specified in the `RESTPP.WorkLoadManager.MaxConcurrentQueries` parameter) are submitted, they are sent to the delay or overflow queue.
+This overflow queue length is limited by the `RESTPP.WorkLoadManager.MaxDelayQueueSize` parameter.
+Use this endpoint to get a list of all queries waiting in the delay/overflow queue.
+
+Query timeout time is not affected by the time spent in the delayed queue.
+
+==== Sample request
+[tabs]
+====
+Request::
++
+[.wrap,console]
+----
+$ curl -X GET "http://localhost:9000/showdelayedlistall" |jq
+----
+Response::
++
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 2
+  },
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "requestidPartial": "1670970545942",
+      "startTime": "2022-12-13 22:29:05.942",
+      "url": "/query/ldbc_snb/LTQ1?gap=60&qtf=vwlm_a_007",
+      "elapsedTime": 2023
+    },
+    {
+      "requestidPartial": "1670970545943",
+      "startTime": "2022-12-13 22:29:05.943",
+      "url": "/query/ldbc_snb/LTQ1?gap=60&qtf=vwlm_a_008",
+      "elapsedTime": 2022
+    },
+    {
+      "requestidPartial": "1670970545942",
+      "startTime": "2022-12-13 22:29:05.942",
+      "url": "/query/ldbc_snb/LTQ1?gap=60&qtf=vwlm_a_004",
+      "elapsedTime": 2023
+    },
+  ],
+  "code": "REST-0000"
+}
+----
+====
+
+[NOTE]
+The /abortquery API is not available for queries in the queue.
+The `expirationTime` attribute is also not available.
 
 === Abort a query
 
@@ -3383,6 +3440,235 @@ Response::
 | Yes
 | String ID of the query.
 |===
+
+
+=== Get information about a template query
+
+`GET /gsql/library?functionName=<package>.<package>.<template name>`
+
+This endpoint returns the template definition, query name, and query parameters for a template query.
+
+==== Sample request
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
+----
+curl -X GET --user tigergraph:tigergraph --url 'http://localhost:14240/gsqlserver/gsql/library?functionName=gds.community.louvain'
+----
+--
+Response::
++
+--
+[source,json]
+----
+{
+  "error": false,
+  "message": "",
+  "results": [
+    {
+      "query": <GSQL definition of the Louvain algorithm, omitted for length>,
+      "name": "louvain",
+      "params": {
+        "file_path": {
+          "default": "",
+          "type": "STRING",
+          "min_count": 0
+        },
+        <additional parameters for the Louvain algorithm, omitted for length>
+        "e_type": {
+          "max_count": 2147483647,
+          "type": "STRING",
+          "min_count": 0
+        }
+      }
+    }
+  ]
+}
+----
+--
+====
+==== Parameters
+
+|===
+| Name | Required | Description
+
+| `functionName`
+| Yes
+| The template name that will be returned in the response
+
+| `isRegularExpression`
+| No
+| Enables regular expression searching for the function name, following link:https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html[Java regular expression patterns]. For example, `gds.*` returns all queries that begin with `gds`.
+|===
+
+
+=== Run a template query
+
+`POST /gsql/library?graph=<graph name>&functionName=<package>.<package>.<template name>`
+
+This endpoint runs a template query on a given graph.
+Query parameters are passed in JSON format in the body of the POST request.
+
+==== Sample request
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
+----
+curl -X POST --user tigergraph:tigergraph \
+  --url 'http://localhost:14240/gsql/library?functionName=gds.community.louvain&graph=poc_graph' \
+  --data '{
+            "v_type": [
+              "members"
+            ],
+            "e_type": [
+              "member_work_company"
+            ],
+            "wt_attr": "positionId",
+            "max_iter": 10,
+            "result_attr": "",
+            "file_path": "",
+            "print_info": true
+          }'
+----
+
+See the documentation for the xref:graph-ml:community-algorithms:louvain.adoc[] algorithm for more information about the algorithm parameters.
+
+.JSON Algorithm Parameters
+[source.wrap, json]
+----
+{
+  "params":{
+    "param1": 1,
+    "param2": ["1","2","3"],
+    "param3": false,
+    "param4": ["id1", "id2"],
+    "param4.type": "vertexType",
+    "param5": ["id1", "id2"],
+    "param6": "id",
+    "param6.type": "vertexType",
+  }
+}
+----
+
+--
+Response::
++
+--
+[source,json]
+----
+{
+  "error": false,
+  "message": "",
+  "results": {
+    "error": false,
+    "message": "",
+    "version": {
+      "schema": 1,
+      "edition": "enterprise",
+      "api": "v2"
+    },
+    "results": [
+      {"@@comp_group_by_size_map": {}},
+      {"sizes": {}},
+      {"Start": []}
+    ]
+  },
+  "generatedQueryName": "gds_community_louvain_1502296930"
+}
+----
+--
+====
+==== Parameters
+
+|===
+| Name | Required | Description
+
+| `functionName`
+| Yes
+| The template query that will be run on the given graph.
+
+| `graph`
+| Yes
+| The graph name that the template query will run on.
+|===
+
+=== Data Consistency Check
+
+`GET /data_consistency_check`
+
+In order to provide peace of mind for TigerGraph operation teams managing HA clusters, a new tool was introduced in version 3.6.3 (via a service endpoint) to check high level consistency of data on both HA and Distributed Clusters.
+This tool can be easily incorporated into the regular operational process to provide up-to-date summary info on the integrity of your data on all servers.
+
+This tool checks for any discrepancies of vertex and edge counts among GPE replicas as well as between GPE and GSE.
+If there is a discrepancy, it reports a list of the cluster nodes, vertices, and edges that are mismatched.
+On a distributed cluster (a cluster with more than one partition), this tool performs the check on each node of the partition cluster and returns results for all nodes.
+If a discrepancy is detected, we recommend that you contact TigerGraph Support for the best way to restore consistency.
+
+
+==== Parameters
+
+|===
+| Name | Required | Description
+
+|`threadnum`
+| No
+| Integer that indicates the number of threads used to execute the deleted vertex check jobs.
+This parameter is optional and the default value is `6` if none is provided.
+
+|===
+
+
+==== Sample request
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
+----
+curl -X GET http://localhost:9000/data_consistency_check |jq .
+----
+--
+Response::
++
+--
+[source,json]
+----
+{
+  "version": {
+    "edition": "enterprise",
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "check passed",
+  "results": {
+    "GPESelfCheck": [
+      {
+        "Partition": 1,
+        "PassCheck": true,
+        "UnSyncList": []
+      }
+    ],
+    "GPEGSECheck": [
+      {
+        "GPE": "GPE_1_1",
+        "PassCheck": true,
+        "UnSyncList": []
+      }
+    ]
+  },
+  "code": "REST-0000"
+}
+----
+--
+====
 
 == Path-Finding Algorithms
 

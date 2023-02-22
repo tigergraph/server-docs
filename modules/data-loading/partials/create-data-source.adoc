@@ -9,12 +9,13 @@ The broker's IP and hostname is the private IP of your TigerGraph server and por
 --
 * If you don't know your private IP, you can retrieve it by running `gmyip` in the bash terminal.
 * To retrieve the port of your Kafka cluster, run `gadmin config get Kafka.Port` to retrieve the port number.
-The default port is 30002.
+The default port is `30002`.
 --
 +
 In the `kafka.config` field, you can provide additional configurations from https://docs.confluent.io/3.1.1/clients/librdkafka/CONFIGURATION_8md.html[librdkafka Global Configurations].
-For example, you can specify `group.id` to be `tigergraph` to specify  the group that this consumer belongs to:
-:
+
+For example, you can specify `group.id` to be `tigergraph` to specify the group that this consumer belongs to:
+
 +
 [.wrap,json]
 ----
