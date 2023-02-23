@@ -19,8 +19,47 @@ $ kubectl tg create --cluster-name <cluster_name>  --storage-class <storage_clas
 Each cluster is provisioned with https://kubernetes.io/docs/concepts/storage/persistent-volumes/[persistent volumes] for each node by default.
 When you create a cluster with persistent volumes, you must specify a https://kubernetes.io/docs/concepts/storage/storage-classes/[storage class].
 
+Run `kubectl get storageclass` to show the names of the available storage classes.
+
+[source, console]
+----
+$ kubectl get storageclass
+
+NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+gcp-pd-ssd           kubernetes.io/gce-pd    Delete          WaitForFirstConsumer   false                  35d
+premium-rwo          pd.csi.storage.gke.io   Delete          WaitForFirstConsumer   true                   232d
+standard (default)   kubernetes.io/gce-pd    Delete          Immediate              true                   232d
+standard-rwo         pd.csi.storage.gke.io   Delete          WaitForFirstConsumer   true                   232d
+----
+
+The default storage class is `standard`.
+
 If you create a cluster in a specific namespace, the namespace must already exist.
 The command does not create a namespace for you.
+
+You can specify pod CPU, memory, TigerGraph version, and other parameters through command-line options.
+
+You must also provide your license key with the `--license` command. Contact TigerGraph support for help finding your license key.
+
+.Example cluster creation command
+[source, console]
+----
+kubectl tg create --cluster-name <your cluster name> --size 3 --ha 2 --version 3.9.0 \
+ --storage-class standard --storage-size 10G --cpu 3000m --memory 6Gi --namespace ${YOUR_NAMESPACE} --license <your TigerGraph license>
+----
+
+Run `kubectl tg help` to view all options available and their default values, which will be used if left unspecified.
+Some of the most common additional options are explained here.
+
+
+The `--ha` flag specifies the xref:ha:ha-cluster.adoc[replication factor] (HA factor) of the cluster, which is the total number of instances of your data.
+If you create a 6-node cluster with the `--ha 2` flag, your cluster has two instances of data that are divided into 3 partitions.
+
+
+If your registry is private, you also need to provide a https://kubernetes.io/docs/concepts/configuration/secret/[Secret] that allows you to access to the private registry.
+Make sure the Secret exists in the same namespace as the one where you are creating the cluster.
+Use `--private-key-secret <your secret>` as an additional cluster creation option
+
 
 If you have cloned TigerGraph images for a self-hosted registry, specify the registry with the `--docker-registry` option:
 
@@ -28,17 +67,6 @@ If you have cloned TigerGraph images for a self-hosted registry, specify the reg
 ----
 $ kubectl tg create --cluster-name <cluster_name> --namespace <namespace_name> --docker-registry <your_registry>
 ----
-
-If your registry is private, you also need to provide a https://kubernetes.io/docs/concepts/configuration/secret/[Secret] that allows you to access to the private registry.
-Make sure the Secret exists in the same namespace as the one where you are creating the cluster.
-
-You can specify pod CPU, memory, and TigerGraph version etc. through command-line options.
-Run `kubectl tg help` to view all options available.
-If you do not specify the options, the command uses the default values for each of the options.
-You can view the default values for each options in the help text as well.
-
-NOTE: The `--ha` flag specifies the xref:ha:ha-cluster.adoc[replication factor] (HA factor) of the cluster, which is the total number of instances of your data.
-If you create a 6-node cluster with the `--ha 2` flag, your cluster has two instances of data that are divided int 3 partitions.
 
 
 [#_list_tigergraph_clusters]
