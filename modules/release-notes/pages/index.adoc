@@ -34,7 +34,12 @@ The following is a list of new features and improvements:
 ** Introduced a new `STREAM` data loading type that simplifies the xref:tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
 ** Data loading with a `STREAM` connector now automatically adds new files from remote storage in near-real time.
 ** Significantly improved CPU usage after connector finishes data loading.
+
+=== JDBC Spark Connector
+
 * Added support for loading job monitoring on xref:data-loading:spark-connection-via-jdbc-driver.adoc[JDBC Spark connector] loading jobs
+* Added the ability to assign a specific job ID to a JDBC loading job.
+* Added error limiting parameters to JDBC loading jobs to cancel loading automatically when errors surpass a certain threshold.
 
 === Kubernetes Operator
 
