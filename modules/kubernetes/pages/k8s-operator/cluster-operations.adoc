@@ -40,11 +40,24 @@ The command does not create a namespace for you.
 You can specify pod CPU, memory, TigerGraph version, and other parameters through command-line options.
 
 You must also provide your license key with the `--license` command. Contact TigerGraph support for help finding your license key.
+A free license, valid for 14 days, is available through this link: A free license is available through this link: ftp://ftp.graphtiger.com/lic/license3.txt
+
+Starting with Operator version 0.0.4, you need to provide your own SSH key for security. See link:https://kubernetes.io/docs/concepts/configuration/secret/[Secrets in Kubernetes] for more information.
+In this example, it is named `ssh-key-secret`.
+[source, console]
+----
+# Create a new private key
+echo -e 'y\n' | ssh-keygen -b 4096 -t rsa -f $HOME/.ssh/tigergraph_rsa -q -N ''
+
+# Create a Kubernetes secret with above SSH key files
+kubectl create secret generic ssh-key-secret --from-file=private-ssh-key=$HOME/.ssh/tigergraph_rsa --from-file=public-ssh-key=$HOME/.ssh/tigergraph_rsa.pub --namespace YOUR_NAME_SPACE
+----
+
 
 .Example cluster creation command
 [source, console]
 ----
-kubectl tg create --cluster-name <your cluster name> --size 3 --ha 2 --version 3.9.0 \
+kubectl tg create --cluster-name <your cluster name> --size 3 --ha 2 --version 3.9.0 --private-key-secret ssh-key-secret \
  --storage-class standard --storage-size 10G --cpu 3000m --memory 6Gi --namespace ${YOUR_NAMESPACE} --license <your TigerGraph license>
 ----
 
@@ -54,11 +67,6 @@ Some of the most common additional options are explained here.
 
 The `--ha` flag specifies the xref:ha:ha-cluster.adoc[replication factor] (HA factor) of the cluster, which is the total number of instances of your data.
 If you create a 6-node cluster with the `--ha 2` flag, your cluster has two instances of data that are divided into 3 partitions.
-
-
-If your registry is private, you also need to provide a https://kubernetes.io/docs/concepts/configuration/secret/[Secret] that allows you to access to the private registry.
-Make sure the Secret exists in the same namespace as the one where you are creating the cluster.
-Use `--private-key-secret <your secret>` as an additional cluster creation option
 
 
 If you have cloned TigerGraph images for a self-hosted registry, specify the registry with the `--docker-registry` option:
