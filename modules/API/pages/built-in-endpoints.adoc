@@ -2366,7 +2366,7 @@ If `select` is provided, the edges returned will only show the attributes provid
 | Integer that specifies the number of seconds after which the query will time out. If the parameter is set to `0` or isn't provided, the system-wide endpoint timeout setting is applied.
 |===
 
-=== Delete an edge by source, target, and edge type
+=== Delete one or more edges by source, target, and edge type
 
 [source.wrap,bash]
 ----
@@ -2379,8 +2379,32 @@ If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-g
 If the edge type is defined with a discriminator, this endpoint deletes all edges of the edge type between the source and target vertices.
 If you want to delete a specific edge by its discriminator, see <<_delete_an_edge_by_source_target_edge_type_and_discriminator>>.
 
-
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] and `READ_DATA` on the types or attributes being queried.
+
+==== Batch edge delete
+
+To delete multiple edges, provide the source and target vertex IDs to delete all edgs connecting source and target.
+
+.Delete all transfers between account 40381 and 10327
+[sourece, console]
+----
+curl -s -X DELETE 'http://localhost:9000/graph/multiedge/edges/Account/40381/transfer/Account/10327' | jq .
+----
+
+Provide only the source to delete all edges from that source, or the source ID and a target type only without the target ID.
+
+[source, console]
+----
+// Delete all transfers from account 24601
+curl -s -X DELETE 'http://localhost:9000/graph/multiedge/edges/Account/24601/transfer' | jq .
+
+// Delete all transfers to Person vertices from account 24601
+curl -s -X DELETE 'http://localhost:9000/graph/multiedge/edges/Account/24601/transfer/Person' | jq .
+----
+
+
+
+[source.wrap]
 
 ==== Sample request
 [tabs]
@@ -2425,6 +2449,11 @@ Response::
 | `timeout`
 | No
 | Integer that specifies the number of seconds after which the query will time out. If the parameter is set to 0 or isn't provided, the system-wide endpoint timeout setting is applied.
+
+| `filter=<attribute value expression>`
+| No
+| Filter that specifies a specific value of a specific edge attribute to delete. For example, `filter=amount>100` would match edges with `amount` attributes greater than `100`.
+
 |===
 
 === Delete an edge by source, target, edge type and discriminator
