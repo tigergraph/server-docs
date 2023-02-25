@@ -14,6 +14,7 @@ For Operations personnel, this reduces the operational overhead while enhancing 
 
 The first five nodes in a TigerGraph cluster each run a GSQL server.
 One of the GSQL servers is the primary server, while other servers are standby servers that provide high availability for client connections.
+The primary and standby servers are referred to as "leaders" and "followers" inside GSQL.
 
 .A TigerGraph cluster contains local clients and GSQL servers, one of which is the primary GSQL server. The standby servers send redirect requests to the primary server.
 image::gsql-ha.png[Diagram visualizing the architecture of a TigerGraph cluster with high availability.]
@@ -62,6 +63,29 @@ $ gadmin config set GSQL.BasicConfig.Nodes [{"HostID":"m1","Partition":0,"Replic
 $ gadmin config apply
 $ gadmin restart gsql
 ----
+
+Run the command `gsql -leader` from the shell to see which node is the primary server. The companion command `ghostname` reveals the current GSQL node.
+
+In some cases with large query results, you may get an error when the results are larger than the buffer size for messages between GSQL servers.
+
+[source.wrap, console]
+----
+Error forwarding request to GSQL leader!
+IOException: Truncated chunk
+----
+
+To fix this, use the xref:reference:configuration-parameters.adoc[configuration parameter] `GSQL.HA.BufferedReaderBufferSizeBytes` to increase the size of the buffer.
+Restart GSQL after updating the buffer size.
+
+[source.wrap, console]
+----
+gadmin config set GSQL.HA.BufferedReaderBufferSizeBytes 2000000000
+gadmin restart gsql
+----
+
+In this example, the buffer size has been set to around two gigabytes compared to the default value of eight kilobytes.
+Different datasets and queries will require different buffer sizes.
+
 
 == User Impact and Changes
 
