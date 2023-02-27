@@ -5,7 +5,7 @@
 
 TigerGraph Server {page-component-version}.0 was released on February 28th, 2023
 
-== New Features
+== New features
 
 The following is a list of new features and improvements:
 
@@ -60,7 +60,7 @@ The Operator is now the preferred way for users to perform cluster operations wi
 * Added NodePiece scalable node embedding algorithm.
 * Added pyTigerGraph support for asynchronous queries (i.e., running in the background).
 
-== Fixed Issues
+== Fixed issues
 
 * Improved stability and security across all components.
 * Fixed an issue with the GSQL `SELECT * FROM` and `PRINT` functions converting some special characters from UTF-8 to UTF-16.
@@ -73,6 +73,16 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 == Deprecations
 * Kubernetes classic  mode (non-operator) is deprecated, as of v3.9.
 * The `WRITE_DATA` RBAC privilege is deprecated, as of v3.7.
+
+== Known issues
+
+* When performing a large data loading job with a file or through Kafka, pausing the job may take longer than usual.
+* The data streaming connector is unable to read files from remote storage if there are a very large number of files in the remote folder.
+* In rare cases with high disk usage, some schema change operations may fail. Run schema change jobs during periods of low disk I/O usage if possible.
+* The GSE service may need to be manually restarted in certain cases during leader switches. If the service fails during a leader switch, run `gadmin restart gse` to restart the service.
+* In rare cases, writing a user-defined tuple (UDT) to file may result in a memory error if the string size limit is exceeded.
+* The tab character `\t` in an AVRO file is loaded into TigerGraph as `\\t`.
+* When upgrading from 3.7 to 3.9, some schema changes may fail. To prevent this, remove all `libudf.so` files, and re-install all queries when doing an upgrade.
 
 == Release notes for previous versions
 * xref:3.8@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.8]
