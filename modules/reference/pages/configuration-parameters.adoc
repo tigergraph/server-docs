@@ -503,6 +503,25 @@ tokens to exist without being cleaned |`0`
 |GSQL.TokenCleaner.IntervalTimeSec |The running interval of TokenCleaner
 in seconds |`10800`
 
+|GSQL.UDF.EnablePutTokenBank | Whether to enable the `PUT` command to upload a TokenBank file.
+|`false`
+
+|GSQL.UDF.EnablePutExpr |Whether to enable the `PUT` command to upload an ExprFunction file.
+|`false`
+
+|GSQL.UDF.Policy.Enable | Whether to enforce a policy on the contents of UDF files (see xref:security:index.adoc#_udf_file_scanning[UDF file scanning]).
+|`true`
+
+|GSQL.UDF.Policy.HeaderAllowlist | A default set of C{plus}{plus} headers that are allowed to be included in a UDF file.
+|`["stdlib.h", "string", "tuple",
+"vector", "list", "deque", "arrays", "forward_list",
+"queue", "priority_queue", "stack",
+"set", "multiset", "map", "multimap",
+"unordered_set", "unordered_multiset", "unordered_map", "unordered_multimap",
+"iterator",
+"sstream",
+"algorithm", "math.h"]`
+
 |GSQL.UserInfoLimit.TokenSizeLimit |The max number of tokens allowed
 |`60000`
 
