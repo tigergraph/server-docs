@@ -91,7 +91,7 @@ CREATE SCHEMA_CHANGE JOB add_tags {
   ADD TAG public DESCRIPTION "Open for public";
   ADD TAG tech DESCRIPTION "All about technology";
   ADD TAG vip DESCRIPTION "Very Important Person";
-  ADD TAG dummy DESCRIPTION "Yeah, just a dummy";
+  ADD TAG default DESCRIPTION "Just a default";
 }
 RUN SCHEMA_CHANGE JOB add_tags
 ----
@@ -108,7 +108,7 @@ Tags:
 - TAG public DESCRIPTION "Open for public"
 - TAG tech DESCRIPTION "All about technology"
 - TAG vip DESCRIPTION "Very Important Person"
-- TAG dummy DESCRIPTION "Yeah, just a dummy"
+- TAG default DESCRIPTION "Just a default"
 ----
 
 === Drop a tag
@@ -130,10 +130,10 @@ Like `ADD TAG`, `DROP TAG` also needs to be inside a `SCHEMA_CHANGE JOB`:
 ----
 USE GRAPH socialNet
 
-CREATE SCHEMA_CHANGE JOB drop_dummy_tag {
-  DROP TAG dummy;
+CREATE SCHEMA_CHANGE JOB drop_default_tag {
+  DROP TAG default;
 }
-RUN SCHEMA_CHANGE JOB drop_dummy_tag
+RUN SCHEMA_CHANGE JOB drop_default_tag
 ----
 
 [NOTE]
@@ -203,10 +203,10 @@ To describe a combination of tags, use the `&` operator to combine the tags:
 [source,gsql]
 ----
 USE GRAPH socialNet
-CREATE GRAPH mixedNet AS socialNet(person:public&vip, post:public&tech&dummy, friend, posted, liked)
+CREATE GRAPH mixedNet AS socialNet(person:public&vip, post:public&tech&default, friend, posted, liked)
 ----
 
-The graph `mixedNet` will only include the `person` vertices having both the `public` and ``vip``tags, and posts having all three of the `public` , `tech` and `dummy` tags.
+The graph `mixedNet` will only include the `person` vertices having both the `public` and ``vip``tags, and posts having all three of the `public` , `tech` and `default` tags.
 
 *Same tag for all vertex types*
 
