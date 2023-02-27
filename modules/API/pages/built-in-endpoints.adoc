@@ -573,6 +573,24 @@ curl -X POST -k localhost:9167/metrics/get/network -d '{"LatestNum":"2"}'
 curl -X POST -k localhost:9167/metrics/get/cpu-memory -d '{"ServiceDescriptor":{"ServiceName":"gse","Partition": 1,"Replica":1}}'
 ----
 
+The Service Status request returns a map of the following service codes:
+
+[source, console]
+----
+ServiceStatus_value = map[string]int32{
+"StatusUnchanged": 0,
+"StatusUnknown":   3,
+"Online":          6,
+"Warmup":          9,
+"Readonly":        12,
+"Starting":        15,
+"Paused":          18,
+"Stopping":        21,
+"Offline":         24,
+"Down":            27,
+}
+----
+
 === Show query performance
 
 `+GET /statistics/{graph_name}+`
