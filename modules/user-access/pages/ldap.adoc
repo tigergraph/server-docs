@@ -6,7 +6,6 @@
 TigerGraph supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials.
 This page provides instructions on how to configure LDAP, map LDAP users to GSQL users, as well as specific instructions for integration with Active Directory (AD).
 
-
 TigerGraph LDAP authentication supports any LDAP server that follows the LDAPv3 protocol.
 StartTLS/SSL connection is also supported.
 
@@ -191,7 +190,15 @@ CREATE GROUP developers PROXY "role=engineering" // Any user in LDAP with role=e
 
 After creating the proxy group, you can xref:user-access:user-management.adoc[grant roles] to the group to give the proxy group privileges.
 
-==== Commands to manage proxy groups
+=== Group hierarchy
+
+Group hierarchy matches (supported only on Azure Active Directory) work for the case-sensitive matching pattern `memberOf=<LDAP group Distinguished Name>`.
+
+For example, assume `UserA` belongs to `Subgroup1`, and `Subgroup1` is a child of `Group1` on the LDAP server for TigerGraph.
+If there is a proxy group `ProxyGroup1` whose rule is `memberOf=CN=Group1,OU=AADDC Users,DC=tigergraph,DC=com`, `UserA` can be authorized as a member of `ProxyGroup1`.
+
+
+=== Commands to manage proxy groups
 
 * `SHOW GROUP` displays information about all groups.
 * `DROP GROUP <group_name>` deletes the definition of a group.
