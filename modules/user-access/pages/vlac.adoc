@@ -18,8 +18,8 @@ Sufficient privileges on the base graph or on the global scope are required to p
 * `WRITE_SCHEMA`
  ** Create/run schema change jobs
  ** Create tag-based graphs
-* `READ_DATA, WRITE_DATA`
- ** Run queries that modify the graph
+* `READ_DATA`, `UPDATE_DATA`
+ ** Run queries that update data values in the graph
 * `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`
  ** Create/run loading jobs
 
@@ -42,7 +42,7 @@ Below is the basic workflow on using the VLAC to control data access for a datab
 
 There are three main options for tagging vertices.
 
-. <<_add_tags_on_existing_data>>: A user with the privilege `ACCESS_TAG` and `WRITE_DATA` privileges on the base graph can create and run a DML query that sets tags on selected individual vertices.
+. <<_add_tags_on_existing_data>>: A user with the privilege `ACCESS_TAG` and `UPDATE_DATA` privileges on the base graph can create and run a DML query that sets tags on selected individual vertices.
 . <<Set tags explicitly with `TAGS` clause>>: A user with `EXECUTE_LOADINGJOB` , `WRITE_LOADINGJOB` and `ACCESS_TAG` privileges on the base graph can create and run a loading job that explicitly sets tags on the newly loaded base graph vertices.
 . <<_set_tags_implicitly_by_inserting_into_a_tag_based_graph>>: A user with tag-based graph loading or insert privilege (e.g., a `designer` or `querywriter`) can create an ordinary loading or upsert job which inserts new vertices. The new vertices will be automatically tagged according to the tag-based graph's schema definition.
 
@@ -62,7 +62,7 @@ Features not yet supported:
 In summary, all necessary operations to set up VLAC graphs and users are supported in GSQL. Due to a known bug, standard users (with `querywriter` and `queryreader` roles) can run some DDL operations which they should not be able to.
 ====
 
-We'll use the graph xref:3.2@gsql-ref:querying:appendix-query/example-graphs.adoc#_socialnet[socialNet] as an example in the following sections.
+We'll use the graph xref:gsql-ref:querying:appendix-query/example-graphs.adoc#_socialnet[socialNet] as an example in the following sections.
 
 == Tag Management
 
@@ -257,14 +257,14 @@ There are three main options for tagging vertices in the base graph.
 
 === Add tags on existing data
 
-In GSQL, special vertex methods are provided to access and modify the tags of a vertex in a DML query (full list available on page xref:3.2@gsql-ref:querying:func/vertex-methods.adoc[]).
+In GSQL, special vertex methods are provided to access and modify the tags of a vertex in a DML query (full list available on page xref:gsql-ref:querying:func/vertex-methods.adoc[Vertex Methods]).
 These functions are only available for vertex aliases (defined in the `FROM` clause of a `SELECT` statement); they cannot be applied to vertex variables in other contexts.
 
-There are xref:3.2@gsql-ref:querying:func/vertex-methods.adoc[8 DML-level tag-access functions] in the vertex-query block or edge-query block. Use the xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_addtags[addTags()] function to tag a vertex.
+There are xref:gsql-ref:querying:func/vertex-methods.adoc[8 DML-level tag-access functions] in the vertex-query block or edge-query block. Use the xref:gsql-ref:querying:func/vertex-methods.adoc#_addtags[addTags()] function to tag a vertex.
 
 ==== Required privilege
 
-`READ_DATA`, `WRITE_DATA`, `WRITE_QUERY` , `ACCESS_TAG`
+`READ_DATA`, `UPDATE_DATA`, `WRITE_QUERY` , `ACCESS_TAG`
 
 [NOTE]
 ====
@@ -299,7 +299,7 @@ CREATE QUERY addTagsToPerson() {
 }
 ----
 
-Use xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_removetags[] and xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_removealltags[] to remove tags from vertices:
+Use xref:gsql-ref:querying:func/vertex-methods.adoc#_removetags[Remove tags] and xref:gsql-ref:querying:func/vertex-methods.adoc#_removealltags[Remove all tags] to remove tags from vertices:
 
 [source,gsql]
 ----
