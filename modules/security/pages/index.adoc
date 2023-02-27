@@ -66,3 +66,46 @@ This ensures the authenticity and integrity of the download package.
 * Fingerprint:E20D 2B61 FB38 57D4 3B8E  B321 67BD 323E 413D 1F12
 
 You can also find our key on link:https://pgp.mit.edu[].
+
+[#_udf_file_scanning]
+== UDF file scanning
+
+TigerGraph users can upload xref:gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined function (UDF) files] to the server and run them as part of a query or loading job.
+In order to prevent security issues with code execution, TigerGraph Server disables this ability by default and requires it to be enabled manually by an administrator.
+
+In addition, the UDF files are scanned to make sure they comply with the file policy. The scanning process, by default, consists of three parts.
+
+The file scanning policy is controlled by a `gadmin` parameter, `GSQL.UDF.Policy.Enable`, which defaults to `true`. For more information, see the xref:reference:configuration-parameters.adoc[] page.
+
+=== Disabled macros with replacement
+
+Macros with replacement are not allowed, for example `#define TABLE_SIZE 100`.
+However, macros without replacement can still be used, such as `#define EXPRFUNCTIONS_HPP`.
+
+=== File header allowlist
+
+Only the headers present in the allowlist can be included in UDF files.
+UDF files with different headers will not be accepted.
+The list is case-sensitive.
+
+[source, json]
+----
+[
+"stdlib.h", "string", "tuple",
+"vector", "list", "deque", "arrays", "forward_list",
+"queue", "priority_queue", "stack",
+"set", "multiset", "map", "multimap",
+"unordered_set", "unordered_multiset", "unordered_map", "unordered_multimap",
+"iterator",
+"sstream",
+"algorithm", "math.h"
+]
+----
+
+This is customizable with the `gadmin` command `GSQL.UDF.Policy.HeaderAllowlist`. `ExprUtil.hpp` and `tg_ExprUtil.hpp` are always allowed, and do not need to be declared in the allowlist.
+
+=== File header blocklist
+
+TigerGraph also has a non-modifiable blocklist that prevents certain types of headers from being used.
+For security reasons, this list is not publicly available.
+Contact support@tigergraph.com for more details about the blocklist policy.
