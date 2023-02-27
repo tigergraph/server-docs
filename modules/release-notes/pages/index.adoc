@@ -10,7 +10,10 @@ TigerGraph Server {page-component-version}.0 was released on February 28th, 2023
 The following is a list of new features and improvements:
 
 === TigerGraph Server
-
+* For the data streaming connector:
+** Added support for xref:tigergraph-server:data-loading:data-streaming-connector.adoc#_define_the_parameters[Parquet file format].
+** Documented additional S3 authentication configuration parameters.
+** Added auto-detection of new files when in Stream mode.
 * Added new xref:tigergraph-server:API:built-in-endpoints.adoc[REST Endpoints]:
 ** `/library` is a set of endpoints for showing and running template queries.
 ** `/showdelayedlistall` shows how many queries are in the delayed queue.
@@ -21,19 +24,21 @@ The following is a list of new features and improvements:
 === TigerGraph Insights
 
 * Added support for multi-user editing of the same application.
-* Added the ability for users to save widgets independently instead of tying them to an application.
+* Added the ability for users to xref:insights:widgets:index.adoc#_save_a_widget[save a widget] independently instead of tying it to an application.
 * Added a mini-map to the xref:insights:widgets:graph-widget.adoc[] for easier navigation.
 
 === GSQL Language
 
-* Added a new set of xref:3.8@gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
-* `to_string()` now supports all primitive and primitiveAccum data types.
-* Added a xref:tigergraph-server:API:built-in-endpoints.adoc#delete-an-edge-by-source-target-edge-type-and-discriminator[REST endpoint] and expanded the DELETE command to support batch delete for multiple edges.
-* Queries can now be drafted and saved as xref:gsql-ref:querying:query-operations.adoc[draft queries] before they are able to be installed as functional queries.
-* Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
+* Moved data connector setup from `gadmin` to GSQL. Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
 ** Introduced a new `STREAM` data loading type that simplifies the xref:tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
 ** Data loading with a `STREAM` connector now automatically adds new files from remote storage in near-real time.
 ** Significantly improved CPU usage after connector finishes data loading.
+* Added a new set of xref:gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
+* `to_string()` now supports all primitive and primitiveAccum data types.
+* Enhanced multi-edge capability by adding support for batch deletion of multiedges, both in GSQL as a xref:tigergraph-server:API:built-in-endpoints.adoc#delete-an-edge-by-source-target-edge-type-and-discriminator[REST endpoint].
+* Queries can now be drafted and saved as xref:gsql-ref:querying:query-operations.adoc[draft queries] before they are able to be installed as functional queries.
+* Improved and standardized `SHOW PACKAGE` so it follows the same behavior as other `SHOW` catalog commands.
+
 
 === JDBC Spark Connector
 
@@ -51,6 +56,10 @@ The Operator is now the preferred way for users to perform cluster operations wi
 
 * Reworked the xref:gui:admin-portal:dashboard.adoc[] to show the relationship hierarchy and status of all TigerGraph components for at-a-glance understanding of the TigerGraph system.
 
+=== GDS Library and ML Workbench
+* Added NodePiece scalable node embedding algorithm.
+* Added pyTigerGraph support for asynchronous queries (i.e., running in the background).
+
 == Fixed Issues
 
 * Improved stability and security across all components.
@@ -61,6 +70,9 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * xref:cluster-resizing:expand-a-cluster.adoc[] no longer requires a graph schema.
 * Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
+== Deprecations
+* Kubernetes classic  mode (non-operator) is deprecated, as of v3.9.
+* The `WRITE_DATA` RBAC privilege is deprecated, as of v3.7.
 
 == Release notes for previous versions
 * xref:3.8@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.8]
