@@ -6,12 +6,18 @@
 TigerGraph supports LDAP authentication by allowing a TigerGraph user to log in using an LDAP username and credentials.
 This page provides instructions on how to configure LDAP, map LDAP users to GSQL users, as well as specific instructions for integration with Active Directory (AD).
 
-
 TigerGraph LDAP authentication supports any LDAP server that follows the LDAPv3 protocol.
 StartTLS/SSL connection is also supported.
 
 CAUTION: Some LDAP servers are configured to require a client certificate upon connection.
 Client certificates are not supported in TigerGraph LDAP authentication.
+
+== Group hierarchy
+
+Group hierarchy matches (supported only on Azure Active Directory) work for the case-sensitive matching pattern `memberOf=<LDAP group Distinguished Name>`.
+
+For example, assume `UserA` belongs to `Subgroup1`, and `Subgroup1` is a child of `Group1` on the LDAP server for TigerGraph.
+If there is a proxy group `ProxyGroup1` whose rules are `memberOf=CN=Group1,OU=AADDC Users,DC=tigergraph,DC=com`, `UserA` can be authorized as a member of `ProxyGroup1`.
 
 == LDAP configuration parameters
 TigerGraph uses the following parameters for LDAP configuration.
