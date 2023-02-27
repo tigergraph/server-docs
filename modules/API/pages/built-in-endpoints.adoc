@@ -414,7 +414,7 @@ Metrics are updated every 60 seconds by default.
 This interval can be adjusted with the xref:reference:configuration-parameters.adoc[`System.Metrics`  parameters].
 
 
-This endpoint does not require any privilege.
+This endpoint does not require any privileges.
 
 ==== Parameters
 None.
@@ -518,6 +518,60 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 ----
 --
 ====
+
+==== Filter returned metrics
+
+A call to the `9167/metrics` endpoint returns all metrics by default.
+This endpoint also supports filtered responses by sending a `POST` request to `9167/metrics/get/` and adding filters like so:
+
+[source, console]
+----
+curl -X POST -k localhost:9167/metrics/get/cpu-memory
+curl -X POST -k localhost:9167/metrics/get/diskspace
+curl -X POST -k localhost:9167/metrics/get/network
+curl -X POST -k localhost:9167/metrics/get/qps
+----
+
+Because these are POST requests, they must take the mandatory `-d` flag and deliver a JSON-formatted payload consisting of a JSON-formatted set of request fields.
+
+[source,json]
+----
+{
+    "ServiceDescriptor": {
+      "ServiceName": "string",
+      "Replica": 0,
+      "Partition": 0
+    },
+    "TimeRange":{
+      "StartTimestampNS": "string, time in nanoseconds",
+      "EndTimestampNS": "string, time in nanoseconds"
+    },
+   "HostID": "string, the node such as m1, m2, etc",
+   "CPUUsage": "float, returns all metrics with CPU usage greater than this value in percent",
+   "MemoryUsage": "int32, returns all metrics with memory usage greater than this value in megabytes",
+   "LatestNum":"int32, the number of items per serviceID to return, most recent first"
+}
+----
+
+Therefore, some sample requests in this format are as follows:
+
+.Get disk space report from host `m2`
+[source, console]
+----
+curl -X POST -k localhost:9167/metrics/get/diskspace -d '{"HostID":"m2"}'
+----
+
+.Get a network usage report with the two most recent items
+[source, console]
+----
+curl -X POST -k localhost:9167/metrics/get/network -d '{"LatestNum":"2"}'
+----
+
+.Get a CPU and memory report for the GSE service with partition and replica number specified
+[source.wrap, console]
+----
+curl -X POST -k localhost:9167/metrics/get/cpu-memory -d '{"ServiceDescriptor":{"ServiceName":"gse","Partition": 1,"Replica":1}}'
+----
 
 === Show query performance
 
