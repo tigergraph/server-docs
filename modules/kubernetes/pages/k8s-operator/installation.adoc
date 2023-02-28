@@ -70,6 +70,15 @@ Options:
                       so that you can deploy mutiple operators in one cluster, default as true
 ----
 
+The `--cluster-scope` option during creation allows you to specify whether to manage resources across the whole cluster (cluster scoped, the default option) or across only a namespace (namespace scoped).
+
+In this example, resources will only be managed in the `tigergraph` namespace.
+[source, console]
+----
+kubectl tg init --cluster-scope false --namespace tigergraph
+
+----
+
 
 == Uninstalling the Kubernetes Operator
 

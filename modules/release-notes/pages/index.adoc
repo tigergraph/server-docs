@@ -11,7 +11,7 @@ The following is a list of new features and improvements:
 
 === TigerGraph Server
 * For the data streaming connector:
-** Added support for xref:tigergraph-server:data-loading:data-streaming-connector.adoc#_define_the_parameters[Parquet file format].
+** Added support for xref:tigergraph-server:data-loading:data-streaming-connector/#_define_the_parameters[Parquet file format].
 ** Documented additional S3 authentication configuration parameters.
 ** Added auto-detection of new files when in Stream mode.
 * Added new xref:tigergraph-server:API:built-in-endpoints.adoc[REST Endpoints]:
@@ -76,13 +76,13 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 
 == Known issues
 
+* During periods of high network usage, loading jobs sometimes fail to show the loading progress and raise an exception instead. Restart GSQL with `gadmin restart gsql`, then inside GSQL run `SHOW LOADING STATUS` to display the loading job progress again.
 * When performing a large data loading job with a file or through Kafka, pausing the job may take longer than usual.
 * The data streaming connector is unable to read files from remote storage if there are a very large number of files in the remote folder.
 * In rare cases with high disk usage, some schema change operations may fail. Run schema change jobs during periods of low disk I/O usage if possible.
 * The GSE service may need to be manually restarted in certain cases during leader switches. If the service fails during a leader switch, run `gadmin restart gse` to restart the service.
 * In rare cases, writing a user-defined tuple (UDT) to file may result in a memory error if the string size limit is exceeded.
 * The tab character `\t` in an AVRO file is loaded into TigerGraph as `\\t`.
-* When upgrading from 3.7 to 3.9, some schema changes may fail. To prevent this, remove all `libudf.so` files, and re-install all queries when doing an upgrade.
 
 == Release notes for previous versions
 * xref:3.8@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.8]

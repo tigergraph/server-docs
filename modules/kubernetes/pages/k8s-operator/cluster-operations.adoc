@@ -88,14 +88,23 @@ $ kubectl tg list --namespace all
 
 If you want to limit the scope to a specific namespace, change `all` to the namespace you want to list clusters for.
 
-[#_check_cluster_status]
-== Check cluster status
+[#_check_cluster_version_and_status]
+== Check cluster version and status
 Run the following command to check the status of a cluster.
 Replace `<cluster_name>` with the name of the cluster, and `<namespace_name>` with the namespace where the cluster is provisioned:
 
 [.wrap,console]
 ----
 $ kubectl tg status --cluster-name <cluster_name> --namespace <namespace_name>
+----
+
+You can also check the version with `version`.
+
+[source, console]
+----
+$ kubectl tg version
+Version: 0.0.4
+Default version of TigerGraph cluster: 3.9.0
 ----
 
 
