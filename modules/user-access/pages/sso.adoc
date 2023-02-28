@@ -11,6 +11,8 @@ We have verified the following IDPs that support SAML 2.0 protocol:
 * https://auth0.com/[Auth0]
 * https://docs.microsoft.com/en-us/azure/active-directory/[Azure Active Directory (Azure AD)]
 * https://docs.pingidentity.com/bundle/pingfederate-110/page/ikr1564002999528.html[PingFederate]
+* https://learn.microsoft.com/en-us/windows-server/identity/active-directory-federation-services[Active Directory Federation Services (AD FS)]
+
 
 For supporting additional IDPs, please contact sales@tigergraph.com and submit a feature request.
 
@@ -152,6 +154,84 @@ The exported XML file provides the information you need to configure single sign
 You can also export the certificate directly in PingFederate.
 * Authentication context: `md:NameIDFormat` element in the XML file.
 
+=== Active Directory Federation Services (AD FS)
+
+==== Prerequisites
+
+* A Windows Server which has AD FS Server configured.
+If this is not set up, follow these instructions to configure it: link:https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/deployment/deploying-a-federation-server-farm[Deploying a federation server farm]
+
+[NOTE]
+A configured AD FS server should belong to an AD DS (Domain Service) and have an available certificate service.
+
+* Ensure that you have domain administrator permissions or have domain administrator credentials available before you perform this procedure.
+
+==== Configure AD FS
+
+. Create a  link:https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/operations/create-a-relying-party-trust[relying party trust] in AD FS.
+. Under "Relying party identifiers", use this format, where `host` is replaced by your TigerGraph Server public IP address:
+[source, console]
+----
+https://host:14240/gsqlserver/gsql/saml/meta`
+----
+
+image::adfs-sso-step-2.png[]
+
+[start=3]
+. In the Endpoints tab, your URL appears under SAML Assertion Consumer Endpoints. The Trusted URL is in this format:
+[source, console]
+----
+https://host:14240/api/auth/saml/acs
+----
+image::adfs-sso-step-3.png[]
+
+[start=4]
+. Export the public certificate of the AD FS server for TigerGraph use. Open the AD FS Management dialog and export the Token-signing certificate
+.. Right-click the certificate -> View certificate
+.. Details -> Copy to file
+.. Base64 encoded X.509
+
+image::adfs-sso-step-4.png[]
+
+[start=5]
+. Run the following command to make the AD FS server sign SAML responses.
+In this example, <display name> takes the place of your actual Display Name in the Relying Party Trusts list.
+[source, console]
+----
+Set-AdfsRelyingPartyTrust  -TargetName <display name> -SamlResponseSignature "MessageAndAssertion"
+----
+
+[start=6]
+. TigerGraph needs a required Claim Name ID to know which user is logging in successfully.
+Following these instructions, create a transform claim rule: link:https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/operations/create-a-rule-to-transform-an-incoming-claim[Create a rule to transform an incoming claim]
+
+image::adfs-sso-step-6.png[]
+
+==== Configure TigerGraph
+
+After configuring AD FS as described previously, you must now configure TigerGraph to accept the connection.
+This is handled in Admin Portal on the SSO page. xref:gui:admin-portal:security/sso.adoc[]
+
+* In the field btn:[Identity Provider's X509 certificate], use the certificate exported in Step #4 above.
+
+* For the btn:[Identity Provider's entity ID], use a value in this format: (adfs.company.com means the URL of the AD FS server)
+[source, console]
+----
+http://adfs.company.com/adfs/services/trust
+----
+
+* For the btn:[Identity Provider's SSO URL], use the AD FS SSO URL.
+In general, it uses a value in this format:
+[source, console]
+----
+https://adfs.company.com/adfs/ls/
+----
+
+* For btn:[IDP SignonBinding], check btn:[Redirect].
+
+The final configuration should appear similar to this screenshot:
+
+image::adfs-sso-graphstudio-example.png[]
 
 :sectnums:
 
