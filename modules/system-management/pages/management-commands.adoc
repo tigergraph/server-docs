@@ -95,12 +95,86 @@ The example below shows an example of the autocomplete for the command `gadmin s
 
 [source,console]
 ----
-tigergraph@ubuntu:~$ gadmin status
+$ gadmin status
 admin         exe           ifm           nginx
 all           gpe           infra         restpp
 ctrl          gse           kafka         ts3
 dict          gsql          kafkaconn     ts3serv
 etcd          gui           kafkastrm-ll  zk
+----
+
+=== gadmin backup
+
+`gadmin backup` commands are used to create and get information about TigerGraph backups.
+See xref:backup-and-restore:index.adoc[] for more information about how to perform backups.
+
+=== gadmin backup list
+
+[source, console]
+----
+$ gadmin backup list -h
+List backups
+
+Usage:
+  gadmin backup list [tag] [flags]
+
+Description:
+
+  List backups, can specify backup tag name
+  Example:
+  gadmin cluster backup list
+
+Flags:
+  -h, --help   help for list
+      --json   Render the backups list in json format rather than table.
+      --meta   Write metadata to local file, for cross-cluster restore. A tag is required.
+
+Global Flags:
+      --debug   enable debug log output to stdout
+----
+
+=== gadmin backup retain
+
+The `retain` command does cleaning for backups whose tags match the given <TagPrefix>.
+
+
+[source, console]
+----
+$ gadmin backup retain -h
+
+Usage:
+  gadmin backup retain <TagPrefix> [-c] [-d] [flags]
+
+Description:
+
+  The 'retain' command applies backup cleaning logic only to the backups that match
+  the given <TagPrefix>.
+  Specifically, the cleaning is done by keeping backups files matching the
+  following conditions:
+  (1) Backups that do NOT contain the given tag prefix
+  (2) Backups that contain the given tag prefix but:
+  (a) it is one of the most recent 'count' backups within the same prefix group;
+  (b) the age of backup is within 'duration'.
+  If an incremental backup is retained/kept, its corresponding base full backup
+  will be kept as well.
+  E.g. the following command keeps the most recent 10 backups within 10 days for
+  backups starting with the prefix "week":
+  gadmin backup retain week -c 10 -d 240h
+  other backups with a name starting with the prefix "week" will be removed.
+
+Flags:
+  -c, --count int         Being one of the most recent <count> backups. (default -1)
+      --dry-run           dry run and output the retain result
+  -d, --duration string
+                          The age of backup is within <duration>.
+                          A duration string should be an unsigned sequence of decimal numbers,
+                          each with an optional fraction and a unit suffix, such as "300ms", "1.5h" or "2h45m".
+                          Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+  -h, --help              help for retain
+  -y, --y                 yes to all questions
+
+Global Flags:
+      --debug   enable debug log output to stdout
 ----
 
 [#_gadmin_config]
