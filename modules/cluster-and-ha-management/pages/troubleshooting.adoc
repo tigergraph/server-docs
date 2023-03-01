@@ -1,4 +1,5 @@
 = Troubleshooting for Cross-Region Replication
+:page-aliases: crr:troubleshooting.adoc
 :sectnums:
 
 
@@ -26,7 +27,7 @@ To check that, run `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql
 
 == Isolate the issue to a specific layer
 
-Assuming the above steps are showing data mismatch between primary and DR, the next step is to understand on which layer the issue is occurring on (See xref:index.adoc#_crr_logic[Cross-region replication logic]).
+Assuming the above steps are showing data mismatch between primary and DR, the next step is to understand on which layer the issue is occurring on (See xref:crr-index.adoc#_crr_logic[Cross-region replication logic]).
 
 First, we need to make sure that Kafka MirrorMaker has correctly done his job in replicating Kafka Metadata from primary to DR to check that we need to run the following commands on both primary and DR:
 
