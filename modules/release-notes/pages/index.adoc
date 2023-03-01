@@ -10,7 +10,7 @@ TigerGraph Server {page-component-version}.0 was released on February 28th, 2023
 The following is a list of new features and improvements:
 
 === TigerGraph Server
-* For the data streaming connector:
+* For the xref:tigergraph-server:data-loading:data-streaming-connector/index.adoc[]:
 ** Added support for xref:tigergraph-server:data-loading:data-streaming-connector/index.adoc#_define_the_parameters[Parquet file format].
 ** Documented additional S3 authentication configuration parameters.
 ** Added auto-detection of new files when in Stream mode.
@@ -29,20 +29,20 @@ The following is a list of new features and improvements:
 
 === GSQL Language
 
-* Moved data connector setup from `gadmin` to GSQL. Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
+* Moved xref:tigergraph-server:data-loading:data-streaming-connector/index.adoc[data connector] setup from `gadmin` to GSQL. Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
 ** Introduced a new `STREAM` data loading type that simplifies the xref:tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
 ** Data loading with a `STREAM` connector now automatically adds new files from remote storage in near-real time.
 ** Significantly improved CPU usage after connector finishes data loading.
 * Added a new set of xref:gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
 * `to_string()` now supports all primitive and primitiveAccum data types.
-* Enhanced multi-edge capability by adding support for batch deletion of multiedges, both in GSQL as a xref:tigergraph-server:API:built-in-endpoints.adoc#delete-an-edge-by-source-target-edge-type-and-discriminator[REST endpoint].
+* Enhanced multi-edge capability by adding support for batch deletion of multiedges, both with GSQL commands and as a xref:tigergraph-server:API:built-in-endpoints.adoc#delete-an-edge-by-source-target-edge-type-and-discriminator[REST endpoint].
 * Queries can now be drafted and saved as xref:gsql-ref:querying:query-operations.adoc[draft queries] before they are able to be installed as functional queries.
 * Improved and standardized `SHOW PACKAGE` so it follows the same behavior as other `SHOW` catalog commands.
 
 
 === JDBC Spark Connector
 
-* Added support for loading job monitoring on xref:data-loading:spark-connection-via-jdbc-driver.adoc[JDBC Spark connector] loading jobs
+* Added support for loading job monitoring on xref:data-loading:spark-connection-via-jdbc-driver.adoc[JDBC Spark connector] loading jobs.
 * Added the ability to assign a specific job ID to a JDBC loading job.
 * Added error limiting parameters to JDBC loading jobs to cancel loading automatically when errors surpass a certain threshold.
 
@@ -50,7 +50,7 @@ The following is a list of new features and improvements:
 
 * Expanded the functionality of the xref:kubernetes:k8s-operator/index.adoc[].
 The Operator is now the preferred way for users to perform cluster operations with Kubernetes.
-* Added backup and restore, version upgrade, and resource update functionality.
+* Added xref:kubernetes:k8s-operator/backup-and-restore.adoc[], version upgrade, and resource update functionality.
 
 === Admin Portal
 
@@ -58,7 +58,7 @@ The Operator is now the preferred way for users to perform cluster operations wi
 
 === GDS Library and ML Workbench
 * Added NodePiece scalable node embedding algorithm.
-* Added pyTigerGraph support for asynchronous queries (i.e., running in the background).
+* Added xref:1.3@pytigergraph:intro:index.adoc[pyTigerGraph] support for asynchronous queries (i.e., running in the background).
 
 === Security
 
@@ -70,7 +70,7 @@ The Operator is now the preferred way for users to perform cluster operations wi
 * Fixed an issue with the GSQL `SELECT * FROM` and `PRINT` functions converting some special characters from UTF-8 to UTF-16.
 Previously affected character sets included the Unicode range `0080` to `00A0` and `2000` to `2100` (Near Eastern scripts and some special typographical marks).
 * The `SELECT * FROM` and `PRINT` functions no longer convert large integers to strings before printing, resulting in quotation marks printed along with the number.
-* Improved backend infrastructure for Kafka security
+* Improved backend infrastructure for Kafka security.
 * xref:cluster-resizing:expand-a-cluster.adoc[] no longer requires a graph schema.
 * Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
@@ -94,13 +94,3 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
 * xref:3.3@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.3]
 * xref:3.2@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.2]
-
-== Compatibility with TigerGraph 3.4
-* A single `POST-ACCUM` clause can no longer reference more than one vertex alias in Syntax V1.
-* `GET /requesttoken` endpoint is dropped.
-Please use `POST /requesttoken` to request authentication tokens instead.
-** Using request body to store credentials is more secure than using query string.
-If you have a create a token request that puts the credentials in the query string, all you need to do is use the `POST` endpoint and move your credentials to the request body. 
-* `GET /gsqlserver/gsql/queryinfo` endpoint on port 14240 now returns the query input parameters in the same order as they are in the query instead of an unordered list.
-* Deploying TigerGraph in Kubernetes now requires more service account permissions than previous versions.
-For details, see Prerequisites section in xref:kubernetes:quickstart-with-gke.adoc[], xref:kubernetes:quickstart-with-aks.adoc[], and xref:kubernetes:quickstart-with-eks.adoc[].
