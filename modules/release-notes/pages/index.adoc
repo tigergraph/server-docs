@@ -82,12 +82,9 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 
 * During peak system load, loading jobs may sometimes display an inaccurate loading status. This issue can be remediated by continuing to run `SHOW LOADING STATUS` periodically to display the up-to-date status.
 * When managing many loading jobs, pausing a data loading job may result in longer-than-usual response time.
-* The xref:data-loading:data-streaming-connector/index.adoc[] can only support up to 1,800 files in a directory within a loading job.
 * Schema change jobs may fail if the server is experiencing a heavy workload. To remedy this, avoid applying schema changes during peak load times.
 * User-defined Types (UDT) do not work if exceeding string size limit. Avoid using UDT for variable length strings that cannot be limited by size.
 * Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
-* Edge count may be misleading in the `segmentconfig.yaml` file when data is loaded into a newly added edge type or the edge data is dropped. You can get the right information by restarting all services.
-* A xref:tigergraph-server:ha:index.adoc[High Availability cluster] may experience a GSE service crash during an extreme edge case where the service leader status switches back and forth within a 5ms window. Restarting the cluster will bring the system back to normal.
 
 == Release notes for previous versions
 * xref:3.8@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.8]
