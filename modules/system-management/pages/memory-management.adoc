@@ -25,6 +25,9 @@ You can monitor memory usage by query and by machine.
 TigerGraph's Graph Processing Engine (GPE) records memory usage by query at different stages of the query and saves it to the GPE logs at `$(gadmin config get System.LogRoot)/gpe/log.INFO`.
 This is an estimation of the query's memory usage *on a particular node* in a TigerGraph cluster.
 
+The log levels are set with the `gadmin` configuration command `GPE.BasicConfig.LogConfig.LogLevel`, which has the values `OFF`, `BRIEF (default)`, `DEBUG`, and `VERBOSE`.
+
+
 You can monitor how much memory a query is using by searching the log file for the request ID and filter for lines that contain `"QueryMem"`:
 
 [source.wrap,console]
@@ -40,7 +43,11 @@ $ grep 'tail -n 50 $(gadmin config get System.LogRoot)/gpe/log.INFO |
     grep -i "querymem"'
 ----
 
-==== Interpreting log response
+==== Step by step query memory logging
+
+[NOTE]
+This type of query memory logging may not appear for some queries due to the way GSQL handles querying internally.
+Furthermore, it only appears at log levels `DEBUG` or `VERBOSE`.
 
 The logs show memory usage by the query at different stages of its execution.
 The number at the end of each line indicates the number of bytes of memory utilized by the query.
@@ -86,10 +93,27 @@ current_mem:132960052 \ <3>
 Note `GPE_1_2` which tells you this line of log is coming from the second node in the primary replica.
 <2> Internally, a query's execution consists of many steps.
 This indicates the step at which the log is generated, which is helpful for TigerGraph Support during debugging.
-You can usually disregard this data.
 <3> The current amount of memory held by the query at the time the log is taken.
 <4> The maximum amount of memory held by the query during the course of its run.
 
+==== Post-completion query memory logging
+
+These logs appear at `BRIEF` or higher logging levels.
+
+Upon completion of a query, TigerGraph prints out a single log line summary about the request.
+This log line contains the query’s overall memory usage info and looks like the following:
+[source, console]
+----
+Request|ldbc_snb::default,16973825.RESTPP_1_1.1676405639909.N,NNN,16,0,0,S|Finished in 259.595 ms|Response 98 bytes|Id conversion 0|mem watermark(MiB): 0
+----
+
+To search this line, first find the request ID.
+Then run the following server command using your request ID.
+
+[source, console]
+----
+grun all 'grep -i "<request id>" $(gadmin config get System.LogRoot)/gpe/INFO.* | grep -i "Finished in" | grep "mem watermark"'
+----
 
 === Monitor system free memory percentage
 
