@@ -174,13 +174,13 @@ CHANGE OWNER OF QUERY <query_name> TO <username> [SECURED BY <acl_password>] <1>
 To change the owner of a query, run the following command and replace `owner_password` with the ACL password of the query owner.
 [.wrap,gsql]
 ----
-GSQL > CHANGE OWNER of QUERY my_query TO user1 SECURED BY "owner_acl_password"
+GSQL > CHANGE OWNER OF QUERY my_query TO user1 SECURED BY "owner_acl_password"
 ----
 
 [#_grant_acl_privilege_to_a_role]
 === Grant ACL privilege to a role
 The owner and *only* the owner of a query can grant ACL privileges on the query to specified roles.
-To grant an ACL privilege, the query owner must have the corresponding RBAC privilege.
+To grant an ACL privilege, the query owner must themselves have the corresponding RBAC privilege.
 
 ==== Syntax
 [.wrap,gsql]
@@ -192,7 +192,10 @@ GRANT ACL PRIVILEGE ( READ | EXECUTE ) ON QUERY <query_name> TO <role1> (, <role
 ==== Required privilege
 * `READ_QUERY` for granting `READ` privilege on the query.
 * `READ_DATA` for granting `EXECUTE` privilege on queries that do not update the graph.
-* `READ_DATA` and `WRITE_DATA` for granting `EXECUTE` privilege on queries that update the graph.
+* `READ_DATA` and appropriate CRUD privileges for granting `EXECUTE` privilege on queries that create, update, or delete data of the graph.
+** For queries that update existing vertices and edges, the `UPDATE_DATA` privilege is needed.
+** For queries that delete vertices or edges, the `DELETE_DATA` privilege is needed.
+** For queries that create vertices or edges, the ACL privilege situation can be more complicated. See xref:access-control-model.adoc#_data_crud_privileges[Data CRUD privileges].
 
 ==== Procedure
 To grant `READ` privilege for a query `example_query` to a role `example_role`, run the following command.
