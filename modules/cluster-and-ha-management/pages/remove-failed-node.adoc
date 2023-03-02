@@ -1,13 +1,14 @@
 = Removal of Failed Nodes
+:page-aliases: tigergraph-server:ha:remove-failed-node.adoc
 :description: This page describes the procedure to remove a failed node.
 
 If a node fails in a highly available (HA) cluster (replication factor > 1), you can remove the failed node from the cluster while keeping all your data intact.
-After removal, use the xref:cluster-resizing:expand-a-cluster.adoc[cluster expansion] feature to restore your cluster to its original size.
+After removal, use the xref:expand-a-cluster.adoc[cluster expansion] feature to restore your cluster to its original size.
 Restoring is important as node removal does not redistribute the data in your cluster.
 
 You should only consider removing a node when the node has failed.
 Removing a node from a cluster does not redistribute the data in the cluster.
-If all nodes are working in a cluster, and you want to reduce the size of the cluster, xref:cluster-resizing:shrink-a-cluster.adoc[shrink the cluster] instead.
+If all nodes are working in a cluster, and you want to reduce the size of the cluster, xref:shrink-a-cluster.adoc[shrink the cluster] instead.
 
 
 == Remove a single node

@@ -1,4 +1,5 @@
 = High Availability Cluster Configuration
+:page-aliases: tigergraph-server:ha:index.adoc, tigergraph-server:ha:ha-cluster.adoc
 :description: An overview of HA concepts in TigerGraph and how to configure an HA cluster.
 :stem: latexmath
 :partition: partition
@@ -39,12 +40,12 @@ A highly available cluster can withstand the failure of any node in the cluster.
 == Configuring HA settings
 There are two ways of configuring HA settings for a cluster:
 
-* Configure HA settings xref:installation:install.adoc#_step_2_configure_installation_settings[during installation].
-* xref:cluster-resizing:index.adoc[Resize a cluster] after installation.
+* Configure HA settings xref:installation:bare-metal-install.adoc#_step_2_configure_installation_settings[during installation].
+* xref:expand-a-cluster.adoc[Expand] or xref:shrink-a-cluster.adoc[Shrink a Cluster] after installation.
 
 
 === Configure HA settings during installation
-Configuring a HA cluster is part of platform xref:installation:install.adoc[installation].
+Configuring a HA cluster is part of platform xref:installation:bare-metal-install.adoc[installation].
 
 During TigerGraph platform installation, specify the replication factor.
 The default value for replication factor is 1, which means high availability is not set up for the cluster.
@@ -60,11 +61,11 @@ For example, if you install a 7-node cluster with a replication factor of 2, the
 In addition to configuring HA settings during installation, you can also resize a running cluster.
 
 
-xref:cluster-resizing:index.adoc[Cluster resizing] allows you to perform the following:
+Cluster resizing allows you to perform the following:
 
-* Expand a cluster
-* Shrink a cluster
-* Repartition a cluster
+* xref:expand-a-cluster.adoc[]
+* xref:shrink-a-cluster.adoc[]
+* xref:repartition-a-cluster.adoc[]
 
 During cluster resizing, you should expect a brief amount of cluster downtime, during which your cluster will not be able to respond to requests.
 The specific amount of downtime varies depending on your cluster size, machine memory and CPU, etc.

@@ -1,4 +1,5 @@
 = Set Up Cross-Region Replication
+:page-aliases: tigergraph-server:crr:set-up-crr.adoc
 :description: Instruction on how to set up the DR cluster for cross-region replication.
 :sectnums:
 
@@ -19,8 +20,8 @@ If you are setting up both the primary cluster and DR cluster from scratch, you 
 * Make sure that your DR cluster has the same number of partitions as the primary cluster.
 * Make sure the username and password of the TigerGraph database user created on the DR cluster during installation matches one of the users on the primary cluster who have the `superuser` role.
 * If you choose to enable CRR and your DR cluster is in a different Virtual Private Cloud (VPC) than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
-** If you xref:installation:install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
-** If you xref:installation:install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
+** If you xref:installation:bare-metal-install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
+** If you xref:installation:bare-metal-install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
 
 [WARNING]
 ====
