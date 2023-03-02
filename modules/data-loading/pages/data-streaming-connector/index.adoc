@@ -328,7 +328,7 @@ The data streaming connector also supports continuous loading in stream mode.
 This is controlled with the `EOF` flag for the `RUN LOADING JOB` command.
 If the `EOF` flag is set to `true`, the continuous loading will stop when the loader encounters an end-of-file (EOF) character in the data.
 
-If you run this command with the `EOF` flag set to `false`, the loading job is kept active and any new data in the external data source will be loaded automatically.
+If you run this command with the `EOF` flag set to `false`, the loading job is kept active and any new data in the external data source will be loaded automatically.  The connector can detect both new lines in existing files and new files added to the designated source folder.
 
 [source, gsql]
 ----
