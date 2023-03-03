@@ -52,11 +52,11 @@ multiple edges of the same type] between vertices, to simplify application desig
 * Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
 * Standardized `SHOW PACKAGE` for xref:3.9@:graph-ml:using-an-algorithm.adoc#_packaged_template_queries[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
 
-=== JDBC Spark Connector
-
-* [Alex] Added support for loading job monitoring on xref:3.9@data-loading:spark-connection-via-jdbc-driver.adoc[JDBC Spark connector] loading jobs.
-* [Alex] Added the ability to assign a specific job ID to a JDBC loading job.
-* [Alex] Added error limiting parameters to JDBC loading jobs to cancel loading automatically when errors surpass a certain threshold.
+//=== JDBC Spark Connector
+//
+//* [Alex] Added support for loading job monitoring on xref:3.9@data-loading:spark-connection-via-jdbc-driver.adoc[JDBC Spark connector] loading jobs.
+//* [Alex] Added the ability to assign a specific job ID to a JDBC loading job.
+//* [Alex] Added error limiting parameters to JDBC loading jobs to cancel loading automatically when errors surpass a certain threshold.
 
 === Kubernetes Operator
 
@@ -76,7 +76,7 @@ multiple edges of the same type] between vertices, to simplify application desig
 
 === GDS Library and ML Workbench
 
-* Added xref:1.3@pytigergraph:gds:data-:query.adoc#_runinstalledquery[NodePiece] scalable node embedding algorithm.
+* Added xref:1.3@pytigergraph:gds:dataloaders.adoc#nodepieceloader[NodePiece] node embedding algorithm.
 * Added pyTigerGraph support for xref:1.3@pytigergraph:core-functions:query.adoc#_runinstalledquery[running queries asynchronously] (i.e., running in the background).
 
 === TigerGraph Insights
@@ -91,7 +91,7 @@ multiple edges of the same type] between vertices, to simplify application desig
 * Fixed an issue with the GSQL `SELECT * FROM` and `PRINT` functions converting some special characters from UTF-8 to UTF-16.
 Previously affected character sets included the Unicode range `0080` to `00A0` and `2000` to `2100` (Near Eastern scripts and some special typographical marks).
 * The `SELECT * FROM` and `PRINT` functions no longer convert large integers to strings before printing, which had resulted in quotation marks printed along with the number.
-* xref:3.9@cluster-resizing:expand-a-cluster.adoc[] no longer requires a graph schema.
+* xref:3.9@tigergraph-server:cluster-and-ha-management:expand-a-cluster.adoc[Cluster resizing] no longer requires a graph schema.
 * Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
 == Known issues
