@@ -414,7 +414,7 @@ Metrics are updated every 60 seconds by default.
 This interval can be adjusted with the xref:reference:configuration-parameters.adoc[`System.Metrics`  parameters].
 
 
-This endpoint does not require any privilege.
+This endpoint does not require any privileges.
 
 ==== Parameters
 None.
@@ -518,6 +518,126 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 ----
 --
 ====
+
+==== Filter returned metrics
+
+A call to the `9167/metrics` endpoint returns all metrics by default.
+This endpoint also supports filtered responses by sending a `POST` request to `9167/metrics/get/` and adding filters like so:
+
+[source, console]
+----
+curl -X POST -k localhost:9167/metrics/get/cpu-memory
+curl -X POST -k localhost:9167/metrics/get/diskspace
+curl -X POST -k localhost:9167/metrics/get/network
+curl -X POST -k localhost:9167/metrics/get/qps
+----
+
+Because these are POST requests, they must take the mandatory `-d` flag and deliver a JSON-formatted payload consisting of a JSON-formatted set of request fields.
+The payload differs based on the requested information.
+
+.CPU and Memory Usage
+[source,json]
+----
+{
+    "ServiceDescriptor": {
+      "ServiceName": "string",
+      "Replica": 0,
+      "Partition": 0
+    },
+    "TimeRange":{
+      "StartTimestampNS": "string, time in nanoseconds",
+      "EndTimestampNS": "string, time in nanoseconds"
+    },
+   "HostID": "string, the node such as m1, m2, etc",
+   "CPUUsage": "float, returns all metrics with CPU usage greater than this value in percent",
+   "MemoryUsage": "int32, returns all metrics with memory usage greater than this value in megabytes",
+   "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+}
+----
+
+.Disk space
+[source, json]
+----
+{
+  "TimeRange": {
+    "StartTimestampNS": "string",
+    "EndTimestampNS": "string"
+  },
+  "PathName": "string, either log, kafka, gstore, or home",
+  "HostID": "string, the node such as m1, m2, etc",
+  "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+}
+----
+
+.Network usage
+[source, json]
+----
+{
+  "TimeRange": {
+    "StartTimestampNS": "string",
+    "EndTimestampNS": "string"
+  },
+  "HostID": "string, the node such as m1, m2, etc",
+  "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+}
+----
+
+.Query per Second (QPS) Metrics
+[source, json]
+----
+{
+  "TimeRange": {
+    "StartTimestampNS": "string",
+    "EndTimestampNS": "string"
+  },
+  "ServiceDescriptor": {
+    "ServiceName": "string",
+    "Replica": 0,
+    "Partition": 0
+  },
+  "HostID": "string, the node such as m1, m2, etc",
+  "LatestNum": "int32, the number of items per serviceID to return, most recent first",
+  "Endpoint": "string"
+}
+----
+
+Some sample requests in this format are as follows:
+
+.Get disk space report from host `m2`
+[source, console]
+----
+curl -X POST -k localhost:9167/metrics/get/diskspace -d '{"HostID":"m2"}'
+----
+
+.Get a network usage report with the two most recent items
+[source, console]
+----
+curl -X POST -k localhost:9167/metrics/get/network -d '{"LatestNum":"2"}'
+----
+
+.Get a CPU and memory report for the GSE service with partition and replica number specified
+[source.wrap, console]
+----
+curl -X POST -k localhost:9167/metrics/get/cpu-memory -d '{"ServiceDescriptor":{"ServiceName":"gse","Partition": 1,"Replica":1}}'
+----
+
+The Service Status request returns a map of the following service codes:
+
+[source, console]
+----
+ServiceStatus_value = map[string]int32{
+"StatusUnchanged": 0,
+"StatusUnknown":   3,
+"Online":          6,
+"Warmup":          9,
+"Readonly":        12,
+"Starting":        15,
+"Paused":          18,
+"Stopping":        21,
+"Offline":         24,
+"Down":            27,
+}
+----
 
 === Show query performance
 
