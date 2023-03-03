@@ -533,7 +533,9 @@ curl -X POST -k localhost:9167/metrics/get/qps
 ----
 
 Because these are POST requests, they must take the mandatory `-d` flag and deliver a JSON-formatted payload consisting of a JSON-formatted set of request fields.
+The payload differs based on the requested information.
 
+.CPU and Memory Usage
 [source,json]
 ----
 {
@@ -549,11 +551,57 @@ Because these are POST requests, they must take the mandatory `-d` flag and deli
    "HostID": "string, the node such as m1, m2, etc",
    "CPUUsage": "float, returns all metrics with CPU usage greater than this value in percent",
    "MemoryUsage": "int32, returns all metrics with memory usage greater than this value in megabytes",
-   "LatestNum":"int32, the number of items per serviceID to return, most recent first"
+   "LatestNum": "int32, the number of items per serviceID to return, most recent first"
 }
 ----
 
-Therefore, some sample requests in this format are as follows:
+.Disk space
+[source, json]
+----
+{
+  "TimeRange": {
+    "StartTimestampNS": "string",
+    "EndTimestampNS": "string"
+  },
+  "PathName": "string, either log, kafka, gstore, or home",
+  "HostID": "string, the node such as m1, m2, etc",
+  "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+}
+----
+
+.Network usage
+[source, json]
+----
+{
+  "TimeRange": {
+    "StartTimestampNS": "string",
+    "EndTimestampNS": "string"
+  },
+  "HostID": "string, the node such as m1, m2, etc",
+  "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+}
+----
+
+.Query per Second (QPS) Metrics
+[source, json]
+----
+{
+  "TimeRange": {
+    "StartTimestampNS": "string",
+    "EndTimestampNS": "string"
+  },
+  "ServiceDescriptor": {
+    "ServiceName": "string",
+    "Replica": 0,
+    "Partition": 0
+  },
+  "HostID": "string, the node such as m1, m2, etc",
+  "LatestNum": "int32, the number of items per serviceID to return, most recent first",
+  "Endpoint": "string"
+}
+----
+
+Some sample requests in this format are as follows:
 
 .Get disk space report from host `m2`
 [source, console]
