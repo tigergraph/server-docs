@@ -15,7 +15,7 @@ LTS versions are supported for 24 months from their initial release and should b
 
 * *xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[Multiple edges of the same type between vertices]* - Simplifies application design for time series data and other complex large data sets
 * *xref:3.9@tigergraph-server:data-loading:data-streaming-connector/[Data streaming connector]* - Simplifies and unifies setup for data loading, employs robust Kafka-based design, supports cloud-hosted data sources in many formats, including Parquet
-* *Improved monitoring and logging* - Facilitates better workload management for xref:3.9@:gui-docs:monitoring:queries.adoc[queries] and xref:3.9@:gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
+* *Improved monitoring and logging* - Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
 
 == Detailed List of New Features
 
@@ -43,14 +43,14 @@ Streamlined the user experience for creating loading jobs for data stored in AWS
 * Added a new set of loading job xref:3.9@gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
 
 ==== Schema
-* Full support for xref:3.9@:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
+* Full support for xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
 multiple edges of the same type] between vertices, to simplify application design for time series data and other complex large data sets.
 
 ==== Querying and Query Management
 * `to_string()` now supports all xref:3.9@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[primitive] and xref:3.9@gsql-ref:querying:accumulators.adoc#_vertex_attached_accumulators
 [scalar accumulator] data types.
 * Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
-* Standardized `SHOW PACKAGE` for xref:3.9@:graph-ml:using-an-algorithm.adoc#_packaged_template_queries[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
+* Standardized `SHOW PACKAGE` for xref:3.9@graph-ml:using-an-algorithm:index.adoc[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
 
 //=== JDBC Spark Connector
 //
