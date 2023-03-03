@@ -5,6 +5,8 @@
 
 TigerGraph Server {page-component-version}.0 was released on Nov 15th, 2022.
 
+This is a Feature Preview version. Preview versions are intended to let users try out early versions of upcoming features and for TigerGraph to gather feedback. Preview versions are not covered by the https://www.tigergraph.com/support-policy/[TigerGraph Software Support Policy].
+
 == New Features
 
 The following is a list of new features and improvements:
@@ -93,13 +95,3 @@ You can no longer specify an empty set using query strings in a GET request.
 * xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
 * xref:3.3@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.3]
 * xref:3.2@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.2]
-
-== Compatibility with TigerGraph 3.4
-* A single `POST-ACCUM` clause can no longer reference more than one vertex alias in Syntax V1.
-* `GET /requesttoken` endpoint is dropped.
-Please use `POST /requesttoken` to request authentication tokens instead.
-** Using request body to store credentials is more secure than using query string.
-If you have a create a token request that puts the credentials in the query string, all you need to do is use the `POST` endpoint and move your credentials to the request body. 
-* `GET /gsqlserver/gsql/queryinfo` endpoint on port 14240 now returns the query input parameters in the same order as they are in the query instead of an unordered list.
-* Deploying TigerGraph in Kubernetes now requires more service account permissions than previous versions.
-For details, see Prerequisites section in xref:kubernetes:quickstart-with-gke.adoc[], xref:kubernetes:quickstart-with-aks.adoc[], and xref:kubernetes:quickstart-with-eks.adoc[].
