@@ -18,7 +18,7 @@ TigerGraph version 3.9 introduced changes in the way user-defined functions are 
 * UDFs may no longer be called `to_string()`. This is now a built-in GSQL function.
 * UDF names may no longer use the `tg_` prefix.
 
-An upgrade is possible with older UDFs, but the functions will not work properly. GSQL will return these errors:
+If any UDFs do not satisfy these restrictions, then they will not be installed. GSQL will return these errors:
 
 .Reserved `tg_` prefix error
 [source, console]
