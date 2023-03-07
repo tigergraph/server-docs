@@ -47,8 +47,8 @@ Streamlined the user experience for creating loading jobs for data stored in AWS
 multiple edges of the same type] between vertices, to simplify application design for time series data and other complex large data sets.
 
 ==== Querying and Query Management
-* `to_string()` now supports all xref:3.9@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[primitive] and xref:3.9@gsql-ref:querying:accumulators.adoc#_vertex_attached_accumulators
-[scalar accumulator] data types.
+* `to_string()` is now a built-in GSQL function, supporting all xref:3.9@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[primitive] and xref:3.9@gsql-ref:querying:accumulators.adoc#_vertex_attached_accumulators
+[scalar accumulator] data types. This means xref:3.9@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined functions] in `Exprfunctions.hpp` may no longer use the name `to_string()` (case-insensitive).
 * Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
 * Standardized `SHOW PACKAGE` for xref:3.9@graph-ml:using-an-algorithm:index.adoc[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
 
@@ -103,7 +103,10 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
 
 === Compatibility Issues
-* v3.9+: Some UDFs may no longer be accepted due to increased security screening.
+* v3.9+: Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
+** UDFs may no longer be called `to_string()`. This is now a built-in GSQL function.
+** UDF names may no longer use the `tg_` prefix. Any user-defined function that began with `tg_` must be renamed or removed in `ExprFunctions.hpp`.
+
 
 === Deprecations
 * Kubernetes classic  mode (non-operator) is deprecated, as of v3.9.

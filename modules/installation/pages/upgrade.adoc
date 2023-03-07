@@ -10,6 +10,33 @@ If you are upgrading from a version older than 3.2:
 This step is necessary because TigerGraph 3.2 made major changes to the Graph Storage Engine and a restore is needed to remove certain files that would make the upgrade operation fail.
 * After restoring the backup, ensure that there are no vertex inserts or deletions before starting the upgrade.
 
+=== User-defined function (UDF) compatibility
+
+TigerGraph version 3.9 introduced changes in the way user-defined functions are accepted by the system.
+
+* Some UDFs may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
+* UDFs may no longer be called `to_string()`. This is now a built-in GSQL function.
+* UDF names may no longer use the `tg_` prefix.
+
+If any UDFs do not satisfy these restrictions, then they will not be installed. GSQL will return these errors:
+
+.Reserved `tg_` prefix error
+[source, console]
+----
+The following function name(s) contain errors:
+  [reserved 'tg_']: tg_myFunction
+
+Please rename the corresponding functions in: ExprFunctions.hpp
+----
+
+.Reserved `to_string()` function name
+[source, console]
+----
+Following GSQL built-in function name(s): [to_string] can not be used again for user defined function name(s)!
+GSQL built-in functions are case-insensitive. Please rename corresponding user defined functions in ExprFunctions.hpp.
+----
+
+Any user-defined function previously used in an older TigerGraph version that does not comply with these requirements must be renamed or removed in `ExprFunctions.hpp`.
 
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
