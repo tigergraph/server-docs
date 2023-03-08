@@ -150,7 +150,8 @@ TigerGraph Server 3.6.1 was released on July 7th, 2022.
 //* GSE memory consumption in a cluster may be higher for the leader than a follower during data loading.
 //* In rare cases, system logs may briefly indicate a mismatched edge count between replicas on a cluster that is continuously loading and dropping edges. This mismatch corrects itself automatically as the system keeps running. Use the xref:tigergraph-server:API:built-in-endpoints.adoc[`/rebuildnow` endpoint] with `force=True` to force a rebuild and correct the issue.
 
-For a list of known issues for GraphStudio and Admin Portal, please see xref:{page-component-version}@gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:{page-component-version}@gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
+* If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC
+* For a list of known issues for GraphStudio and Admin Portal, please see xref:{page-component-version}@gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:{page-component-version}@gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
 
 
 == Release notes for previous versions
