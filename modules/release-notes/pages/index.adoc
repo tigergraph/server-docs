@@ -101,6 +101,7 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * Schema change jobs may fail if the server is experiencing a heavy workload. To remedy this, avoid applying schema changes during peak load times.
 * User-defined Types (UDT) do not work if exceeding string size limit. Avoid using UDT for variable length strings that cannot be limited by size.
 * Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
+* If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC
 
 === Compatibility Issues
 * v3.9+: Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
