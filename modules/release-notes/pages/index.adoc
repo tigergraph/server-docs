@@ -96,6 +96,8 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 
 == Known issues
 
+* Upgrading a cluster with 10 or more nodes to v3.9.0 requires a patch. Please contact TigerGraph Support if you have a cluster this large. Clusters with nine or fewer nodes do not require the patch.
+* Downsizing a cluster to have fewer nodes requires a patch. Please contact TigerGraph Support.
 * During peak system load, loading jobs may sometimes display an inaccurate loading status. This issue can be remediated by continuing to run `SHOW LOADING STATUS` periodically to display the up-to-date status.
 * When managing many loading jobs, pausing a data loading job may result in longer-than-usual response time.
 * Schema change jobs may fail if the server is experiencing a heavy workload. To remedy this, avoid applying schema changes during peak load times.
