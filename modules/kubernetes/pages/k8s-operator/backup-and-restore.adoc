@@ -1,6 +1,6 @@
 = Backup and Restore
 
-The Backup and Restore functionality of the Kubernetes operator allows for incremental and scheduled backups as well as detailed logging.
+The Backup and Restore functionality of the Kubernetes operator allows for scheduled backups as well as detailed logging.
 
 Backup and restore jobs work by internally creating TigerGraphBackup, TigerGraphRestore, and TigerGraphScheduledBackup functions that carry out jobs according to the user settings.
 This concept is important for understanding the relationship between the console commands you enter and the results from Kubernetes.
@@ -34,7 +34,6 @@ Options:
   --compress-process-number :   the number of concurrent processes for compression during backup;
                                 value 0 means the number of processes used to compress equals
                                 the number of the node's CPU cores. And the default value is 0
-  --incremental :               perform incremental backup
   --full :                      perform full backup
   --destination :               set the destination to store backup files
   The following parameters are used to configure a destination.
@@ -109,25 +108,6 @@ kubectl tg backup create --cluster-name test-cluster --tag testS3 -n tigergraph
 --timeout 18000 --compress-process-number 0
 ----
 
-
-=== Incremental backup
-
-If you want to perform an incremental backup, ensure that there already exists at least one backup for the cluster.
-Otherwise the incremental backup will fail.
-
-Use the command `kubectl tg backup list` to check if you have a full backup.
-
-To perform an incremental backup, run `kubectl tg backup create` and include the option `--incremental`.
-
-
-[source.wrap, console]
-----
-kubectl tg backup create --cluster-name test-cluster --tag testlocal -n tigergraph
---incremental \
---destination local \
---local-path /home/tigergraph/backup
-----
-
 === Update an existing backup
 
 If you have already created one backup with `kubectl tg backup create` , you can use `kubectl tg backup update` to change the backup configuration. Once you run the update command, the backup will start immediately with the updated configurations.
@@ -157,11 +137,6 @@ kubectl tg backup update --cluster-name test-cluster --tag testlocal -n tigergra
 ----
 
 The timeout will be changed to `20000`, and a backup process with timeout `20000` will start immediately.
-
-
-If you have a full backup config, use `kubectl tg backup update --cluster-name CLUSTER --tag TAG --incremental` to change it to incremental backup.
-
-If you have an incremental backup config, use `kubectl tg backup update --cluster-name CLUSTER --tag TAG --full` to change it to full backup.
 
 === Back up again
 If you have already created one backup by `kubectl tg backup create` :
@@ -194,9 +169,9 @@ The output is like this:
 [source.wrap, console]
 ----
 kubectl tg backup status
-NAME                        CLUSTER        TAG     STORAGE   INCREMENTAL   STARTTIME   COMPLETIONTIME
-test-cluster-backup-daily   test-cluster   daily   local                   3d12h
-test-cluster-backup-local   test-cluster   local   local                   16s         5s
+NAME                        CLUSTER        TAG     STORAGE   STARTTIME   COMPLETIONTIME
+test-cluster-backup-daily   test-cluster   daily   local     3d12h
+test-cluster-backup-local   test-cluster   local   local     16s         5s
 ----
 
 If the `COMPLETIONTIME` field is not empty, the backup process is successful.
@@ -265,7 +240,6 @@ Options:
 value 0 means the number of processes used to compress equals
 the number of the node's CPU cores. And the default value is 0
 --schedule :                  specify the schedule of backup in cron format. e.g. '* * * * *' is backup every minute
---incremental :               do incremental backup
 --full :                      do full backup (full backup is performed by default)
 --max-retry :                 set max times of retry for each backup
 --max-backup-file :           set the max number of files you want to retain
@@ -321,20 +295,6 @@ kubectl tg backup-schedule create --cluster-name test-cluster -n tigergraph \
 --tag s3daily --schedule '0 * * * *' --destination s3Bucket\
 --s3-bucket tgbackup \
 --aws-secret aws-secret
-----
-
-=== Create a backup schedule in incremental mode
-
-Notes: for incremental backup ,you can refer to  K8S Backup & Restore | perform incremental backup[inlineExtension] .
-Make sure that there is already a full backup for the cluster.
-
-Use the `--incremental` flag to schedule incremental backup.
-
-[source.wrap, console]
-----
-kubectl tg backup-schedule create --cluster-name test-cluster -n tigergraph \
---tag localdaily --schedule '0 0 * * *' --incremental\
---destination local --local-path /home/tigergraph/backup
 ----
 
 === Update a backup schedule

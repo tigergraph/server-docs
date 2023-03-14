@@ -155,8 +155,6 @@ Description:
   (2) Backups that contain the given tag prefix but:
   (a) it is one of the most recent 'count' backups within the same prefix group;
   (b) the age of backup is within 'duration'.
-  If an incremental backup is retained/kept, its corresponding base full backup
-  will be kept as well.
   E.g. the following command keeps the most recent 10 backups within 10 days for
   backups starting with the prefix "week":
   gadmin backup retain week -c 10 -d 240h
@@ -646,7 +644,7 @@ Description:
   ServiceID should be [serviceName][_partition][#replica], e.g., GSE_1#3. Leave
   replica field empty(e.g. GSE_1) to either refer to all replicas of given
   partition, or if the service has no replicas(e.g. EXE_1). Same for parititons.
-  If no serviceID is specified for the cpu or memory metric type, it will show all
+  If no serviceIDf is specified for the cpu or memory metric type, it will show all
   service metrics.
   Metric type should be one of the four types:
     cpu                 cpu usage
