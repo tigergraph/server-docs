@@ -47,6 +47,7 @@ DESCRIPTION
 OPTIONS
        Available Commands:
          autocomplete Generate autocomplete script
+         backup
          config       Manage the configuration for the TigerGraph system
          help         Help about any command
          init         Init the whole cluster or given service
@@ -103,11 +104,35 @@ dict          gsql          kafkaconn     ts3serv
 etcd          gui           kafkastrm-ll  zk
 ----
 
-[#_gadmin_backup]
 === gadmin backup
 
+`gadmin backup` commands are used to create and get information about TigerGraph backups.
+See xref:backup-and-restore:index.adoc[] for more information about how to perform backups.
 
+=== gadmin backup list
 
+[source, console]
+----
+$ gadmin backup list -h
+List backups
+
+Usage:
+  gadmin backup list [tag] [flags]
+
+Description:
+
+  List backups, can specify backup tag name
+  Example:
+  gadmin cluster backup list
+
+Flags:
+  -h, --help   help for list
+      --json   Render the backups list in json format rather than table.
+      --meta   Write metadata to local file, for cross-cluster restore. A tag is required.
+
+Global Flags:
+      --debug   enable debug log output to stdout
+----
 
 [#_gadmin_config]
 === gadmin config
