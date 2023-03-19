@@ -49,11 +49,13 @@ Examples:
   kubectl tg init
   # install the operator in the specified namespace
   kubectl tg init --namespace tg-tenant1
+  # install the operator in the specified namespace, with specified helm repo and image pull secretkubectl tg init --namespace tg-tenant1 --helm-repo https://yourhelprepo.com --image-pull-secret yoursecret
   # install the operator in the specified namespace, with specified operator version, watch name namespace, cpu and memory
   kubectl tg init --cluster-scope false --version OPERATOR_VERSION --operator-size 3 --operator-watch-namespace tigergraph --operator-cpu 1000m  --operator-memory 1024Mi --namespace tigergraph
 
 Options:
   -n, --namespace : set namespace to deploy TG cluster, default as default
+  --helm-repo : set the specified helm repo to install operator, default as https://dl.tigergraph.com/charts
   --docker-registry : set docker registry to download tigergraph image, default as docker.io
   --docker-image-repo : set docker image repo for image name, default as tigergraph.
   -p, --image-pull-secret :   set imagePullSecret of docker registry, default as tigergraph-operator-image-pull-secrets-default
