@@ -116,3 +116,13 @@ The output may include a warning message such such as the following:
 ----
 [Warning] License limit exceeded. The system is running in limited capacity mode
 ----
+
+=== Configuring License Key Checks
+
+There are several configuration parameters available for system adminstrators to customize the policy used to check compliance with the license key.  See the xref:reference:configuration-parameters.adoc#_gse[GSE] section of the Configuration Parameters page.
+
+`MaxLicenseViolation`: max license violation times, default/max value: 3 (we should set it to 0 for Singtel)
+
+LicenseCheckInterval: how often (in seconds) to check license violations, default/max value: 300
+
+UpdateGraphInterval: how often (in seconds) to pull topology info from ZK, default/max value: 300

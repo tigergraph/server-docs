@@ -9,8 +9,10 @@ See xref:system-management:management-with-gadmin.adoc[] for how to set a parame
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|Admin.BasicConfig.Env |The runtime environment variables, separated by
-`;` |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|Admin.BasicConfig.Env
+|The runtime environment variables, separated by
+`;`
+
 
 |Admin.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number
 of days to retain old log files based on the timestamp encoded in their
@@ -378,7 +380,11 @@ bucket counts. |`5`
 |===
 |Name |Description |Example
 |GSE.BasicConfig.Env |The runtime environment variables, separated by
-`;'
+`;'.
+Some of the environment variables:
+`MaxLicenseViolation`: max license violation times, default/max value: 3;
+`LicenseCheckInterval`: how often (in seconds) to check license violations, default/max value: 300;
+`UpdateGraphInterval`: how often (in seconds) to pull topology info from Zookeeper, default/max value: 300
 |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=34; MALLOC_CONF=prof:true,prof_active:false`
 
 |GSE.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
