@@ -38,6 +38,14 @@ If the value provided is a path to a script, the parameter will be set to the ou
 | Enable LDAP authentication: default false
 | `false`
 
+|Security.LDAP.GroupFilter
+|list of group objects on LDAP server used to retrieve group hierarchy information, default value: (objectClass=group)
+|(objectClass=group)
+
+|Security.LDAP.GroupHierarchyRefreshIntervalMin
+|Refresh time in minutes of ldap group hierarchy information. default 240
+|60
+
 | Security.LDAP.Hostname
 | Configure LDAP server hostname: default localhost
 | `localhost`
@@ -194,9 +202,18 @@ After creating the proxy group, you can xref:user-access:user-management.adoc[gr
 
 Group hierarchy matches (supported only on Azure Active Directory) work for the case-sensitive matching pattern `memberOf=<LDAP group Distinguished Name>`.
 
+An example of a DN (Distinguished Name) is `CN=group1,OU=AADDC Users,DC=tigergraph,DC=com`.
+
+The attribute which indicates that the current DN is a child of another DN is `memberOf`.
+
 For example, assume `UserA` belongs to `Subgroup1`, and `Subgroup1` is a child of `Group1` on the LDAP server for TigerGraph.
 If there is a proxy group `ProxyGroup1` whose rule is `memberOf=CN=Group1,OU=AADDC Users,DC=tigergraph,DC=com`, `UserA` can be authorized as a member of `ProxyGroup1`.
 
+GSQL will update the group hierarchy information from the LDAP according to the parameter `Security.LDAP.GroupHierarchyRefreshIntervalMin` whose default value is 240.
+
+The following API is provided to refresh the preloaded group hierarchy information. Only the superuser has privilege to execute this endpoint.
+
+http://host:14240/gsqlserver/gsql/ldap/refresh-group
 
 === Commands to manage proxy groups
 
