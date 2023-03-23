@@ -95,13 +95,13 @@ multiple edges of the same type] between vertices, to simplify application desig
 * Fixed: GraphStudio not displaying queries for users with the QueryReader role.
 * Removed extraneous automatic backup at 12:00am UTC if the user sets `System.Backup.Local.Enable` to `true`.
 * Fixed accidental erasure of the `UserCatalog.yaml` file, which caused users to lose access to the database.
-* dded support for `DATETIME` datatype in `PRINT … TO_CSV` statements.
+* Added support for `DATETIME` datatype in `PRINT … TO_CSV` statements.
 * Added error handling in the case of a name conflict or use of reserved query names among UDF functions.
 * Fixed an issue with nested group access in LDAP.
 * Fixed an issue with perceived "schema error", which then causes an upgrade to abort.
 * Fixed issue with `DISTRIBUTED QUERY` not able to insert on edge.
 * Removed C++ headers not on the allowlist from default UDF files.
-* fixed a GSE crash in rare synchronization circumstances in HA clusters.
+* Fixed a GSE crash in rare synchronization circumstances in HA clusters.
 * Fixed an issue with a query syntax error not being detected at the root cause stage where a clear error message could be issued.
 * Added options to configure the frequency of checking for license key violations
 * Fixed: GSE does not start or restart after upgrading to 3.9.0 due to change in log synchronization.
