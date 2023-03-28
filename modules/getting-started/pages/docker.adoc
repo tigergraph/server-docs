@@ -134,6 +134,19 @@ $ docker exec -it $(docker ps | grep tigergraph | awk '{print $1}') /bin/sh
 $ gadmin start all
 ----
 
+. Attend to security.
++
+WARNING: Your TigerGraph image is preconfigured with a superuser having the default username and password `tigergraph`. If you do not change this, anyone with access to your database will be able to read and modify it.
++
+To xref:tigergraph-server:user-access:user-management.adoc#_change_a_users_password[change the password] of the user called `tigergraph`:
++
+[source,console]
+----
+$ gadmin ALTER PASSWORD tigergraph
+----
++
+For additional security settings, see xref:tigergraph-server:security:index.adoc[].
+
 . Run the `gsql` command as shown below to start the GSQL shell. If you are new to TigerGraph, you can run the xref:gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101] tutorial now.
 +
 [source,console]
