@@ -125,6 +125,23 @@ $ docker exec -it $(docker ps | grep tigergraph | awk '{print $1}') /bin/sh
 ----
 
 
+== Secure TigerGraph
+
+WARNING: Your TigerGraph image is preconfigured with a Linux user called `tigergraph` and a database superuser called `tigergraph`. Both have the default password `tigergraph`. If you do not change this, anyone with access to your database or docker container will be able to read and modify it.
+
+. Change the password of the Linux user `tigergraph`.
+
+.  xref:tigergraph-server:user-access:user-management.adoc#_change_a_users_password[Change the password] of the database user called `tigergraph`:
++
+[source,console]
+----
+$ gadmin ALTER PASSWORD tigergraph
+----
+
+. For additional TigerGraph security settings, see xref:tigergraph-server:security:index.adoc[].
+
+Please follow best practices for securing and hardening the docker container especially when installing in a shared environment.
+
 == Start TigerGraph
 
 . After connecting to the container via ssh, inside the container, start all TigerGraph services with the following command (which may take up to one minute):
@@ -133,19 +150,6 @@ $ docker exec -it $(docker ps | grep tigergraph | awk '{print $1}') /bin/sh
 ----
 $ gadmin start all
 ----
-
-. Attend to security.
-+
-WARNING: Your TigerGraph image is preconfigured with a superuser having the default username and password `tigergraph`. If you do not change this, anyone with access to your database will be able to read and modify it.
-+
-To xref:tigergraph-server:user-access:user-management.adoc#_change_a_users_password[change the password] of the user called `tigergraph`:
-+
-[source,console]
-----
-$ gadmin ALTER PASSWORD tigergraph
-----
-+
-For additional security settings, see xref:tigergraph-server:security:index.adoc[].
 
 . Run the `gsql` command as shown below to start the GSQL shell. If you are new to TigerGraph, you can run the xref:gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101] tutorial now.
 +
