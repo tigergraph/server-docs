@@ -124,6 +124,22 @@ You can also access your TigerGraph container via `docker exec` with the followi
 $ docker exec -it $(docker ps | grep tigergraph | awk '{print $1}') /bin/sh
 ----
 
+== Secure TigerGraph
+
+WARNING: Your TigerGraph image is preconfigured with a Linux user called `tigergraph` and a database superuser called `tigergraph`. Both have the default password `tigergraph`. If you do not change this, anyone with access to your database or docker container will be able to read and modify it.
+
+. Change the password of the Linux user `tigergraph`.
+
+.  xref:tigergraph-server:user-access:user-management.adoc#_change_a_users_password[Change the password] of the database user called `tigergraph`:
++
+[source,console]
+----
+$ gadmin ALTER PASSWORD tigergraph
+----
+
+. For additional TigerGraph security settings, see xref:tigergraph-server:security:index.adoc[].
+
+Please follow best practices for securing and hardening the docker container especially when installing in a shared environment.
 
 == Start TigerGraph
 
