@@ -187,7 +187,7 @@ Here is an example `install_conf.json` file:
   "BasicConfig": {
     "TigerGraph": {
       "Username": "tigergraph",
-      "Password": "tigergraph",
+      "Password": "secret-password",
       "SSHPort": 22,
       "PrivateKeyFile": "",
       "PublicKeyFile": ""
@@ -245,6 +245,9 @@ If you use key-based authentication, the sudo user you are providing must have p
   *** `"ReplicationFactor"`: xref:intro:continuous-availability-overview.adoc#_continuous_availability__definitions[Replication factor] of the cluster.
    **** If you would like to enable the High Availability (HA) feature, please make sure you have at least 3 nodes in the cluster and set the replication factor to be greater than 1. For example, if your cluster has 6 nodes, you could set the replication factor to be 2 or 3. If you set the replication factor to be 2, then the partitioning factor will be  6 / 2 = 3.  Therefore, 3 nodes will be used for one copy of the data, and the other 3 nodes will be used as a replica copy of the data.
    **** Ensure that the total number of nodes can be fully divided by the replication factor.  Otherwise, some nodes may not be utilized as parts of the HA cluster.
+
+[WARNING]
+Deploying a database without changing the default password for the TigerGraph superuser is a security risk.
 
 [WARNING]
 If you alter the `RootDir` folder paths, make sure the new user created to manage the platform has the appropriate permissions.
