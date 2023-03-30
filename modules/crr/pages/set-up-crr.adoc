@@ -92,4 +92,22 @@ After being set up, the DR cluster will be read-only and all data update operati
 When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
 
 To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the setup steps detailed on this page again.
-However, you can skip <<_enable_crr_on_the_dr_cluster, Step 3: Enable CRR on the DR cluster>>, because CRR will have already been enabled.
+However, you can skip <<_enable_crr_on_the_dr_cluster, Step 3: Enable CRR on the DR cluster>>, because CRR will
+
+== Updating a CRR system
+
+From time to time, you may want to update the TigerGraph software on a CRR system.
+To perform this correctly, follow this sequence of steps.
+
+1. Disable CRR on your DR cluster.
+
+[source.wrap,console]
+----
+$ gadmin config set System.CrossRegionReplication.Enabled false
+$ gadmin config apply -y
+$ gadmin restart all -y
+----
+
+2. xref:installation:upgrade.adoc[Upgrade] both the primary cluster and DR cluster.
+
+3. Enable CRR on the DR cluster.
