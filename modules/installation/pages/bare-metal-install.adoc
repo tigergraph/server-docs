@@ -79,8 +79,11 @@ Navigate to the `tigergraph-<version>-offline` folder and open the configuration
 
 Edit the configuration file according to your needs, pay extra attention to the followings entries:
 
-* *TigerGraph Username and Password*: You can leave the default value of `tigergraph` for both and change their password after installation, or you can choose another name and password.
-If the user already exists, the installer will skip creating a new user.
+* *TigerGraph Username and Password*: A TigerGraph database has a built-in superuser, whose default username and password are `tigergraph`.
+You can either customize the username and password now or after installation.
+If the username already exists, the installer will skip creating a new user.
+
+WARNING: Deploying a database without changing the password for the TigerGraph superuser is a security risk.
 
 * *SSHPort*: By default, the SSH port is `22`, if this port is open in all the provisioned machines you can leave it as it is.
 Otherwise change the port to the actual SSH port in your environment.
