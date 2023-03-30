@@ -41,9 +41,11 @@ Any user-defined function previously used in an older TigerGraph version that do
 
 === Upgrading from a version older than 3.2
 
-* First perform a backup *and a restore* xref:backup-and-restore:index.adoc[using GBAR (Graph Backup and Restore)] on your existing installation.
+. First perform a backup xref:backup-and-restore:index.adoc[using GBAR (Graph Backup and Restore)] on your existing installation.
+. *Restore* your installation with GBAR to rebuild it.
 This step is necessary because TigerGraph 3.2 made major changes to the Graph Storage Engine and a restore is needed to remove certain files that would make the upgrade operation fail.
-* After restoring the backup, ensure that there are no vertex inserts or deletions before starting the upgrade.
+. Ensure that the restore is completely finished and there are no pending graph modifications (schema change, insert, update, or delete) before starting the upgrade.
+You can do this by calling the xref:tigergraph-server:api:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint and waiting until there are no more PullDelta messages being printed in the logs.
 
 === Upgrading a CRR system
 To upgrade the TigerGraph software on a CRR system, follow this sequence of steps.
