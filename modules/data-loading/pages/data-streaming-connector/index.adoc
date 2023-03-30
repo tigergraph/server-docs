@@ -111,6 +111,9 @@ $ gadmin connector delete <connector_name> -s
 
 
 == Known issues
+
+NOTE: Automatic message removal is an Alpha feature and may be subject to change.
+
 Messages in TigerGraph's internal Kafka cluster are automatically removed from the topics at regular intervals.
 There are several known issues with this process:
 
@@ -120,4 +123,9 @@ If the loading job finishes much sooner before the interval is reached, the mess
 * If a topic is deleted and recreated while a loading job on the topic is running, the data in the topic may get removed.
 * Deleting the connector does not delete the connect offsets for topics that are mapped to a folder URI.
 
-Automatic message removal is an alpha feature and may be subject to change.
+[CAUTION]
+.NULL is not a valid input value.
+====
+TigerGraph does not store NULL values.
+Therefore, your input data should not contain any NULLs.
+====
