@@ -33,6 +33,13 @@ A resumed job picks up from where it was stopped before and will not consume mes
 * CSV
 * JSON
 
+[CAUTION]
+.NULL is not a valid input valid.
+====
+TigerGraph does not store NULL values.
+Therefore, your input data should not contain any NULLs.
+====
+
 If the Kafka loader fails to parse messages due to formatting issues, the Kafka Loader skips the messages the fail to be parsed.
 
 
