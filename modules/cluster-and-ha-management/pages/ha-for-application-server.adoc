@@ -27,10 +27,10 @@ You can increase the number of servers through the `GUI.BasicConfig.Nodes` confi
 
 The value of `GUI.BasicConfig.Nodes` is a list of nodes that run an application server:
 
-[,console]
+[source.wrap,console]
 ----
 $ gadmin config get GUI.BasicConfig.Nodes
-[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4}]
+[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3}]
 ----
 
 To configure the number of servers, add an JSON object to the list:
@@ -43,12 +43,14 @@ For example, if you are adding a fourth server, then `Replica` should be 4.
 To add two more servers, add two JSON objects to the list, and use `gadmin config set` to set the new value.
 Afterwards, apply the change and restart the `gui` service:
 
-[,console]
+[source.wrap,console]
 ----
-$ gadmin config set GUI.BasicConfig.Nodes [{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4},{"HostID":"m5","Partition":0,"Replica":5},{"HostID":"m6","Partition":0,"Replica":6}]
+$ gadmin config set GUI.BasicConfig.Nodes [{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4},{"HostID":"m5","Partition":0,"Replica":5}]
 $ gadmin config apply
 $ gadmin restart gui
 ----
+NOTE: The recommended maximum number of GUI servers is 5.
+
 
 == Load Balancing
 
