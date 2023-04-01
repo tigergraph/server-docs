@@ -3,12 +3,17 @@
 :description: High availability overview for the GSQL server.
 
 TigerGraph has built-in HA for all the internal critical components.
-This includes GPE, GSE, and REST API Servers.
-The GSQL Server also has built-in HA, but as it is a user-facing component, its HA configuration can be customized by users.
+That is, if one component becomes unavailable, then a corresponding component located within another cluster node can take over.
+Due to the criticality of the interworking of these internal components, users are advised not to alter the number of such internal nodes except as advised by Tigergraph Support or Professional Services.
+
+When a cluster is xref:installation:bare-metal-install.adoc[initially installed] or xref:cluster-and-ha-management:repartition-a-cluster.adoc[resized], the installer will automatically select an appropriate number of service components.
+For components which comprise the core storage and compute engine (such GSE, GPE, and REST API servers), one service component per cluster node is appropriate.
+For other components, like the GSQL server, having one component per node is excessive for large clusters.
+The maximum number of GSQL servers is 5, regardless of cluster size.
 
 == Design overview
 
-The first five nodes in a TigerGraph cluster each run a GSQL server.
+The *first five nodes* in a TigerGraph cluster each run a GSQL server.
 One of the GSQL servers is the primary server, while other servers are standby servers that provide high availability for client connections.
 The primary and standby servers are referred to as "leaders" and "followers" inside GSQL.
 
@@ -32,56 +37,7 @@ When the old primary server is restored, it becomes a GSQL standby server.
 * Help the primary server check for the existence of source data files and parse file headers (if ANY is chosen)
 
 == Configuring HA for the GSQL server
-=== Configuring the number of GSQL servers
-The GSQL server (`gsql`) runs on the first 5 nodes in a cluster by default.
-However, you can increase the number of servers through the `GSQL.BasicConfig.Nodes` configuration parameter.
 
-The value of `GSQL.BasicConfig.Nodes` is a list of nodes that run a GSQL server:
-
-[,console]
-----
-$ gadmin config get GSQL.BasicConfig.Nodes
-[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4}]
-----
-
-To configure the number of servers, add an JSON object to the list:
-
-* `HostID` is the name of the node the server runs on.
-* `Partition` must be 0.
-* `Replica` is the number in the GSQL server sequence that this server would be.
-For example, if you are adding a fourth server, then `Replica` should be 4.
-
-For example, to add two more servers, add two JSON objects to the list, and use `gadmin config set` to set the new value.
-Afterwards, apply the change and restart the `gsql` service:
-
-[,console]
-----
-$ gadmin config set GSQL.BasicConfig.Nodes [{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4},{"HostID":"m5","Partition":0,"Replica":5},{"HostID":"m6","Partition":0,"Replica":6}]
-$ gadmin config apply
-$ gadmin restart gsql
-----
-
-Run the command `gsql -leader` from the shell to see which node is the primary server. The companion command `ghostname` reveals the current GSQL node.
-
-In some cases with large query results, you may get an error when the results are larger than the buffer size for messages between GSQL servers.
-
-[source.wrap, console]
-----
-Error forwarding request to GSQL leader!
-IOException: Truncated chunk
-----
-f
-To fix this, use the xref:reference:configuration-parameters.adoc[configuration parameter] `GSQL.HA.BufferedReaderBufferSizeBytes` to increase the size of the buffer.
-Restart GSQL after updating the buffer size.
-
-[source.wrap, console]
-----
-gadmin config set GSQL.HA.BufferedReaderBufferSizeBytes 2000000000
-gadmin restart gsql
-----
-
-In this example, the buffer size has been set to around two gigabytes compared to the default value of eight kilobytes.
-Different datasets and queries will require different buffer sizes.
 
 === Setting GSQL HA Failover
 
