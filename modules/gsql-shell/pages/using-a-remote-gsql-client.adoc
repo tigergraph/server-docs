@@ -9,8 +9,8 @@ You can use the GSQL client to access a GSQL server on a different machine, incl
 
 == Prerequisites
 * The machine running the GSQL client needs to have Java 7.0 or later.
-* The server machine allows the client machine to access port 14240.
-* OpenSSL is needed on the client machine to get an SSL certificate from a TigerGraph Cloud solution.
+* For a self-managed remote server, the server machine allows the client machine to access port 14240.
+* OpenSSL is needed on the client machine to get an SSL certificate from the TigerGraph Server or TigerGraph Cloud.
 
 == Connect to a remote server
 
@@ -21,23 +21,36 @@ link:https://dl.tigergraph.com/download.html[Download the GSQL client for a Tige
 As an alternative to downloading, you can also copy the file `gsql_client.jar` from an existing installation to the client machine.
 The client is packaged as a Java jar file, `gsql_client.jar` located in the folder `<TigerGraph_root_dir>/app/<VERSION_NUM>/dev/gdk/gsql/lib/` on an existing TigerGraph installation.
 
-=== Connect to the server
+[#obtain_ssl_cert_remote_server]
+=== Obtain SSL certificate
 
+If you have SSL enabled, you must obtain the TigerGraph server's public SSL certificate.
+Run the following Unix command, replacing `<ip_address>` with the IP address of your TigerGraph server, and replacing `<path_to_certificate>` with a filename for the certificate, such as `ssl_1.cert1`.
+Note that the port to access TigerGraph Server is 12420.
+
+You need to install link:https://www.openssl.org/[`openssl`] on your client machine to run this command.
+
+[.wrap,console]
+----
+echo | openssl s_client  -connect <ip_address>:12420 |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <path_to_certificate>
+----
+
+=== Connect to the server
 
 To connect to a remote server, your must provide the following to the GSQL client:
 
 * The IP address of the GSQL server.
 * Your TigerGraph user credentials.
 * If you are running GSQL commands, the user you are logged in as must have the privileges to run them.
-* If SSL/TLS encryption (e.g., HTTPS) is enabled on the server, you must <<_obtaining_ssl_certificate_from_remote_server,provide the server's SSL certificate>>.
+* If SSL/TLS encryption (e.g., HTTPS) is enabled on the server, you must <<obtain_ssl_cert_remote_server,provide the server's SSL certificate>>.
 
 Run the following command to connect to the remote server:
 [.wrap,console]
 ----
 java -jar <path_to_client> \ <1>
-  [--cacert <path_to_certificate>|--ssl] \ <2>
-  --ip <ip_address> \ <3>
-  -u <username> -p <password> <4>
+  --cacert <path_to_certificate> \ <2>
+  --ip <ip_address>:12420 \ <3>
+  -u <username> <4>
 ----
 <1> Replace `<path_to_client>` with the file path to the GSQL client.
 <2> If you have the SSL certificate of the remote server, you can replace `<path_to_certificate>` with the path to your SSL certificate (most common).
@@ -45,25 +58,18 @@ Otherwise, you can use `--ssl` instead to use the default certificate. Note that
 If the remote server doesn't have SSL/TLS encryption enabled, you can omit these flags.
 <3> Replace `<ip_address>` with the IP address of your remote server.
 You can also <<_specify_server_ip_address_in_file, specify the IP address in a file and omit this flag>>.
-<4> Replace `<username>` and `<password>` with the username and password of the TigerGraph user you want to be logged in as.
+<4> Replace `<username>` with the username of the TigerGraph user you want to be logged in as.
 If you don't provide a `<username>`, the client uses the default user `tigergraph`.
 
-
-[#_obtaining_ssl_certificate_from_remote_server]
-=== Obtain SSL certificate from remote server
-To obtain the SSL certificate from the remote server, you can copy it from the path: `$(gadmin config get System.DataRoot)/configs/nginx/conf/ssl.cert`.
-
-
-
 [#_specify_server_ip_address_in_file]
-=== Specify server IP address in file
+=== Tip: Specify server IP address in file
 You can create a one-line file called `gsql_server_ip_config` containing the IP address of the GSQL server.
 *This file needs to be in the same directory where you run GSQL.*
 
-When there is a `gsql_server_up_config` file in the same directory where you run the GSQL client, the GSQL client uses IP address stored in the file.
+When there is a `gsql_server_up_config` file in the same directory where you run the GSQL client, the GSQL client uses the IP address stored in the file.
 You won't need to specify the IP address in the command.
 
-=== Define a Unix alias for command to run GSQL client
+=== Tip: Define a Unix alias for command to run GSQL client
 You can define a Unix alias to simplify the command to run the GSQL client:
 
 [,console]
@@ -83,7 +89,7 @@ Since TigerGraph Cloud uses a different xref:cloud:security:manage-org-users.ado
 link:https://dl.tigergraph.com/download.html[Download the GSQL client for a TigerGraph solution version directly from this page].
 
 === Obtain SSL certificate
-Run the following command, replacing `<domain>` with the domain of your Cloud solution and replace `<path_to_certificate>` with the local path to place the certificate file.
+Run the following Unix command, replacing `<domain>` with the domain of your Cloud solution and replace `<path_to_certificate>` with the local path to place the certificate file. Note that the port to access TigerGraph Cloud is 443.
 
 Find the domain of a Cloud solution by clicking on it in the solution view under "My Solutions."
 
