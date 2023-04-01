@@ -1,18 +1,18 @@
 = High Availability Support for GSQL Server
 :description: High availability overview for the GSQL server.
 
-TigerGraph has built-in HA for all the internal critical components from the beginning.
-This includes GPE, GSE, REST API Servers, etc.
-However, the user-facing applications (GSQL and GraphStudio) were designed to be set up by customers based on their High Availability (HA) needs.
-This included building solutions using non-TigerGraph components.
+TigerGraph has built-in HA for all the internal critical components.
+That is, if one component becomes unavailable, then a corresponding component located within another cluster node can take over.
+Due to the criticality of the interworking of these internal components, users are advised not to alter the number of such internal nodes except as advised by Tigergraph Support or Professional Services.
 
-TigerGraph supports native HA functionality for user-facing applications as well.
-This simplifies and streamlines HA deployment for users completely.
-For Operations personnel, this reduces the operational overhead while enhancing the availability for end users.
+When a cluster is xref:installation:bare-metal-install.adoc[initially installed] or xref:cluster-and-ha-management:repartition-a-cluster.adoc[resized], the installer will automatically select an appropriate number of service components.
+For components which comprise the core storage and compute engine (such GSE, GPE, and REST API servers), one service component per cluster node is appropriate.
+For other components, like the GSQL server, having one component per node is excessive for large clusters.
+The maximum number of GSQL servers is 5, regardless of cluster size.
 
 == Design overview
 
-The first five nodes in a TigerGraph cluster each run a GSQL server.
+The *first five nodes* in a TigerGraph cluster each run a GSQL server.
 One of the GSQL servers is the primary server, while other servers are standby servers that provide high availability for client connections.
 
 .A TigerGraph cluster contains local clients and GSQL servers, one of which is the primary GSQL server. The standby servers send redirect requests to the primary server.
@@ -35,6 +35,7 @@ When the old primary server is restored, it becomes a GSQL standby server.
 * Help the primary server check for source data file existence and parse file header (if ANY is chosen)
 
 == Configuring HA for the GSQL server
+<<<<<<< HEAD:modules/ha/pages/ha-for-gsql-server.adoc
 The GSQL server (`gsql`) runs on the first 5 nodes in a cluster by default.
 However, you can increase the number of servers through the `GSQL.BasicConfig.Nodes` configuration parameter.
 
@@ -62,6 +63,26 @@ $ gadmin config set GSQL.BasicConfig.Nodes [{"HostID":"m1","Partition":0,"Replic
 $ gadmin config apply
 $ gadmin restart gsql
 ----
+=======
+
+
+=== Setting GSQL HA Failover
+
+Use the `gadmin config` command to get/set the following configurations related to GSQL High Availability.
+
+The first is the heartbeat interval in milliseconds. The second is the number of consecutively missed heartbeats that will trigger switching to a backup server.
+It must be at least 2 to allow 1 heartbeat miss.
+
+[source,text]
+----
+Controller.LeaderElectionHeartBeatIntervalMS = 2000
+Controller.LeaderElectionHeartBeatMaxMiss = 4
+----
+
+For example, if we use `LeaderElectionHeartBeatIntervalMS = 2000` and `LeaderElectionHeartBeatMaxMiss = 4` as shown above, then the total timeout is 2 × 4 = 8 seconds.
+In this case, the current primary server will be switched if its heartbeat has stopped for more than 8 seconds.
+
+>>>>>>> 0a4fe1e (DOC-1650-HA-num-services):modules/cluster-and-ha-management/pages/ha-for-gsql-server.adoc
 
 == User Impact and Changes
 
