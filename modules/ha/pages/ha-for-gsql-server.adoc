@@ -5,7 +5,7 @@ TigerGraph has built-in HA for all the internal critical components.
 That is, if one component becomes unavailable, then a corresponding component located within another cluster node can take over.
 Due to the criticality of the interworking of these internal components, users are advised not to alter the number of such internal nodes except as advised by Tigergraph Support or Professional Services.
 
-When a cluster is xref:installation:bare-metal-install.adoc[initially installed] or xref:cluster-and-ha-management:repartition-a-cluster.adoc[resized], the installer will automatically select an appropriate number of service components.
+When a cluster is xref:installation:bare-metal-install.adoc[initially installed] or xref:cluster-resizing:index.adoc[resized], the installer will automatically select an appropriate number of service components.
 For components which comprise the core storage and compute engine (such GSE, GPE, and REST API servers), one service component per cluster node is appropriate.
 For other components, like the GSQL server, having one component per node is excessive for large clusters.
 The recommended maximum number of GSQL servers is 5, regardless of cluster size.
