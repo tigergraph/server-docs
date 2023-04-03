@@ -14,6 +14,7 @@ The recommended maximum number of GSQL servers is 5, regardless of cluster size.
 
 The *first five nodes* in a TigerGraph cluster each run a GSQL server.
 One of the GSQL servers is the primary server, while other servers are standby servers that provide high availability for client connections.
+The primary and standby servers are referred to as "leaders" and "followers" inside GSQL.
 
 .A TigerGraph cluster contains local clients and GSQL servers, one of which is the primary GSQL server. The standby servers send redirect requests to the primary server.
 image::gsql-ha.png[Diagram visualizing the architecture of a TigerGraph cluster with high availability.]
@@ -22,9 +23,9 @@ image::gsql-ha.png[Diagram visualizing the architecture of a TigerGraph cluster 
 
 The primary GSQL server performs the following tasks:
 
-* Process client connections
-* Process querying requests from GSQL clients
-* Process user management requests
+* Processes client connections
+* Processes requests from GSQL clients
+* Processes user management requests
 
 When the primary server fails, a standby server becomes the new primary server.
 When the old primary server is restored, it becomes a GSQL standby server.
@@ -32,39 +33,9 @@ When the old primary server is restored, it becomes a GSQL standby server.
 === Role of standby GSQL servers
 
 * Redirect requests to the primary server
-* Help the primary server check for source data file existence and parse file header (if ANY is chosen)
+* Help the primary server check for the existence of source data files and parse file headers (if ANY is chosen)
 
 == Configuring HA for the GSQL server
-<<<<<<< HEAD:modules/ha/pages/ha-for-gsql-server.adoc
-The GSQL server (`gsql`) runs on the first 5 nodes in a cluster by default.
-However, you can increase the number of servers through the `GSQL.BasicConfig.Nodes` configuration parameter.
-
-The value of `GSQL.BasicConfig.Nodes` is a list of nodes that run a GSQL server:
-
-[,console]
-----
-$ gadmin config get GSQL.BasicConfig.Nodes
-[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4}]
-----
-
-To configure the number of servers, add an JSON object to the list:
-
-* `HostID` is the name of the node the server runs on.
-* `Partition` must be 0.
-* `Replica` is the number in the GSQL server sequence that this server would be.
-For example, if you are adding a fourth server, then `Replica` should be 4.
-
-For example, to add two more servers, add two JSON objects to the list, and use `gadmin config set` to set the new value.
-Afterwards, apply the change and restart the `gsql` service:
-
-[,console]
-----
-$ gadmin config set GSQL.BasicConfig.Nodes [{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4},{"HostID":"m5","Partition":0,"Replica":5},{"HostID":"m6","Partition":0,"Replica":6}]
-$ gadmin config apply
-$ gadmin restart gsql
-----
-=======
-
 
 === Setting GSQL HA Failover
 
