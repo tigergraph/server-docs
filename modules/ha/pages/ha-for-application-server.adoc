@@ -2,7 +2,8 @@
 :description: Overview of high availability support for the application server.
 
 TigerGraph supports native HA functionality for its application server, which serves the APIs for TigerGraph's GUI - GraphStudio and Admin Portal.
-The application server follows the active-active architecture, and runs on the *first three nodes* in a cluster by default.
+The application server follows the active-active architecture, and runs on the *first five nodes* in a cluster by default.
+Five is the maximum number of application servers per cluster.
 If one server falls offline, you can use the other servers without any loss of functionality.
 
 When you deploy TigerGraph in a cluster with multiple replicas, it is ideal to set up load balancing to distribute network traffic evenly across the different servers.
@@ -19,35 +20,6 @@ To find out which node hosts the application server, run xref:cluster-commands.a
 The output will show you which nodes are hosting a GUI server.
 
 Keep in mind that any long-running operation in progress when the server fails will be lost.
-
-== Configuring HA for the application server
-The application server (`gui`) runs on the first three nodes in a cluster by default.
-You can increase the number of servers through the `GUI.BasicConfig.Nodes` configuration parameter.
-
-The value of `GUI.BasicConfig.Nodes` is a list of nodes that run an application server:
-
-[,console]
-----
-$ gadmin config get GUI.BasicConfig.Nodes
-[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4}]
-----
-
-To configure the number of servers, add an JSON object to the list:
-
-* `HostID` is the name of the node the server runs on.
-* `Partition` must be 0.
-* `Replica` is the number in the application server sequence that this server would be.
-For example, if you are adding a fourth server, then `Replica` should be 4.
-
-To add two more servers, add two JSON objects to the list, and use `gadmin config set` to set the new value.
-Afterwards, apply the change and restart the `gui` service:
-
-[,console]
-----
-$ gadmin config set GUI.BasicConfig.Nodes [{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2},{"HostID":"m3","Partition":0,"Replica":3},{"HostID":"m4","Partition":0,"Replica":4},{"HostID":"m5","Partition":0,"Replica":5},{"HostID":"m6","Partition":0,"Replica":6}]
-$ gadmin config apply
-$ gadmin restart gui
-----
 
 == Load Balancing
 
