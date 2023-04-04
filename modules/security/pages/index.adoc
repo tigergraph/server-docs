@@ -1,0 +1,111 @@
+= Security
+:description: Overview of security features in TigerGraph.
+
+TigerGraph provides a comprehensive set of security features, including authentication, access control, and encryption to secure your data and communication.
+
+== Network access
+
+* Secured and encrypted communication
+* xref:encrypting-connections.adoc[Connection encryption (TLS 1.2)]
+
+== Authentication
+
+* xref:user-access:enabling-user-authentication.adoc#_enable_restpp_authentication[RESTPP authentication]
+* xref:user-access:enabling-user-authentication.adoc#_enable_gsql_authentication[GSQL authentication]
+* xref:user-access:sso.adoc[SSO with SAML 2.0]
+** xref:user-access:sso.adoc#_azure_ad[Azure AD]
+** xref:user-access:sso.adoc#_okta[Okta]
+** xref:user-access:sso.adoc#_auth0[Auth0]
+** xref:user-access:sso.adoc#_pingfederate[PingFederate]
+* xref:user-access:ldap.adoc[LDAP authentication]
+
+== Authorization
+
+* xref:user-access:access-control-model.adoc#_role_based_access_control[Role-based Access Control (RBAC)]
+* xref:user-access:access-control-model.adoc#_access_control_lists[Access control lists (ACL)]
+* Audit logs for privileged user actions
+
+== Data encryption
+* xref:encrypting-connections.adoc[Data in-transit encryption (TLS 1.2)]
+* xref:encrypting-data-at-rest.adoc[Data at-rest encryption]
+* <<_pgp_key,PGP key-signed download package>>
+
+== Operational compliance
+TigerGraph Server meets the following security compliance standards as certified by third-party audits:
+
+* https://www.tigergraph.com/soc-2/[SOC 2 Compliance]
+* https://www.tigergraph.com/compliance/[PCI-DSS]
+
+== Vulnerability scanning
+TigerGraph leverages best-of-breed tools to periodically and proactively scan source code, application runtime, infrastructure to identify security vulnerabilities:
+
+* Dynamic Application Security Testing (DAST)
+* Static Application Security Testing (SAST)
+* Software Composition Analysis (SCA)
+* Penetration Testing
+* Operating System (OS) Level Vulnerability Scanning
+* Network Vulnerability Scanning
+
+=== Vulnerability remediation
+
+TigerGraph commits to vulnerability remediation upon discovery by the following timelines:
+
+* Critical/high: 30 days
+* Medium: 90 days
+* Low: 180 days
+
+[#_pgp_key]
+== PGP key
+
+TigerGraph Server download packages are signed with our PGP key.
+This ensures the authenticity and integrity of the download package.
+
+* Key ID: 413D1F12
+* Fingerprint:E20D 2B61 FB38 57D4 3B8E  B321 67BD 323E 413D 1F12
+
+You can also find our key on link:https://pgp.mit.edu[].
+
+[#_udf_file_scanning]
+== UDF file scanning
+
+Available in TigerGraph 3.9+
+
+TigerGraph users can upload xref:gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined function (UDF) files] to the server and run them as part of a query or loading job.
+In order to prevent security issues with code execution, TigerGraph Server disables this ability by default and requires it to be enabled manually by an administrator.
+
+In addition, the UDF files are scanned to make sure they comply with the file policy. The scanning process, by default, consists of three parts.
+
+The file scanning policy is controlled by a `gadmin` parameter, `GSQL.UDF.Policy.Enable`, which defaults to `true`. For more information, see the xref:reference:configuration-parameters.adoc[] page.
+
+=== Disabled macros with replacement
+
+Macros with replacement are not allowed, for example `#define TABLE_SIZE 100`.
+However, macros without replacement can still be used, such as `#define EXPRFUNCTIONS_HPP`.
+
+=== File header allowlist
+
+Only the headers present in the allowlist can be included in UDF files.
+UDF files with different headers will not be accepted.
+The list is case-sensitive.
+
+[source, json]
+----
+[
+"stdlib.h", "string", "tuple",
+"vector", "list", "deque", "arrays", "forward_list",
+"queue", "priority_queue", "stack",
+"set", "multiset", "map", "multimap",
+"unordered_set", "unordered_multiset", "unordered_map", "unordered_multimap",
+"iterator",
+"sstream",
+"algorithm", "math.h"
+]
+----
+
+This is customizable with the `gadmin` command `GSQL.UDF.Policy.HeaderAllowlist`. `ExprUtil.hpp` and `tg_ExprUtil.hpp` are always allowed, and do not need to be declared in the allowlist.
+
+=== Blocklist
+
+TigerGraph also has a non-modifiable blocklist that prevents certain C{plus}{plus} features from being used.
+For security reasons, this list is not publicly available.
+Contact support@tigergraph.com for more details about the blocklist policy.
