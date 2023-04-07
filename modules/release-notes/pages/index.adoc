@@ -129,7 +129,8 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
 * If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC (fixed in 3.9.1)
 * The data streaming connector does not handle NULL values; the connector may operate properly if a NULL value is submitted. Users should replace NULL with an alternate value, such as empty string "" for STRING data, 0 for INT data, etc.  (NULL is not a valid value for the TigerGraph graph data store.)
-* he `DATETIME` data type is not supported by the `PRINT … TO CSV` statement (fixed in 3.9.1).
+* The `DATETIME` data type is not supported by the `PRINT … TO CSV` statement (fixed in 3.9.1).
+* The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
 
 === Compatibility Issues
 * v3.9+: Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
