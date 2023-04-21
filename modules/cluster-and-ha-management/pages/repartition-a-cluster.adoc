@@ -61,7 +61,7 @@ $ gadmin cluster expand --stagingPath /tmp/
 If you choose to supply a staging location, make sure that the TigerGraph Linux user has write permission to the path you provide. The overall amount of space required for cluster repartition on each node is `(1 + ceiling(oldPartition/newPartition) ) * dataRootSize`. `oldPartition` and `newPartition` stand for the partitioning factors of the cluster before and after repartition, respectively; `dataRootSize` stands for the size of the data root folder on the node.
 
 For example, assume you are repartitioning from a 6-node cluster with a replication factor of 2 and a partitioning factor of 3, to a 6-node cluster with a replication factor of 3 and a partitioning factor of 2, and the size of the data root folder on a node is 50GB.
-You would need more than `(1 + ceilingl(3/2)) * 50) = 150 GB` of free space on the staging path.
+You would need more than `(1 + ceiling(3/2)) * 50) = 150 GB` of free space on the staging path.
 
 === Verify success and delete temporary files
 
