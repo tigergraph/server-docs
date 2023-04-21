@@ -1,9 +1,16 @@
 = Cluster Expansion
+:page-aliases: tigergraph-server:cluster-resizing:expand-a-cluster.adoc
 :sectnums:
 
-As your workload changes, you can expand your cluster to improve its query performance, system availability, and fault tolerance.
-Expanding a cluster adds more nodes to the cluster, and the data in your cluster is redistributed in the expanded cluster during the expansion.
-During an expansion, you can also change the replication factor of your cluster.
+Expanding a cluster adds more nodes to the cluster.
+During the expansion, the cluster's data is redistributed across the expanded cluster.
+You can also change replication factor during an expansion.
+
+Expanding a cluster may make sense for several reasons:
+
+* to improve query performance
+* to improve system availability
+* to improve fault tolerance
 
 Cluster expansion requires several minutes of cluster downtime.
 The exact amount of downtime varies depending on the size of your cluster.
@@ -12,23 +19,20 @@ WARNING: If your TigerGraph cluster uses a seeded license, please contact mailto
 
 == Before you begin
 
-[NOTE]
+[IMPORTANT]
 ====
-If you are expanding to a single-node installation, TigerGraph must already be installed on the new node in *exactly the same version* as the original.
-For expansion to a target cluster, the target cluster should be running a cluster installation of TigerGraph Server *exactly the same version* as the original that you are expanding from.
-You must expand to all nodes in the target cluster, not a portion of them.
+You must adhere to all of the following requirements.
 ====
 
-* Ensure that there is some data loaded into your cluster.
-Cluster expansion will fail if the cluster is empty of data. 
+* The new nodes must already have *exactly the same version* of TigerGraph software installed as the nodes you are expanding from.
+* The new nodes must not have any data you wish to keep.
+* Ensure that the cluster is not using shared storage.
+Cluster expansion does not support shared storage.
 * Ensure that no loading jobs, queries, or REST requests are running on the original or the expansion target.
-* Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results. This will be useful in verifying data integrity after the expansion completes.
 * If the original cluster is a single node installation, make sure the IP used is not a https://en.wikipedia.org/wiki/Localhost[local loopback address] such as 127.0.0.1.
 
-
-[NOTE]
-====
-You can check the IP address of your original cluster using `gadmin config get System.HostList`. 
+[TIP]
+You can check the IP address of your original cluster using `gadmin config get System.HostList`.
 If it is a loopback IP, you can update it to be the internal IP using the following script:
 [source.wrap, console]
 ----
@@ -36,13 +40,21 @@ $ gadmin config set System.HostList '[{"Hostname":"'$(ip a | grep "inet " | awk 
 $ gadmin config apply -y
 $ gadmin restart all -y
 ----
+
+[NOTE]
+.Advice and Precautions
+====
+* Obtain a few key measures for the state of your data before the expansion, such as vertex counts/edge counts or certain query results.
+This will be useful in verifying data integrity after the expansion completes.
+* Perform a full backup of your existing system before performing the expansion.
 ====
 
 == Procedure
 
 === Identify new cluster replication and partition
 
-Before running any commands to expand a cluster, make sure you have a clear idea of how the new cluster should be distributed. You should have the following information:
+Before running any commands to expand a cluster, make sure you have a clear idea of how the new cluster should be distributed.
+You should have the following information:
 
 * The new replication factor of the cluster
 * The new partitioning factor of the cluster
@@ -65,7 +77,8 @@ $ gadmin cluster expand node_ip_list [--ha <replication_factor>]
 $ gadmin cluster expand m3:10.128.0.81,m4:10.128.0.82 --ha 1
 ----
 
-We suggest naming the new nodes following the convention of `m<serial>`, such as `m1`, `m2`, and `m3` for a 3-node cluster. If you are adding a fourth node, then the fourth node would be named `m4`. If you decide to name them differently, make sure that all names are unique within the cluster.
+We suggest naming the new nodes following the convention of `m<count>`, such as `m1`, `m2`, and `m3` for a 3-node cluster. If you are adding a fourth node, then the fourth node would be named `m4`.
+If you decide to name them differently, make sure that all names are unique within the cluster.
 
 ==== Supply a staging location
 
@@ -76,15 +89,16 @@ Extra disk space is required during cluster expansion. If more space is not avai
 $ gadmin cluster expand m3:192.168.1.3,m4:192.168.1.4 --stagingPath /tmp/
 ----
 
-If you choose to supply a staging location, make sure that the TigerGraph Linux user has write permission to the path you provide. The overall amount of space required for expansion on each node is `(1 + Math.ceil(oldPartition/newPartition) ) * dataRootSize`.
-`oldPartition` and `newPartition` each stand for the partitioning factor of the cluster before and after expansion; `dataRootSize` stands for the size of the data root folder on the node.
+If you choose to supply a staging location, make sure that the TigerGraph Linux user has write permission to the path you provide. The overall amount of space required for expansion on each node is `(1 + ceiling(oldPartition/newPartition) ) * dataRootSize`.
+`oldPartition` and `newPartition` stand for the partitioning factors of the cluster before and after expansion, respectively; `dataRootSize` stands for the size of the data root folder on the node.
 
 For example, assume you are expanding from a 6-node cluster with a replication factor of 2 and a partitioning factor of 3, to a 10-node cluster with a replication factor of 2 and a partitioning factor of 5, and the size of the data root folder on a node is 50GB.
-You would need more than `(1 + Math.ceil(3/5)) * 50) = 100 GB` of free space on the staging path.
+You would need more than `(1 + ceiling(3/5)) * 50) = 100 GB` of free space on the staging path.
 
 
 === Verify success and delete temporary files
 
-When the expansion completes, you should see a message confirming the completion of the cluster change. The message will also include the location of the temporary files created during the expansion.
+When the expansion completes, you should see a message confirming the completion of the cluster change.
+The message will also include the location of the temporary files created during the expansion.
 
 Verify data integrity by comparing vertex/edge counts or query results. After confirming a successful expansion, delete the temporary files to free up disk space.
