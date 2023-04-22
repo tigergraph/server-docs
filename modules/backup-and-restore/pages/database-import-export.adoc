@@ -31,6 +31,7 @@ If the command provides no options, it performs a full export, including schema,
 EXPORT_GRAPH
 ----
 
+[#_synopsis]
 === Synopsis
 
 [.wrap,ebnf]
@@ -51,7 +52,11 @@ exportOptions ::=
         --EOL           Specify a line separator
 ----
 
-CAUTION: The export directory should be empty before running the command.
+WARNING: The export directory should be empty before running the command.
+The export command will delete any intial content in the directory.
+
+IMPORTANT: If you are exporting from a cluster, please also read the section
+xref:tigergraph-server:backup-and-restore:database-import-export.adoc#_cluster_importexport[].
 
 === Parameters
 
@@ -89,13 +94,17 @@ Users will be prompted to enter a password when using this option.
 |===
 
 [NOTE]
+.Limitations and Restrictions of EXPORT
 ====
-xref:user-access:ldap.adoc#_proxy_users[Proxy users] cannot be exported.
-====
+. xref:user-access:ldap.adoc#_proxy_users[Proxy users] cannot be exported.
+. ASCII char 30 (RS) and 31 (US) are reserved separators that cannot be used for data export.
+. When exporting graphs, ACLs are only exported when both queries and users are exported.
 
-[NOTE]
-====
-ASCII char 30 (RS) and 31 (US) are reserved separators that cannot be used for data export.
+** If you use the `-U` option without using the `-T` option, there is no ACL on the exported graphs because there are no queries.
+** If you use the `-T` option without using the `-U` option, the ACL entries on the exported are reset to the _unspecified_ status.
+
+. If you `EXPORT` using the password option, the exported files can only be unzipped by performing an `IMPORT` with the password.
+The security features prevent users from directly unzipping it.
 ====
 
 === Output
@@ -114,24 +123,10 @@ functions.
 * GSQL command files used to recreate the users and their privileges.
 * An encrypted file containing the Access Control List (ACL) privilege catalog.
 
-[NOTE]
-====
-When exporting graphs, ACLs are only exported when both queries and users are exported.
-
-* If you use the `-U` option without using the `-T` option, there is no ACL on the exported graphs because there are no queries.
-* If you use the `-T` option without using the `-U` option, the ACL entries on the exported are reset to the _unspecified_ status.
-====
-
-
 The following files are created in the specified directory when
 exporting and are then zipped into a single file named
 `ExportedGraphs.zip`.
 
-[CAUTION]
-====
-If the file is password-protected, it can only be unzipped using the GSQL command `IMPORT GRAPH ALL`.
-The security features prevent users from directly unzipping it.
-====
 
 * A `DBImportExport_<Graph_Name>.gsql` for each graph called `Graph_Name` in a multigraph database that contains a series of GSQL DDL statements that do the following:
 ** Create the exported graph, along with its local vertex, edge, and tuple types,
@@ -321,28 +316,49 @@ The database can be exported and imported by following some additional steps.
 
 === Export from a cluster
 
-Rather than creating a single export zip file, the `EXPORT GRAPH ALL` command creates a file for each machine.
-
 To export,  run `EXPORT GRAPH ALL` from the GSQL shell on one node.
-The `EXPORT GRAPH` command does not bundle all the files to one server, and it does not compress each server's files to one zip file.
-Some files, including the data files, are exported to each server, while some files are only on the local server where `EXPORT GRAPH` was run.
+Let's call that the __export home node__.
+
+
+The `EXPORT GRAPH` command does not bundle all the files to one server node, and it does not compress each nodes's files to one zip file.
+Instead, the command will write a set of files to each machine.
+Some files, including the data files, are exported to each node, while some files are only on the export home node where `EXPORT GRAPH` was run.
+
+If you have an HA cluster configured as P x R (partition factor x replica factor), the export operation will put the essential files on P nodes: the __export cluster__.
+The other nodes will contain redundant information which does not need to be saved.
+To know which nodes comprise the export cluster, you need to check the size of the exported content.
+The P nodes which clearly have the most data are the export cluster nodes.
+Save these files, each node having a separate folder.
+Remember which one was the export home node.
+
+[CAUTION]
+====
+Each target folder must be separate from the other target folders.
+Having them all point to a single shared folder will result in data corruption. The folders could all be mapped to the same disk or volume using symbolic links, but separate folders on that disk, e.g.,
+[source,bash]
+----
+m1: ~/db_export → /net/shared/db_export/m1
+m2: ~/db_export → /net/shared/db_export/m2
+----
+====
 
 === Import into a cluster
 
-The following are the steps to import an export file to a cluster.
-
-You may only import to a cluster that has the same number and configuration of servers as the data from which the export originated.
+You can import into a cluster with either the same or larger partitioning factor as that of the export cluster.
+For example, if the export cluster had 8 nodes organized as 4 x 2 (partitioning factor x replica factor) configuration, the import cluster must have a partitioning factor of 4 or higher.
 
 ==== 1. Transfer files to new cluster
 
-Transfer the export files from the export servers to the corresponding servers in the new cluster.
-For example, the files on the m1 node of the cluster that exported the graphs must be copied to the m1 server on the cluster that is importing the export files.
+Transfer the export files from the P export nodes to P corresponding nodes in the new cluster.
+If the partitioning factor of the import cluster is larger than that of the export cluster, you don't need to place any export files on the extra nodes.
+For example, the files on the m1 node of the cluster that exported the graphs must be copied to the m1 node on the cluster that is importing the export files.
 
 The export file on every node must share the same absolute path.
+If you mapped all the folders to one drive, you again need symbolic links so that the data seems to be stored locally on each import node.
 
 ==== 2. Run `IMPORT GRAPH ALL`
 
-Run the `IMPORT GRAPH ALL` command from the server that corresponds to the server where `EXPORT GRAPH ALL` was run.
+Run the `IMPORT GRAPH ALL` command from the node that corresponds to the export home node where `EXPORT GRAPH ALL` was run.
 
 For example, if you exported from the m2 node in a cluster, you also need to run the `IMPORT GRAPH ALL` command from the m2 node of the cluster you are importing the export files into.
 
