@@ -48,6 +48,8 @@ The following is a list of new features and improvements:
 ** In an HTTP request, use square brackets `[]` in the request body of a POST request to specify an empty set.
 You can no longer specify an empty set using query strings in a GET request.
 
+NOTE: `TYPE` is a xref:3.8@gsql-ref:appendix:keywords-and-reserved-words.adoc [DDL reserved word]. In particular, you may not use `TYPE` as a vertex or attribute property name.
+
 === Performance
 * Introduced the xref:gsql-ref:querying:query-optimizer/index.adoc[query optimizer], which performs cost-based optimization on queries based on pre-computed statistics.
 
@@ -95,6 +97,9 @@ You can no longer specify an empty set using query strings in a GET request.
 [#_known_issues]
 == Known issues
 * If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC
+
+=== Compatibility Issues
+* `TYPE` is a xref:3.8@gsql-ref:appendix:keywords-and-reserved-words.adoc [DDL reserved word]. In particular, you may not use `TYPE` as a vertex or attribute property name.
 
 
 == Release notes for previous versions
