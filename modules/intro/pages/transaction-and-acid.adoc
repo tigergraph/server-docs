@@ -24,7 +24,7 @@ The TigerGraph system also provides distributed system Sequential Consistency: e
 
 == *Isolation Level*
 
-TigerGraph supports the Serializable isolation level, the strongest form of isolation. Internally, TigerGraph uses MVCC to implement the isolation. MVCC, or Multi-Version Concurrency Control, makes use of multiple snapshots of portions of the database state in order to support isolated concurrent operations.  In principle, there can be one snapshot per read or write operation.
+TigerGraph supports the read-committed isolation level, the default standard for many major databases. Internally, TigerGraph uses MVCC to implement the isolation. MVCC, or Multi-Version Concurrency Control, makes use of multiple snapshots of portions of the database state in order to support isolated concurrent operations.  In principle, there can be one snapshot per read or write operation.
 
 == *No Dirty Reads*
 
