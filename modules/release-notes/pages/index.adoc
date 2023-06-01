@@ -5,6 +5,8 @@
 :toc:
 :toclevels:2
 
+TigerGraph Server {page-component-version}.2 LTS was released on June 7, 2023.
+
 TigerGraph Server {page-component-version}.1 LTS was released on March 22, 2023.
 
 TigerGraph Server {page-component-version}.0 LTS was released on February 28th, 2023.
@@ -19,7 +21,7 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 * *xref:3.9@tigergraph-server:data-loading:data-streaming-connector/[Data streaming connector]* - Simplifies and unifies setup for data loading, employs robust Kafka-based design, supports cloud-hosted data sources in many formats, including Parquet
 * *Improved monitoring and logging* - Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
 
-== Detailed List of New Features
+== Detailed List of New and Modified Features
 
 === TigerGraph Server
 * xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[]:
@@ -34,6 +36,9 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 * Added a new command for `gadmin backup` to xref:3.9@tigergraph-server:backup-and-restore:backup-cluster.adoc#_back_up_a_database_cluster[control the number of backups], for better storage space management.
 * Expanded the list of xref:3.9@tigergraph-server:reference:error-codes.adoc[system response codes] to include one for an invalid vertex ID.
 * Improved the backend security infrastructure for the Kafka loader.
+* [3.9.2+] Changed the default retention times for the
+xref:tigergraph-server:reference:configuration-parameters.adoc#_informant[Informant.RetentionPeriodDay] and
+xref:tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.RetentionPeriodDay] configuration parameters from 30 days to 7 days, to reduce disk consumption and improve system history query performanace.
 
 === GSQL Command and Querying Language
 
@@ -53,6 +58,10 @@ multiple edges of the same type] between vertices, to simplify application desig
 [scalar accumulator] data types. This means xref:3.9@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined functions] in `Exprfunctions.hpp` may no longer use the name `to_string()` (case-insensitive).
 * Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
 * Standardized `SHOW PACKAGE` for xref:3.9@graph-ml:using-an-algorithm:index.adoc[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
+* [3.9.2+] `outdegree`
+xref:gsql-ref:querying:func/vertex-methods.adoc[vertex function]
+vertex function can also be used with vertex input parameters in the query-body statements, not only with SELECT block vertex aliases.
+
 
 //=== JDBC Spark Connector
 //
@@ -88,6 +97,10 @@ multiple edges of the same type] between vertices, to simplify application desig
 * Added a mini-map to the xref:3.9@insights:widgets:graph-widget.adoc[graph widgets] for easier navigation.
 
 == Fixed issues
+
+=== Fixed and Improved in 3.9.2
+
+* Removed a restriction when load data into an edge defined for multiple FROM-TO vertex type pairs. The load statement no longer must have a USING clause.
 
 === Fixed and Improved in 3.9.1
 * Fixed sorting issue in a script for upgrading a cluster with more than 9 nodes.

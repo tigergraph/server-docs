@@ -663,8 +663,10 @@ informant database source folder |`informant/db`
 
 |Informant.RestPort |The restful server port for Informant |`9167`
 
-|Informant.RetentionPeriodDay |The period in days for local database
-records to keep, set -1 for keeping forever |`30`
+|Informant.RetentionPeriodDay |The period in days for local data
+records to be kept, set to -1 for forever (not advised).
+Longer retention results in higher disk space usage and slower search for historical status
+|`7`
 |===
 
 == Kafka
@@ -1275,8 +1277,10 @@ database source folder |`ts3/db`
 |TS3.Metrics |The metrics TS3 will be collecting
 |`cpu,mem,diskspace,qps,servicestate,network,connection`
 
-|TS3.RetentionPeriodDay |The period in days for local database records
-to keep, set -1 for keeping forever |`30`
+|TS3.RetentionPeriodDay |The period in days for local data records
+to be kept, set to -1 for forever (not advised).
+Longer retention results in higher disk space usage and slower search for historical status
+|`7`
 |===
 
 == TS3Server
