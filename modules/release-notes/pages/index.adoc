@@ -48,6 +48,7 @@ xref:tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.Retentio
 Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
 ** Introduced a new `STREAM` data loading type that simplifies the xref:3.9@tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
 * Added a new set of loading job xref:3.9@gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
+* [3.9.2+] Added configuration parameter xref:tigergraph-server:reference:configuration-parameters.adoc#_kafkaconnect[`KafkaConnect.ALlowedTaskPerCPU`] to set a maximum number of concurrent connector tasks.
 
 ==== Schema
 * Full support for xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
@@ -84,6 +85,9 @@ vertex function can also be used with vertex input parameters in the query-body 
 === Admin Portal
 
 * Reworked the xref:3.9@gui:admin-portal:dashboard.adoc[Admin Portal dashboard] to show the relationship hierarchy and status of all TigerGraph components for at-a-glance understanding of the TigerGraph system.
+
+=== GraphStudio
+* [3.9.2+] Removed the *All Paths* option from the Explore Graph page, as this feature is not practical for large graphs.
 
 === GDS Library and ML Workbench
 
