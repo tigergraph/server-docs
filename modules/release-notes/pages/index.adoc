@@ -48,7 +48,7 @@ xref:tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.Retentio
 Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
 ** Introduced a new `STREAM` data loading type that simplifies the xref:3.9@tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
 * Added a new set of loading job xref:3.9@gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
-* [3.9.2+] Added configuration parameter xref:tigergraph-server:reference:configuration-parameters.adoc#_kafkaconnect[`KafkaConnect.ALlowedTaskPerCPU`] to set a maximum number of concurrent connector tasks.
+* [3.9.2+] Added configuration parameter xref:tigergraph-server:reference:configuration-parameters.adoc#_kafkaconnect[`KafkaConnect.AllowedTaskPerCPU`] to set a maximum number of concurrent connector tasks.
 
 ==== Schema
 * Full support for xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
@@ -83,7 +83,7 @@ vertex function can also be used with vertex input parameters in the query-body 
 
 == TigerGraph Suite Updates
 === Admin Portal
-
+* [3.9.2+] Added support for xref:gui:admin-portal:components:readme.adoc[configuring two additional components]: GPE and Kafka.
 * Reworked the xref:3.9@gui:admin-portal:dashboard.adoc[Admin Portal dashboard] to show the relationship hierarchy and status of all TigerGraph components for at-a-glance understanding of the TigerGraph system.
 
 === GraphStudio
@@ -150,6 +150,8 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
 
 === Compatibility Issues
+* v3.9.2+
+** Betweenness Centrality algorithm: `reverse_edge_type (STRING)` parameter changed to `reverse_edge_type_set (SET<STRING>)`, to be consistent with `edge_type_set` and similar algorithms.
 * v3.9+: Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
 ** UDFs may no longer be called `to_string()`. This is now a built-in GSQL function.
 ** UDF names may no longer use the `tg_` prefix. Any user-defined function that began with `tg_` must be renamed or removed in `ExprFunctions.hpp`.
