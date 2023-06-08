@@ -403,9 +403,13 @@ Response::
 
 `GET :14240/informant/metrics`
 
+`POST :14240/informant/metrics`
+
 You can monitor system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
 
-Every call to this endpoint retrieves all metrics.
+* To retrieve all metrics, use GET.
+* To retreive xref:built-in-endpoints.adoc#_filter_returned_metrics[filtered metrics], use POST along with a payload describing your filters.
+
 Metrics are updated every 60 seconds by default.
 This interval can be adjusted with the xref:reference:configuration-parameters.adoc[`System.Metrics`  parameters].
 
@@ -516,15 +520,15 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 
 ==== Filter returned metrics
 
-A call to the `9167/metrics` endpoint returns all metrics by default.
-This endpoint also supports filtered responses by sending a `POST` request to `9167/metrics/get/` and adding filters like so:
+A call to the `14240/informant/metrics` endpoint returns all metrics by default.
+This endpoint also supports filtered responses by sending a `POST` request to `14240/informant/metrics/get/` and adding filters like so:
 
 [source, console]
 ----
-curl -X POST -k localhost:9167/metrics/get/cpu-memory
-curl -X POST -k localhost:9167/metrics/get/diskspace
-curl -X POST -k localhost:9167/metrics/get/network
-curl -X POST -k localhost:9167/metrics/get/qps
+curl -X POST -k localhost:14240/informant/metrics/get/cpu-memory
+curl -X POST -k localhost:14240/informant/metrics/get/diskspace
+curl -X POST -k localhost:14240/informant/metrics/get/network
+curl -X POST -k localhost:14240/informant/metrics/get/qps
 ----
 
 Because these are POST requests, they must take the mandatory `-d` flag and deliver a JSON-formatted payload consisting of a JSON-formatted set of request fields.
