@@ -401,18 +401,13 @@ Response::
 
 === Monitor system metrics (OpenMetrics)
 
-`GET :9167/metrics`
+`GET :14240/informant/metrics`
 
 You can monitor system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
-This endpoint exists on port 9167 by default.
-
-NOTE: This endpoint listens on the same port as the informant service in TigerGraph.
-If you change the informant port to a different one, this endpoint listens on that port instead.
 
 Every call to this endpoint retrieves all metrics.
 Metrics are updated every 60 seconds by default.
 This interval can be adjusted with the xref:reference:configuration-parameters.adoc[`System.Metrics`  parameters].
-
 
 This endpoint does not require any privileges.
 
@@ -428,7 +423,7 @@ Request::
 --
 [.wrap.console]
 ----
-$ curl http://localhost:9167/metrics
+$ curl http://localhost:14240/informant/metrics
 ----
 --
 Response::
