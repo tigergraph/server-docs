@@ -427,7 +427,7 @@ Request::
 --
 [.wrap.console]
 ----
-$ curl http://localhost:12420/informant/metrics
+$ curl http://localhost:14240/informant/metrics
 ----
 --
 Response::
@@ -520,15 +520,15 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 
 ==== Filter returned metrics
 
-A call to the `12420/informant/metrics` endpoint returns all metrics by default.
-This endpoint also supports filtered responses by sending a `POST` request to `12420/informant/metrics/get/` and adding filters like so:
+A call to the `14240/informant/metrics` endpoint returns all metrics by default.
+This endpoint also supports filtered responses by sending a `POST` request to `14240/informant/metrics/get/` and adding filters like so:
 
 [source, console]
 ----
-curl -X POST -k localhost:12420/informant/metrics/get/cpu-memory
-curl -X POST -k localhost:12420/informant/metrics/get/diskspace
-curl -X POST -k localhost:12420/informant/metrics/get/network
-curl -X POST -k localhost:12420/informant/metrics/get/qps
+curl -X POST -k localhost:14240/informant/metrics/get/cpu-memory
+curl -X POST -k localhost:14240/informant/metrics/get/diskspace
+curl -X POST -k localhost:14240/informant/metrics/get/network
+curl -X POST -k localhost:14240/informant/metrics/get/qps
 ----
 
 Because these are POST requests, they must take the mandatory `-d` flag and deliver a JSON-formatted payload consisting of a JSON-formatted set of request fields.
@@ -605,19 +605,19 @@ Some sample requests in this format are as follows:
 .Get disk space report from host `m2`
 [source, console]
 ----
-curl -X POST -k localhost:12420/informant/metrics/get/diskspace -d '{"HostID":"m2"}'
+curl -X POST -k localhost:14240/informant/metrics/get/diskspace -d '{"HostID":"m2"}'
 ----
 
 .Get a network usage report with the two most recent items
 [source, console]
 ----
-curl -X POST -k localhost:12420/informant/metrics/get/network -d '{"LatestNum":"2"}'
+curl -X POST -k localhost:14240/informant/metrics/get/network -d '{"LatestNum":"2"}'
 ----
 
 .Get a CPU and memory report for the GSE service with partition and replica number specified
 [source.wrap, console]
 ----
-curl -X POST -k localhost:12420/informant/metrics/get/cpu-memory -d '{"ServiceDescriptor":{"ServiceName":"gse","Partition": 1,"Replica":1}}'
+curl -X POST -k localhost:14240/informant/metrics/get/cpu-memory -d '{"ServiceDescriptor":{"ServiceName":"gse","Partition": 1,"Replica":1}}'
 ----
 
 The Service Status request returns a map of the following service codes:
