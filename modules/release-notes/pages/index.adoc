@@ -50,6 +50,11 @@ You can no longer specify an empty set using query strings in a GET request.
 
 NOTE: `TYPE` is a xref:3.8@gsql-ref:appendix:keywords-and-reserved-words.adoc [DDL reserved word]. In particular, you may not use `TYPE` as a vertex or attribute property name.
 
+=== Backup
+
+* Added support and a configuration parameter for a
+xref:3.8@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied s3-compatible storage endpoint], typically used when operating in a private network of with a non-AWS S3-compatible service.
+
 === Performance
 * Introduced the xref:gsql-ref:querying:query-optimizer/index.adoc[query optimizer], which performs cost-based optimization on queries based on pre-computed statistics.
 
