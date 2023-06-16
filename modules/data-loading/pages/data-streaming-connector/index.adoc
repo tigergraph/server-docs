@@ -392,9 +392,9 @@ NOTE: Automatic message removal is an Alpha feature and may be subject to change
 Messages in TigerGraph's internal Kafka cluster are automatically removed from the topics at regular intervals.
 There are several known issues with this process:
 
+* If the connector is manually deleted before reaching EOF, the corresponding loading job will never stop. Please use `ABORT LOADING JOB` to terminate the loading pipeline instead of directly manipulating the connector.
 * Messages are only removed if the loading job is actively running.
 If the loading job finishes much sooner before the interval is reached, the messages are not removed.
-* If loading job uses EOF mode, meaning the loading job will terminate as soon as it finishes, it is likely some partial data will be left in the topic.
 * If a topic is deleted and recreated while a loading job on the topic is running, the data in the topic may get removed.
 * Deleting the connector does not delete the connect offsets for topics that are mapped to a folder URI.
 
