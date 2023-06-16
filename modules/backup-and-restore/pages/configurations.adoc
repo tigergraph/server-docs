@@ -39,10 +39,10 @@ Required if backup is to be stored on S3.| null
 |System.Backup.S3.Enable |Whether to store the database backup data to S3.
 Required if backup is to be stored on S3.
 
+If this parameter is set to true, `System.Backup.Local.Enable` cannot be set to true.|`+false+`
+
 |System.Backup.S3.Endpoint | Endpoint to use instead of the S3 default endpoint. Must be a fully qualified URL.
 Typically used when operating in a private network or with a non-AWS S3-compatible endpoint. | null
-
-If this parameter is set to true, `System.Backup.Local.Enable` cannot be set to true.|`+false+`
 
 |System.Backup.TimeoutSec |Timeout limit for the backup operation in seconds |`+18000+`
 
