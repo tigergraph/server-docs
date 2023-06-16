@@ -1,6 +1,6 @@
 = Backup and Restore Configurations
 
-This page walks you through the configurations available for backup and restore on TigerGraph and how to set them.
+This page describes the configuration options available for backup and restore on TigerGraph and how to set them.
 
 == Prerequisites
 * You have access to the TigerGraph Linux user account on your cluster.
@@ -8,7 +8,7 @@ All commands must be run from the TigerGraph Linux user.
 
 == Configuration parameters
 
-The following is a list of configurations available for backup and restore.
+The following is a list of configuration options available for backup and restore.
 
 
 |===
@@ -20,11 +20,11 @@ If this parameter is set to true, `System.Backup.S3.Enable` cannot be set to tru
 |`false`
 
 |System.Backup.Local.Path |Local path to store the backup files.
-Required if backup is to be stored locally. |`nan`
+Required if backup is to be stored locally. | null
 
 |System.Backup.S3.AWSAccessKeyID |AWS access key ID for s3 bucket of
 backup.
-Required if backup is to be stored on S3. |`+nan+`
+Required if backup is to be stored on S3. | null
 
 |System.Backup.S3.AWSSecretAccessKey |Secret access key for s3
 bucket.
@@ -34,7 +34,10 @@ Required if backup is to be stored on S3.
 |`+nan+`
 
 |System.Backup.S3.BucketName |Name of the S3 bucket to store backup files.
-Required if backup is to be stored on S3.|`+nan+`
+Required if backup is to be stored on S3.| null
+
+|System.Backup.S3.Endpoint | Endpoint to use instead of the S3 default endpoint. Must be a fully qualified URL.
+Typically used when operating in a private network or with a non-AWS S3-compatible endpoint. | null
 
 |System.Backup.S3.Enable |Whether to store the database backup data to S3.
 Required if backup is to be stored on S3.
