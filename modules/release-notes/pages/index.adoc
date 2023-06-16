@@ -49,6 +49,7 @@ Streamlined the user experience for creating loading jobs for data stored in AWS
 ** Introduced a new `STREAM` data loading type that simplifies the xref:3.9@tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
 * Added a new set of loading job xref:3.9@gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
 * [3.9.2+] Added configuration parameter xref:tigergraph-server:reference:configuration-parameters.adoc#_kafkaconnect[`KafkaConnect.AllowedTaskPerCPU`] to set a maximum number of concurrent connector tasks.
+* [3.9.2+] The default mode for the Kafka Connector is `EOF="true"`
 
 ==== Schema
 * Full support for xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
@@ -146,6 +147,7 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
 * If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC (fixed in 3.9.1)
 * The data streaming connector does not handle NULL values; the connector may operate properly if a NULL value is submitted. Users should replace NULL with an alternate value, such as empty string "" for STRING data, 0 for INT data, etc.  (NULL is not a valid value for the TigerGraph graph data store.)
+* Automatic message removal is an Alpha feature of the Kafka connector.  It has several xref:tigergraph-server:data-loading:data-streaming-connector/index.adoc#_known_issues[known issues].
 * The `DATETIME` data type is not supported by the `PRINT … TO CSV` statement (fixed in 3.9.1).
 * The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
 

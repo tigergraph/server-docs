@@ -279,7 +279,7 @@ Topic-partition configuration file::
 Loading job::
 +
 --
-[,gsql]
+[.wrap,gsql]
 ----
 CREATE LOADING JOB load_company FOR GRAPH Company_Graph {
     DEFINE FILENAME f1 =
@@ -298,7 +298,8 @@ Once the loading job is created, run the loading job to load data into the graph
 RUN LOADING JOB -noprint load_company USING EOF="true"
 ----
 
-There are two modes for the Kafka Loader: streaming mode and EOF mode.
-The default mode is streaming mode.
-In streaming mode, loading never stops until the job is aborted.
+There are two modes for the Kafka Loader: EOF mode and streaming mode.
+The default mode is EOF mode.
 In EOF mode, loading stops after consuming the current Kafka messages.
+In streaming mode, loading never stops until the job is aborted.
+
