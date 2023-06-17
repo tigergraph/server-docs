@@ -11,8 +11,12 @@ If you run into errors saying that Custom Resource Definition (CRD) already exis
 Therefore, you can safely ignore the error and skip installation.
 
 == Prerequisites
+* The following software must be installed on your computer:
+** helm v3.7.0 or above
+** kubectl v1.22 or above
+** jq v1.6 or above
+** yq v4.18.1 or above
 * You have configured the `kubectl` command-line tool for access to your running Kubernetes cluster.
-* Helm is installed on your local machine.
 * https://cert-manager.io/docs/installation/kubectl/[cert-manager is installed on your Kubernetes cluster].
 
 == Procedure
@@ -36,7 +40,7 @@ Run the command below to initialize the TigerGraph Kubernetes Operator.
 
 [.wrap,console]
 ----
-$ kubectl tg init http://hub.docker.com/
+$ kubectl tg init
 ----
 
 Add the `-n` flag with your namespace to use a custom namespace. The full options for the `init` command are listed here:
