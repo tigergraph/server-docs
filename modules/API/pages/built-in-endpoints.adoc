@@ -518,10 +518,9 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 --
 ====
 
-==== Filter returned metrics
+==== Monitor system metrics (non-OpenMetrics)
 
 A call to the `14240/informant/metrics` endpoint returns all metrics by default.
-This endpoint also supports filtered responses by sending a `POST` request to `14240/informant/metrics/get/` and adding filters like so:
 
 [source, console]
 ----
@@ -538,33 +537,39 @@ The payload differs based on the requested information.
 [source,json]
 ----
 {
-    "ServiceDescriptor": {
-      "ServiceName": "string",
-      "Replica": 0,
-      "Partition": 0
-    },
+  "ServiceDescriptors": [
+      {
+        "ServiceName": "<service_name>",
+        "Partition": <partition_number (int32)>,
+        "Replica": <replica_number (int32)>
+      }
+      ... <1>
+    ],
     "TimeRange":{
-      "StartTimestampNS": "string, time in nanoseconds",
-      "EndTimestampNS": "string, time in nanoseconds"
+      "StartTimestampNS": "<time in nanoseconds (string)>",
+      "EndTimestampNS": "<time in nanoseconds (string)>"
     },
-   "HostID": "string, the node such as m1, m2, etc",
-   "CPUUsage": "float, returns all metrics with CPU usage greater than this value in percent",
-   "MemoryUsage": "int32, returns all metrics with memory usage greater than this value in megabytes",
-   "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+   "HostID": "<the node ID, such as m1 or m2>",
+   "CPUUsage": <return all metrics with CPU usage greater than this value in percent (float)>,
+   "MemoryUsage": <return all metrics with memory usage greater than this value in megabytes (int32)>,
+   "LatestNum": <the number of items per serviceID to return, most recent first (int32)>
 }
 ----
+<1> List additional services, as needed.
+
+NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having a single ServiceDescriptor to having a list of ServiceDescriptors.
 
 .Disk space
 [source, json]
 ----
 {
   "TimeRange": {
-    "StartTimestampNS": "string",
-    "EndTimestampNS": "string"
+    "StartTimestampNS": "<time in nanoseconds (string)>",
+    "EndTimestampNS": "<time in nanoseconds (string)>"
   },
-  "PathName": "string, either log, kafka, gstore, or home",
-  "HostID": "string, the node such as m1, m2, etc",
-  "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+  "PathName": "<either log, kafka, gstore, or home>",
+  "HostID": "<the node ID, such as m1 or m2>",
+  "LatestNum": <the number of items per serviceID to return, most recent first (int32)>
 }
 ----
 
@@ -573,11 +578,11 @@ The payload differs based on the requested information.
 ----
 {
   "TimeRange": {
-    "StartTimestampNS": "string",
-    "EndTimestampNS": "string"
+    "StartTimestampNS": "<time in nanoseconds (string)>",
+    "EndTimestampNS": "<time in nanoseconds (string)>"
   },
-  "HostID": "string, the node such as m1, m2, etc",
-  "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+  "HostID": "<the node ID, such as m1 or m2>",
+  "LatestNum": <the number of items per serviceID to return, most recent first (int32)>
 }
 ----
 
@@ -586,17 +591,17 @@ The payload differs based on the requested information.
 ----
 {
   "TimeRange": {
-    "StartTimestampNS": "string",
-    "EndTimestampNS": "string"
+    "StartTimestampNS": "<time in nanoseconds (string)>",
+    "EndTimestampNS": "<time in nanoseconds (string)>"
   },
   "ServiceDescriptor": {
-    "ServiceName": "string",
-    "Replica": 0,
-    "Partition": 0
+    "ServiceName": "<service_name>",
+    "Partition": <partition_number (int32)>,
+    "Replica": <replica_number (int32)>
   },
-  "HostID": "string, the node such as m1, m2, etc",
-  "LatestNum": "int32, the number of items per serviceID to return, most recent first",
-  "Endpoint": "string"
+  "HostID": "<the node ID, such as m1 or m2>",
+  "LatestNum": <the number of items per serviceID to return, most recent first (int32)>
+  "Endpoint": "<endpoint URL>"
 }
 ----
 
@@ -617,7 +622,7 @@ curl -X POST -k localhost:9167/metrics/get/network -d '{"LatestNum":"2"}'
 .Get a CPU and memory report for the GSE service with partition and replica number specified
 [source.wrap, console]
 ----
-curl -X POST -k localhost:9167/metrics/get/cpu-memory -d '{"ServiceDescriptor":{"ServiceName":"gse","Partition": 1,"Replica":1}}'
+curl -X POST -k localhost:9167/metrics/get/cpu-memory -d '{"ServiceDescriptors":[{"ServiceName":"gse","Partition": 1,"Replica":1}]}'
 ----
 
 The Service Status request returns a map of the following service codes:
