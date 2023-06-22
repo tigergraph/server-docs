@@ -1,0 +1,439 @@
+= Custom Containers and Volumes
+:description: How to use Kubernetes init containers, sidecar containers, and custom volumes in TigerGraph.
+
+Custom containers are available in TigerGraph 3.9.2.
+
+IMPORTANT: Kubernetes Operator support is currently a Preview Feature. Preview Features give users an early look at future production-level features. Preview Features should not be used for production deployments.
+
+Starting with TigerGraph 3.9.2, a TigerGraph Kubernetes pod may contain multiple containers, sharing the storage and network resources of the pod.
+Each container should have one primary concern, so more complex pods can be partitioned into multiple containers.
+
+TIP: You should configure the resource limit for each container in the pod to avoid exhausting the resources of a pod or node.
+
+TigerGraph supports three types of pods.
+The application ("app") containers perform the main purpose of the pod.
+Users can add customized init containers and sidecar containers.
+xref:#_defining_init_containers[Init containers] execute before the app containers.
+xref:#_defining_sidecar_containers[Side containers] work with app containers to provide additional functionlity.
+
+Users can also xref:#_defining_custom_volumes[create a custom volume] to mount in their init containers or sidecar containers.
+
+The first part of this page describes xref:#_defining_custom_containers[how to define custom containers].
+The second part describes xref:#_deploying_custom_containers[how to deploy custom containers].
+
+== Defining Custom Containers
+
+[#_defining_init_containers]
+=== Defining Init Containers
+When a pod is created, init containers will run one by one in order, before the app containers start.
+Each init container will run to completion before the next one starts.
+If an init container fails, it will be restarted according to the pods `restartPolicy`.See
+https://kubernetes.io/docs/concepts/workloads/pods/init-containers/[Kubernetes documentation on Init containers] for a detailed explanation.
+
+To specify one or more init containers, add a `initContainer` list to the `spec` section of your pod specification manifest.
+The init containers will run in the order in which you list them.
+
+An example is shown below.
+
+._Click to open_
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: graphdb.tigergraph.com/v1alpha1
+kind: TigerGraph
+metadata:
+  name: test-cluster
+spec:
+  image: docker.io/tigergraph/tigergraph-k8s:3.9.2
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - name: tigergraph-image-pull-secret
+  initJob:
+    image: docker.io/tigergraph/tigergraph-k8s-init:0.0.6
+    imagePullPolicy: IfNotPresent
+    imagePullSecrets:
+      - name: tigergraph-image-pull-secret
+  initTGConfig:
+    appRoot: /home/tigergraph/tigergraph/app
+    dataRoot: /home/tigergraph/tigergraph/data
+    ha: 1
+    hashBucketInBit: 5
+    license: YOUR_LICENSE_HERE
+    logRoot: /home/tigergraph/tigergraph/log
+    password: tigergraph
+    privatekey: /home/tigergraph/.ssh/tigergraph_rsa
+    tempRoot: /home/tigergraph/tigergraph/tmp
+    username: tigergraph
+    version: 3.9.2
+  listener:
+    type: LoadBalancer
+  privateKeyName: ssh-key-secret
+  replicas: 1
+  resources:
+    requests:
+      cpu: "8"
+      memory: 16Gi
+  initContainers:
+    - image: alpine:3.17.2
+      name: init-hello
+      args:
+        - /bin/sh
+        - -c
+        - echo hello
+  storage:
+    type: persistent-claim
+    volumeClaimTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10G
+      storageClassName: standard
+      volumeMode: Filesystem
+----
+====
+
+=== Defining Sidecar Containers
+A sidecar container is tightly coupled to and dependent on one more app containers.
+If the sidecar container is required to configure readiness and liveness checks, you must ensure that those checks will not affect the rolling update of TigerGraph pods.
+See https://kubernetes.io/docs/concepts/workloads/pods/#workload-resources-for-managing-pod[documentation on sidecars at Kubernetes] and elsewhere for a more detailed explanation.
+
+To specify one or more sidecar containers, add a `sidecarContainer` list to the `spec` section of your pod specification manifest.
+
+._Click to open_
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: graphdb.tigergraph.com/v1alpha1
+kind: TigerGraph
+metadata:
+  name: test-cluster
+spec:
+  image: docker.io/tigergraph/tigergraph-k8s:3.9.2
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - name: tigergraph-image-pull-secret
+  initJob:
+    image: docker.io/tigergraph/tigergraph-k8s-init:0.0.6
+    imagePullPolicy: IfNotPresent
+    imagePullSecrets:
+      - name: tigergraph-image-pull-secret
+  initTGConfig:
+    appRoot: /home/tigergraph/tigergraph/app
+    dataRoot: /home/tigergraph/tigergraph/data
+    ha: 1
+    hashBucketInBit: 5
+    license: YOUR_LICENSE_HERE
+    logRoot: /home/tigergraph/tigergraph/log
+    password: tigergraph
+    privatekey: /home/tigergraph/.ssh/tigergraph_rsa
+    tempRoot: /home/tigergraph/tigergraph/tmp
+    username: tigergraph
+    version: 3.9.2
+  listener:
+    type: LoadBalancer
+  privateKeyName: ssh-key-secret
+  replicas: 1
+  resources:
+    requests:
+      cpu: "8"
+      memory: 16Gi
+  sidecarContainers:
+    - args: # sidecar will execute this
+        - /bin/sh
+        - -c
+        - |
+          while true; do
+            echo "$(date) INFO hello from main-container" >> /var/log/myapp.log ;
+            sleep 1;
+          done
+      image: alpine:3.17.2
+      name: main-container # name of sidecar
+      readinessProbe: # check if the sidecar is ready
+        exec:
+          command:
+            - sh
+            - -c
+            - if [[ -f /var/log/myapp.log ]];then exit 0; else exit 1;fi
+        initialDelaySeconds: 10
+        periodSeconds: 5
+      resources:
+        requests: # request resouces for sidecar
+          cpu: 2
+          memory: 1Gi
+        limits: # limit resources
+          cpu: 4
+          memory: 4Gi
+      env: # inject the environment you need
+        - name: CLUSTER_NAME
+          value: test-cluster
+      volumeMounts:
+        - mountPath: /var/log
+          name: tg-log # this volume is used by TG, you can access log of tg here
+    # securityContext: # configure securityContext here
+    #   privileged: true
+  storage:
+    type: persistent-claim
+    volumeClaimTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10G
+      storageClassName: standard
+      volumeMode: Filesystem
+----
+====
+
+[#_defining_custom_volumes]
+=== Defining Custom Volumes
+
+TigerGraph's operator custom volumes to exchange data between its init containers and sidecar containers.
+If you wish to define your own custom volumes, place your configurations in a `customVolumes` list in the `spec` section of your pod specification manifest.
+See https://kubernetes.io/docs/concepts/storage/volumes/[Kubernetes documentation on Volumes] for more on how to define a volume.
+
+The TigerGraph operator creates two volumes by default:
+
+* `tg-data`, to persistent data of the database
+* `tg-log`, to save logs
+
+The mount path for the logs is /`home/tigergraph/tigergraph/log`
+You can use the volume name `tg-log` and mount path `/home/tigergraph/tigergraph/log` in the sidecar to access TigerGraph's logs.
+
+==== Example of a Custom Volume to Exchange Data
+
+The following YAML code block shows an example of an init container,  sidecar containers, and a custom volume to share data between them.
+The init container create a file in the volume named `credentials`.
+The sidecar named `main-container` uses this `credential` file to check the readiness.
+The sidecar outputs `/var/log/myapp.log` to a file, and the sidecar named `sidecar-container` can read this file because they both mount the customVolume named `log`.
+
+._Click to open_
+[%collapsible]
+====
+[,yaml]
+----
+apiVersion: graphdb.tigergraph.com/v1alpha1
+kind: TigerGraph
+metadata:
+  name: test-cluster
+spec:
+  image: docker.io/tigergraph/tigergraph-k8s:3.9.2
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - name: tigergraph-image-pull-secret
+  initJob:
+    image: docker.io/tigergraph/tigergraph-k8s-init:0.0.6
+    imagePullPolicy: IfNotPresent
+    imagePullSecrets:
+      - name: tigergraph-image-pull-secret
+  initTGConfig:
+    appRoot: /home/tigergraph/tigergraph/app
+    dataRoot: /home/tigergraph/tigergraph/data
+    ha: 1
+    hashBucketInBit: 5
+    license: YOUR_LICENSE_HERE
+    logRoot: /home/tigergraph/tigergraph/log
+    password: tigergraph
+    privatekey: /home/tigergraph/.ssh/tigergraph_rsa
+    tempRoot: /home/tigergraph/tigergraph/tmp
+    username: tigergraph
+    version: 3.9.2
+  listener:
+    type: LoadBalancer
+  privateKeyName: ssh-key-secret
+  replicas: 1
+  resources:
+    requests:
+      cpu: "8"
+      memory: 16Gi
+  storage:
+    type: persistent-claim
+    volumeClaimTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10G
+      storageClassName: standard
+      volumeMode: Filesystem
+  initContainers:
+    - image: alpine:3.17.2
+      name: init-credential
+      args:
+        - /bin/sh
+        - -c
+        - echo CREDENTIAL > /credentials/auth_file
+      volumeMounts:
+      - name: credentials
+        mountPath: /credentials
+
+  sidecarContainers:
+    - image: alpine:3.17.2
+      name: main-container
+      args:
+        - /bin/sh
+        - -c
+        - while true; do echo "$(date) INFO hello from main-container" >> /var/log/myapp.log ;sleep 1;done
+      volumeMounts:
+      - name: credentials
+        mountPath: /credentials
+      - name: log
+        mountPath: /var/log
+      readinessProbe:
+        exec:
+          command:
+          - sh
+          - -c
+          - if [[ -f /credentials/auth_file ]];then exit 0; else exit 1;fi
+        initialDelaySeconds: 10
+        periodSeconds: 5
+    - name: sidecar-container
+      image: alpine:3.17.2
+      args:
+        - /bin/sh
+        - -c
+        - tail -fn+1 /var/log/myapp.log
+      volumeMounts:
+      - name: log
+        mountPath: /var/log
+  customVolumes:
+    - name: log
+      emptyDir: {}
+    - name: credentials
+      emptyDir: {}
+----
+====
+
+
+== Deploying Custom Containers
+
+To include custom containers or volumes in a cluster, use the option
+
+`--custom-containers <customizing YAML>`
+
+with `kubectl tg`, where <customizing YAML> is a YAML file containing the definitions of your custom containers and volumes.
+
+The following is an example file with definitions for a init container, a sidecar container, and a custom volume.
+
+._Click to open_
+[%collapsible]
+====
+[,yaml]
+----
+initContainers:
+  - image: alpine:3.17.2
+    name: init-hello
+    args:
+      - /bin/sh
+      - -c
+      - echo hello
+sidecarContainers:
+  - image: alpine:3.17.2
+    name: main-container
+    args:
+      - /bin/sh
+      - -c
+      - >
+        while true; do
+          echo "$(date) INFO hello from main-container" >> /var/log/myapp.log ;
+          sleep 1;
+        done
+    volumeMounts:
+    - name: tg-log
+      mountPath: /var/tglog
+    - name: log
+      mountPath: /var/log
+    readinessProbe:
+      exec:
+        command:
+        - sh
+        - -c
+        - if [[ -f /var/log/myapp.log ]];then exit 0; else exit 1;fi
+      initialDelaySeconds: 10
+      periodSeconds: 5
+    # livenessProbe:
+    #   exec:
+    #     command:
+    #     - sh
+    #     - -c
+    #     - ps aux | grep my-service
+    #   initialDelaySeconds: 10
+    #   periodSeconds: 5
+
+  - name: sidecar-container
+    image: alpine:3.17.2
+    args:
+      - /bin/sh
+      - -c
+      - tail -fn+1 /var/log/myapp.log
+    volumeMounts:
+    - name: log
+      mountPath: /var/log
+    # readinessProbe:
+    #   httpGet:
+    #     path: /ready
+    #     port: 8086
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 10
+    #   successThreshold: 1
+    #   failureThreshold: 3
+    # livenessProbe:
+    #   httpGet:
+    #     path: /live
+    #     port: 8086
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 10
+    #   successThreshold: 1
+    #   failureThreshold: 3
+customVolumes:
+  - name: log
+    emptyDir: {}
+----
+====
+
+=== Creating a Cluster with Custom Containers
+
+Suppose the YAML file defining your custom containers and custom volumes is called `tg-custom-container.yaml`.
+
+This follow command creates a cluster with custom containers.
+
+[example.wrap, console]
+----
+kubectl tg  create --cluster-name test-cluster --namespace ${NAMESPACE} \
+--size 3 --ha 2 --docker-registry ${DOCKER_REGISTRY} -k ssh-key-secret \
+--docker-image-repo ${DOCKER_IMAGE_REPO}  --version ${TG_CLUSTER_VERSION} \
+--storage-class standard --storage-size 10G --cpu 3000m --memory 8Gi \
+--custom-containers tg-custom-container.yaml -l ${LICENSE}
+----
+
+=== Updating a Cluster with Custom Containers
+
+To update an existing cluster, make a YAML file that describes your desired custom containers, as though you were creating them initially.
+, then run `kubectl tg update` with the `--custom-containers option.
+
+----
+kubectl tg update --cluster-name test-cluster \
+  --namespace ${NAMESPACE} \
+  --custom-containers updated-custom-containers.yaml
+----
+
+This method works for all of these cases:
+
+* To add custom containers to an existing cluster that doesn't have custom containers yet
+* To modify existing custom containers
+* To remove some or all of the existing custom containers
+
+For example, if you want to remove all custom containers, you can create an empty YAML file and pass it to `--custom-containers`:
+
+[example.wrap,console]
+----
+touch empty.yaml
+
+kubectl tg update --cluster-name test-cluster \
+  --namespace ${NAMESPACE} \
+  --custom-containers empty.yaml
+----
+
+
