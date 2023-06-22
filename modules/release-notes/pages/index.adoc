@@ -162,9 +162,11 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 === Compatibility Issues
 * v3.9.2+
 ** Betweenness Centrality algorithm: `reverse_edge_type (STRING)` parameter changed to `reverse_edge_type_set (SET<STRING>)`, to be consistent with `edge_type_set` and similar algorithms.
-* v3.9+: Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
-** UDFs may no longer be called `to_string()`. This is now a built-in GSQL function.
-** UDF names may no longer use the `tg_` prefix. Any user-defined function that began with `tg_` must be renamed or removed in `ExprFunctions.hpp`.
+
+* v3.9+:
+** Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
+*** UDFs may no longer be called `to_string()`. This is now a built-in GSQL function.
+*** UDF names may no longer use the `tg_` prefix. Any user-defined function that began with `tg_` must be renamed or removed in `ExprFunctions.hpp`.
 
 
 === Deprecations
