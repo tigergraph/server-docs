@@ -12,9 +12,9 @@ TIP: You should configure the resource limit for each container in the pod to av
 
 TigerGraph supports three types of pods.
 The application ("app") containers perform the main purpose of the pod.
-Users can add customized init containers and sidecar containers.
-xref:#_defining_init_containers[Init containers] execute before the app containers.
-xref:#_defining_sidecar_containers[Side containers] work with app containers to provide additional functionlity.
+Users can add customized xref:#_defining_init_containers[init containers] and xref:#_defining_sidecar_containers[sidecar containers].
+Init containers execute before the app containers.
+Side containers work with app containers to provide additional functionlity.
 
 Users can also xref:#_defining_custom_volumes[create a custom volume] to mount in their init containers or sidecar containers.
 
@@ -188,7 +188,7 @@ spec:
 ====
 
 [#_defining_custom_volumes]
-=== Defining Custom Volumes
+== Defining Custom Volumes
 
 TigerGraph's operator custom volumes to exchange data between its init containers and sidecar containers.
 If you wish to define your own custom volumes, place your configurations in a `customVolumes` list in the `spec` section of your pod specification manifest.
