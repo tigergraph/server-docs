@@ -1,18 +1,19 @@
 = Configuration parameters
 
-This page provides a comprehensive list of the parameters available for configuration with `gadmin config`.
+This page provides a comprehensive list of system configuration parameters.
+See xref:system-management:management-with-gadmin.adoc[] for how to use `gadmin config` to set configuration parameters.
 
-See xref:system-management:management-with-gadmin.adoc[] for how to set a parameter.
+The parameters are organized by TigerGraph internal component, listed here in alphabetical order: `Admin`, `Controller`, `Dict`, etc.
+
+In addition, the last table is for runtime environment variables. Each component may have a set of environment variables which are set by `xxx.BasicConfig.Env`. See `Admin.BasicConfig.Env` below for an example.
 
 == Admin
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|Admin.BasicConfig.Env
-|The runtime environment variables, separated by
-`;` |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
-
+|Admin.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
 
 |Admin.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number
 of days to retain old log files based on the timestamp encoded in their
@@ -41,8 +42,7 @@ System.LogRoot) of the log directory for Admin |`admin`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|Controller.BasicConfig.Env |The runtime environment variables,
-separated by `;' |`nan`
+|Controller.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
 
 |Controller.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
@@ -98,8 +98,8 @@ controller |`5`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|Dict.BasicConfig.Env |The runtime environment variables, separated by
-`;` |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|Dict.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
 
 |Dict.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
@@ -125,8 +125,8 @@ System.LogRoot) of log directory for Dict |`dict`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|ETCD.BasicConfig.Env |The runtime environment variables, separated by
-`;` |`ETCD_UNSUPPORTED_ARCH=arm64`
+|ETCD.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`ETCD_UNSUPPORTED_ARCH=arm64`
 
 |ETCD.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
@@ -181,8 +181,8 @@ snapshot to disk |`50000`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|Executor.BasicConfig.Env |The runtime environment variables, separated
-by `;' |`nan`
+|Executor.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`nan`
 
 |Executor.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
@@ -226,8 +226,7 @@ file transfer |`10`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|FileLoader.BasicConfig.Env |The runtime environment variables,
-separated by `;` |`nan`
+|FileLoader.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
 
 |FileLoader.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
@@ -282,7 +281,7 @@ response |`8500`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|GPE.BasicConfig.Env |The runtime environment variables, separated by `;`
+|GPE.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;`
 |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=34; MALLOC_CONF=prof:true,prof_active:false; ZMQ_KEEPALIVE=1`
 
 |GPE.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
@@ -379,8 +378,8 @@ bucket counts. |`5`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|GSE.BasicConfig.Env |The runtime environment variables, separated by
-`;'.
+|GSE.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+
 Some of the environment variables:
 `MaxLicenseViolation`: max license violation times, default/max value: 3;
 `LicenseCheckInterval`: how often (in seconds) to check license violations, default/max value: 300;
@@ -425,8 +424,8 @@ responsive after the TTL. |`30`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|GSQL.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`CPATH=$CPATH; LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|GSQL.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;`
+|`CPATH=$CPATH; LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
 
 |GSQL.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
@@ -486,7 +485,7 @@ Must be a positive 32-bit integer (less than `2147483647`).
 | `2`
 
 |GSQL.ManageCatalogTimeoutSec |GSQL connection timeout (second) to admin
-server when trying to |`nan`
+server when trying to download/upload/delete catalog. Default value: 20 | 20
 
 |GSQL.MaxAuthTokenLifeTimeSec |The maximum lifetime of auth token in
 seconds, 0 means unlimited |`0`
@@ -546,8 +545,8 @@ online |`300`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|GUI.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`nan`
+|GUI.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`nan`
 
 |GUI.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
@@ -633,8 +632,8 @@ request timeout in milliseconds |`30000`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|Informant.BasicConfig.Env |The runtime environment variables, separated
-by `;' |`nan`
+|Informant.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;
+|`nan`
 
 |Informant.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
@@ -674,8 +673,8 @@ Longer retention results in higher disk space usage and slower search for histor
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|Kafka.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`nan`
+|Kafka.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`nan`
 
 |Kafka.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
@@ -734,8 +733,7 @@ eligible for deletion (gigabytes) |`40`
 |KafkaConnect.AllowedTaskPerCPU |Maximum number of allowed connector tasks = (#CPUs) x AllowedTaskPerCPU. 
 Range is [0.5,10]. It is recommended to stay below 2.0. |`1.5`
 
-|KafkaConnect.BasicConfig.Env |The runtime environment variables,
-separated by `;' |`nan`
+|KafkaConnect.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
 
 |KafkaConnect.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size
 in megabytes of the log file before it gets rotated |`100`
@@ -783,8 +781,7 @@ attempting to retry a failed fetch request to a given topic partition
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|KafkaLoader.BasicConfig.Env |The runtime environment variables,
-separated by `;' |`nan`
+|KafkaLoader.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
 
 |KafkaLoader.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
@@ -839,8 +836,7 @@ node |`1`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|KafkaStreamLL.BasicConfig.Env |The runtime environment variables,
-separated by `;' |`nan`
+|KafkaStreamLL.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
 
 |KafkaStreamLL.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size
 in megabytes of the log file before it gets rotated |`100`
@@ -928,8 +924,8 @@ the key from file) |`nan`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|RESTPP.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; REPORT_FIRST_N_LINES=$REPORT_FIRST_N_LINES`
+|RESTPP.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; REPORT_FIRST_N_LINES=$REPORT_FIRST_N_LINES`
 
 |RESTPP.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number
 of days to retain old log files based on the timestamp encoded in their
@@ -1248,8 +1244,8 @@ privatekey) |`tigergraph`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|TS3.BasicConfig.Env |The runtime environment variables, separated by
-`;' |`nan`
+|TS3.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`nan`
 
 |TS3.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
@@ -1292,8 +1288,8 @@ Longer retention results in higher disk space usage and slower search for histor
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|TS3Server.BasicConfig.Env |The runtime environment variables, separated
-by `;' |`nan`
+|TS3Server.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
+|`nan`
 
 |TS3Server.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
@@ -1326,7 +1322,7 @@ support one node)
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
-|ZK.BasicConfig.Env |The runtime environment variables, separated by `;'
+|ZK.BasicConfig.Env |  A list of `<environment variable>=<value>` pairs, separated by `;`
 |`ZK_SERVER_HEAP=4096;`
 
 |ZK.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
@@ -1348,7 +1344,7 @@ System.LogRoot) of log directory for ZK |`zk`
 
 |ZK.ElectionPort |The port for Zookeeper to do leader election |`3888`
 
-|ZK.ForceSync |The force syncronize property of zookeeper |`false`
+|ZK.ForceSync |The force synchronize property of zookeeper |`false`
 
 |ZK.InitLimit |The amount of time, in ticks(by default 2s for one tick),
 to allow followers to connect and sync to a leader. Increased this value
@@ -1361,10 +1357,3 @@ as needed, if the amount of data managed by ZooKeeper is large |`30`
 |ZK.StartTimeoutMS |Start zookeeper timeout |`120000`
 |===
 
-== download/upload/delete catalog
-
-[cols=",,",options="header",]
-|===
-|Name |Description |Example
-|download/upload/delete catalog. Default value: 20 |nan |`nan`
-|===
