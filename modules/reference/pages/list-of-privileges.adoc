@@ -2,10 +2,13 @@
 
 This page provides a complete list of privileges in TigerGraph's Role-based Access Control system.
 
-* Any privilege marked "`on global only`" can only be granted to a global role. It cannot be granted to a local role (See xref:user-access:roles-and-privileges.adoc[Global role vs local role]).
-** Local roles are deprecated and will be dropped in a later version.
-* The command `IMPORT GRAPH <gName>` needs multiple privileges, .e.g `WRITE_SCHEMA`, `WRITE_LOADING_JOB`, `WRITE_QUERY` and so on.
-* To run the command `CREATE SECRET` on a graph, the user must have at least one of the access database privileges: `READ_DATA`, `WRITE_DATA` and `EXECUTE_LOADINGJOB` on that graph. Thus the built-in `queryreader` role and above can create secrets on a graph, but the observer role cannot.
+[NOTE]
+====
+* Any privilege marked "`Global only`" can only be granted to a global role.
+It cannot be granted to a local role (See xref:user-access:roles-and-privileges.adoc[Global role vs local role]).
+
+* Local roles are deprecated and will be dropped in a later version.
+====
 
 == Table of Privileges
 [width="100%",cols="22%,63%,15%",options="header",]
