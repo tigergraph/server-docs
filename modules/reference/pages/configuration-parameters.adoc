@@ -1,15 +1,9 @@
 = Configuration Parameters
 
-This page lists the configuration parameters that are available for `gadmin config`.
+This page provides a comprehensive list of system configuration parameters.
+See xref:system-management:management-with-gadmin.adoc[] for how to use `gadmin config` to set configuration parameters.
 
-To change a parameter, use the following command:
-
-[source,text]
-----
-$ gadmin config set <parameter> <value>
-----
-
-After updating a parameter, run `gadmin config apply` to apply the change and restart the corresponding services to make the change take effect.
+The parameters are organized by TigerGraph internal component, listed here in alphabetical order: `Admin`, `Controller`, `Dict`, etc.
 
 == Admin
 
@@ -458,7 +452,7 @@ e.g. https://api.github.com |`+nan+`
 gsql |`+40+`
 
 |GSQL.ManageCatalogTimeoutSec |GSQL connection timeout (second) to admin
-server when trying to |`+nan+`
+server when trying to download/upload/delete catalog. Default value: 20| 20
 
 |GSQL.MaxAuthTokenLifeTimeSec |The maximum lifetime of auth token in
 seconds, 0 means unlimited |`+0+`
@@ -1230,12 +1224,4 @@ as needed, if the amount of data managed by ZooKeeper is large |`+30+`
 |`+2888+`
 
 |ZK.StartTimeoutMS |Start zookeeper timeout |`+120000+`
-|===
-
-== download/upload/delete catalog
-
-[cols=",,",options="header",]
-|===
-|Name |Description |Default
-|download/upload/delete catalog. Default value: 20 |nan |`+nan+`
 |===
