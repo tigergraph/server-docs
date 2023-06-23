@@ -114,6 +114,7 @@ xref:3.9@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied 
 === Fixed and Improved in 3.9.2
 
 * Removed a restriction when load data into an edge defined for multiple FROM-TO vertex type pairs. The load statement no longer must have a USING clause.
+* Fixed a signed integer overflow error in loader status report messages, if more than 2^31 lines of data were loaded.
 
 === Fixed and Improved in 3.9.1
 * Fixed sorting issue in a script for upgrading a cluster with more than 9 nodes.
