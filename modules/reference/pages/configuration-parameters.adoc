@@ -1,4 +1,4 @@
-= Configuration parameters
+= Configuration Parameters
 
 This page provides a comprehensive list of system configuration parameters.
 See xref:system-management:management-with-gadmin.adoc[] for how to use `gadmin config` to set configuration parameters.
@@ -1357,3 +1357,12 @@ as needed, if the amount of data managed by ZooKeeper is large |`30`
 |ZK.StartTimeoutMS |Start zookeeper timeout |`120000`
 |===
 
+== Environment Variables
+//[width="100%",cols="34%,33%,33%",options="header",]
+An environment variable is set using its `xxx.Basic.ConfigEnv` configuration parameter, where `xxx` is the name of its associated component.
+
+[cols=",,",options="header",]
+|===
+|Name |Description |Example
+
+|GPE_DSC_APPLY_TIMEOUT_MINUTE, GSQL.Basic.ConfigEnv|Timeout (minutes) for dynamic schema change. Default = 30| 30|
