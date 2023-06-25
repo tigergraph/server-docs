@@ -22,13 +22,14 @@ For all TigerGraph Server solutions not on TigerGraph Cloud, or for TigerGraph C
 
 === Echo
 
-`GET /echo` and `POST /echo`
+`GET /echo` +
+`POST /echo`
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the RESTPP server is up and running.
 
 ==== Sample request:
 
-.GET echo/ Request and Response
+.GET /echo Request and Response
 
 [source,console]
 ----
@@ -39,12 +40,11 @@ curl -X GET "http://localhost:9000/echo"
 }
 ----
 
-
-
 `POST /echo` has the same response as `GET /echo`.
 
-==== Parameters
-
+==== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
 |===
 | Name | Required | Description
 
@@ -53,13 +53,13 @@ curl -X GET "http://localhost:9000/echo"
 | Integer that indicates the number of seconds for which the response will be delayed.
 |===
 
+'''
+
 === Health check (public)
 
-This endpoint performs a simple server health check. It listens on port 14240 and does not require authentication. If you ping it and the server is running, it will respond with the message "pong".
-
-==== Endpoint:
-
 `GET /api/ping`
+
+This endpoint performs a simple server health check. It listens on port 14240 and does not require authentication. If you ping it and the server is running, it will respond with the message "pong".
 
 ==== Sample request:
 
@@ -75,7 +75,9 @@ curl 'http://localhost:14240/api/ping'
 
 ==== Parameters:
 
-No parameters.
+None
+
+'''
 
 === List all endpoints
 
@@ -132,8 +134,8 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
 
 
 
-==== Parameters
-
+==== Parameters:
+[%autowidth]
 |===
 | Name | Required | Description
 
@@ -150,15 +152,16 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
 | Takes a boolean value. Returns user-installed endpoints if true.
 |===
 
+'''
+
 === Show component versions
 
 `GET /version`
 
 This endpoint returns the Git versions of all components of the system.
 
-==== Parameters
 
-None
+==== Example
 
 [,tabs]
 ====
@@ -200,6 +203,7 @@ blue_commons         release_2.6.0_05-09-2020 432763afc49bf986aed4731e50254243d3
 --
 ====
 
+'''
 
 === Monitor system metrics (TS3, deprecated)
 
@@ -228,8 +232,8 @@ Visualization of such metrics are available in Admin Portal - Dashboard - xref:g
 
 On a TigerGraph cluster, this endpoint is only present on the `m1` node.
 
-==== Parameters
-[width="100%",cols="12%,10%,78%",options="header",]
+==== Parameters:
+[%autowidth,options="header",]
 |===
 |Name |Required |Description
 |`+from+` |No |Epoch timestamp that indicates the start of the time
@@ -263,7 +267,7 @@ endpoint
 |`+where+` |No |Name of the node that the datapoint is reported for
 |===
 
-==== Sample requests
+==== Sample requests:
 
 The sample request below uses three filters: `from`, `to` and `what`.
 
@@ -408,6 +412,8 @@ Response::
 --
 ====
 
+'''
+
 === Monitor system metrics (OpenMetrics format)
 
 `GET /informant/metrics` +
@@ -425,10 +431,10 @@ This interval can be adjusted with the xref:reference:configuration-parameters.a
 
 This endpoint does not require any privileges.
 
-==== Parameters
+==== Parameters:
 None
 
-==== Sample request
+==== Sample request:
 
 [tabs]
 ====
@@ -527,6 +533,8 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 ----
 --
 ====
+
+'''
 
 === Monitor system metrics by category
 
@@ -656,6 +664,8 @@ ServiceStatus_value = map[string]int32{
 }
 ----
 
+'''
+
 === Show query performance
 
 `+GET /statistics/{graph_name}+`
@@ -741,8 +751,8 @@ Each endpoint has the following attributes:
 
 If there is no query sent in the past given seconds, an empty json will be returned.
 
-==== Parameters
-
+==== Parameters:
+[%autowidth]
 |===
 | Name | Required | Description
 
@@ -755,16 +765,19 @@ If there is no query sent in the past given seconds, an empty json will be retur
 | Integer that indicates the number of segments that the `LatencyPercentile` array in the response will be split into. The value for this endpoint must be between 1 and 100. The default value is 10.
 |===
 
-[#_show_service_status]
+'''
+
 === Show service status
-`POST :14240/informant/current-service-status`
+`POST /informant/current-service-status`
+
+*Server*: informanat
 
 This endpoint returns the status of the TigerGraph services specified in the request.
 
-==== Parameters
-No URL parameters.
+==== Parameters:
+None
 
-==== Request body
+==== Request body:
 The endpoint requires a request body in the following format:
 
 [source,javascript]
@@ -898,10 +911,11 @@ Response::
 --
 ====
 
+'''
+
 === Rebuild graph engine
 
-`GET /rebuildnow/\{graph_name}` or
-
+`GET /rebuildnow/\{graph_name}` +
 `POST /rebuildnow/\{graph_name}`
 
 xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Global-level UPDATE_DATA
@@ -909,9 +923,9 @@ xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: 
 When new data is being loaded into the graph (such as new vertices or edges), data is first stored in memory before it is saved to disk permanently.
 TigerGraph runs a rebuild of the Graph Processing Engine (GPE) to commit the data in memory to disk every 30 seconds, but you can also call this endpoint to trigger a rebuild immediately.
 
-==== Parameters
+==== Parameters:
 
-[width="100%",cols="15%,10%,75%",options="header",]
+[%autowidth,options="header",]
 |===
 |Name |Required |Description
 |`+threadnum+` |No |Number of threads used to execute the rebuild. If
@@ -959,6 +973,8 @@ cat finished.summary.txt
 [SKIPPED]	Segment id: 6, vertextype: 0, vertexsubtypeid: 0, vertexcount: 85732, edgecount: 3106, deletevertexcount: 0, postqueue_pos: 16344, transaction id: 16344, rebuild ts: 1573106412900
 ----
 
+'''
+
 === Check deleted vertices
 
 `GET /deleted_vertex_check`
@@ -969,7 +985,7 @@ In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Stor
 
 The check passes if there are no discrepancies between the GSE and GPE in terms of deleted vertices. If there is a discrepancy, the check fails and the return result will contain the IDs of the deleted vertices that are not synced properly. If you are running TigerGraph on a distributed cluster, the check will be performed on each node of the cluster, and the endpoint will return a list containing the results of the check for every node.
 
-==== Parameters
+==== Parameters:
 [width="100%",cols="15%,10%,75%a",options="header",]
 |===
 |Name |Required |Description
@@ -1099,6 +1115,8 @@ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0&v
 The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server.
 *These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
 
+'''
+
 === Request a token
 
 `POST /requesttoken`
@@ -1111,7 +1129,7 @@ If authentication is enabled on RESTPP endpoints, a token needs to be included i
 * Their username and password.
 ** The request also needs to specify the graph for which the token is valid if it uses username and password to generate the token.
 
-==== Request body
+==== Request body:
 The endpoint expects a JSON request body in the following format:
 
 [,javascript]
@@ -1128,7 +1146,7 @@ Required if the request body does not supply `graph`.
 Required if the request body does not supply `secret`.
 <3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 
-==== Sample request
+==== Sample request:
 The responses are slightly different between requests made with secrets and username-password pair.
 
 [tabs]
@@ -1194,9 +1212,10 @@ Keep your tokens accessible in a secure location.
 For security reasons, TigerGraph Support cannot restore access to tokens.
 ====
 
-==== Parameters
-None.
+==== Parameters:
+None
 
+'''
 
 === Refresh a token
 
@@ -1210,7 +1229,7 @@ A user can refresh a token using either
 This endpoint takes a token and refreshes the lifetime of the token.
 The token itself remains unchanged.
 
-==== Request body
+==== Request body:
 The endpoint expects a JSON request body in the following format:
 
 [,javascript]
@@ -1226,7 +1245,7 @@ The endpoint expects a JSON request body in the following format:
 Required if username and userpassword are not suplied.
 <3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 With secret::
@@ -1265,21 +1284,23 @@ Response::
 ====
 
 
-==== Parameters
+==== Parameters:
 
-None.
+None
 
+'''
 
 === Delete a token
 
 `DELETE /requesttoken`
 
-A user can delete a token using either
+This endpoint deletes a token belonging to a user.
+The user must provide one of the following forms of credentials:
 
 * A secret, which is associated with the token to be deleted
-* Their username and password in their request header
+* Username and password in the request header
 
-==== Request body
+==== Request body:
 The endpoint expects a JSON request body in the following format:
 
 [,javascript]
@@ -1290,9 +1311,9 @@ The endpoint expects a JSON request body in the following format:
 }
 ----
 <1> Token to delete.
-<2> User’s secret to generate the token. Required if username and userpassword are not suplied.
+<2> User’s secret to generate the token. Required if username and userpassword are not supplied.
 
-==== Sample request
+==== Sample request:
 
 [tabs]
 ====
@@ -1333,24 +1354,28 @@ Response::
 
 ==== Parameters:
 
-None.
+None
+
+'''
 
 === Remove expired tokens
 
-`DELETE :8123/expiredtoken`
+`DELETE /expiredtoken`
+
+*Server*: GSQL
 
 This endpoint removes expired authentication tokens.
 A user is always allowed to remove their own expired tokens.
 If a user tries to delete tokens that belong to other users, they need to have xref:user-access:access-control-model.adoc#_privileges[the `WRITE_USER` privilege].
 
-==== Sample request
+==== Sample request:
 
 The following request deletes all expired tokens.
 This request requires the privilege `WRITE_USER`:
 
 [.wrap,console]
 ----
-curl -X DELETE "https://localhost:8123/expiredtoken"
+curl -X DELETE "https://localhost:14240/expiredtoken"
 ----
 
 The following request deletes all expired tokens that belong to users `u1` and `u2` as well as all tokens created with secrets `s1` and `s2`.
@@ -1358,10 +1383,10 @@ This request requires the privilege `WRITE_USER`
 
 [.wrap,console]
 ----
-curl -X DELETE 'localhost:8123/expiredtoken' -d '{"user":["u1","u2"],"secret":["s1","s2"]}'
+curl -X DELETE 'localhost:14240/expiredtoken' -d '{"user":["u1","u2"],"secret":["s1","s2"]}'
 ----
 
-==== Request body
+==== Request body:
 The request body is optional.
 If not provided a request body, a request deletes all expired tokens.
 
@@ -1381,9 +1406,8 @@ A request deletes all tokens associated with any of the users and secrets contai
 The request is atomic:
 if any of the provided users or secrets are invalid, or if a user doesn't have the privilege to remove tokens that belong to one of the users or secrets provided, no tokens will be removed by the request.
 
-==== Parameters
-None.
-
+==== Parameters:
+None
 
 
 
@@ -1476,7 +1500,7 @@ curl -X POST --data-binary @./work_at.csv "http://localhost:9000/ddl/poc_graph?t
 ----
 
 ==== Parameters:
-
+[%autowidth]
 |===
 | Name | Required | Description
 
@@ -1517,11 +1541,11 @@ The maximum size of data you can upload via this endpoint is controlled by the x
 
 === Run built-in functions on graph
 
-`+POST /builtins/{graph_name}+`
+`POST /builtins/{graph_name}`
 
 This endpoint runs a set of built-in functions and returns relevant statistics about a graph.
 
-==== Request body
+==== Request body:
 
 This endpoint expects a data payload in the request body that specifies which function to run on the graph. Depending on the function being run, different fields may also be expected in the request body.
 
@@ -1552,7 +1576,7 @@ Here is a list of functions supported by this endpoint and their corresponding d
 *** `"from_type"`: Optional. The source vertex type of the edges to report on.
 *** `"to_type"`: Optional. The target vertex type of the edges to report on.
 
-==== Sample requests
+==== Sample requests:
 
 Below is an example request running `stat_vertex_attr` on `socialNet` and its output. The vertex type `"Person"` has a `uint` attribute `"age"`.
 
@@ -1664,8 +1688,9 @@ curl -X POST "http://localhost:9000/builtins/socialNet" \
 }
 ----
 
-==== Parameters
+==== Parameters:
 
+[%autowidth]
 |===
 | Name | Required | Default value | Description
 
@@ -1675,11 +1700,15 @@ curl -X POST "http://localhost:9000/builtins/socialNet" \
 | Force built-in functions to rerun queries instead of using cached data, which is resource-intensive but more accurate if the graph is frequently updated.
 |===
 
+'''
+
 === Show graph schema metadata
 
 `GET /gsqlserver/gsql/schema`
 
-Returns schema details about a vertex type, an edge type, or the entire graph schema. This is a GSQL Server request sent to port 14240.
+*Server*: GSQL
+
+The endpoint returns schema details about a vertex type, an edge type, or the entire graph schema.
 Authentication credentials need to be provided.
 
 ==== Sample request:
@@ -1791,6 +1820,7 @@ curl -u tigergraph:tigergraph \
 
 ==== Parameters:
 
+[%autowidth]
 |===
 | Name | Required | Description
 
@@ -1803,11 +1833,34 @@ curl -u tigergraph:tigergraph \
 | The vertex or edge type whose details to retrieve. If not provided, the endpoint will provide a _graph schema object_ containing the schema details of the entire graph.
 |===
 
+'''
+
 [#_upsert_data_to_graph]
 === Upsert data to graph
 
 The endpoint for upserting data to graph is more complicated than most other REST endpoints and is documented on a separate page.
 See xref:upsert-rest.adoc[].
+
+'''
+
+=== Clear Graph Store
+
+`GET /gsqlserver/gsql/clear-store` +
+`POST /gsqlserver/gsql/clear-store`
+
+*Server*: GSQL-Server
+
+xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Global-level CLEAR_GRAPHSTORE
+
+This endpoint permanently deletes all the data out of the graph store (database), for all graphs.
+It does not delete the database schema, nor does it delete queries or loading jobs.
+It is equivalent to the GSQL command xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
+
+[WARNING]
+====
+This operation is not reversible.
+The deleted data cannot be recovered.
+====
 
 == Vertices
 
@@ -1824,7 +1877,7 @@ This endpoint returns all vertices having the type `vertex_type` in a graph.
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the vertex type.
 
 
-==== Sample request
+==== Sample request:
 
 [tabs]
 ====
@@ -1865,7 +1918,7 @@ Response::
 ----
 --
 ====
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -1902,7 +1955,7 @@ Response::
 This endpoint returns a single vertex by its vertex ID.
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the vertex type.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -1936,7 +1989,7 @@ Response::
 ----
 --
 ====
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -1960,7 +2013,7 @@ If a vertex is deleted, then all edges connected to it are automatically deleted
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] on the vertex type.
 
-==== Sample request
+==== Sample request:
 The response object will contain a `"deleted_vertices"` field that indicates the number of vertices that were deleted.
 [tabs]
 Request::
@@ -1992,7 +2045,7 @@ Response::
 ----
 --
 
-==== Parameters
+==== Parameters:
 [width="100%",cols="15%,10%,75%",options="header",]
 |===
 |Name |Required |Description
@@ -2032,14 +2085,14 @@ the system-wide endpoint timeout setting is applied.
 This endpoint deletes all vertices of the given vertex type in a graph.
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] on the vertex type.
 
-==== Sample request
+==== Sample request:
 
 [source.wrap,bash]
 ----
 curl -X DELETE "http://localhost:9000/graph/poc_graph/delete_by_type/vertices/person"
 ----
 
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -2059,7 +2112,7 @@ curl -X DELETE "http://localhost:9000/graph/poc_graph/delete_by_type/vertices/pe
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] on the vertex type.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -2115,7 +2168,7 @@ This endpoint returns all edges which are connected to a given vertex ID in the 
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
 
-==== Sample request
+==== Sample request:
 
 [tabs]
 ====
@@ -2208,7 +2261,7 @@ This endpoint lists all the edges of a specified type connected to a given verte
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
 
-==== Sample request
+==== Sample request:
 
 [source,bash]
 ----
@@ -2296,7 +2349,7 @@ This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud
 Use `"_"` for `edge_type` in the URL to permit any edge type.
 ====
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -2349,7 +2402,7 @@ Response::
 ----
 --
 ====
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -2396,7 +2449,7 @@ If the edge type is defined with a discriminator, this endpoint returns all edge
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -2438,7 +2491,7 @@ Response::
 --
 ====
 
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -2473,7 +2526,7 @@ The backslash escape character can escape the escape character itself as well.
 
 This endpoint requires the `READ_DATA` privilege on the types or attributes being queried.
 
-==== Sample request
+==== Sample request:
 
 [tabs]
 ====
@@ -2496,7 +2549,7 @@ curl -X GET "http://localhost:9000/graph/multiedge/edges/Person/9/transfer2/Acco
 --
 ====
 
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -2551,7 +2604,7 @@ curl -s -X DELETE 'http://localhost:9000/graph/multiedge/edges/Account/24601/tra
 
 [source.wrap]
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -2586,7 +2639,7 @@ Response::
 --
 ====
 
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -2621,7 +2674,7 @@ The backslash escape character can escape the escape character itself as well.
 
 This endpoint requires the `DELETE_DATA` privilege on the type of the edge being queried.
 
-==== Sample request
+==== Sample request:
 
 [tabs]
 ====
@@ -2644,7 +2697,7 @@ curl -X DELETE "http://localhost:9000/graph/multiedge/edges/Person/9/transfer2/A
 --
 ====
 
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -2666,7 +2719,7 @@ In particular, it lists the input parameters in the same order as they exist in 
 *This endpoint exists on port 14240 and requests are sent to the GSQL server.*
 Therefore, you should provide authentication credentials in the request.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -2773,7 +2826,7 @@ Once the GSQL server has received the `POST` request, it creates an installation
 An installation request will wait in the background for any currently running processes to complete.
 
 
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -2786,7 +2839,7 @@ To pass in the names of multiple queries, enter the same parameter multiple time
 |===
 
 
-==== Sample request
+==== Sample request:
 In the below example, the user requests to install all queries on the graph `poc_graph` by using the `*` wildcard.
 
 [tabs]
@@ -2823,10 +2876,10 @@ Response::
 
 This endpoint takes a request location generated by the `POST /gsql/queries/install` endpoint and returns the state of the installation request for each query, as well as the overall state of the request itself.
 
-==== Parameters
+==== Parameters:
 None.
 
-==== Sample request
+==== Sample request:
 In the below example, the user requests information about the queries installed in the above `POST` example.
 The response shows that three query install requests were made with `POST`: queries `t1`, `t2`, and `t3`.
 
@@ -2890,7 +2943,7 @@ Each time a new TigerGraph query is installed, a dynamic endpoint is generated.
 This new endpoint enables the user to run the new TigerGraph query through HTTP requests and giving the parameters in URL or in a data payload.
 In the case of a `GET` request, parameters should be passed in through the query string.
 
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -2970,7 +3023,7 @@ The number of threads used by a query means the number of vCPUs used by the quer
 For example, if you have a cluster of three nodes, each with 8 vCPUs, then a query will use all 8 threads available on a node in the cluster by default.
 By providing a thread limit in the request header, you can limit the query to only use a number of threads under the limit.
 
-==== Sample requests
+==== Sample requests:
 
 To run a query that takes a parameter of a set of strings (`str`), a vertex parameter(v), and a parameter of a set of vertices:
 
@@ -3050,7 +3103,7 @@ curl -X POST --data-binary @./<sample_file> "http://localhost:9000/query/<sample
 ----
 
 
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -3127,7 +3180,7 @@ By providing a thread limit in the request header, you can limit the query to on
 By default, there is no limit to the amount of memory a query is allowed to consume until the overall free memory reaches a critical level.
 |===
 
-==== Sample request
+==== Sample request:
 
 To run a query that takes a parameter of a set of strings (`str`), a vertex parameter(v), and a parameter of a set of vertices (`party`):
 
@@ -3243,7 +3296,7 @@ If you are running a TigerGraph cluster, this endpoint only shows queries runnin
 
 This endpoint requires the `READ_DATA` privilege on the graph you are querying.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3286,7 +3339,7 @@ Response::
 ----
 --
 ====
-==== Parameters
+==== Parameters:
 
 No Parameters.
 
@@ -3302,7 +3355,7 @@ CAUTION: If a high volume of queries are running, invoking the endpoint can be a
 
 This endpoint requires the `READ_DATA` privilege on the global scope.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3355,7 +3408,7 @@ Response::
 <2> The time at which the query will time out.
 ====
 
-==== Parameters
+==== Parameters:
 No parameters.
 
 === Show all delayed queries
@@ -3368,7 +3421,7 @@ Use this endpoint to get a list of all queries waiting in the delay/overflow que
 
 Query timeout time is not affected by the time spent in the delayed queue.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3427,7 +3480,7 @@ This endpoint safely aborts a selected query by ID or all queries of an endpoint
 
 If you are running a TigerGraph cluster, this endpoint only allows you to abort a query sent to the requested node, not any query in the cluster.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3470,7 +3523,7 @@ Response::
 ----
 --
 ====
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -3492,7 +3545,7 @@ This endpoint allows you to check the status of a query run in xref:gsql-ref:que
 
 If you are running a TigerGraph cluster, this endpoint only allows you to check the status of a query running on the node to which the request is sent, not all nodes on the cluster.
 
-==== Parameters
+==== Parameters:
 
 |===
 |Parameter | Required |Description
@@ -3510,7 +3563,7 @@ If not specified, the endpoint returns queries running on the first created grap
 |===
 
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3574,7 +3627,7 @@ This endpoint allows you to check the results of queries run in Detached Mode if
 
 This endpoint only allows you to check the results of a query sent to the requested node, not any query in the graph.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3607,7 +3660,7 @@ Response::
 ----
 --
 ====
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -3624,7 +3677,7 @@ Response::
 
 This endpoint returns the template definition, query name, and query parameters for a template query.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3666,7 +3719,7 @@ Response::
 ----
 --
 ====
-==== Parameters
+==== Parameters:
 
 |===
 | Name | Required | Description
@@ -3688,7 +3741,7 @@ Response::
 This endpoint runs a template query on a given graph.
 Query parameters are passed in JSON format in the body of the POST request.
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3760,8 +3813,8 @@ Response::
 ----
 --
 ====
-==== Parameters
-
+==== Parameters:
+[%autowidth]
 |===
 | Name | Required | Description
 
@@ -3789,8 +3842,8 @@ On a distributed cluster (a cluster with more than one partition), this tool per
 If a discrepancy is detected, we recommend that you contact TigerGraph Support for the best way to restore consistency.
 
 
-==== Parameters
-
+==== Parameters:
+[%autowidth]
 |===
 | Name | Required | Description
 
@@ -3802,7 +3855,7 @@ This parameter is optional and the default value is `6` if none is provided.
 |===
 
 
-==== Sample request
+==== Sample request:
 [tabs]
 ====
 Request::
@@ -3896,6 +3949,7 @@ This endpoint takes a source vertex or a set of source vertices and a target ver
 
 This endpoint expects a request body that describes the source and target vertex or vertex set. Below is a table of all the fields in the request body.
 
+[%autowidth]
 |===
 | Key | Type | Description
 
@@ -3978,6 +4032,7 @@ Result is an array of vertex json objects and edge json objects describing the s
 ====
 ==== Parameters:
 
+[%autowidth]
 |===
 | Key | Required | Description
 
@@ -4000,6 +4055,7 @@ This endpoint finds all paths between a source vertex (or vertex set) and target
 
 This endpoint expects a request body that describes the source and target vertex or vertex set. Below is a table of all the fields in the request body.
 
+[%autowidth]
 |===
 | Key | Type | Description
 
