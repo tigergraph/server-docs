@@ -543,9 +543,10 @@ qps means "queries per second".
 ==== Input Filter
 
 A filter to limit the output may be provided as a JSON-formatted payload (e.g., by using the `curl -d` option).
-The payload differs based on the requested information.
+The filtering options are different for each metrics category.
+The filter may include any or all of the supported fields, which are described below.
 
-.Filter for `/informant/metrics/get/cpu-memory`
+.Filter template for `/informant/metrics/get/cpu-memory`
 [source,json]
 ----
 {
@@ -571,7 +572,7 @@ The payload differs based on the requested information.
 
 NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having a single ServiceDescriptor to having a list of ServiceDescriptors.
 
-.Filter for `/informant/metrics/get/diskspace`
+.Filter template for `/informant/metrics/get/diskspace`
 [source, json]
 ----
 {
@@ -585,7 +586,7 @@ NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having
 }
 ----
 
-.Filter for `/informant/metrics/get/network`
+.Filter template for `/informant/metrics/get/network`
 [source, json]
 ----
 {
@@ -598,7 +599,7 @@ NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having
 }
 ----
 
-.Filter for `/informant/metrics/get/qps`
+.Filter template for `/informant/metrics/get/qps`
 [source, json]
 ----
 {
