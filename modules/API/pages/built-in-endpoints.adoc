@@ -156,7 +156,11 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
 
 This endpoint returns the Git versions of all components of the system.
 
-[tabs]
+==== Parameters
+
+None
+
+[,tabs]
 ====
 Request::
 +
@@ -196,17 +200,22 @@ blue_commons         release_2.6.0_05-09-2020 432763afc49bf986aed4731e50254243d3
 --
 ====
 
-==== Parameters
 
-This endpoint does not take any parameters.
-
-=== Monitor system metrics
+=== Monitor system metrics (TS3, deprecated)
 
 `GET /ts3/api/datapoints`
 
+*Server*: TS3
+
+[NOTE]
+====
+This endpoint is deprecated.
+Use `/informant/metrics/get/{service}` instead.
+====
+
+
 TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events.
 Many TigerGraph components report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals.
-This endpoint listens on port 14240 instead of port 9000.
 
 You can use this endpoint to read from TS3. You can filter for the data points you need as follows:
 
@@ -399,13 +408,14 @@ Response::
 --
 ====
 
-=== Monitor system metrics (OpenMetrics)
+=== Monitor system metrics (OpenMetrics format)
 
-`GET :14240/informant/metrics`
+`GET /informant/metrics` +
+`POST /informant/metrics`
 
-`POST :14240/informant/metrics`
+*Server*: Informant
 
-You can monitor system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
+This endpoint returns system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
 
 * To retrieve all metrics, use GET.
 * To retreive xref:built-in-endpoints.adoc#_filter_returned_metrics[filtered metrics], use POST along with a payload describing your filters.
@@ -416,7 +426,7 @@ This interval can be adjusted with the xref:reference:configuration-parameters.a
 This endpoint does not require any privileges.
 
 ==== Parameters
-None.
+None
 
 ==== Sample request
 
@@ -518,22 +528,24 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 --
 ====
 
-==== Monitor system metrics (non-OpenMetrics)
+=== Monitor system metrics by category
 
-A call to the `14240/informant/metrics` endpoint returns all metrics by default.
+`POST /informant/metrics/get/{metrics_category}`
 
-[source, console]
-----
-curl -X POST -k localhost:14240/informant/metrics/get/cpu-memory
-curl -X POST -k localhost:14240/informant/metrics/get/diskspace
-curl -X POST -k localhost:14240/informant/metrics/get/network
-curl -X POST -k localhost:14240/informant/metrics/get/qps
-----
+*Server*: Informant
 
-Because these are POST requests, they must take the mandatory `-d` flag and deliver a JSON-formatted payload consisting of a JSON-formatted set of request fields.
+==== Path Parameters
+`{metrics_category}` is one of the following: +
+(`cpu-memory`, `diskspace` , `network`, `qps`)
+
+qps means "queries per second".
+
+==== Input Filter
+
+A filter to limit the output may be provided as a JSON-formatted payload (e.g., by using the `curl -d` option).
 The payload differs based on the requested information.
 
-.CPU and Memory Usage
+.Filter for `/informant/metrics/get/cpu-memory`
 [source,json]
 ----
 {
@@ -559,7 +571,7 @@ The payload differs based on the requested information.
 
 NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having a single ServiceDescriptor to having a list of ServiceDescriptors.
 
-.Disk space
+.Filter for `/informant/metrics/get/diskspace`
 [source, json]
 ----
 {
@@ -573,7 +585,7 @@ NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having
 }
 ----
 
-.Network usage
+.Filter for `/informant/metrics/get/network`
 [source, json]
 ----
 {
@@ -586,7 +598,7 @@ NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having
 }
 ----
 
-.Query per Second (QPS) Metrics
+.Filter for `/informant/metrics/get/qps`
 [source, json]
 ----
 {
@@ -605,24 +617,24 @@ NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having
 }
 ----
 
-Some sample requests in this format are as follows:
+==== Examples
 
 .Get disk space report from host `m2`
 [source, console]
 ----
-curl -X POST -k localhost:9167/metrics/get/diskspace -d '{"HostID":"m2"}'
+curl -X POST localhost:14240/metrics/get/diskspace -d '{"HostID":"m2"}'
 ----
 
 .Get a network usage report with the two most recent items
 [source, console]
 ----
-curl -X POST -k localhost:9167/metrics/get/network -d '{"LatestNum":"2"}'
+curl -X POST localhost:14240/metrics/get/network -d '{"LatestNum":"2"}'
 ----
 
 .Get a CPU and memory report for the GSE service with partition and replica number specified
 [source.wrap, console]
 ----
-curl -X POST -k localhost:9167/metrics/get/cpu-memory -d '{"ServiceDescriptors":[{"ServiceName":"gse","Partition": 1,"Replica":1}]}'
+curl -X POST  localhost:14240/metrics/get/cpu-memory -d '{"ServiceDescriptors":[{"ServiceName":"gse","Partition": 1,"Replica":1}]}'
 ----
 
 The Service Status request returns a map of the following service codes:
