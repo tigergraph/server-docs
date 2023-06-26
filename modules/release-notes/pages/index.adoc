@@ -5,7 +5,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server {page-component-version}.2 LTS was released on June 7, 2023.
+TigerGraph Server {page-component-version}.2 LTS was released on June 26, 2023.
 
 TigerGraph Server {page-component-version}.1 LTS was released on March 22, 2023.
 
@@ -116,6 +116,8 @@ xref:3.9@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied 
 
 * Removed a restriction when load data into an edge defined for multiple FROM-TO vertex type pairs. The load statement no longer must have a USING clause.
 * Fixed a signed integer overflow error in loader status report messages, if more than 2^31 lines of data were loaded.
+* Fixed importing pre-3.7 user-defined tuple (UDT) data which uses default-width INT or UINT fields.
+The import process will set pre-3.7 default-width fields to be 4 bytes.  3.7+ default-width fields are explicitly set to 8 bytes.
 
 === Fixed and Improved in 3.9.1
 * Fixed sorting issue in a script for upgrading a cluster with more than 9 nodes.
