@@ -26,13 +26,13 @@ The client is packaged as a Java jar file, `gsql_client.jar` located in the fold
 
 If you have SSL enabled, you must obtain the TigerGraph server's public SSL certificate.
 Run the following Unix command, replacing `<ip_address>` with the IP address of your TigerGraph server, and replacing `<path_to_certificate>` with a filename for the certificate, such as `ssl_1.cert1`.
-Note that the port to access TigerGraph Server is 12420.
+Note that the port to access TigerGraph Server is 14240.
 
 You need to install link:https://www.openssl.org/[`openssl`] on your client machine to run this command.
 
 [.wrap,console]
 ----
-echo | openssl s_client  -connect <ip_address>:12420 |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <path_to_certificate>
+echo | openssl s_client  -connect <ip_address>:14240 |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > <path_to_certificate>
 ----
 
 === Connect to the server
@@ -49,7 +49,7 @@ Run the following command to connect to the remote server:
 ----
 java -jar <path_to_client> \ <1>
   --cacert <path_to_certificate> \ <2>
-  --ip <ip_address>:12420 \ <3>
+  --ip <ip_address>:14240 \ <3>
   -u <username> <4>
 ----
 <1> Replace `<path_to_client>` with the file path to the GSQL client.
