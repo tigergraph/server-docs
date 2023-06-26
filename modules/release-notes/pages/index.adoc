@@ -114,6 +114,7 @@ xref:3.9@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied 
 === Fixed and Improved in 3.9.2
 
 * Removed a restriction when load data into an edge defined for multiple FROM-TO vertex type pairs. The load statement no longer must have a USING clause.
+* Added limited support for xref:3.9@gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[subqueries in Distributed mode].
 
 === Fixed and Improved in 3.9.1
 * Fixed sorting issue in a script for upgrading a cluster with more than 9 nodes.
@@ -145,7 +146,8 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
 == Known issues
-
+* Subqueries with SET<VERTEX> parameters cannot be run in Distributed or Interpreted mode.
+(xref:3.9@gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[Limited Distributed model support] is added in 3.9.2.)
 * Upgrading a cluster with 10 or more nodes to v3.9.0 requires a patch. Please contact TigerGraph Support if you have a cluster this large. Clusters with nine or fewer nodes do not require the patch. (This issue is fixed in 3.9.1)
 * Downsizing a cluster to have fewer nodes requires a patch. Please contact TigerGraph Support.
 * During peak system load, loading jobs may sometimes display an inaccurate loading status. This issue can be remediated by continuing to run `SHOW LOADING STATUS` periodically to display the up-to-date status.
