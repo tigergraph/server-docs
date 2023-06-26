@@ -5,6 +5,8 @@
 
 TigerGraph Server {page-component-version}.0 was released on Sep 15th, 2022.
 
+Known Issues were updated on June 25, 2023.
+
 [IMPORTANT]
 This is a Feature Preview version.
 ====
@@ -85,15 +87,18 @@ Every time a user performs an action that requires any privilege, a xref:securit
 * Fixed an issue where the function `instr()` could not accept certain special characters as substring arguments.
 
 
-
 == Dropped feature
 * The `-OPTIMIZE` flag for `INSTALL QUERY` was deprecated in 3.5 and is dropped in this 3.7 release.
 
 == Known Issues
 
-
+[%autowidth]
 |===
 |In version |Description |Status
+
+|3.7.0
+|If you used a default-width INT or UINT in a user-defined type (UDT) prior to version 3.7, the standard upgrade process will not import your pre-3.7 UDT data correctly.
+|Unresolved
 
 |3.7.0
 |Running a query that returns results that are too large in size may cause GraphStudio to become unresponsive.
@@ -152,6 +157,11 @@ For a list of known issues for GraphStudio and Admin Portal, please see xref:{pa
 * xref:3.4@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.4]
 * xref:3.3@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.3]
 * xref:3.2@tigergraph-server:release-notes:release-notes.adoc[Release notes - TigerGraph 3.2]
+
+== Compatibility with TigerGraph 3.6
+* The default width of INT or UINT fields in a
+xref:3.7@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_user_defined_tuples[user-defined tuple (UDT)]
+has changed from 4 bytes to 8 bytes, to be consistent with standalone INT attributes.
 
 == Compatibility with TigerGraph 3.4
 * A single `POST-ACCUM` clause can no longer reference more than one vertex alias in Syntax V1.
