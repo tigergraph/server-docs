@@ -665,7 +665,7 @@ informant database source folder |`informant/db`
 |Informant.RetentionPeriodDay |The period in days for local data
 records to be kept, set to -1 for forever (not advised).
 Longer retention results in higher disk space usage and slower search for historical status
-|`7`
+|`7` (default. Prior to v3.9.2, the default was 30.)
 |===
 
 == Kafka
@@ -730,8 +730,8 @@ eligible for deletion (gigabytes) |`40`
 |===
 |Name |Description |Example
 
-|KafkaConnect.AllowedTaskPerCPU |Maximum number of allowed connector tasks = (#CPUs) x AllowedTaskPerCPU. 
-Range is [0.5,10]. It is recommended to stay below 2.0. |`1.5`
+|KafkaConnect.AllowedTaskPerCPU |[v3.9.2+] Maximum number of allowed connector tasks = (#CPUs) x AllowedTaskPerCPU.
+Range is [0.5,10]. It is recommended to stay below 2.0. |`1.5` (default)
 
 |KafkaConnect.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
 
@@ -1138,7 +1138,8 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 
 == System
 
-[width="100%",cols="34%,33%,33%",options="header",]
+//[width="100%",cols="34%,33%,33%",options="header",]
+[%autowidth,options="header",]
 |===
 |Name |Description |Example
 |System.AppRoot |The root directory for TigerGraph applications
@@ -1154,7 +1155,7 @@ used to compress equals the node CPU’s cores. |`0`
 |System.Backup.Local.Enable |Backup data to local path *IMPORTANT*: If set to `true`, this also enables a daily full backup at 12:00am UTC. |`false`
 
 |System.Backup.Local.Path |The path to store the backup files |`nan`
-
+f
 |System.Backup.S3.AWSAccessKeyID |The AWS access key ID for s3 bucket of
 backup |`nan`
 
@@ -1164,6 +1165,10 @@ bucket |`nan`
 |System.Backup.S3.BucketName |The S3 bucket name |`nan`
 
 |System.Backup.S3.Enable |Backup data to S3 path |`false`
+
+|System.Backup.S3.Endpoint | Endpoint to use instead of the S3 default endpoint. Must be a fully qualified URL.
+Typically used when operating in a private network or with a non-AWS S3-compatible endpoint. | null
+
 
 |System.Backup.TimeoutSec |The backup timeout in seconds |`18000`
 
@@ -1281,7 +1286,7 @@ database source folder |`ts3/db`
 |TS3.RetentionPeriodDay |The period in days for local data records
 to be kept, set to -1 for forever (not advised).
 Longer retention results in higher disk space usage and slower search for historical status
-|`7`
+|`7` (default. Prior to v3.9.2, the default was 30.)
 |===
 
 == TS3Server
@@ -1366,4 +1371,5 @@ An environment variable is set using its `xxx.Basic.ConfigEnv` configuration par
 |===
 |Name |Description |Example
 
-|GPE_DSC_APPLY_TIMEOUT_MINUTE, GSQL.Basic.ConfigEnv|Timeout (minutes) for dynamic schema change. Default = 30| 30|
+|GPE_DSC_APPLY_TIMEOUT_MINUTE, GSQL.Basic.ConfigEnv
+| [v3.9.2+] Timeout (minutes) for dynamic schema change. Default = 30| 30|
