@@ -29,7 +29,7 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** Moved data connector setup from `gadmin` to xref:3.9@tigergraph-server:data-loading:data-streaming-connector/[GSQL commmands], to better align with user personas and privileges.
 ** Added xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc#_continuous_file_loading [auto-detection of new files] when in Stream mode.
 ** Significantly improved CPU usage after connector finishes data loading.
-** Documented additional xref:3.9@tigergraph-server:data-loading:data-streaming-connector/aws-s3.adoc#_specify_connector_configurations[S3 authentication configuration parameters].
+** Documented additional xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_system[S3 authentication configuration parameters].
 
 * Added new xref:3.9@tigergraph-server:API:built-in-endpoints.adoc[REST Endpoints]:
 ** `/library` is a set of endpoints for showing and running template queries.
@@ -38,7 +38,7 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** [3.9.2] `/informant/metrics/get/{metrics_category}` provides filterable JSON formatted system performance metrics.
 ** [3.9.2] `/gsqlserver/gsql/clear-store` is equivalent to `GSQL CLEAR GRAPH STORE -HARD`
 
-* Added or changed xref:3.9.2@tigergraph-server:reference:configuration-parameters.adoc[configuration parameters]:
+* Added or changed xref:3.9@tigergraph-server:reference:configuration-parameters.adoc[configuration parameters]:
 ** `KafkaConnect.AllowedTaskPerCPU` limits the number of concurrent kafka loading tasks.
 ** The GSQL environment variable `GPE_DSC_APPLY_TIMEOUT_MINUTE` is the maximum allowed time for dynamic schema changes (DSC).
 
@@ -46,8 +46,8 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 * Expanded the list of xref:3.9@tigergraph-server:reference:error-codes.adoc[system response codes] to include one for an invalid vertex ID.
 * Improved the backend security infrastructure for the Kafka loader.
 * [3.9.2] Changed the default retention times for the
-xref:3.9.2@tigergraph-server:reference:configuration-parameters.adoc#_informant[Informant.RetentionPeriodDay] and
-xref:3.9.2@tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.RetentionPeriodDay] configuration parameters from 30 days to 7 days, to reduce disk consumption and improve system history query performanace.
+xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_informant[Informant.RetentionPeriodDay] and
+xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.RetentionPeriodDay] configuration parameters from 30 days to 7 days, to reduce disk consumption and improve system history query performanace.
 
 === GSQL Command and Querying Language
 
@@ -57,7 +57,7 @@ xref:3.9.2@tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.Re
 Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
 ** Introduced a new `STREAM` data loading type that simplifies the xref:3.9@tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
 * Added a new set of loading job xref:3.9@gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
-* [3.9.2] Added configuration parameter xref:3.9.2@tigergraph-server:reference:configuration-parameters.adoc#_kafkaconnect[`KafkaConnect.AllowedTaskPerCPU`] to set a maximum number of concurrent connector tasks.
+* [3.9.2] Added configuration parameter xref:tigergraph-server:reference:configuration-parameters.adoc#_kafkaconnect[`KafkaConnect.AllowedTaskPerCPU`] to set a maximum number of concurrent connector tasks.
 * [3.9.2] The default mode for the Kafka Connector is `EOF="true"`
 
 ==== Schema
@@ -70,7 +70,7 @@ multiple edges of the same type] between vertices, to simplify application desig
 * Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
 * Standardized `SHOW PACKAGE` for xref:3.9@graph-ml:using-an-algorithm:index.adoc[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
 * [3.9.2] `outdegree`
-xref:3.9.2@gsql-ref:querying:func/vertex-methods.adoc[vertex function]
+xref:gsql-ref:querying:func/vertex-methods.adoc[vertex function]
 vertex function can also be used with vertex input parameters in the query-body statements, not only with SELECT block vertex aliases.
 
 //=== JDBC Spark Connector
@@ -88,7 +88,7 @@ xref:3.9@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied 
 
 * Enhanced the functionality of the xref:3.9@kubernetes:k8s-operator/index.adoc[] so it is now the standard way to perform cluster operations with Kubernetes.
 * Added support for xref:3.9@kubernetes:k8s-operator/backup-and-restore.adoc[], xref:3.9@kubernetes:k8s-operator/cluster-operations.adoc#_upgrade_cluster_version[upgrading the version of the TigerGraph server], and xref:3.9@kubernetes:k8s-operator/cluster-operations.adoc#_update_cluster_resources[updating cluster resources].
-* [3.9.2] Support for xref:3.9.2@tigergraph-server:kubernetes:k8s-operator/custom-containers.adoc[].
+* [3.9.2] Support for xref:tigergraph-server:kubernetes:k8s-operator/custom-containers.adoc[].
 
 === Security
 
@@ -100,7 +100,7 @@ xref:3.9@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied 
 === Admin Portal
 
 * Reworked the xref:3.9@gui:admin-portal:dashboard.adoc[Admin Portal dashboard] to show the relationship hierarchy and status of all TigerGraph components for at-a-glance understanding of the TigerGraph system.
-* [3.9.2] Added support for xref:3.9.2@gui:admin-portal:components:readme.adoc[configuring two additional components]: GPE and Kafka.
+* [3.9.2] Added support for xref:gui:admin-portal:components/README.adoc[configuring two additional components]: GPE and Kafka.
 
 === GraphStudio
 
@@ -111,10 +111,10 @@ xref:3.9@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied 
 
 * Added xref:1.3@pytigergraph:gds:dataloaders.adoc#nodepieceloader[NodePiece] node embedding algorithm.
 * Added pyTigerGraph support for xref:1.3@pytigergraph:core-functions:query.adoc#_runinstalledquery[running queries asynchronously] (i.e., running in the background).
-* [3.9.2] Added xref:3.9.2@graph-ml:using-an-algorithm:packaged-template-algorithms.adoc[packaged templated versions] of four xref:3.9.2@graph-ml:link-prediction:index.adoc[topological link prediction algorithms].
+* [3.9.2] Added xref:graph-ml:using-an-algorithm:packaged-template-algorithms.adoc[packaged templated versions] of four xref:3.9@graph-ml:link-prediction:index.adoc[topological link prediction algorithms].
 * [3.9.2] Characterized each algorithm by readiness: Alpha, Beta, or Production.
-* [3.9.2] In the documentation, added a xref:3.9.2@graph-ml:intro:algorithm-table.adoc[table for Algorithm Availability and Dependencies].
-* [3.9.2] In the documentation, added a fuller explanation of how to xref:3.9.2@graph-ml:using-an-algorithm:index.adoc[install and run algorithms] using Python.
+* [3.9.2] In the documentation, added a xref:graph-ml:intro:algorithm-table.adoc[table for Algorithm Availability and Dependencies].
+* [3.9.2] In the documentation, added a fuller explanation of how to xref:graph-ml:using-an-algorithm:index.adoc[install and run algorithms] using Python.
 
 
 === TigerGraph Insights
@@ -132,7 +132,7 @@ xref:3.9@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied 
 * Loading: Removed the 5-minute wait that the streaming loader used to decide if all the input data had been consumed.
 * Data format: Fixed importing pre-3.7 user-defined tuple (UDT) data which uses default-width INT or UINT fields.
 The import process will set pre-3.7 default-width fields to be 4 bytes.  3.7+ default-width fields are explicitly set to 8 bytes.
-* GSQL: Added limited support for xref:3.9.2@gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[subqueries in Distributed mode].
+* GSQL: Added limited support for xref:gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[subqueries in Distributed mode].
 * GSQL: Improved the display of FLOAT and DOUBLE numbers so they have the correct number of digits of precision (max. 7 or 16, respectively).
 
 === Fixed and Improved in 3.9.1
