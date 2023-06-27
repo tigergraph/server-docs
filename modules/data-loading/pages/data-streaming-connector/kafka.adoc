@@ -299,7 +299,9 @@ RUN LOADING JOB -noprint load_company USING EOF="true"
 ----
 
 There are two modes for the Kafka Loader: EOF mode and streaming mode.
-The default mode is EOF mode.
-In EOF mode, loading stops after consuming the current Kafka messages.
-In streaming mode, loading never stops until the job is aborted.
 
+* In EOF mode, loading stops after consuming the current Kafka messages.
+* In streaming mode, loading never stops until the job is aborted.
+
+Starting from v3.9.2, the default mode is EOF mode. +
+Prior to v3.9.2, the default mode was streaming mode.
