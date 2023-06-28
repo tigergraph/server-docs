@@ -5,7 +5,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server {page-component-version}.2 LTS was released on June 28, 2023.
+TigerGraph Server {page-component-version}.2 LTS was released on June 29, 2023.
 
 TigerGraph Server {page-component-version}.1 LTS was released on March 22, 2023.
 
@@ -127,13 +127,50 @@ xref:3.9@tigergraph-server:backup-and-restore:configurations.adoc[user-supplied 
 
 === Fixed and Improved in 3.9.2
 
-* Loading: Removed a restriction when load data into an edge defined for multiple FROM-TO vertex type pairs. The load statement no longer must have a USING clause.
-* Loading: Fixed a signed integer overflow error in loader status report messages, if more than 2^31 lines of data were loaded.
-* Loading: Removed the 5-minute wait that the streaming loader used to decide if all the input data had been consumed.
-* Data format: Fixed importing pre-3.7 user-defined tuple (UDT) data which uses default-width INT or UINT fields.
-The import process will set pre-3.7 default-width fields to be 4 bytes.  3.7+ default-width fields are explicitly set to 8 bytes.
-* GSQL: Added limited support for xref:gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[subqueries in Distributed mode].
-* GSQL: Improved the display of FLOAT and DOUBLE numbers so they have the correct number of digits of precision (max. 7 or 16, respectively).
+==== Crashes and Deadlocks
+* Fixed a GPE crash caused by GetVertexTypeId failing to get the type of a vertex.
+* Fixed a RESTPP/WorkloadManager deadlock when multiple queries are waiting to execute.
+* Fixed a deadlock-like state when free disk space became very low during data loading.
+* Fixed a problem with GSQL not responding because no GSQL leader was elected.
+
+==== Functionality
+* Fixed importing pre-3.7 user-defined tuple (UDT) data which uses default-width INT or UINT fields.
+The import process will set pre-3.7 default-width fields to be 4 bytes.  3.7+ default-width fields are explicitly
+* Fixed GSQL not installing queries with certain collection accumulator expressions.
+* Restored the functionality of the -`-ssl` option of the GSQL Client.
+* Fixed a situation that can result in different cluster nodes having differently compiled versions of the same query, resulting in an MD5 check error.
+* Fixed a situation where a request to install one query results in several other queries also being installed.
+* Removed an exclusive lock when Interpret Query is running, which had been preventing concurrent GSQL operations
+* Fixed a null pointer error when attempting to import into GraphStudio a Solution tarball of a tag-based graph.
+* Fixed a case where a schema change did not run because not all libudf.so files had been cleared out.
+* Fixed an internal classification error for `FIXED_BINARY` data, which caused a schema_check test failure.
+* Fixed a bug where if a loading job used `TEMP_TABLE` and `VERTEX_MUST_EXIST`, then the VERTEX_MUST_EXIST option would not be displayed (by `LS` or `SHOW JOB`), nor would it included in a database export.
+* Fixed a GSQL query bug where it did not handle string parameters properly if they contained “&”.
+* Fixed a bug when upgrading to 3.9 that caused the old installation’s default `QueryUDF` files to be copied and overwrite the new 3.9 default QueryUDF files, so that queries using UDFs could not be installed.
+* Fixed a GSQL log bug where the `PermissionUtil.java` function was logging a stale Command Type rather than the current Command Type.
+* Restored limited ability to run xref:gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[
+subqueries having a SET<VERTEX> parameter].
+* Modified the `/deleted_vertex_check` and `/data_consistency_check` endpoints to be global, not associated with any particular graph.
+* Fix a SET type attribute bug in which the set’s values were not being deduplicated.
+* Patched a user authorization issue that prevented a user registered on a primary cluster from running a query on the secondary cluster.
+* Provided a more comprehensive fix to a node sorting issue when upgrading a cluster with 10 or more nodes to v3.9.
+* Removed a restriction when load data into an edge defined for multiple FROM-TO vertex type pairs. The load statement no longer must have a USING clause.
+* Fixed a signed integer overflow error in loader status report messages, if more than 2^31 lines of data were loaded.
+set to 8 bytes.
+* Improved the display of FLOAT and DOUBLE numbers so they have the correct number of digits of precision (max. 7 or 16, respectively).
+* Fixed a GraphStudio bug in which a vertex attribute which had been deleted was still showing until the browserpage was refreshed.
+
+==== Security
+* Security: Updated JDK to 11.9.18-10 to address some vulnerability scan issues.
+* Security: Updated JSON to 20230227 to address some vulnerability scan issues.
+* Improved system security by applying more restrictive file permissions to several files.
+* No longer include examples of the data being loading in the Kafka loader log file, for better data security.
+
+==== Performance
+* Added lazy initialization of vertex data, for large graphs with more that 20K segments in the gstore.
+* Improved query installation memory usage and speed by optimizing gcc9 options.
+* Fixed a GraphStudio slowness issue when creating or editing vertices with hundreds of attributes.
+* Removed the 5-minute wait that the streaming loader used to decide if all the input data had been consumed.
 
 === Fixed and Improved in 3.9.1
 * Fixed sorting issue in a script for upgrading a cluster with more than 9 nodes.
