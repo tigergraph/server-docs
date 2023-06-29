@@ -421,12 +421,7 @@ Response::
 
 *Server*: Informant
 
-This endpoint is available in v3.9.2+.
-
 This endpoint returns system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
-
-* To retrieve all metrics, use GET.
-* To retreive xref:built-in-endpoints.adoc#_filter_returned_metrics[filtered metrics], use POST along with a payload describing your filters.
 
 Metrics are updated every 60 seconds by default.
 This interval can be adjusted with the xref:reference:configuration-parameters.adoc[`System.Metrics`  parameters].
@@ -548,7 +543,9 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 `{metrics_category}` is one of the following: +
 (`cpu-memory`, `diskspace` , `network`, `qps`)
 
-qps means "queries per second".
+`qps` means "queries per second".
+
+The output will be in JSON format.
 
 ==== Input Filter
 
