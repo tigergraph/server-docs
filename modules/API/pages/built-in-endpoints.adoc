@@ -200,13 +200,20 @@ blue_commons         release_2.6.0_05-09-2020 432763afc49bf986aed4731e50254243d3
 
 This endpoint does not take any parameters.
 
-=== Monitor system metrics
+=== Monitor system metrics (TS3, deprecated)
 
 `GET /ts3/api/datapoints`
 
+*Server*: TS3
+
+[NOTE]
+====
+This endpoint is deprecated.
+Use `/informant/metrics/get/{service}` instead.
+====
+
 TigerGraph System State Service (TS3) is TigerGraph's managed monitoring service that collects system metrics and events.
 Many TigerGraph components report metrics such as CPU usage, memory usage, disk usage, and network traffic to TS3 at regular intervals.
-This endpoint listens on port 14240 instead of port 9000.
 
 You can use this endpoint to read from TS3. You can filter for the data points you need as follows:
 
@@ -219,8 +226,8 @@ Visualization of such metrics are available in Admin Portal - Dashboard - xref:g
 
 On a TigerGraph cluster, this endpoint is only present on the `m1` node.
 
-==== Parameters
-[width="100%",cols="12%,10%,78%",options="header",]
+==== Parameters:
+[%autowidth,options="header",]
 |===
 |Name |Required |Description
 |`+from+` |No |Epoch timestamp that indicates the start of the time
@@ -254,7 +261,7 @@ endpoint
 |`+where+` |No |Name of the node that the datapoint is reported for
 |===
 
-==== Sample requests
+==== Sample requests:
 
 The sample request below uses three filters: `from`, `to` and `what`.
 
@@ -399,26 +406,26 @@ Response::
 --
 ====
 
-=== Monitor system metrics (OpenMetrics)
+'''
 
-`GET :14240/informant/metrics`
+=== Monitor system metrics (OpenMetrics format)
 
-`POST :14240/informant/metrics`
+`GET /informant/metrics` +
+`POST /informant/metrics`
 
-You can monitor system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
+*Server*: Informant
 
-* To retrieve all metrics, use GET.
-* To retreive xref:built-in-endpoints.adoc#_filter_returned_metrics[filtered metrics], use POST along with a payload describing your filters.
+This endpoint returns system metrics regarding CPU usage, memory usage, network usage, diskspace, service status, or engine QPS data in OpenMetrics format, allowing you to integrate this endpoint with observability platforms such as Datadog or Prometheus.
 
 Metrics are updated every 60 seconds by default.
 This interval can be adjusted with the xref:reference:configuration-parameters.adoc[`System.Metrics`  parameters].
 
 This endpoint does not require any privileges.
 
-==== Parameters
-None.
+==== Parameters:
+None
 
-==== Sample request
+==== Sample request:
 
 [tabs]
 ====
@@ -518,106 +525,110 @@ tigergraph_service_status{partition="1",replica="1",service_name="GSE"} 6
 --
 ====
 
-==== Filter returned metrics
+'''
 
-A call to the `14240/informant/metrics` endpoint returns all metrics by default.
-This endpoint also supports filtered responses by sending a `POST` request to `14240/informant/metrics/get/` and adding filters like so:
+=== Monitor system metrics by category
 
-[source, console]
-----
-curl -X POST -k localhost:14240/informant/metrics/get/cpu-memory
-curl -X POST -k localhost:14240/informant/metrics/get/diskspace
-curl -X POST -k localhost:14240/informant/metrics/get/network
-curl -X POST -k localhost:14240/informant/metrics/get/qps
-----
+`POST /informant/metrics/get/{metrics_category}`
 
-Because these are POST requests, they must take the mandatory `-d` flag and deliver a JSON-formatted payload consisting of a JSON-formatted set of request fields.
-The payload differs based on the requested information.
+*Server*: Informant
 
-.CPU and Memory Usage
+==== Path Parameters
+`{metrics_category}` is one of the following: +
+(`cpu-memory`, `diskspace` , `network`, `qps`)
+
+qps means "queries per second".
+
+==== Input Filter
+
+A filter to limit the output may be provided as a JSON-formatted payload (e.g., by using the `curl -d` option).
+The filtering options are different for each metrics category.
+The filter may include any or all of the supported fields, which are described below.
+
+.Filter template for `/informant/metrics/get/cpu-memory`
 [source,json]
 ----
 {
     "ServiceDescriptor": {
-      "ServiceName": "string",
-      "Replica": 0,
-      "Partition": 0
-    },
+      "ServiceName": "<service_name>",
+      "Partition": <partition_number (int32)>,
+      "Replica": <replica_number (int32)>
+    }
     "TimeRange":{
-      "StartTimestampNS": "string, time in nanoseconds",
-      "EndTimestampNS": "string, time in nanoseconds"
+      "StartTimestampNS": "<time in nanoseconds (string)>",
+      "EndTimestampNS": "<time in nanoseconds (string)>"
     },
-   "HostID": "string, the node such as m1, m2, etc",
-   "CPUUsage": "float, returns all metrics with CPU usage greater than this value in percent",
-   "MemoryUsage": "int32, returns all metrics with memory usage greater than this value in megabytes",
-   "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+   "HostID": "<the node ID, such as m1 or m2>",
+   "CPUUsage": <return all metrics with CPU usage greater than this value in percent (float)>,
+   "MemoryUsage": <return all metrics with memory usage greater than this value in megabytes (int32)>,
+   "LatestNum": <the number of items per serviceID to return, most recent first (int32)>
 }
 ----
 
-.Disk space
+.Filter template for `/informant/metrics/get/diskspace`
 [source, json]
 ----
 {
   "TimeRange": {
-    "StartTimestampNS": "string",
-    "EndTimestampNS": "string"
+    "StartTimestampNS": "<time in nanoseconds (string)>",
+    "EndTimestampNS": "<time in nanoseconds (string)>"
   },
-  "PathName": "string, either log, kafka, gstore, or home",
-  "HostID": "string, the node such as m1, m2, etc",
-  "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+  "PathName": "<either log, kafka, gstore, or home>",
+  "HostID": "<the node ID, such as m1 or m2>",
+  "LatestNum": <the number of items per serviceID to return, most recent first (int32)>
 }
 ----
 
-.Network usage
+.Filter template for `/informant/metrics/get/network`
 [source, json]
 ----
 {
   "TimeRange": {
-    "StartTimestampNS": "string",
-    "EndTimestampNS": "string"
+    "StartTimestampNS": "<time in nanoseconds (string)>",
+    "EndTimestampNS": "<time in nanoseconds (string)>"
   },
-  "HostID": "string, the node such as m1, m2, etc",
-  "LatestNum": "int32, the number of items per serviceID to return, most recent first"
+  "HostID": "<the node ID, such as m1 or m2>",
+  "LatestNum": <the number of items per serviceID to return, most recent first (int32)>
 }
 ----
 
-.Query per Second (QPS) Metrics
+.Filter template for `/informant/metrics/get/qps`
 [source, json]
 ----
 {
   "TimeRange": {
-    "StartTimestampNS": "string",
-    "EndTimestampNS": "string"
+    "StartTimestampNS": "<time in nanoseconds (string)>",
+    "EndTimestampNS": "<time in nanoseconds (string)>"
   },
   "ServiceDescriptor": {
-    "ServiceName": "string",
-    "Replica": 0,
-    "Partition": 0
+    "ServiceName": "<service_name>",
+    "Partition": <partition_number (int32)>,
+    "Replica": <replica_number (int32)>
   },
-  "HostID": "string, the node such as m1, m2, etc",
-  "LatestNum": "int32, the number of items per serviceID to return, most recent first",
-  "Endpoint": "string"
+  "HostID": "<the node ID, such as m1 or m2>",
+  "LatestNum": <the number of items per serviceID to return, most recent first (int32)>
+  "Endpoint": "<endpoint URL>"
 }
 ----
 
-Some sample requests in this format are as follows:
+==== Examples
 
 .Get disk space report from host `m2`
 [source, console]
 ----
-curl -X POST -k localhost:14240/informant/metrics/get/diskspace -d '{"HostID":"m2"}'
+curl -X POST localhost:14240/metrics/get/diskspace -d '{"HostID":"m2"}'
 ----
 
 .Get a network usage report with the two most recent items
 [source, console]
 ----
-curl -X POST -k localhost:14240/informant/metrics/get/network -d '{"LatestNum":"2"}'
+curl -X POST localhost:14240/metrics/get/network -d '{"LatestNum":"2"}'
 ----
 
 .Get a CPU and memory report for the GSE service with partition and replica number specified
 [source.wrap, console]
 ----
-curl -X POST -k localhost:14240/informant/metrics/get/cpu-memory -d '{"ServiceDescriptor":{"ServiceName":"gse","Partition": 1,"Replica":1}}'
+curl -X POST  localhost:14240/metrics/get/cpu-memory -d '{"ServiceDescriptors":[{"ServiceName":"gse","Partition": 1,"Replica":1}]}'
 ----
 
 The Service Status request returns a map of the following service codes:
@@ -637,6 +648,8 @@ ServiceStatus_value = map[string]int32{
 "Down":            27,
 }
 ----
+
+'''
 
 === Show query performance
 
