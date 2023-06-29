@@ -35,7 +35,8 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** `/library` is a set of endpoints for showing and running template queries.
 ** `/showdelayedlistall` shows how many queries are in the Workflow Manager's delay queue.
 ** `:14240/informant/metrics` replaces `:9167/metrics`
-** [3.9.2] `/informant/metrics/get/{metrics_category}` provides filterable JSON formatted system performance metrics.
+** `/informant/metrics/get/{metrics_category}` provides filterable JSON formatted system performance metrics.
+** [3.9.2] The filter for `/informant/metrics/get/cpu-memory` now accepts a list of ServiceDescriptors instead of a single ServiceDescriptor.
 ** [3.9.2] `/gsqlserver/gsql/clear-store` is equivalent to `GSQL CLEAR GRAPH STORE -HARD`
 
 * Added or changed xref:3.9@tigergraph-server:reference:configuration-parameters.adoc[configuration parameters]:
@@ -227,6 +228,7 @@ This lockup can be cleared by restarting the GSE.
 ** For vertices with string-type primary IDs, vertices whose ID is an empty string will now be rejected.
 ** The default mode for the Kafka Connector changed from EOF="false" to EOF="true".
 ** The default retention time for two monitoring services `Informant.RetentionPeriodDays` and `TS3.RetentionPeriodDays` has reduced from 30 to 7 days.
+** The filter for `/informant/metrics/get/cpu-memory` now accepts a list of ServiceDescriptors instead of a single ServiceDescriptor.
 
 * v3.9+:
 ** Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
