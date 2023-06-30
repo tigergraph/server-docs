@@ -19,8 +19,62 @@ To restore a backup, run the following command:
 ----
 $ gadmin backup restore <backup_tag>
 ----
+To retrieve the tag of a backup, you can use the `gadmin backup list` command.
+Run `gadmin backup restore -h` get all subcommands and flags for backup restore.
 
-For example, if you want to restore a backup with the tag `weekly-2022-08-31T004132`, run gadmin `backup restore weekly-2022-08-31T004132`.
+[.wrap,console]
+----
+$ gadmin backup restore -h
+Restore a cluster from backup
 
+Usage:
+  gadmin backup restore <tag> [flags]
+
+Description:
+  
+  Restores a backup of cluster data.
+  
+  Example:
+  gadmin backup restore my-backup-2021-11-04T120000
+
+Flags:
+  -h, --help                  help for restore
+      --ignore-space-check    Ignore the space check during the backup/restore. Default is false.
+      --meta string           path to metadata file, for cross-cluster restore
+      --staging-path string   The path used to store the graph data during backup/restore. Defaults to dataroot.
+  -y, --y                     yes to all questions
+
+Global Flags:
+      --debug   enable debug log output to stdout
+----
+
+For example, if you want to restore a backup with the tag `weekly-2022-10-25T141957`, run gadmin `weekly-2022-10-25T141957`.
+
+[.wrap,console]
+----
+$ gadmin backup restore weekly-2022-10-25T141957
+[   Note] gadmin backup restore needs to reset TigerGraph system.
+Are you sure? (y/N)y
+[   Info] [Tue Nov  1 09:53:35 UTC 2022] Staging path: /home/tigergraph/tigergraph/data/backup/weekly-2022-10-25T141957 (shared: false)
+[   Info] [Tue Nov  1 09:53:35 UTC 2022] Begin to check needed disk space...
+[   Info] [Tue Nov  1 09:53:35 UTC 2022] Scan backup archives under the path /home/tigergraph/backup/weekly-2022-10-25T141957
+[   Info] [Tue Nov  1 09:53:35 UTC 2022] Prepare archives...
+[   Info] [Tue Nov  1 09:53:35 UTC 2022] Start to restore GPE & GSE data...
+[   Info] [Tue Nov  1 09:53:35 UTC 2022] Stopping GPE & GSE...
+[   Info] [Tue Nov  1 09:53:47 UTC 2022] Backupping current GPE & GSE data...
+[   Info] [Tue Nov  1 09:53:47 UTC 2022] Extracting GPE & GSE data...
+[   Info] [Tue Nov  1 09:53:48 UTC 2022] Reseting GPE & GSE
+[   Info] [Tue Nov  1 09:53:58 UTC 2022] Starting services
+[   Info] [Tue Nov  1 09:54:06 UTC 2022] Restore GPE & GSE successfully. you can remove manually the path /home/tigergraph/tigergraph/data/gstore-20221101095347 after the restore is finished.
+[   Info] [Tue Nov  1 09:54:06 UTC 2022] Importing GUI data... (async)
+[   Info] [Tue Nov  1 09:54:06 UTC 2022] Checksumming and extracting on GUI#1
+[   Info] [Tue Nov  1 09:54:06 UTC 2022] Importing GSQL data... (async)
+[   Info] [Tue Nov  1 09:54:06 UTC 2022] Checksumming and extracting on GSQL
+[   Info] [Tue Nov  1 09:54:06 UTC 2022] GUI imported
+[   Info] [Tue Nov  1 09:54:47 UTC 2022] GSQL imported
+[   Info] [Tue Nov  1 09:54:47 UTC 2022] Restore completes
+[   Info] [Tue Nov  1 09:54:47 UTC 2022] Clean staging directory: /home/tigergraph/tigergraph/data/backup/weekly-2022-10-25T141957
+[   Info] [Tue Nov  1 09:54:47 UTC 2022] Clean staging directory /home/tigergraph/tigergraph/data/backup/weekly-2022-10-25T141957 successfully
+----
 
 The restore operation cannot be canceled once started.
