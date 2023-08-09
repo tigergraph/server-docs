@@ -13,7 +13,7 @@ When xref:user-access:enabling-user-authentication.adoc[REST{pp} authentication 
 The REST{pp} server implements OAuth 2.0-style authorization as follows:
 
 . Each user xref:user-access:user-credentials.adoc#_create_a_secret[can create one or more *secrets* (unique pseudorandom strings)]. Each secret is associated with a particular user and the user's privileges for a particular graph.
-. Anyone who has this secret can invoke a special REST endpoint to xref:API:built-in-endpoints.adoc#_request_a_token_get[generate authorization *tokens*] (other pseudorandom strings).
+. Anyone who has this secret can invoke a special REST endpoint to xref:API:built-in-endpoints.adoc#_request_a_token[generate authorization *tokens*] (other pseudorandom strings).
 . An authorization token can then be used to perform TigerGraph database operations via other REST endpoints. Each token will expire after a certain period of time. The TigerGraph default lifetime for a token is 1 month.
 
 === *Using Tokens*
