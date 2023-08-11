@@ -630,19 +630,19 @@ NOTE: [3.9.2] The query payload for CPU and memory usage has changed from having
 .Get disk space report from host `m2`
 [source, console]
 ----
-curl -X POST localhost:14240/metrics/get/diskspace -d '{"HostID":"m2"}'
+curl -X POST localhost:14240/informant/metrics/get/diskspace -d '{"HostID":"m2"}'
 ----
 
 .Get a network usage report with the two most recent items
 [source, console]
 ----
-curl -X POST localhost:14240/metrics/get/network -d '{"LatestNum":"2"}'
+curl -X POST localhost:14240/informant/metrics/get/network -d '{"LatestNum":"2"}'
 ----
 
 .Get a CPU and memory report for the GSE service with partition and replica number specified
 [source.wrap, console]
 ----
-curl -X POST  localhost:14240/metrics/get/cpu-memory -d '{"ServiceDescriptors":[{"ServiceName":"gse","Partition": 1,"Replica":1}]}'
+curl -X POST  localhost:14240/informant/metrics/get/cpu-memory -d '{"ServiceDescriptors":[{"ServiceName":"gse","Partition": 1,"Replica":1}]}'
 ----
 
 The Service Status request returns a map of the following service codes:
