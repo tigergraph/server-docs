@@ -27,6 +27,9 @@ With TigerGraph's connector offerings, you can perform data loading tasks such a
 * xref:data-streaming-connector/big-query.adoc[]
 * xref:data-streaming-connector/kafka.adoc[]
 
+NOTE: The data connectors will stage temporary data files on the database server's disk.
+You should have free disk space of at least 2 times the size of your total (uncompressed) input data.
+
 == Data source
 
 A data source is an object in GSQL that contains metadata about the source of the data where a loading job loads data from.
