@@ -10,7 +10,10 @@ If you have defined a graph schema, you can load data into the graph store. Load
 To learn about the GSQL statements used in defining a loading job, see xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[GSQL language reference: Creating a loading job.]
 
 == Data loaders
-Data loaders are interfaces built in to the TigerGraph system that enable users to use the same high-level GSQL protocol for high-speed parallel data loading, whether the data reside directly on the network file system, or come from one of several other supported data sources. 
+Data loaders are interfaces built in to the TigerGraph system that enable users to use the same high-level GSQL protocol for high-speed parallel data loading, whether the data reside directly on the network file system, or come from one of several other supported data sources.
+
+NOTE: The data loaders will stage temporary data files on the database server's disk.
+You should have free disk space of at least 2 times the size of your total (uncompressed) input data.
 
 When the data are coming from another data source, some  initial configuration is needed.
 Then you can use the same type of loading jobs described in the xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[GSQL language reference: Creating a loading job].
