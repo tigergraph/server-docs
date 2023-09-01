@@ -22,6 +22,9 @@ GSQL uses a user-provided configuration file to automatically set up a streaming
 
 Go to the xref:data-streaming-connector/index.adoc[] main page for instructions on setting up the loading job.
 
+NOTE: The data streaming will stage temporary data files on the database server's disk.
+You should have free disk space of at least 2 times the size of your total (uncompressed) input data.
+
 == Manual connector setup
 For data stored in an external Kafka cluster, you need to perform a few more steps to set up data streaming.
 Using `gadmin` server commands, you first create a connector to interpret the data source, then define the data source, create the loading job, and run it.
