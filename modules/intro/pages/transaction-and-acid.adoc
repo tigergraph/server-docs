@@ -9,7 +9,7 @@ A TigerGraph *transaction* is a sequence of operations which acts as a single lo
 
 A *read-only operation* in TigerGraph does not add or remove vertices or edges or change any vertex/edge attribute values. An *update operation* in TigerGraph is an operation which either changes some vertex/edge attribute value or inserts some new or delete some existing vertex/edge.
 
-The TigerGraph system provides full ACID transactions with read-commited consistency. Transactions are defined as follows:
+The TigerGraph system provides full ACID transactions with Strong Consistency. Transactions are defined as follows:
 
 * Each GSQL query is a transaction. Each query may have multiple read or write operations.
 * Each REST{pp} GET, POST, or DELETE operation (which may have multiple update operations within it) is a transaction.
