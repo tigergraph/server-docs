@@ -20,7 +20,9 @@ A transaction with update operations may insert/delete multiple vertices/edges o
 
 == *Consistency*
 
-The TigerGraph system provides distributed system Strong Consistency: every replica of the data performs the same operations in the same order. This is one of the strongest forms of consistency available, stronger than causal consistency, for example.
+The TigerGraph system provides distributed system Strong Consistency:
+An update transaction is considered complete when every replica of the data finishes its update.
+All replicas perform updates in the same order.
 
 == *Isolation Level*
 
