@@ -7,7 +7,7 @@ TigerGraph Server {page-component-version}.0 LTS was released on June 17th, 2022
 
 LTS versions are supported for 24 months from their initial release and should be the choice for production deployments.
 
-* TigerGraph Server 3.6.4 (July 21, 2023) fixes xref:#_fixed_in_3_6_4[several issues].
+* TigerGraph Server 3.6.4 (September 13, 2023) fixes xref:#_fixed_in_3_6_4[several issues] and adds some xref:#[mitigations].
 * TigerGraph Server 3.6.3 (February 9, 2023) fixes xref:#_fixed_in_3_6_3[several issues]
 ** adds a
 xref:#_known_issues[known issue about vertex primary IDs]
@@ -16,7 +16,6 @@ xref:#_deprecation_and_compatibility_warnings[one rule regarding primary IDs of 
 * TigerGraph Server 3.6.2 (August 16, 2022) fixes xref:#_fixed_in_3_6_2[several issues].
 * TigerGraph Server 3.6.1 (July 7, 2022) fixes a xref:#_fixed_in_3_6_1[few issues].
 * The latest maintenance release of TigerGraph 3.6 is available on TigerGraph Cloud.
-
 
 == New Features
 
@@ -33,6 +32,8 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 
 === Security
 * Sensitive data such as user credentials in log and configuration files are now encrypted.
+* [3.6.4] Added additional security settings to the default headers for Nginx. (TP-3293)
+* [3.6.4] Tighten the file permissions for various files. (TP-3131, TP-3396)
 
 === Ecosystem integration
 * Added the ability to stream data from external Kafka clusters to xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector].
@@ -67,13 +68,17 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 == Fixed Issues
 
 === Fixed in 3.6.4
-TigerGraph Server 3.6.4 was released on July 21, 2023.
+TigerGraph Server 3.6.4 was released on September 13, 2023.
 
 ==== Upgrading
 * Fixed an issue in which the verifydict process could cause a schema error when upgrading from 3.6.0. (GLE-5137)
+* Fixed an issue with importing data which has user-defined tuples with the older default width for INT/UINT fields (4 bytes) instead of the current default width (8 bytes). (GLE-5620)
+
+==== Backup
+* Fix an error in the application server that was conflating the schedule for local backup with cloud backup. (TP-3436)
 
 ==== Exporting
-* Fixed an issue in which a loading job's VERTEX_MUST_EXIST option was not being included in the output of SHOW, LS, or EXPORT, if the loading job used a TEMP_TABLE with the VERTEX_MUST_EXIST option. (GLE-5420)
+* Fixed an issue in which a loading job's VERTEX_MUST_EXIST option was not being included in the output of SHOW, LS, or EXPORT, if the loading job used a TEMP_TABLE with the VERTEX_MUST_EXIST option. (GLE-5593)
 
 ==== In Replicated Clusters
 * Fixed an issue in which lastSeqId could get out of sync across a CRR multicluster system when a query installation was triggered by a schema change. (GLE-5403)
@@ -82,6 +87,8 @@ TigerGraph Server 3.6.4 was released on July 21, 2023.
 * Fixed an issue in which deleting or refreshing an authentication token could cause cross-region replication to become out of sync.(GLE-5433)
 * Refined the self-protection tests that trigger an intentional GSE crash/panic so that receiving duplicate messages only triggers a crash if the receiver is the primary cluster in a replicated system.(CORE-2610)
 * Fixed an issue in which the GSE Kafka Syncer could get stuck if a secondary replica is promoted to be the primary replica (PR), and if the old PR’s term ID was larger than the new PR’s term ID. (CORE-2602)
+* Fixed a rare GSE crash caused by the lease thread not selecting a new GSE leader when the current GSE leader takes too long to respond to a heartbeat check due to high CPU load. Also added log messages to make diagnosis easily. (CORE-2871)
+* Fixed a null pointer exception in the TokenCleaner routine which is called when a follower transitions to leader. (GLE-5203)
 
 ==== Across a Single Cluster
 * Refined the self-tests for an error state among the GSE Kafka offsets in a cluster so that a GSE leader which doesn't write any messages to Kafka during its term is not treated as an error.
@@ -90,12 +97,28 @@ TigerGraph Server 3.6.4 was released on July 21, 2023.
 
 ==== Loading
 * Fixed: an issue in which data loading could become stalled if the free disk space became low.(CORE-2608)
+* Added kafka_reader to the product bundle so it is available if needed for debugging (QA-5240)
 
 ==== GSQL
 * Fixed an issue with DROP GRAPH not succeeding if there is a local data source for the graph (CREATE DATA_SOURCE –LOCAL). (GLE-5460)
 * Fixed an issue with the DATETIME type being declared internally in two different places, causing possible confusion. (CORE-2541)
 * Fixed a race with the GPE possibly crashing during UDF compilation due to a race condition. (CORE-2618)
+* Fixed a GPE crash caused by threads continuing to use a query's resources after a query has been aborted. (CORE-2828)
+* Fixed a GPE crash occurring when a query references a vertex type that is not in the local tag-based graph schema. (CORE-2831)
+* Fixed an issue where INSERT edge does not work for queries in DISTRIBUTED mode. (GLE-5135)
+* Fixed a deadlock issue during certain GSQL operations for users using OIDC or SAML authentication. (GLE-4819)
+* Fixed an issue where certain queries with nested accumulations would run in Interpreted mode but would not install (compile). (GLE-5278)
+* Fixed a bug where string parameters containing "&" were not being handled correctly. (GLE-5610)
+* Removed unnecessary locks when running GSQL in interpreted mode (GLE-5613)
+* Fixed an issue on a multi-node cluster where DROP QUERY of a query with a codegen error did not fully remove the bad query's generated code. (GLE-5614)
 
+==== REST Endpoints ====
+* Changed the deleted_vertex_check and data_consistency_check endpoints so that they can be run without authorization on a specific graph (GLE-5245)
+
+==== GraphStudio ====
+* Fixed a null pointer exception when importing a GraphStudio solution package. (GLE-5612)
+
+[#_3_6_4_mitigations]
 ==== Mitigations
 
 * If a secondary replica (SR) is performing work on many vertices so that several messages are required, and if it sees a gap in the vertex IDs from one message to the message, the SR's GSE will intentionally crash, to prevent entering a possibly inconsistent state. (CORE-2503)
