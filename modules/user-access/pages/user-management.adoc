@@ -9,10 +9,14 @@ To see user management tasks under the xref:access-control-model.adoc#_access_co
 
 You can run the `CREATE USER` command to create a user.
 
-The username cannot contain the following characters: `\` ,` ` `(` , `)`, `[`, `]`, `:`, `<`, `>`, `;`, `,`, `@`, `\r`, `\n`, `\f`, `\t`, `\\`, `\0`, `\b`.
-It also cannot start with a dot `.` or have multiple dots in a sequence.
+*Usernames* can contain any ASCII or non-ASCII characters (such as Chinese and Kenji)
+or any valid email *except* the following:
 
-You can use non-ascii characters, such as Chinese and Kanji characters.
+. `\r`, `\n`, `\0`, `\b`, `\t`, `jack:@email.com`
+
+. Cannot start with a dot `.` or have multiple dots in a sequence.
+
+. Cannot contain any `<space>`
 
 === Syntax
 
@@ -36,16 +40,35 @@ GSQL > CREATE USER
 
 . Enter the user information in the prompts that follow:
 +
-.Example: Create user
+.Example 1: Create user
 +
 [source,console]
 ----
-User Name : thx1138
+User Name : user1
 New Password : ************
 Re-enter Password : ************
-The user "thx1138" is created.
+The user "user1" is created.
 ----
-
++
+.Example 2: Create user with email
++
+[source,console]
+----
+User Name : a@b.com
+New Password : ************
+Re-enter Password : ************
+The user "a@b.com" is created.
+----
++
+.Example 3: Create user with special characters
++
+[source,console]
+----
+User Name : `:"/.,@#$%^*()_+=-`
+New Password : ************
+Re-enter Password : ************
+The user "`:"/.,@#$%^*()_+=-`" is created.
+----
 
 == View roles assignments and login attempts
 The `SHOW USER` command displays the role assignments, as well as the login attempts,  of the current user.
@@ -255,7 +278,7 @@ DROP USER <user1> (,<user2>)*
 +
 [source,gsql]
 ----
-GSQL > DROP USER user1, user2
+GSQL > DROP USER user1, a@b.com, `:"/.,@#$%^*()_+=-`
 ----
 
 . GSQL will confirm that the users you entered have been dropped
