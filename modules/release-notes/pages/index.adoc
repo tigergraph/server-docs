@@ -122,6 +122,28 @@ vertex function can also be used with vertex input parameters in the query-body 
 
 == Fixed issues
 
+=== Fixed and Improved in 3.9.2-1
+
+==== Crashes and Deadlocks
+* Fixed a GPE crash caused by aborted query still being used by running thread.
+* Fixed crash issue after RESTPP auth refresh.
+* Fixed GSE crash due to the check failure when refreshing leader info after 60 minute timeout.
+* Fixed GPE crash and non-recovery due to Kafka retention to a higher offset.
+
+==== Functionality
+* Fixed data inconsistency while loading data and post-processing operations
+via write queries when running `data_consitency_check` with GPE and GSE.
+* Fixed command fail when user with only graph scope privilege runs a command that only requires graph scope privilege.
+* Fixed failed to compile query when using edge variables in DML-sub delete statement.
+* Fixed `subtypeid` error message inconsistency for GPR and interpret mode.
+* Fixed `/deleted_vertex_check` false alert when GSE doesn't have a segment.
+
+==== Security
+* Security: Updated JDK to 11.0.20 to address vulnerability scan issues.
+
+==== Performance
+* Improved performance of GPE abort function.
+
 === Fixed and Improved in 3.9.2
 
 ==== Crashes and Deadlocks
