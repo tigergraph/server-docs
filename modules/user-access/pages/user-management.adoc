@@ -9,14 +9,18 @@ To see user management tasks under the xref:access-control-model.adoc#_access_co
 
 You can run the `CREATE USER` command to create a user.
 
-*Usernames* can contain any ASCII or non-ASCII characters (such as Chinese and Kenji)
+*Usernames* can contain any Unicode characters
 or any valid email *except* the following:
 
-. `\r`, `\n`, `\0`, `\b`, `\t`, `jack:@email.com`
+. `\r`, `\n`, `\0`, `\b`, `\t`,
+
+. Backquotes (```) can be included in usernames
+
+`jack:@email.com`
 
 . Cannot start with a dot `.` or have multiple dots in a sequence.
 
-. Cannot contain any `<space>`
+. Cannot contain any spaces.
 
 === Syntax
 
