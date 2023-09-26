@@ -9,18 +9,37 @@ To see user management tasks under the xref:access-control-model.adoc#_access_co
 
 You can run the `CREATE USER` command to create a user.
 
-*Usernames* can contain any Unicode characters
-or any valid email *except* the following:
+== Username Rules for v3.9.3 and above
 
-. `\r`, `\n`, `\0`, `\b`, `\t`,
+NOTE: v3.9.3 expanded the variety of characters users can access while creating a username from previous versions.
 
-. Backquotes (```) can be included in usernames
+*Usernames* may contain any Unicode characters *except* the following:
 
-`jack:@email.com`
+IMPORTANT: All usernames are treated as a `STRING` in `GSQL`
+regardless of the syntax structure, format, or characters used.
+Including email syntax (Ex: a@b.com)
 
-. Cannot start with a dot `.` or have multiple dots in a sequence.
+. May not contain these characters: `\r`, `\n`, `\0`, `\b`, `\t`
 
-. Cannot contain any spaces.
+. May not contain any `SPACE`
+
+. May not contain a colon ( `:` )
+
+NOTE: Backquotes ( ``` ) may be used as a delimiter to enclose the username which does not follow
+the pattern `[a-zA-Z_][a-zA-Z0-9]*`. The delimiters are not stored internally.
+
+== Username Rules for v3.9.2 and below
+
+NOTE: For versions 3.9.2 and below please follow these guidelines when creating a username.
+
+*Usernames* must match a regex pattern of [a-zA-Z_][a-zA-Z0-9]*, or be an email.
+Additionally, usernames may not contain the following characters:
+
+. `\\ ,  ( , ), [, ], :, <, >, ;, ,, @, \\r, \\n, \\f, \\t, \\\\, \\0, \\b.`
+
+. It also cannot start with a dot ( `.` ) or have multiple dots ( `...` or `a.b..c...` ) in a sequence.
+
+NOTE: You may use non-ascii characters, such as Chinese and Kanji characters.
 
 === Syntax
 
@@ -64,14 +83,14 @@ Re-enter Password : ************
 The user "a@b.com" is created.
 ----
 +
-.Example 3: Create user with special characters
+.Example 3: Create user with special characters (*Only* v3.9.3)
 +
 [source,console]
 ----
 User Name : `:"/.,@#$%^*()_+=-`
 New Password : ************
 Re-enter Password : ************
-The user "`:"/.,@#$%^*()_+=-`" is created.
+The user ":"/.,@#$%^*()_+=-" is created.
 ----
 
 == View roles assignments and login attempts
