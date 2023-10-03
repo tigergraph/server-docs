@@ -1155,8 +1155,15 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 |`Va2V7mdpTY5ErZRmTBBRqYtkgR7CiGbF`
 
 |System.Backup.CompressProcessNumber |The number of concurrent process
-for compression during backup. Value 0 means the number of processes
-used to compress equals the node CPU’s cores. |`0`
+for compression during backup. Value `10` means the number of processes
+used to compress equals the node CPU’s cores. |`10`
+
+|System.Backup.DecompressProcessNumber | The number of concurrent processes for decompression during the restore.
+| `8`
+
+|System.Backup.CompressionLevel |The backup compression level strikes a balance between size and speed. The better compression, the longer it takes.
+("BestSpeed", "DefaultCompression", "BestCompression")
+| "DefaultCompression"
 
 |System.Backup.Local.Enable |Backup data to local path *IMPORTANT*: If set to `true`, this also enables a daily full backup at 12:00am UTC. |`false`
 
