@@ -13,31 +13,30 @@ You can run the `CREATE USER` command to create a user.
 
 NOTE: v3.9.3 expanded the variety of characters users can access while creating a username from previous versions.
 
-IMPORTANT: All usernames are treated as a `STRING` in `GSQL`
+IMPORTANT: A username is treated as a `STRING` in GSQL,
 regardless of the syntax structure, format, or characters used.
-Including email syntax (Ex: a@b.com).
 
 *Usernames* may contain any Unicode characters *except* the following:
 
-. May not contain these characters: `\r`, `\n`, `\0`, `\b`, `\t`
+. May not contain these characters: `\r`, `\n`, `\0`, `\b`, `\t`.
 
-. May not contain any `SPACE`
+. May not contain any `SPACE`.
 
-. May not contain a colon ( `:` )
+. May not contain a colon ( `:` ).
 
-NOTE: Backquotes ( ``` ) may be used as a delimiter to enclose a username which does not follow
+NOTE: Backquotes ( ``` ) must be used as a delimiter to enclose a username which does not follow
 the pattern `[a-zA-Z_][a-zA-Z0-9]*`. Delimiters are not stored internally.
 
 == Username Rules for v3.9.2 and below
 
 NOTE: For v3.9.2 and below please follow these guidelines when creating a username.
 
-*Usernames* must match a regex pattern of [a-zA-Z_][a-zA-Z0-9]*, or be an email.
+*Usernames* must match a regex pattern of `[a-zA-Z_][a-zA-Z0-9]*`, or be an email.
 Additionally, usernames may not contain the following characters:
 
-. `\\ ,  ( , ), [, ], :, <, >, ;, ,, @, \\r, \\n, \\f, \\t, \\\\, \\0, \\b.`
+. `\\`, `(`, `)`, `[`, `]`, `:`, `<`, `>`, `;`, `,`, `@`, `\\r`, `\\n`, `\\f`, `\\t`, `\\\\`, `\\0`, `\\b`.
 
-. It also cannot start with a dot ( `.` ) or have multiple dots ( `...` or `a.b..c...` ) in a sequence.
+. A username may not start with a dot ( `.` ) or have multiple dots ( `...` or `a.b..c...` ) in a sequence.
 
 NOTE: You may use non-ascii characters, such as Chinese and Kanji characters.
 
@@ -87,10 +86,10 @@ The user "a@b.com" is created.
 +
 [source,console]
 ----
-User Name : `:"/.,@#$%^*()_+=-`
+User Name : `"/.,@#$%^*()_+=-`
 New Password : ************
 Re-enter Password : ************
-The user ":"/.,@#$%^*()_+=-" is created.
+The user ""/.,@#$%^*()_+=-" is created.
 ----
 
 == View roles assignments and login attempts
@@ -301,7 +300,7 @@ DROP USER <user1> (,<user2>)*
 +
 [source,gsql]
 ----
-GSQL > DROP USER user1, a@b.com, `:"/.,@#$%^*()_+=-`
+GSQL > DROP USER user1, a@b.com, `"/.,@#$%^*()_+=-`
 ----
 
 . GSQL will confirm that the users you entered have been dropped
