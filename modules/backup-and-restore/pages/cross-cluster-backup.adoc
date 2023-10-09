@@ -19,10 +19,21 @@ gadmin backup restore <backup_tag>
 
 Just like restoring a backup in its original cluster.
 
-//Note to writer: Find where to include example for s3 bucket...
-//For the local backup, the restore flow will try to find a metadata file under the backup path, i.e. the file /path/to/{System.Backup.Local.Path}/{name_of_backup}/metadata
-//For the S3 backup, the restore flow will try to find an s3 object for the backup,
-//from the Bucket System.Backup.S3.BucketName, as its (daily_backup_0816) metadata.
+For local backup, the restore flow will try to find a metadata file under the backup path:
+
+[source,console]
+--
+/path/to/{System.Backup.Local.Path}/<backup_tag>/metadata
+--
+
+For the S3 backup, the restore flow will try to find an s3 object:
+
+[source, console]
+--
+<backup_tag>_metadata
+--
+
+From the Bucket `System.Backup.S3.BucketName`.
 
 IMPORTANT: For all previous versions please follow the steps below.
 
@@ -34,7 +45,7 @@ All commands must be run from the TigerGraph Linux user.
 * You have access to a data backup from another cluster as well as its xref:backup-cluster.adoc#_metadata_backup_optional[metadata backup].
 * You have xref:configurations.adoc[configured backup and restore] on the new cluster.
 
-== Procedure (For v3.9.3 and below)
+== Procedure
 
 === Upload metadata to new cluster
 Upload the metadata file specific to the backup with which you want to restore the cluster to a path on any node of the new cluster where the TigerGraph Linux user has access.
