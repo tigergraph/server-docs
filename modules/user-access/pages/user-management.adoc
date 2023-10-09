@@ -18,11 +18,9 @@ regardless of the syntax structure, format, or characters used.
 
 *Usernames* may contain any Unicode characters *except* the following:
 
-. May not contain these characters: `\r`, `\n`, `\0`, `\b`, `\t`.
+. May not contain these characters: `\r`, `\n`, `\0`, `\b`, `\t`, `\a`, `\v`.
 
 . May not contain any `SPACE`.
-
-. May not contain a colon ( `:` ).
 
 NOTE: Backquotes ( ``` ) must be used as a delimiter to enclose a username which does not follow
 the pattern `[a-zA-Z_][a-zA-Z0-9]*`. Delimiters are not stored internally.
@@ -34,7 +32,7 @@ NOTE: For v3.9.2 and below please follow these guidelines when creating a userna
 *Usernames* must match a regex pattern of `[a-zA-Z_][a-zA-Z0-9]*`, or be an email.
 Additionally, usernames may not contain the following characters:
 
-. `\\`, `(`, `)`, `[`, `]`, `:`, `<`, `>`, `;`, `,`, `@`, `\\r`, `\\n`, `\\f`, `\\t`, `\\\\`, `\\0`, `\\b`.
+. `\\`, `(`, `)`, `[`, `]`, `:`, `<`, `>`, `;`, `,`, `@`, `\r`, `\n`, `\f`, `\t`, `\\`, `\0`, `\b`.
 
 . A username may not start with a dot ( `.` ) or have multiple dots ( `...` or `a.b..c...` ) in a sequence.
 
@@ -86,10 +84,10 @@ The user "a@b.com" is created.
 +
 [source,console]
 ----
-User Name : `"/.,@#$%^*()_+=-`
+User Name : `:"/.,@#$%^*()_+=-`
 New Password : ************
 Re-enter Password : ************
-The user ""/.,@#$%^*()_+=-" is created.
+The user ":"/.,@#$%^*()_+=-" is created.
 ----
 
 == View roles assignments and login attempts
@@ -300,7 +298,7 @@ DROP USER <user1> (,<user2>)*
 +
 [source,gsql]
 ----
-GSQL > DROP USER user1, a@b.com, `"/.,@#$%^*()_+=-`
+GSQL > DROP USER user1, a@b.com, `:"/.,@#$%^*()_+=-`
 ----
 
 . GSQL will confirm that the users you entered have been dropped
