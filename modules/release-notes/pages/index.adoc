@@ -7,10 +7,15 @@ TigerGraph Server {page-component-version}.0 LTS was released on June 17th, 2022
 
 LTS versions are supported for 24 months from their initial release and should be the choice for production deployments.
 
-* The most recent update is 3.6.3, which was released on February 9th, 2023.
+* TigerGraph Server 3.6.4 (October 10, 2023) fixes xref:#_fixed_in_3_6_4[several issues] and adds some xref:#[mitigations].
+* TigerGraph Server 3.6.3 (February 9, 2023) fixes xref:#_fixed_in_3_6_3[several issues]
+** adds a
+xref:#_known_issues[known issue about vertex primary IDs]
+** adds
+xref:#_deprecation_and_compatibility_warnings[one rule regarding primary IDs of vertices].
+* TigerGraph Server 3.6.2 (August 16, 2022) fixes xref:#_fixed_in_3_6_2[several issues].
+* TigerGraph Server 3.6.1 (July 7, 2022) fixes a xref:#_fixed_in_3_6_1[few issues].
 * The latest maintenance release of TigerGraph 3.6 is available on TigerGraph Cloud.
-
-
 
 == New Features
 
@@ -25,9 +30,10 @@ If you are a paid TigerGraph Cloud enterprise customer and want to set up an ER 
 * Introduced TigerGraph xref:kubernetes:k8s-operator/index.adoc[Kubernetes Operator (Preview)] {fn-preview}.
 TigerGraph Kubernetes Operator allows you to automate operations such as the creation, status checking and deletion of TigerGraph clusters.
 
-
 === Security
 * Sensitive data such as user credentials in log and configuration files are now encrypted.
+* [3.6.4] Added additional security settings to the default headers for Nginx. (TP-3293)
+* [3.6.4] Tighten the file permissions for various files. (TP-3131, TP-3396)
 
 === Ecosystem integration
 * Added the ability to stream data from external Kafka clusters to xref:data-loading:data-streaming-connector.adoc[Data Streaming Connector].
@@ -42,6 +48,7 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 * Improved GSQL log debuggability by ensuring all metadata and data update operations share a common prefix.
 * Improved engine log debuggability by including the ID of the original request from RESTPP.
 * Added more detail to several error messages.
+* [3.6.4] Added reports of vertices with empty string IDs to the data loading logs.
 
 === Data API service
 * Added two parameters `target_vertex_must_exist` and `source_vertex_must_exist` to xref:tigergraph-server:API:built-in-endpoints.adoc#_upsert_data_to_graph[the REST endpoint to upsert data].
@@ -58,7 +65,68 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 * Simplified installation of algorithms: UDFs required by certain algorithms are included with the database and will be automaticalled installed.
 
 [#_fixed_issues]
-== Fixed issues
+== Fixed Issues
+
+=== Fixed in 3.6.4
+TigerGraph Server 3.6.4 was released on October 10, 2023.
+
+==== Upgrading
+* Fixed an issue in which the verifydict process could cause a schema error when upgrading from 3.6.0. (GLE-5137)
+* Fixed an issue with importing data which has user-defined tuples with the older default width for INT/UINT fields (4 bytes) instead of the current default width (8 bytes). (GLE-5620)
+* Improved output to be more specific when GSE is offline and `/deleted_vertex_check` reported all deleted vertices on the GPE side as ghost IDs,
+assuming GSE has no deletion. (CORE-3018)
+* Fixed `/deleted_vertex_check` false alert when GSE doesn't have a segment and there are no active vertices on the GPE. (CORE-2823)
+
+==== Backup
+* Fix an error in the application server that was conflating the schedule for local backup with cloud backup. (TP-3436)
+
+==== Exporting
+* Fixed an issue in which a loading job's VERTEX_MUST_EXIST option was not being included in the output of SHOW, LS, or EXPORT, if the loading job used a TEMP_TABLE with the VERTEX_MUST_EXIST option. (GLE-5593)
+
+==== In Replicated Clusters
+* Fixed an issue in which lastSeqId could get out of sync across a CRR multicluster system when a query installation was triggered by a schema change. (GLE-5403)
+* Fixed an issue in which a user registered on the primary cluster of a CRR system was not able to run a query on the secondary cluster, because the secondary cluster was inappropriately creating a new secret for the user. (GLE-5419)
+* Fixed an issue in which the Kafka offset of a GSQL server in a secondary cluster could become lost if the secondary cluster is shut down while active. (GLE-5411)
+* Fixed an issue in which deleting or refreshing an authentication token could cause cross-region replication to become out of sync.(GLE-5433)
+* Refined the self-protection tests that trigger an intentional GSE crash/panic so that receiving duplicate messages only triggers a crash if the receiver is the primary cluster in a replicated system.(CORE-2610)
+* Fixed an issue in which the GSE Kafka Syncer could get stuck if a secondary replica is promoted to be the primary replica (PR), and if the old PR’s term ID was larger than the new PR’s term ID. (CORE-2602)
+* Fixed a rare GSE crash caused by the lease thread not selecting a new GSE leader when the current GSE leader takes too long to respond to a heartbeat check due to high CPU load. Also added log messages to make diagnosis easily. (CORE-2871)
+* Fixed a null pointer exception in the TokenCleaner routine which is called when a follower transitions to leader. (GLE-5203)
+
+==== Across a Single Cluster
+* Refined the self-tests for an error state among the GSE Kafka offsets in a cluster so that a GSE leader which doesn't write any messages to Kafka during its term is not treated as an error.
+(CORE-2632, CORE-2485)
+* Fixed an issue in which a GPE leader might not be aware of vertices in a remote segment of a cluster needing to be deleted, if the segment was created before a rebuild and a restart occurred before the rebuild.(CORE-2480)
+
+==== Loading
+* Fixed: an issue in which data loading could become stalled if the free disk space became low.(CORE-2608)
+* Added kafka_reader to the product bundle so it is available if needed for debugging (QA-5240)
+
+==== GSQL
+* Fixed an issue with DROP GRAPH not succeeding if there is a local data source for the graph (CREATE DATA_SOURCE –LOCAL). (GLE-5460)
+* Fixed an issue with the DATETIME type being declared internally in two different places, causing possible confusion. (CORE-2541)
+* Fixed a race with the GPE possibly crashing during UDF compilation due to a race condition. (CORE-2618)
+* Fixed a GPE crash caused by threads continuing to use a query's resources after a query has been aborted. (CORE-2828)
+* Fixed a GPE crash occurring when a query references a vertex type that is not in the local tag-based graph schema. (CORE-2831)
+* Fixed an issue where INSERT edge does not work for queries in DISTRIBUTED mode. (GLE-5135)
+* Fixed a deadlock issue during certain GSQL operations for users using OIDC or SAML authentication. (GLE-4819)
+* Fixed an issue where certain queries with nested accumulations would run in Interpreted mode but would not install (compile). (GLE-5278)
+* Fixed a bug where string parameters containing "&" were not being handled correctly. (GLE-5610)
+* Removed unnecessary locks when running GSQL in interpreted mode (GLE-5613)
+* Fixed an issue on a multi-node cluster where DROP QUERY of a query with a codegen error did not fully remove the bad query's generated code. (GLE-5614)
+
+==== REST Endpoints ====
+* Changed the deleted_vertex_check and data_consistency_check endpoints so that they can be run without authorization on a specific graph (GLE-5245)
+
+==== GraphStudio ====
+* Fixed a null pointer exception when importing a GraphStudio solution package. (GLE-5612)
+
+[#_3_6_4_mitigations]
+==== Mitigations
+
+* If a secondary replica (SR) is performing work on many vertices so that several messages are required, and if it sees a gap in the vertex IDs from one message to the message, the SR's GSE will intentionally crash, to prevent entering a possibly inconsistent state. (CORE-2503)
+* If data is being loaded to a replicated system, and the process notices an inconsistency in the number of edges reporting on one replica vs. another, then the GPE will intentionally crash to prevent additional errors. (CORE-2646)
+
 
 === Fixed in 3.6.3
 TigerGraph Server 3.6.3 was released on February 9, 2023.
@@ -144,8 +212,9 @@ TigerGraph Server 3.6.1 was released on July 7th, 2022.
 * When a user tries to edit an inferred vertex from returned edges in GraphStudio's visualized query results, they will now see a warning to modify their queries to return the vertices to be able to edit the vertices.
 
 
-== Deprecation warnings
+== Deprecation and Compatibility Warnings
 * The `-OPTIMIZE` flag for `INSTALL QUERY` is deprecated and is planned to be dropped in the 3.7 release.
+* Begining with 3.6.3, a vertex having an empty string as its primary id cannot be loaded. Previously, such a vertex was permitted.
 
 == Known Issues
 
@@ -155,8 +224,10 @@ TigerGraph Server 3.6.1 was released on July 7th, 2022.
 
 * When available memory becomes very low in a cluster and there are a large number of vertex deletions to process, some remote servers might have difficulty receiving the metadata needed to be aware of all the deletions across the full cluster. The mismatched metadata will cause the GPE to go down.
 * If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC
+* Vertex primary IDs are treated as STRING, regardless of whether they are declared as STRING, INT, or UINT.
+If a vertex is defined to have INT or UINT type IDs, but the user tries to load string values, the string values will be accepted, because the type is not checked.
+If the `primary_id_as_attribute` option is selected, then attending to perform numeric options on a pirmary id may encounter a data type conflict error.
 * For a list of known issues for GraphStudio and Admin Portal, please see xref:{page-component-version}@gui:graphstudio:known-issues.adoc[Known issues for GraphStudio] and xref:{page-component-version}@gui:admin-portal:known-issues.adoc[Known issues for Admin Portal].
-
 
 == Release notes for previous versions
 * xref:3.5@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.5]
