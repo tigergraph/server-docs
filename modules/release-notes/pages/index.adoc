@@ -73,6 +73,9 @@ TigerGraph Server 3.6.4 was released on October 10, 2023.
 ==== Upgrading
 * Fixed an issue in which the verifydict process could cause a schema error when upgrading from 3.6.0. (GLE-5137)
 * Fixed an issue with importing data which has user-defined tuples with the older default width for INT/UINT fields (4 bytes) instead of the current default width (8 bytes). (GLE-5620)
+* Improved output to be more specific when GSE is offline and `/deleted_vertex_check` reported all deleted vertices on the GPE side as ghost IDs,
+assuming GSE has no deletion. (CORE-3018)
+* Fixed `/deleted_vertex_check` false alert when GSE doesn't have a segment and there are no active vertices on the GPE. (CORE-2823)
 
 ==== Backup
 * Fix an error in the application server that was conflating the schedule for local backup with cloud backup. (TP-3436)
