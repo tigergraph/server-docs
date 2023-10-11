@@ -1,6 +1,5 @@
 = Restore a Database Backup from Another Cluster
 :description:
-:sectnums:
 
 This page walks you through the process of restoring a cluster from a backup that was created from another database cluster.
 
@@ -12,6 +11,8 @@ Your cluster is offline during the restore process.
 * TigerGraph is installed on the new cluster in the exact same version as the previous cluster.
 * You have access to the TigerGraph Linux user account on your cluster.
 All commands must be run from the TigerGraph Linux user.
+* You have access to a data backup from another cluster.
+* You have xref:configurations.adoc[configured backup and restore] on the new cluster.
 
 NOTE: Since v3.9.2, it is no longer required to create a backup for a backups metadata or upload the metadata to a new cluster.
 A backup’s metadata is now stored as a part of a backup's files, but the previous method is still supported. *See xref:_prerequisites_v3_9_1_and_below[].
@@ -25,14 +26,9 @@ gadmin backup restore <backup_tag>
 
 Just like restoring a backup in its original cluster.
 
-For local backup, the restore flow will try to find a metadata file under the backup path:
+== Copy data backup to new cluster
 
-[source,console]
---
-/path/to/{System.Backup.Local.Path}/<backup_tag>/metadata
---
-
-For the S3 backup, the restore flow will try to find an s3 object:
+For an Amazon S3 backup, the restore flow will try to find a S3 object:
 
 [source, console]
 --
@@ -40,6 +36,18 @@ For the S3 backup, the restore flow will try to find an s3 object:
 --
 
 From the Bucket `System.Backup.S3.BucketName`.
+
+If your backups were stored locally, you need to make sure backup files from all nodes are copied to the new cluster.
+The restore flow will try to find a metadata file under the backup path:
+
+[source,console]
+--
+/path/to/{System.Backup.Local.Path}/<backup_tag>/metadata
+--
+
+They do not necessarily need to be on the corresponding nodes as long as all partitions are in the new cluster at the specified paths you configured.
+
+For example, if you have configured the backup path to be `/home/tigergraph/backups` for a 3-node cluster, you can put all backup files for backup `weekly-<timestamp>` in the folder `/home/tigergraph/backups/weekly-<timestamp>`.
 
 IMPORTANT: For all previous versions please follow the steps below.
 
@@ -53,13 +61,13 @@ All commands must be run from the TigerGraph Linux user.
 
 == Procedure
 
-=== Upload metadata to new cluster
+=== 1) Upload metadata to new cluster
 Upload the metadata file specific to the backup with which you want to restore the cluster to a path on any node of the new cluster where the TigerGraph Linux user has access.
 
 For example, upload the file to `/home/tigergraph/metadata` on m1 of the new cluster.
 
 
-=== Copy data backup to new cluster
+=== 2) Copy data backup to new cluster
 
 If your backups are stored in Amazon S3 buckets, you can skip this step as long as you configure `System.Backup.S3.BucketName` for the new cluster to be the same as the previous cluster.
 
@@ -68,7 +76,7 @@ They do not necessarily need to be on the corresponding nodes as long as all par
 
 For example, if you have configured the backup path to be `/home/tigergraph/backups` for a 3-node cluster, you can put all backup files for backup `weekly-<timestamp>` in the folder `/home/tigergraph/backups/weekly-<timestamp>`.
 
-=== Restore cluster
+=== 3) Restore cluster
 
 Run the following command to restore the cluster using the backup.
 You must run the command on the cluster to which you uploaded the cluster metadata:
