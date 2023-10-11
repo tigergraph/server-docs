@@ -7,8 +7,14 @@ This page walks you through the process of restoring a cluster from a backup tha
 Restoring is an off-line operation.
 Your cluster is offline during the restore process.
 
-NOTE: Since v3.9.3, it is no longer required to create a backup for a backups metadata or upload the metadata to a new cluster.
-A backup’s metadata is now stored as a part of a backup's files.
+== Prerequisites
+* Your new cluster has the same xref:cluster-and-ha-management:ha-cluster.adoc[partitioning factor] as the cluster from which the backup file was created.
+* TigerGraph is installed on the new cluster in the exact same version as the previous cluster.
+* You have access to the TigerGraph Linux user account on your cluster.
+All commands must be run from the TigerGraph Linux user.
+
+NOTE: Since v3.9.2, it is no longer required to create a backup for a backups metadata or upload the metadata to a new cluster.
+A backup’s metadata is now stored as a part of a backup's files, but the previous method is still supported. *See xref:_prerequisites_v3_9_1_and_below[].
 
 Simply run:
 
@@ -37,7 +43,7 @@ From the Bucket `System.Backup.S3.BucketName`.
 
 IMPORTANT: For all previous versions please follow the steps below.
 
-== Prerequisites
+== Prerequisites v3.9.1 and below
 * Your new cluster has the same xref:cluster-and-ha-management:ha-cluster.adoc[partitioning factor] as the cluster from which the backup file was created.
 * TigerGraph is installed on the new cluster in the exact same version as the previous cluster.
 * You have access to the TigerGraph Linux user account on your cluster.
