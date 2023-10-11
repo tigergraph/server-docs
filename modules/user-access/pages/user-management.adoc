@@ -22,21 +22,24 @@ regardless of the syntax structure, format, or characters used.
 
 . May not contain any `SPACE`.
 
-NOTE: Backquotes ( ``` ) must be used as a delimiter to enclose a username which does not follow
-the pattern `[a-zA-Z_][a-zA-Z0-9]*`. Delimiters are not stored internally.
+NOTE: In the GSQL client, backquotes ( ``` ) must be used as a delimiter to enclose usernames which is not a valid email and does not follow the pattern [a-zA-Z_][a-zA-Z0-9]*.
+Delimiters are not stored internally.
 
 == Username Rules for v3.9.2 and below
 
 NOTE: For v3.9.2 and below please follow these guidelines when creating a username.
 
 *Usernames* must match a regex pattern of `[a-zA-Z_][a-zA-Z0-9]*`, or be an email.
-Additionally, usernames may not contain the following characters:
+You may also use non-ascii characters, such as Chinese and Kanji characters.
+
+Additionally, usernames may **not** contain the following characters:
 
 . `\`, `(`, `)`, `[`, `]`, `:`, `<`, `>`, `;`, `,`, `@`, `\r`, `\n`, `\f`, `\t`, `\\`, `\0`, `\b`.
 
 . A username may not start with a dot ( `.` ) or have multiple dots ( `...` or `a.b..c...` ) in a sequence.
 
-NOTE: You may use non-ascii characters, such as Chinese and Kanji characters.
+NOTE: Backquotes ( ``` ) must be used as a delimiter to enclose usernames which do not follow
+the pattern `[a-zA-Z_][a-zA-Z0-9]*`. Delimiters are not stored internally.
 
 === Syntax
 
