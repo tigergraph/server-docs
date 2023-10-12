@@ -64,3 +64,30 @@ For example, to specify a limit of four threads that can be used by a query, use
 ----
 curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
 ----
+
+== Replica/Partition routing based on CPU Usage
+
+REST++ allows users to route queries based on CPU usage. Determined by a user configurable threshold (default set at 50%).
+This is so that queries don’t overwhelm nodes that are already under a heavy load.
+
+Periodically, CPU usage data will be pulled to determine which GPE instance will be picked to route the query.
+If no GPE satisfies the CPU threshold condition, REST++ falls back to the default behavior (a round-robin selection from the full list of GPEs).
+
+NOTE: If GSQL-REPLICA header is used when invoking a query, this header would be used instead and ignore this routing logic.
+
+.Enable CPULoadAware routing
+[source, console]
+gadmin config entry RESTPP.QueryRouting.Mode
+RESTPP.QueryRouting.Mode [ 1 ]
+
+NOTE: Query routing mode has two options: 0=RoundRobin and 1=CPULoadAware.
+
+You can also then set the CPU usage threshold for CPULoadAware query routing mode.
+
+.Change CPU threshold
+[source, console]
+gadmin config entry RESTPP.QueryRouting.TargetSelectionCPUThreshold
+RESTPP.QueryRouting.TargetSelectionCPUThreshold [ 40 ]
+New: 40
+
+NOTE: Default CPU threshold is set at 50.
