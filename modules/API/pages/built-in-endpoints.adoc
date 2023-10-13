@@ -989,8 +989,7 @@ The check passes if there are no discrepancies between the GSE and GPE in terms 
 |===
 |Name |Required |Description
 |`threadnum` |No |Integer that indicates the number of threads used to
-execute the deleted vertex check jobs. This parameter is optional and
-the default value is `6` if none is provided
+execute the deleted vertex check jobs. he default value is 6.
 
 |`segid` |No |IDs of segments to perform the deleted vertex check for.
 If none is provided, the check will be performed on all segments.
@@ -1121,6 +1120,7 @@ The endpoints in this subsection allow users to create, refresh and delete authe
 `POST /requesttoken`
 
 This endpoint returns a token used to authenticate RESTPP requests.
+The token will be always be a new token, unless the `allowExisting` parameter is set to true.
 
 If authentication is enabled on RESTPP endpoints, a token needs to be included in the request header for all requests sent to the RESTPP server. A user can generate a token using either
 
@@ -1145,7 +1145,21 @@ Required if the request body does not supply `graph`.
 Required if the request body does not supply `secret`.
 <3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
 
-==== Sample request:
+==== Parameters:
+[width="100%",cols="15%,10%,75%a",options="header",]
+|===
+|Name |Required |Description
+
+|`allowExisting` [v3.9.3+]
+|No
+|Boolean (default False). When True:
+(1) If an existing token has at least one day remaining before its expiration, refresh and return that token.
+(2) If there is no such existing token and the requester is a cross-region replica, then respond with a No Token Found error.
+(3) Otherwise, return a new token.
+
+|===
+
+==== Sample requests:
 The responses are slightly different between requests made with secrets and username-password pair.
 
 [tabs]
@@ -1211,8 +1225,10 @@ Keep your tokens accessible in a secure location.
 For security reasons, TigerGraph Support cannot restore access to tokens.
 ====
 
-==== Parameters:
-None
+
+
+
+
 
 '''
 
