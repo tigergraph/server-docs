@@ -42,18 +42,6 @@ $ gadmin confit set RESTPP.WorkLoadManager.MaxDelayQueueSize 20
 
 You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
 
-== Specify replica to run query on
-On a distributed cluster, you can specify on which replica you want a query to be run through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
-
-For example, to run the query on the primary cluster, use the `GSQL-REPLICA` header when running a query and set its value to 1:
-
-.Specify that the query run on the primary cluster
-[source.wrap,bash]
-----
-curl -X POST -H "GSQL-REPLICA: 1" -d '{"p":{"id":"Tom","type":"person"}}'
-"http://localhost:9000/query/social/hello"
-----
-
 == Specify number of threads used by a query
 You can specify the limit of the number of threads that can be used by one query through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
 
@@ -65,29 +53,44 @@ For example, to specify a limit of four threads that can be used by a query, use
 curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
 ----
 
-== Replica/Partition routing based on CPU Usage
 
-REST++ allows users to route queries based on CPU usage. Determined by a user configurable threshold (default set at 50%).
-This is so that queries don’t overwhelm nodes that are already under a heavy load.
+== Query Routing Schemes
 
-Periodically, CPU usage data will be pulled to determine which GPE instance will be picked to route the query.
-If no GPE satisfies the CPU threshold condition, REST++ falls back to the default behavior (a round-robin selection from the full list of GPEs).
+In a distributed or replicated cluster, REST++ automatically routes queries to different GPEs, in order to spread the workload.
 
-NOTE: If GSQL-REPLICA header is used when invoking a query, this header would be used instead and ignore this routing logic.
+NOTE: If xref:_specify_replica_to_run_query_on[GSQL-REPLICA] header is used when invoking a query, this header overrides the routing scheme for that query.
 
-.Enable CPULoadAware routing
+=== Round Robin routing
+
+The default query routing scheme is round-robin. The first query is managed by GPE 0, the next query by GPE 1, and so on. After the last GPE, the cycle returns to GPE 0.
+
+Version 3.9.3 adds a system configuration parameter `RESTPP.CPULoadAware.Mode` to enable system administrators to select other query routing schemes:
+
+* Mode = 0 (default): Round-Robin
+* Mode = 1: CPU Load Aware
+
+=== CPU Load Aware Query Routing
+
+When enabled, REST++ tries to direct incoming queries to the GPEs that are currently less busy.
+
+Specifically, the system periodically polls CPU usage data to find a GPE whose CPU usage percentage is below
+`RESTPP.QueryRouting.TargetSelectionCPUThreshold` (default 50).
+
+If no GPE satisfies the CPU threshold condition, REST++ falls back to the default behavior (round-robin selection).
+
+.Example: Change CPU Load Threshold and Enable CPU Load Aware routing
 [source, console]
-gadmin config entry RESTPP.QueryRouting.Mode
-RESTPP.QueryRouting.Mode [ 1 ]
+$ gadmin config entry RESTPP.QueryRouting.TargetSelectionCPUThreshold 40
+$ gadmin config entry RESTPP.QueryRouting.Mode 1
 
-NOTE: Query routing mode has two options: 0=RoundRobin and 1=CPULoadAware.
+== Specify replica to run query on
+On a distributed cluster, you can specify on which replica you want a query to be run through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
 
-You can also then set the CPU usage threshold for CPULoadAware query routing mode.
+For example, to run the query on the primary cluster, use the `GSQL-REPLICA` header when running a query and set its value to 1:
 
-.Change CPU threshold
-[source, console]
-gadmin config entry RESTPP.QueryRouting.TargetSelectionCPUThreshold
-RESTPP.QueryRouting.TargetSelectionCPUThreshold [ 40 ]
-New: 40
-
-NOTE: Default CPU threshold is set at 50.
+.Specify that the query run on the primary cluster
+[source.wrap,bash]
+----
+curl -X POST -H "GSQL-REPLICA: 1" -d '{"p":{"id":"Tom","type":"person"}}'
+"http://localhost:9000/query/social/hello"
+----
