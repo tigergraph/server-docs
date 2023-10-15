@@ -9,37 +9,32 @@ To see user management tasks under the xref:access-control-model.adoc#_access_co
 
 You can run the `CREATE USER` command to create a user.
 
-== Username Rules for v3.9.3 and above
+=== Username Rules for v3.9.3 and above
 
-NOTE: v3.9.3 expanded the variety of characters users can access while creating a username from previous versions.
+NOTE: v3.9.3 removes some of the restrictions on username strings.
 
-IMPORTANT: A username is treated as a `STRING` in GSQL,
-regardless of the syntax structure, format, or characters used.
+. A username can contain most Unicode characters, but it *may not* contain any of the following characters:
+* the colon (`:`) character
+* any whitespace character
+* nonprintable characters, such as `\a`, `\b`, `\f`, `\n`, `\r`, `\s`, `\t`, `\v`, `\0`
 
-*Usernames* may contain any Unicode characters *except* the following:
+. A username which either follows the pattern `[a-zA-Z_][a-zA-Z0-9]*` or is a simple email address does not need to be enclosed in delimiters. All other usernames must be enclosed in backquotes (```). Delimiters are not stored internally.
 
-. May not contain these characters: `\r`, `\n`, `\0`, `\b`, `\t`, `\a`, `\v`.
+=== Username Rules for v3.9.2 and below
 
-. May not contain any `SPACE`.
+Usernames must follow the following string rules:
 
-NOTE: In the GSQL client, backquotes ( ``` ) must be used as a delimiter to enclose usernames which is not a valid email and does not follow the pattern [a-zA-Z_][a-zA-Z0-9]*.
-Delimiters are not stored internally.
+. A username can contain most Unicode characters, but it *may not* contain any of the following characters:
++
+* these punctuation symbols: `\` `(` `)` `[` `]` `:` `<` `>` `;` `,` `@` `*`
+* whitespace characters
+* nonprintable characters, such as `\a`, `\b`, `\f`, `\n`, `\r`, `\s`, `\t`, `\v`, `\0`
 
-== Username Rules for v3.9.2 and below
 
-NOTE: For v3.9.2 and below please follow these guidelines when creating a username.
+. A username *may not* start with a dot ( `.` ) or have multiple dots ( `...` or `a.b..c...` ) in a sequence.
 
-*Usernames* must match a regex pattern of `[a-zA-Z_][a-zA-Z0-9]*`, or be an email.
-You may also use non-ascii characters, such as Chinese and Kanji characters.
-
-Additionally, usernames may **not** contain the following characters:
-
-. `\`, `(`, `)`, `[`, `]`, `:`, `<`, `>`, `;`, `,`, `@`, `\r`, `\n`, `\f`, `\t`, `\\`, `\0`, `\b`.
-
-. A username may not start with a dot ( `.` ) or have multiple dots ( `...` or `a.b..c...` ) in a sequence.
-
-NOTE: Backquotes ( ``` ) must be used as a delimiter to enclose usernames which do not follow
-the pattern `[a-zA-Z_][a-zA-Z0-9]*`. Delimiters are not stored internally.
+. Backquotes ( ``` ) *must* be used as a delimiter to enclose usernames which do not follow
+the simple pattern `[a-zA-Z_][a-zA-Z0-9]*`. Delimiters are not stored internally.
 
 === Syntax
 
