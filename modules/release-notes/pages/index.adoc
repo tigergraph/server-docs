@@ -5,6 +5,8 @@
 :toc:
 :toclevels:2
 
+TigerGraph Server {page-component-version}.3 LTS was released on October [], 2023.
+
 TigerGraph Server {page-component-version}.2-1 LTS was released on October 10, 2023.
 
 TigerGraph Server {page-component-version}.2 LTS was released on June 29, 2023.
@@ -22,6 +24,7 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 * *xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[Multiple edges of the same type between vertices]* - Simplifies application design for time series data and other complex large data sets
 * *xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[Data streaming connector]* - Simplifies and unifies setup for data loading, employs robust Kafka-based design, supports cloud-hosted data sources in many formats, including Parquet
 * *Improved monitoring and logging* - Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
+* xref:gsql-ref:appendix:openCypher-in-gsql.adoc[Support for openCypher in GSQL] - GSQL now supports many openCypher features and syntax.
 
 == Detailed List of New and Modified Features
 
@@ -123,6 +126,16 @@ vertex function can also be used with vertex input parameters in the query-body 
 * Added a mini-map to the xref:3.9@insights:widgets:graph-widget.adoc[graph widgets] for easier navigation.
 
 == Fixed issues
+
+=== Fixed and Improved in 3.9.3
+
+==== Crashes and Deadlocks
+
+==== Functionality
+
+==== Security
+
+==== Performance
 
 === Fixed and Improved in 3.9.2-1
 
@@ -258,6 +271,8 @@ This lockup can be cleared by restarting the GSE.
 
 
 === Deprecations
+* As of 3.9.3, Visual Query Builder is deprecated and will not be updated or supported and instead
+we are focusing on xref:insights:widgets:index.adoc[Insights] as the tool of choice for building visual queries.
 * Kubernetes classic  mode (non-operator) is deprecated, as of v3.9.
 * The `WRITE_DATA` RBAC privilege is deprecated, as of v3.7.
 
