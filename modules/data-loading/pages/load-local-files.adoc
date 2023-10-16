@@ -1,0 +1,137 @@
+:toc:
+= Loading from Local Files
+
+Once you have xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc[defined a graph schema], you can start creating and running the loading job.
+The following sections will demonstrate the key steps.
+
+include::partial$loading-example-schema.adoc[]
+
+NOTE: Refer to the full xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Creating a Loading Job] documentation for more detail about loading jobs in general.
+
+== Example Loading Job for Local Files
+
+
+[source,php,linenums]
+----
+CREATE LOADING JOB load_data FOR GRAPH ldbc_snb {
+  DEFINE FILENAME file_Person = "/data/person.csv";
+  DEFINE FILENAME file_Comment = "m3:/data/comment.csv";
+  DEFINE FILENAME file_Comment_hasCreator_Person="ALL:/data/hasCreator.json";
+  LOAD file_Person TO VERTEX Person
+    VALUES($1, $2, $3, $4, $5, $0, $6, $7, SPLIT($8, ";"), SPLIT($9, ";"))
+    USING SEPARATOR="|", HEADER="true", EOL="\n";
+  LOAD file_Comment TO VERTEX Comment
+    VALUES($1, $0, $2, $3, $4, $5)
+    USING SEPARATOR="|", HEADER="true", EOL="\n";
+  LOAD file_Comment_hasCreator_Person TO EDGE HAS_CREATOR
+    VALUES($1 Comment, $2 Person)
+    USING JSON_FILE="true";
+}
+----
+
+=== Define filenames
+First we define _filenames_, which are local variables referring to data source objects.
+
+[source,php]
+.DEFINE FILENAME syntax
+----
+DEFINE FILENAME filevar ["=" source_object ];
+----
+
+The source object can be specified at compile time or at runtime.
+Runtime settings override compile-time settings:
+
+[source,php]
+.Specifying source object at runtime
+----
+RUN LOADING JOB job_name USING filevar=source_object_override
+----
+
+For local file loading, the `source_object`  is a filepath string, enclosed in quotation marks.  Here are examples of the syntax for various cases:
+
+* An absolute or relative path for either a file or a folder *on the machine where the job is run*:
++
+[source,json]
+"/data/graph.csv"
+
+* An absolute or relative path for either a file or a folder *on all machines in the cluster*:
++
+[source,json]
+"ALL:/data/graph.csv"
+
+* An absolute or relative path for either a file or a folder *on any machine in the cluster*:
++
+[source,json]
+"ANY:/data/graph.csv"
+
+* A list of *machine-specific paths*:
+[source,json]
+"m1:/data1.csv, m2|m3|m5:/data/data2.csv"
+
+=== Define the loading
+Next, we use LOAD statements to describe how the incoming data will be loaded to attributes of vertices and edges. Each LOAD statement handles the data mapping, and optional data transformation and filtering, from one filename to one or more vertex and edge types.
+
+[source,php]
+.LOAD statement syntax
+----
+LOAD [ source_object|filevar|TEMP_TABLE table_name ]
+  destination_clause [, destination_clause ]*
+  [ TAGS clause ] <1>
+  [ USING clause ];
+----
+<1>  As of v3.9.3, TAGS are deprecated.
+
+Let's break down one of the LOAD statements in our example:
+[source,php]
+----
+LOAD file_Person TO VERTEX Person
+    VALUES($1, $2, $3, $4, $5, $0, $6, $7,
+       SPLIT($8, ";"), SPLIT($9, ";"))
+    USING SEPARATOR="|", HEADER="true", EOL="\n";
+----
+* `$0`, `$1`,...  refer to the first, second, ... columns in each line a data file.
+* `SEPARATOR="|"` says the column separator character is the pipe (`|`). The default is comma (`,`).
+* `HEADER="true"` says that the first line in the source contains column header names instead of data.  These names can be used instead of the columnn numbers.
+* `SPLIT` is one of GSQL's ETL functions.  It says that there is a multi-valued column, which has a separator character to mark the subfields in that column.
+
+Refer to xref:3.6@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[] in the GSQL Language Reference for descriptions of all the options for loading jobs.
+
+== Run the loading job
+
+Use the command `RUN LOADING JOB` to run the loading job.
+
+[source,php]
+.RUN LOADING JOB syntax
+----
+RUN LOADING JOB [-noprint] job_name [
+  USING filevar [="source_object"][, filevar [="source_object"]]*
+  [,EOF="eof_mode"]
+]
+----
+
+*-noprint*
+
+By default, the loading job will run in the foreground and print the loading status and statistics after you submit the job.
+If the `-noprint` option is specified, the job will run in the background after displaying the job ID and the location of the log file.
+
+*filevar list*
+
+The optional `USING` clause may contain a list of file variables. Each file variable may optionally be assigned a `source_object`, obeying the same format as in `CREATE LOADING JOB`. This list of file variables determines which parts of a loading job are run and what data files are used.
+
+When a loading job is compiled, it generates one RESTPP endpoint for each `filevar` and source_object. As a consequence, a loading job can be run in parts. When `RUN LOADING JOB` is executed, only those endpoints whose filevar or file identifier (`__GSQL_FILENAME_n__`) is mentioned in the `USING` clause will be used. However, if the `USING` clause is omitted, then the entire loading job will be run.
+
+If a `source_object` is given, it overrides the `source_object` defined in the loading job. If a particular `filevar` is not assigned a `source_object` either in the loading job or in the `RUN LOADING JOB` statement, an error is reported and the job exits.
+
+[NOTE]
+Streaming mode is not available for local file loading, so the EOF parameter will be ignored.
+
+// Manage and monitor your loading job
+include::partial$loading-managing.adoc[]
+
+== Manage loading job concurrency
+
+See xref:loading-concurrency.adoc[Loading Job Concurrency] for how to manage the concurrency of loading jobs.
+
+
+
+
