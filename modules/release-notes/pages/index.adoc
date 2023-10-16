@@ -37,6 +37,7 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** Documented additional xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_system[S3 authentication configuration parameters].
 
 * Added new xref:3.9@tigergraph-server:API:built-in-endpoints.adoc[REST Endpoints]:
+** [3.9.3] Added new REST parameter `/allowExisting` for token endpoints (GLE-5439)
 ** `/library` is a set of endpoints for showing and running template queries.
 ** `/showdelayedlistall` shows how many queries are in the Workflow Manager's delay queue.
 ** `:14240/informant/metrics` replaces `:9167/metrics`
@@ -45,9 +46,12 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** [3.9.2] `/gsqlserver/gsql/clear-store` is equivalent to `GSQL CLEAR GRAPH STORE -HARD`
 
 * Added or changed xref:3.9@tigergraph-server:reference:configuration-parameters.adoc[configuration parameters]:
+** [3.9.3] Additional commands were added to support user determined compression levels of backups and restores. (TP-2564)
+** [3.9.3] Added two new commands that allowed CPU usage based GPE query routing via a user determined threshold (CORE-2429)
 ** `KafkaConnect.AllowedTaskPerCPU` limits the number of concurrent kafka loading tasks.
 ** The GSQL environment variable `GPE_DSC_APPLY_TIMEOUT_MINUTE` is the maximum allowed time for dynamic schema changes (DSC).
 
+* [3.9.3] xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[Simplified cross-cluster restore] process by adding metadata to backup files and still supporting the previous method for older versions. (TP-3616)
 * Added a new command for `gadmin backup` to xref:3.9@tigergraph-server:backup-and-restore:backup-cluster.adoc#_back_up_a_database_cluster[control the number of backups], for better storage space management.
 * Expanded the list of xref:3.9@tigergraph-server:reference:error-codes.adoc[system response codes] to include one for an invalid vertex ID.
 * Improved the backend security infrastructure for the Kafka loader.
@@ -59,6 +63,7 @@ xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.Rete
 
 ==== Loading
 
+* [3.9.3] Added `_max_percent_error` command for user configurability when validating loading data inputs
 * Moved xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[data connector] setup from `gadmin` to GSQL.
 Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
 ** Introduced a new `STREAM` data loading type that simplifies the xref:3.9@tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
@@ -67,6 +72,7 @@ Streamlined the user experience for creating loading jobs for data stored in AWS
 * [3.9.2] The default mode for the Kafka Connector is `EOF="true"`
 
 ==== Schema
+* [3.9.3] xref:tigergraph-server:user-access:user-management.adoc[Reduction of GSQL username character restrictions] for more flexible username creation for v3.9.3 and future versions (GLE-5545).
 * Full support for xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
 multiple edges of the same type] between vertices, to simplify application design for time series data and other complex large data sets.
 
@@ -105,6 +111,8 @@ vertex function can also be used with vertex input parameters in the query-body 
 
 === GraphStudio
 
+* [3.9.3] Added openCypher syntax support to xref:gui:graphstudio:write-open-cypher-queries-in-tigergraph.adoc[].
+* [3.9.3] Enabled the "Share Insights" to share Insights widgets without needing a login.
 * [3.9.2] Enabled GraphStudio to run on any node in a cluster, whether or not the node hosts a GUI server.
 * [3.9.2] Removed the *All Paths* option from the Explore Graph page, as this feature is not practical for large graphs.
 
@@ -130,12 +138,43 @@ vertex function can also be used with vertex input parameters in the query-body 
 === Fixed and Improved in 3.9.3
 
 ==== Crashes and Deadlocks
+* Fixed crash when query thread would keep running after `JobListener` is shutdown (CORE-1730).
+* Fixed GPE crash when using `INSERT` with an `UNKNOWN` accumulator (GLE-5038).
+* Fixed crash when running interpret query with dynamic value (GLE-5600).
+* Fixed JSON Viewer crash on browser when displaying a large response (TOOLS-2283).
 
 ==== Functionality
+* Fixed issue of missing files in AdminPortal when downloading an output (TOOLS-2499).
+* Fixed issue primary id could not set a color config for a vertex (TOOLS-2478).
+* Fixed issue where administrator could privilege of vertex `primary_id` in Role Management page of Admin Portal (TOOLS-2430).
+* Fixed issue where error messages of abort requests created large file sizes (CORE-2705).
+* Fixed issue where GPE was still in warmup while running chaos testing (CORE-2670).
+* Fixed issue where user could download query results from the label “View Table Result” without proper privilege (TOOLS-2404).
+* Fixed issue where multiple vertex types return when selecting one vertex type (GLE-5325).
+* Fixed issue of show statement parser error for catalog object created using create statement (GLE-5719).
+* Fixed support for `outdegree()` with a collection of edge types in `INTERPRET` mode (GLE-5476).
+* Fixed issue where delete or edit vertex attributes were incorrect in GST (TOOLS-2258).
+* Fixed issue in GraphStudio when "=” appeared as a missing parameter in an `INTERPRET` query (TOOLS-2298).
+* Fixed argument error when passing a negative float parameter in GSQL cli in a `{key: value}` format. (GLE-6004).
+* Fixed GSE crash when `lease_expire_time_ms_` was not updating (CORE-2693).
+* Fixed issue where AWS credential user with access permission failed to `create data_source` to specified bucket (TP-4049).
+* Fixed issue of wrong result for `DISTINCT` with aggregation functions (GLE-3386).
 
-==== Security
+==== Improvements
+* Improved Insights table widget to be more consistent with graph studio (TOOLS-2375).
+* Improved insights search for two replicas when generating a pattern (TOOLS-2443).
+* Improved logs to show sso username and login related information (GLE-5970).
+* Improved precision of `INT` and `UNIT` (CORE-2703).
+* Improved error message details when during a failure to find a request record when deleting (CORE-2686).
+* Improved API user existent check for when permission is not needed (GLE-5678).
+* Improved performance of edit vertex when vertex 200 attributes. (TOOLS-2107)
+* Added memory check in `DistrbutedTopologyStore` (CORE-2496).
+* LDAP now has more detailed error messages (GLE-5559).
+* Implemented connector fail status to show error messages in GSQL console (TP-3465).
+* Added link to TigerGraph Kubernetes preview documentation on GitHub (TP-4039).
+* Expended support for `gcollect` (TP-4127).
+* Improved Insights tables by adding overflow setting to tables with many column (TOOLS-2312).
 
-==== Performance
 
 === Fixed and Improved in 3.9.2-1
 
@@ -236,7 +275,10 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
 == Known issues
-
+* An exception error is thrown when "" fail to covert to int64 when using `gcollect` to collect the tsar data.
+* After a global loading job is running for a while a fail can be encountered when getting the loading status due to `KAFKASTRM-LL` not being online, when actually the status is online. Then the global loading process will exit and and fail the local job after timeout while waiting the global loading job to finish.
+* For v3.9.1 and v3.9.2 when inserting a new edge in `GPR` and `INTERPRET` mode, the GPE will print out a warning message, because it calls `graphupdates()` and `getau()` API and the `subtypeid` and discriminator string is not set for new-inserted edges.
+Creating an inconsistent problem in delta message for GPR and `INTERPRET` mode.
 * When the memory usage approaches 100%, the system may stall because the process to elect a new GSE leader did not complete correctly.
 This lockup can be cleared by restarting the GSE.
 * If the CPU and memory utilization remain high for an extended period during a schema change on a cluster, a GSE follower could crash, if it is requested to insert data belonging to the new schema before it has finished handling the schema update. 
