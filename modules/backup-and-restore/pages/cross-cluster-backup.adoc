@@ -11,20 +11,8 @@ Your cluster is offline during the restore process.
 * TigerGraph is installed on the new cluster in the exact same version as the previous cluster.
 * You have access to the TigerGraph Linux user account on your cluster.
 All commands must be run from the TigerGraph Linux user.
-* You have access to a data backup from another cluster.
+* You have access to a data backup from another cluster, and *for versions 3.9.1 and below*, its metadata backup.
 * You have xref:configurations.adoc[configured backup and restore] on the new cluster.
-
-NOTE: Since v3.9.2, it is no longer required to create a backup for a backups metadata or upload the metadata to a new cluster.
-A backup’s metadata is now stored as a part of a backup's files, but the previous method is still supported. *See xref:_prerequisites_v3_9_1_and_below[].
-
-Simply run:
-
-[source,console,]
---
-gadmin backup restore <backup_tag>
---
-
-Just like restoring a backup in its original cluster.
 
 == Copy data backup to new cluster
 
@@ -49,16 +37,6 @@ They do not necessarily need to be on the corresponding nodes as long as all par
 
 For example, if you have configured the backup path to be `/home/tigergraph/backups` for a 3-node cluster, you can put all backup files for backup `weekly-<timestamp>` in the folder `/home/tigergraph/backups/weekly-<timestamp>`.
 
-IMPORTANT: For all previous versions please follow the steps below.
-
-== Prerequisites v3.9.1 and below
-* Your new cluster has the same xref:cluster-and-ha-management:ha-cluster.adoc[partitioning factor] as the cluster from which the backup file was created.
-* TigerGraph is installed on the new cluster in the exact same version as the previous cluster.
-* You have access to the TigerGraph Linux user account on your cluster.
-All commands must be run from the TigerGraph Linux user.
-* You have access to a data backup from another cluster as well as its xref:backup-cluster.adoc#_metadata_backup_optional[metadata backup].
-* You have xref:configurations.adoc[configured backup and restore] on the new cluster.
-
 == Procedure
 
 === 1) Upload metadata to new cluster
@@ -77,6 +55,15 @@ They do not necessarily need to be on the corresponding nodes as long as all par
 For example, if you have configured the backup path to be `/home/tigergraph/backups` for a 3-node cluster, you can put all backup files for backup `weekly-<timestamp>` in the folder `/home/tigergraph/backups/weekly-<timestamp>`.
 
 === 3) Restore cluster
+
+then run:
+
+[source,console,]
+--
+gadmin backup restore <backup_tag>
+--
+
+Just like restoring a backup in its original cluster.
 
 Run the following command to restore the cluster using the backup.
 You must run the command on the cluster to which you uploaded the cluster metadata:
