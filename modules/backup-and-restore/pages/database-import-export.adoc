@@ -16,6 +16,7 @@ Known Issues:
 
 * User-defined loading jobs containing xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
 * If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be re-imported.
+* GSQL EXPORT GRAPH may fail and cause a GPE to crash when UDT type has a fixed STRING size.
 ====
 
 == EXPORT GRAPH ALL
