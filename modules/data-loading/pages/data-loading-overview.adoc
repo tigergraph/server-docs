@@ -2,31 +2,49 @@
 = Data Loading Overview
 :description: Overview of available loading methods and supported features.
 
-Once you have xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc[defined a graph schema], you can load data into the graph store.
+Once you have xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc[defined a graph schema], you can load data into the graph. This section focuses on how to configure TigerGraph for the different data sources, as well as different data formats and transport schemes.
 
-If you are loading from files that exist locally on a TigerGraph server, xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[create and run a loading job] in GSQL to load the files.
+== Data Sources
 
-Loading data from an outside source, such as cloud storage, requires one additional step to first define the data source for GSQL to work with.
+You have several options for data sources:
+
+* *Local Files*: Files residing on a TigerGraph server can be loaded without the need to create a GSQL DATA_SOURCE object. This option can have the highest performance.
+
+* *Outside Sources*: Loading data from an outside source, such as cloud storage, requires one additional step to first define a DATA_SOURCE object, which uses the *Kafka Connect* framework. GSQL can then treat it like it treats a local file. You can use this approach for the following data sources:
++
+** Cloud storage (Amazon S3, Azure Blob Storage, Google Cloud Storage)
+** Data warehouse query results (Google BigQuery)
+** External Kafka cluster
++
 See the pages for the specific method that fits your data source.
+
+* *Spark/JDBC*: To load data from other big data platforms, such as Hadoop, the typical method is to use Spark's built-in feature to write a DataFrame to a JDBC target, together with TigerGraph's `POST /ddl` REST endpoint.
+
+== Loading Workflow
+
+TigerGraph uses the same workflow for both local file and Kafka Connect loading:
+
+. *Specify a graph*.
+Data is always loading to exactly one graph (though that graph could have global vertices and edges which are shared with other graphs). For example:
++
+[source,php]
+USE GRAPH ldbc_snb
+
+. If you are using Kafka Connect, *define a `DATA_SOURCE` object*.
+See the details on the pages for cloud storage, BigQuery, or an external Kafka cluster.
+
+. *Create a xref:#_loading_jobs[loading job]*.
+
+. *Run your loading job*.
 
 == Loading System Architecture
 
-This diagram shows that supported data sources, which connector to use, and which TigerGraph component manages the data loading.
+This diagram shows the supported data sources, which connector to use, and which TigerGraph component manages the data loading.
 
 .TigerGraph Data Loading Options
 image::data-loading:loading_arch_3.9.3.png[Architectural diagram showing supported data sources, which connector to use, and which TigerGraph component manages the data loading]
 
-* *Local Files*: Files residing on a TigerGraph server can be loaded without the need to create a GSQL DATA_SOURCE object. This option can have the highest performance.
-
-* *Kafka Connect*: You can define a DATA_SOURCE object, which uses the Kafka Connect framework. GSQL can then treat it like it treats a local file. You can use this approach for the following data sources:
-** Cloud storage (Amazon S3, Azure Blob Storage, Google Cloud Storage)
-** Data warehouse query results (Google BigQuery)
-** External Kafka cluster
-
-* *Spark/JDBC*: To load data from other big data platforms, such as Hadoop, the typical method is to use Spark's built-in feature to write a DataFrame to a JDBC target, together with TigerGraph's `POST /ddl` REST endpoint.
-
-== Basic Loading Job Structure
-
+== Loading Jobs
 A loading job tells the database how to construct vertices and edges from data sources.
 
 [source,php]
