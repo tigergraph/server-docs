@@ -18,7 +18,6 @@ TigerGraph Server {page-component-version}.0 LTS was released on February 28th, 
 LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
 
 
-
 == Key New Features
 
 * *xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[Multiple edges of the same type between vertices]* - Simplifies application design for time series data and other complex large data sets
@@ -30,6 +29,9 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 
 === TigerGraph Server
 * xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[]:
+//Add Link to below point
+** [3.9.3] Added MirrorMaker(external Kafka) as a new type of GSQL data source
+//
 ** Added support for the xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc#_define_the_parameters[Parquet file format], widely used for big data.
 ** Moved data connector setup from `gadmin` to xref:3.9@tigergraph-server:data-loading:data-streaming-connector/[GSQL commmands], to better align with user personas and privileges.
 ** Added xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc#_continuous_file_loading [auto-detection of new files] when in Stream mode.
@@ -37,7 +39,9 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** Documented additional xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_system[S3 authentication configuration parameters].
 
 * Added new xref:3.9@tigergraph-server:API:built-in-endpoints.adoc[REST Endpoints]:
+//Add link
 ** [3.9.3] Added new REST parameter `/allowExisting` to the `POST /requestoken` endpoint.
+//
 ** `/library` is a set of endpoints for showing and running template queries.
 ** `/showdelayedlistall` shows how many queries are in the Workflow Manager's delay queue.
 ** `:14240/informant/metrics` replaces `:9167/metrics`
@@ -46,8 +50,8 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** [3.9.2] `/gsqlserver/gsql/clear-store` is equivalent to `GSQL CLEAR GRAPH STORE -HARD`
 
 * Added or changed xref:3.9@tigergraph-server:reference:configuration-parameters.adoc[configuration parameters]:
-** [3.9.3] Added parameters to adjust the compression level of backups.
-** ** [3.9.3] Added parameters for GPE query routing based on CPU usage.
+** [3.9.3] Added parameters `System.Backup.DecompressProcessNumber` and `System.Backup.CompressionLevel` to adjust the compression level of backups.
+** [3.9.3] Added parameters for xref:tigergraph-server:system-management:workload-management.adoc[GPE query routing] based on CPU usage.
 ** `KafkaConnect.AllowedTaskPerCPU` limits the number of concurrent kafka loading tasks.
 ** The GSQL environment variable `GPE_DSC_APPLY_TIMEOUT_MINUTE` is the maximum allowed time for dynamic schema changes (DSC).
 
@@ -63,6 +67,16 @@ xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.Rete
 
 ==== Loading
 
+//insert
+//Loading job reports are stored in KafkaStream-LL and can be viewed in loading log files and GSQL console.
+//In terms of log files, the following files are useful:
+//Log files are stored in a directory named after the loading job under a dedicated loader log directory in TigerGraph log root.
+//The info log is populated while the loader is running. This file is similar to the jobid.log file in 3.6 and is useful to understand the loader behavior (for troubleshooting).
+//There is another file named summary.
+//The content of the file is no longer a json string, but it gives a high-level summary of each loading task when they finish. See the attached screenshot 3.9.3 Loading Log for an example.
+//In terms of the GSQL console, see the attached screenshot 3.9.3 GSQL Console Output for the status monitoring table printed in the GSQL console. The table is more readable compared to 3.6.3. Additionally we provided the most recent loading log aggregation timestamp as an additional piece of information.
+//In terms of loading monitoring improvements, KafkaStream-LL took over the responsibility to aggregate loading logs from the loader processes themselves. It also provides an internal API returning a JSON representation of the loading log. GSQL server calls this API, gets the loading log response, and converts it to the table displayed in the GSQL console.
+
 * [3.9.3] Added `-max_percent_error` option to `RUN LOADING JOB` to automatically abort the job if the number of invalid data lines exceeds the given threshold.
 * Moved xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[data connector] setup from `gadmin` to GSQL.
 Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
@@ -72,7 +86,7 @@ Streamlined the user experience for creating loading jobs for data stored in AWS
 * [3.9.2] The default mode for the Kafka Connector is `EOF="true"`
 
 ==== Schema
-* Relaxed the rules for [3.9.3] xref:tigergraph-server:user-access:user-management.adoc[GSQL usernames].
+* [3.9.3] Relaxed the rules for xref:tigergraph-server:user-access:user-management.adoc[GSQL usernames].
 * Full support for xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
 multiple edges of the same type] between vertices, to simplify application design for time series data and other complex large data sets.
 
@@ -93,6 +107,12 @@ vertex function can also be used with vertex input parameters in the query-body 
 
 === Kubernetes Operator
 
+//TODO add improvements from K*s opotartor
+// * Added a link to TigerGraph Kubernetes preview documentation on GitHub (TP-4039).
+//xref:tigergraph-server:kubernetes:k8s-operator:ind
+// * (TP-3763)
+// * (TP-3711)
+//
 * Enhanced the functionality of the xref:3.9@kubernetes:k8s-operator/index.adoc[] so it is now the standard way to perform cluster operations with Kubernetes.
 * Added support for xref:3.9@kubernetes:k8s-operator/backup-and-restore.adoc[], xref:3.9@kubernetes:k8s-operator/cluster-operations.adoc#_upgrade_cluster_version[upgrading the version of the TigerGraph server], and xref:3.9@kubernetes:k8s-operator/cluster-operations.adoc#_update_cluster_resources[updating cluster resources].
 * [3.9.2] Support for xref:tigergraph-server:kubernetes:k8s-operator/custom-containers.adoc[].
@@ -112,7 +132,7 @@ vertex function can also be used with vertex input parameters in the query-body 
 === GraphStudio
 
 * [3.9.3] Added an openCypher xref:gui:graphstudio:write-open-cypher-queries-in-tigergraph.adoc[option] to the Add New Query dialog, to simplify writing and running openCypher in GraphStudio.
-* [3.9.3] Users can now share Insights widgets and applications to third-party websites and users without a TigerGraph login via a URL token.
+* [3.9.3] Users can now xref:insights:intro:applications.adoc[share] Insights widgets and applications to third-party websites and users without a TigerGraph login via a URL token.
 * [3.9.2] Enabled GraphStudio to run on any node in a cluster, whether or not the node hosts a GUI server.
 * [3.9.2] Removed the *All Paths* option from the Explore Graph page, as this feature is not practical for large graphs.
 
@@ -158,9 +178,14 @@ vertex function can also be used with vertex input parameters in the query-body 
 * Fixed argument error when passing a negative float parameter in GSQL cli in a `{key: value}` format. (GLE-6004).
 * Fixed GSE crash when `lease_expire_time_ms_` was not updating (CORE-2693).
 * Fixed issue where AWS credential user with access permission failed to `create data_source` to specified bucket (TP-4049).
+* Fixed issue where there was a failure to backup during upgrading from a free tier. (TP-3922)
 * Fixed issue of wrong result for `DISTINCT` with aggregation functions (GLE-3386).
 
 ==== Improvements
+//Adding additional tickets from release notes
+* (TP-3670)
+
+//
 * Improved Insights table widget to be more consistent with GraphStudio (TOOLS-2375).
 * Improved insights search for two replicas when generating a pattern (TOOLS-2443).
 * Improved logs to show sso username and login related information (GLE-5970).
@@ -169,7 +194,6 @@ vertex function can also be used with vertex input parameters in the query-body 
 * Added memory check in `DistrbutedTopologyStore` (CORE-2496).
 * LDAP now has more detailed error messages (GLE-5559).
 * Implemented a  new connector fail status to show error messages in GSQL console (TP-3465).
-* Added a link to TigerGraph Kubernetes preview documentation on GitHub (TP-4039).
 * Improved Insights tables by adding overflow. (TOOLS-2312).
 
 
