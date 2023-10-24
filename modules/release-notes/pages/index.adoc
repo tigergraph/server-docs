@@ -5,7 +5,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server {page-component-version}.3 LTS was released on October 24th, 2023.
+TigerGraph Server {page-component-version}.3 LTS was released on October [], 2023.
 
 TigerGraph Server {page-component-version}.2-1 LTS was released on October 10, 2023.
 
@@ -297,8 +297,9 @@ This lockup can be cleared by restarting the GSE.
 
 === Compatibility Issues
 * v3.9.3
-** A minor update to remove the space in the `PRINT` statements of expressions using `DISTINCT` could produce a parse error for production use applications that automatically scan the output for the fields of interest.
-A minor break might occur unless it is modified to no longer expect `count(DISTINCT @@intBag)` and instead expect `count(DISTINCT@@intBag)`.
+** When a `PRINT` argument is an expression, the output uses the expression as the key (label) for that output value.
+To better support `Antlr` processing, `PRINT` now removes any spaces from that key.
+For example, `count(DISTINCT @@ids)` becomes `count(DISTINCT@@ids)`.
 
 * v3.9.2+
 ** Betweenness Centrality algorithm: `reverse_edge_type (STRING)` parameter changed to `reverse_edge_type_set (SET<STRING>)`, to be consistent with `edge_type_set` and similar algorithms.
