@@ -21,11 +21,12 @@ All commands must be run from the TigerGraph Linux user.
 
 ==== For Amazon S3 Backup:
 
-If your backups are stored in Amazon S3 buckets, you can skip this step as long as you configure:
+If your backups are stored in Amazon S3 buckets, set the following configuration parameter to be the location of your backup files.
+
 [source,console]
 System.Backup.S3.BucketName
 
-For the new cluster to be the same as the previous cluster
+for the new cluster to be the same as the previous cluster
 
 ==== For Local Backup Storage:
 
@@ -34,15 +35,15 @@ They do not necessarily need to be on the corresponding nodes as long as all par
 
 * For example:
 +
-.if you have configured the backup path to be:
+.If you have configured the backup path to be
 [source,console]
 /home/tigergraph/backups
 +
-.For a 3-node cluster, you can put all backup files for backup:
+.for a 3-node cluster, you can put all backup files for backup
 [source,console]
 weekly-<timestamp>
 +
-.In the folder like this:
+.in the folder like this:
 [source,console]
 /home/tigergraph/backups/weekly-<timestamp>
 
@@ -57,18 +58,18 @@ gadmin backup restore <backup_tag>
 === 1) Upload Metadata to New Cluster
 Upload the metadata file specific to the backup with which you want to restore the cluster to a path on any node of the new cluster where the TigerGraph Linux user has access.
 
-For example, upload the  file to:
+For example, upload the  file to
 [source, console]
 /home/tigergraph/metadata
 
-On m1 of the new cluster.
-
+on m1 of the new cluster.
 
 === 2) Copy Data Backup to a New Cluster
 
 ==== For Amazon S3 Backup:
 
-If your backups are stored in Amazon S3 buckets, you can skip this step as long as you configure:
+If your backups are stored in Amazon S3 buckets, set the following configuration parameter to be the location of your backup files.
+
 [source,console]
 System.Backup.S3.BucketName
 
@@ -81,15 +82,15 @@ They do not necessarily need to be on the corresponding nodes as long as all par
 
 * For example:
 +
-.if you have configured the backup path to be:
+.If you have configured the backup path to be
 [source,console]
 /home/tigergraph/backups
 +
-.For a 3-node cluster, you can put all backup files for backup:
+.for a 3-node cluster, you can put all backup files for backup
 [source,console]
 weekly-<timestamp>
 +
-.In the folder like this:
+.in the folder like this:
 [source,console]
 /home/tigergraph/backups/weekly-<timestamp>
 
