@@ -7,16 +7,7 @@ It enables you to automate operations such as the creation, status checking, res
 
 IMPORTANT: Kubernetes Operator support is currently a Preview Feature. Preview Features give users an early look at future production-level features. Preview Features should not be used for production deployments.
 
-NOTE: Additionally, we have provided a public GitHub repo (https://github.com/tigergraph/ecosys/tree/master/k8s) to our preview documentation of the Kubernetes Operator. These docs are frequently updated to support operation, troubleshooting, and all other relevant use cases.
-
-The Operator provides the following features:
-
-* Cluster Provisioning
-* Cluster Deletion
-* Listing Clusters
-* Checking Cluster Status
-* Shrink or Expand a Cluster
-* Backup and Restore
+NOTE: Additionally, we have provided a public xref:https://github.com/tigergraph/ecosys/tree/master/k8s[GitHub Repo] to our preview documentation of the Kubernetes Operator. These docs are frequently updated to support operation, troubleshooting, and all other relevant use cases.
 
 //* xref:k8s-operator/cluster-operations.txt#_create_tigergraph_clusters[Cluster provisioning]
 //* xref:k8s-operator/cluster-operations.txt#_delete_tigergraph_clusters[Cluster deletion]
@@ -24,10 +15,6 @@ The Operator provides the following features:
 //* xref:k8s-operator/cluster-operations.txt#_check_cluster_version_and_status[Checking cluster status]
 //* xref:k8s-operator/cluster-operations.txt#_shrink_expand_cluster[Shrink or expand a cluster]
 //* xref:k8s-operator/backup-and-restore.txt[]
-
-Moreover,
-
-* [3.9.2+] Clusters can contain custom containers and volumes.
 //* Clusters can contain xref:tigergraph-server:kubernetes:k8s-operator/custom-containers.txt[custom containers and volumes] [3.9.2+]
 
 == Getting started
@@ -42,8 +29,10 @@ The TigerGraph Kubernetes Operator is platform-agnostic.
 You should be able to use the Operator on any cloud platform that provides a Kubernetes service.
 TigerGraph has verified the full functionality of the operator on the Kubernetes services of the following platform:
 
-* Google Kubernetes Engine (GKE)
-* Azure Kubernetes Service (AKS)
-* AWS Elastic Kubernetes Service (EKS)
+* xref:https://github.com/tigergraph/ecosys/blob/master/k8s/docs/03-deploy/tigergraph-on-gke.md[Google Kubernetes Engine (GKE)]
+* xref:https://github.com/tigergraph/ecosys/blob/master/k8s/docs/03-deploy/tigergraph-on-openshift.md[Red Hat OpenShift]
+* xref:https://github.com/tigergraph/ecosys/blob/master/k8s/docs/03-deploy/tigergraph-on-eks.md[AWS Elastic Kubernetes Service (EKS)]
 
+Additionally, TigerGraph Kubernetes Operator can be installed and deployed without internet access
 
+* xref:https://github.com/tigergraph/ecosys/blob/master/k8s/docs/03-deploy/deploy-without-internet.md[Install and Deploy without internet access]
