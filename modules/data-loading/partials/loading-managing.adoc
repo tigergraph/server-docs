@@ -1,0 +1,29 @@
+== Manage and monitor your loading job
+
+When a loading job starts, the GSQL server assigns it a job ID and displays it for the user to see.
+There are three key commands to monitor and manage loading jobs:
+
+[source,php]
+----
+SHOW LOADING STATUS job_id|ALL
+ABORT LOADING JOB job_id|ALL
+RESUME LOADING JOB job_id
+----
+
+`SHOW LOADING STATUS` shows the current status of either a specified loading job or all current jobs, this command should be within the scope of a graph:
+
+[source,php]
+GSQL > USE GRAPH graph_name
+GSQL > SHOW LOADING STATUS ALL
+
+For each loading job, the above command reports the following information:
+
+* Loading status
+* Loaded lines/Loaded objects/Error lines
+* Average loading speed
+* Size of loaded data
+* Duration
+
+When inspecting all current jobs with `SHOW LOADING STATUS ALL`, the jobs in the `FINISHED` state will be omitted as they are considered to have successfully finished. You can use `SHOW LOADING STATUS job_id` to check the historical information of finished jobs.
+
+See xref:gsql-ref:ddl-and-loading:managing-loading-job.adoc[Managing and Inspecting a Loading Job] for more details.

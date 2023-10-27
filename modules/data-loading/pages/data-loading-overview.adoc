@@ -1,0 +1,98 @@
+:toc:
+= Data Loading Overview
+:description: Overview of available loading methods and supported features.
+
+Once you have xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc[defined a graph schema], you can load data into the graph. This section focuses on how to configure TigerGraph for the different data sources, as well as different data formats and transport schemes.
+
+== Data Sources
+
+You have several options for data sources:
+
+* *Local Files*: Files residing on a TigerGraph server can be loaded without the need to create a GSQL DATA_SOURCE object. This option can have the highest performance.
+
+* *Outside Sources*: Loading data from an outside source, such as cloud storage, requires one additional step to first define a DATA_SOURCE object, which uses the *Kafka Connect* framework. GSQL can then treat it like it treats a local file. You can use this approach for the following data sources:
++
+** Cloud storage (Amazon S3, Azure Blob Storage, Google Cloud Storage)
+** Data warehouse query results (Google BigQuery)
+** External Kafka cluster
++
+See the pages for the specific method that fits your data source.
+
+* *Spark/JDBC*: To load data from other big data platforms, such as Hadoop, the typical method is to use Spark's built-in feature to write a DataFrame to a JDBC target, together with TigerGraph's `POST /ddl` REST endpoint.
+
+== Loading Workflow
+
+TigerGraph uses the same workflow for both local file and Kafka Connect loading:
+
+. *Specify a graph*.
+Data is always loading to exactly one graph (though that graph could have global vertices and edges which are shared with other graphs). For example:
++
+[source,php]
+USE GRAPH ldbc_snb
+
+. If you are using Kafka Connect, *define a `DATA_SOURCE` object*.
+See the details on the pages for
+xref:data-streaming-connector/index.adoc[cloud storage],
+xref:data-streaming-connector/big-query.adoc[BigQuer],
+or an xref:data-streaming-connector/kafka.adoc[external Kafka cluster].
+
+. *Create a xref:#_loading_jobs[loading job]*.
+
+. *Run your loading job*.
+
+== Loading System Architecture
+
+This diagram shows the supported data sources, which connector to use, and which TigerGraph component manages the data loading.
+
+.TigerGraph Data Loading Options
+image::data-loading:loading_arch_3.9.3.png[Architectural diagram showing supported data sources, which connector to use, and which TigerGraph component manages the data loading]
+
+== Loading Jobs
+A loading job tells the database how to construct vertices and edges from data sources.
+
+[source,php]
+.CREATE LOADING JOB syntax
+----
+CREATE LOADING JOB <job_name> FOR GRAPH <graph_name> {
+  <DEFINE statements>
+  <LOAD statements>
+}
+----
+The opening line does some naming:
+
+* assigns a name to this job: (`<job_name>`)
+* associates this job with a graph (`<graph_name>`)
+
+The loading job body has two parts:
+
+. DEFINE statements create variables to refer to data sources.
+These can refer to actual files or be placeholder names. The actual data sources can be given when running the loading job.
+
+. LOAD statements specify how to take the data fields from files to construct vertices or edges.
+
+NOTE: Refer to the xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Creating a Loading Job] documentation for full details
+
+////
+OLD CONTENT
+== Set up a data source for a data streaming loading job
+
+GSQL uses a user-provided configuration file to automatically set up a streaming data connection and a loading job for data in these external cloud data hosts:
+
+* Google Cloud Storage (GCS)
+* AWS S3
+* Azure Blob Storage (ABS)
+* Google BigQuery
+
+Go to the xref:data-streaming-connector/index.adoc[] main page for instructions on setting up the loading job.
+
+NOTE: The data streaming will stage temporary data files on the database server's disk.
+You should have free disk space of at least 2 times the size of your total (uncompressed) input data.
+
+== Manual connector setup
+For data stored in an external Kafka cluster, you need to perform a few more steps to set up data streaming.
+Using `gadmin` server commands, you first create a connector to interpret the data source, then define the data source, create the loading job, and run it.
+
+See the xref:data-streaming-connector/kafka.adoc[Kafka cluster streaming] page for more information.
+
+This method relies on the xref:kafka-loader/index.adoc[TigerGraph Kafka Loader].
+////

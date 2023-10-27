@@ -1,0 +1,41 @@
+== Loading Job Concurrency
+
+=== Number of concurrent loading jobs
+
+By default, only one loading job may run at a time.
+Additional job requests are held in a wait queue.
+You can increase the number of concurrent active jobs by changing the following configurations:
+
+For *local file loading*:
+
+[source,bash]
+----
+$ gadmin config set FileLoader.ReplicaNumber <new_limit>
+$ gadmin config apply -y && gadmin restart gse gpe restpp -y
+----
+
+For *Kafka Loader loading*:
+
+[source,bash]
+----
+$ gadmin config set KafkaLoader.ReplicaNumber <new_limit>
+$ gadmin config apply -y && gadmin restart gse gpe restpp -y
+----
+
+=== Allowed resources for loading
+
+You can also configure how many resources are permitted to work on loading jobs.
+
+*Tasks per CPU* (for KafkaConnect)
+
+This parameter sets the average CPU workload per server, in a distributed cluster.  The allowed range is [0.5, 10], but we recommend going no higher than 2. The default value is 1.5. In a 4-server cluster, that means the maximum number of Kafka connector tasks is
+
+0.5 * 4 = 2.
+
+If you get an error message saying that the Connector has hit the upper limit on the number of tasks, you can slightly increase the limit to allow more connector tasks.
+
+[source,bash]
+----
+$ gadmin config set KafkaConnect.AllowedTaskPerCPU <new_limit>
+$ gadmin config apply -y && gadmin restart kafkaconn -y
+----

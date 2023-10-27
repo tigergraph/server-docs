@@ -1,14 +1,16 @@
-= GSQL Data Streaming Connector
+= TigerGraph Kafka Loader
 
 :description: A guide to TigerGraph's Streaming Data Connector.
 
-The TigerGraph Data Streaming Connector is an integrated link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and external data sources.
+The TigerGraph Kafka Loader is an integrated link:https://docs.confluent.io/home/connect/overview.html[Kafka connector] that provides fast and scalable data streaming between TigerGraph and external data sources.
+This is the preferred method for cloud storage sources such as Amazon S3, Azure Blob Storage, and Google Cloud Storage.
 
 For data coming from a separate Kafka instance, you need to perform a few more steps to set up data streaming.
-This process has its own separate instructions.
+This process has its own separate instructions. See
+xref:data-streaming-connector/kafka.adoc[Load from External Kafka]
 
-* xref:data-streaming-connector/kafka.adoc[Apache Kafka streaming connector]
 
+////
 == Architecture overview
 The connector streams data from a source data system into TigerGraph's internal Kafka cluster in the form of Kafka messages in specified topics.
 The messages are then ingested by a Kafka loading job and loaded into the database.
@@ -19,7 +21,7 @@ image::data-streaming-connector.png[Data streaming connector streams from data s
 Multiple connectors can run at the same time, streaming data from various sources into the TigerGraph system concurrently.
 
 TigerGraph automatically sets up the streaming connector and Kafka job when an external data source is specified during loading job creation.
-
+////
 
 == Create the loading job
 

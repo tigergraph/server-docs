@@ -1,0 +1,18 @@
+== Example Schema
+This example uses part of the LDBC_SNB schemaa:
+
+[source,php]
+.Example schema taken from LDBC_SNB
+----
+//Vertex Types:
+CREATE VERTEX Person(PRIMARY_ID id UINT, firstName STRING, lastName STRING,
+  gender STRING, birthday DATETIME, creationDate DATETIME, locationIP STRING,
+  browserUsed STRING, speaks SET<STRING>, email SET<STRING>)
+  WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+CREATE VERTEX Comment(PRIMARY_ID id UINT, creationDate DATETIME,
+  locationIP STRING, browserUsed STRING, content STRING, length UINT)
+  WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+//Edge Types:
+CREATE DIRECTED EDGE HAS_CREATOR(FROM Comment, TO Person)
+  WITH REVERSE_EDGE="HAS_CREATOR_REVERSE"
+----

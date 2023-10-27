@@ -1,34 +1,30 @@
 = Data Loading
-:description: Introduction to data loading and data loaders in TigerGraph.
+:description: Outline of data loading
 :page-aliases: README.adoc, data-loading.adoc, readme.adoc
 
-Once you have defined a graph schema, you can load data into the graph store.
-The data loading process varies based on where the data files are located relative to the TigerGraph server.
+There are various ways to load data in TigerGraph. Here you can find an overview and detailed instructions for the loading method that fits your needs.
 
-If you are loading from files that exist locally on a TigerGraph server, xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[create and run a loading job] in GSQL to load the files.
+== xref:data-loading-overview.adoc[Overview of Data Loading]
 
-Loading data from an outside source, such as cloud storage, requires one additional step of first defining the data source for GSQL to work with.
-This process is described in this documentation section.
-We refer to this as "data streaming" because TigerGraph can be configured to automatically load new data as it appears in the outside source.
+Available loading methods and supported features.
+Start from this page to pick what works for you.
 
-== Set up a data source for a data streaming loading job
+== xref:load-local-files.adoc[Load Data from Local Files]
 
-GSQL uses a user-provided configuration file to automatically set up a streaming data connection and a loading job for data in these external cloud data hosts:
+Instructions for loading local files.
 
-* Google Cloud Storage (GCS)
-* AWS S3
-* Azure Blob Storage (ABS)
-* Google BigQuery
+== xref:data-streaming-connector/index.adoc[Load Data from Cloud Storage]
 
-Go to the xref:data-streaming-connector/index.adoc[] main page for instructions on setting up the loading job.
+Instructions for loading files stored in third-party cloud storage
+(Amazon S3, Google Cloud Storage, and Microsoft Azure).
 
-NOTE: The data streaming will stage temporary data files on the database server's disk.
-You should have free disk space of at least 2 times the size of your total (uncompressed) input data.
+== xref:data-streaming-connector/big-query.adoc[Load Data from a Data Warehouse]
 
-== Manual connector setup
-For data stored in an external Kafka cluster, you need to perform a few more steps to set up data streaming.
-Using `gadmin` server commands, you first create a connector to interpret the data source, then define the data source, create the loading job, and run it.
+Instructions for loading query results from a data warehouse (BigQuery).
 
-See the xref:data-streaming-connector/kafka.adoc[Kafka cluster streaming] page for more information.
+== xref:data-streaming-connector/kafka.adoc[Load Data from an External Kafka Cluster]
+Instructions for loading records from Kafka topics including CSV, JSON and Avro formats.
 
-This method relies on the xref:kafka-loader/index.adoc[TigerGraph Kafka Loader].
+== xref:spark-connection-via-jdbc-driver.adoc[Load DataFrames from Spark]
+
+Instructions for writing Spark DataFrames to TigerGraph via a JDBC connector.
