@@ -279,7 +279,9 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * xref:3.9@tigergraph-server:cluster-and-ha-management:expand-a-cluster.adoc[Cluster resizing] no longer requires a graph schema.
 * Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
-== Known issues
+== Known Issues
+* In 3.9.3, if a loading job is expected to load from a large batch of files or Kafka queues (e.g. more than 500), the job’s status may not be updated for an extended period of time. In this case, users should check the loader log file as an additional reference for loading status.
+* In 3.9.3, when a GPE/GSE is turned off right after initiating a loading job, the loading job is terminated internally. However, users may still observe the loading job as running on their end. Please see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Troubleshooting Loading Job Delays] for additional details.
 * GSQL `EXPORT GRAPH` may fail and cause a GPE to crash when UDT type has a fixed STRING size.
 * After a global loading job is running for a while a fail can be encountered when getting the loading status due to `KAFKASTRM-LL` not being online, when actually the status is online.
 Then the global loading process will exit and fail the local job after timeout while waiting the global loading job to finish.
