@@ -21,14 +21,12 @@ If you use spark job to connect TigerGraph via JDBC, we recommend your concurren
 This limits the concurrent JDBC connections to 40.
 
 ----
-—num-executors 2  /* 2 executors per job */
-—executor-cores 2 /* 1 executor take 2 cores */
+—-num-executors 2  /* 2 executors per job */
+—-executor-cores 2 /* 1 executor take 2 cores */
 ----
 ====
 
-NOTE: The TigerGraph JDBC Driver has more use cases than just as a Spark Connection. You can use TigerGraph's JDBC Driver for your Java and Python applications. This is an open source project.
-
-== Load From a Data lake
+== Load From a Data Lake Via Spark
 
 === Prerequisites: General Loading from Spark
 * Create a GSQL xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Loading Job], where you map the source column index to target vertex/edge attribute.
@@ -155,6 +153,8 @@ The loading job will be aborted when reaching the limit. `jobid` is required.
 The loading job will be aborted when reaching the limit.
 `jobid` is required.
 
+NOTE: For a more detailed example, please refer to the https://github.com/tigergraph/ecosys/blob/master/tools/etl/tg-jdbc-driver/tg-jdbc-examples/src/main/java/com/tigergraph/jdbc/examples/SparkLoadingJob.scala#L55-L57[GitHub link].
+
 *For the `"batchsize"` option:*
 
 * *If it is set too small*, lots of time will be spent on setting up connections.
@@ -192,7 +192,7 @@ To bypass the disk IO limitation, it is better to put the raw data file on a dif
 | `connectTimeout` | 30 | The connect timeout (s) for HTTP client. | No
 |===
 
-=== Specific Usages for Delta Lake
+=== Specific Usages for a Spark DataFrame in TigerGraph
 
 ==== Bulk Load
 To read the full delta table as a Spark DataFrame and a bulk load to TigerGraph:
@@ -281,7 +281,7 @@ df.write.mode("overwrite").format("jdbc").options(
 
 Below is a full example of the previous steps with more options.
 
-.Capture changes + filter the insertion and updating + retain the original data columns:
+.Capture changes + filter the insertion and updating:
 [source, gsql]
 val df = spark.read.format("delta")
     .option("readChangeFeed", "true")
@@ -289,7 +289,6 @@ val df = spark.read.format("delta")
     .option("endingVersion", 10)
     .table("myDeltaTable")
     .filter($"_change_type" === "insert" || $"_change_type" === update_postimage)
-    .df.select("_c0", "_c1", "_c2")
 
 .Now write the changes from the DataFrame to TigerGraph
 [source, gsql]
