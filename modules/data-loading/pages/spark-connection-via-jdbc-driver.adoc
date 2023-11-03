@@ -30,7 +30,7 @@ This limits the concurrent JDBC connections to 40.
 . Use the `write()` function of the `DataFrame` to build a Spark `DataFrameWriter`.
 +
 .. Specify the `mode("overwrite")` to set the save mode.
-.. Specify `format("jdbc")` to leverage the xref:https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html[JDBC Data Source].
+.. Specify `format("jdbc")` to leverage the https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html[JDBC Data Source].
 .. Specify the JDBC connection properties in configuration options.
 . Create a GSQL xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Loading Job], where you map the source column index to target vertex/edge attribute.
 
@@ -262,7 +262,7 @@ val df = spark.read.format("delta")
 
 . Filter the changes:
 +
-The DataFrame containing the changes of the Delta table has xref:https://docs.databricks.com/en/delta/delta-change-data-feed.html#what-is-the-schema-for-the-change-data-feed[3 additional columns]:
+The DataFrame containing the changes of the Delta table has https://docs.databricks.com/en/delta/delta-change-data-feed.html#what-is-the-schema-for-the-change-data-feed[3 additional columns]:
 +
 [cols="3"]
 |===
