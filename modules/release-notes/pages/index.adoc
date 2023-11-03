@@ -5,7 +5,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server {page-component-version}.3 LTS was released on October 30th, 2023.
+TigerGraph Server {page-component-version}.3 LTS was released on November [], 2023.
 
 TigerGraph Server {page-component-version}.2-1 LTS was released on October 10, 2023.
 
@@ -21,9 +21,12 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 == Key New Features
 
 * *xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[Multiple edges of the same type between vertices]* - Simplifies application design for time series data and other complex large data sets
-* *xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[Data streaming connector]* - Simplifies and unifies setup for data loading, employs robust Kafka-based design, supports cloud-hosted data sources in many formats, including Parquet
-* *Improved monitoring and logging* - Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
-* xref:gsql-ref:appendix:openCypher-in-gsql.adoc[Support for openCypher in GSQL] - GSQL now supports many openCypher features and syntax.
+* *xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector]* - Simplifies and unifies setup for data loading, employs robust Kafka-based design, supports cloud-hosted data sources in many formats, including Parquet
+* xref:tigergraph-server:system-management:workload-management.adoc[Workload Management] — Automatically assigns query tasks to the least-busy resources to maximize productivity. Added parameters for xref:tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[GPE query routing based on CPU usage]
+* *Real-time data Ingestion Monitoring* - Monitors the progress and integrity for high-speed data loading up to terabytes. Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
+* xref:tigergraph-server:kubernetes:[Support for Kubernetes] — Enables simple, automated deployment and scaling of software components to meet dynamic needs, lowering operational costs.
+* xref:gsql-ref:appendix:openCypher-in-gsql.adoc[Integrates OpenCypher] - Adds a language familiar to many developers, to speed up creating and migrating graph queries, before leaning into GSQL for advanced and high-performance graph analytics.
+
 
 == Detailed List of New and Modified Features
 
@@ -44,8 +47,7 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** [3.9.2] `/gsqlserver/gsql/clear-store` is equivalent to `GSQL CLEAR GRAPH STORE -HARD`
 
 * Added or changed xref:3.9@tigergraph-server:reference:configuration-parameters.adoc[configuration parameters]:
-** [3.9.3] Added parameters `System.Backup.DecompressProcessNumber` and `System.Backup.CompressionLevel` to adjust the compression level of backups.
-** [3.9.3] Added parameters for xref:tigergraph-server:system-management:workload-management.adoc[GPE query routing] based on CPU usage.
+** [3.9.3] xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_system[Added parameters] `System.Backup.DecompressProcessNumber` and `System.Backup.CompressionLevel` to adjust the compression level of backups.
 ** `KafkaConnect.AllowedTaskPerCPU` limits the number of concurrent kafka loading tasks.
 ** The GSQL environment variable `GPE_DSC_APPLY_TIMEOUT_MINUTE` is the maximum allowed time for dynamic schema changes (DSC).
 
@@ -61,7 +63,7 @@ xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.Rete
 
 ==== Loading
 
-* [3.9.3] Added `-max_percent_error` option to `RUN LOADING JOB` to automatically abort the job if the number of invalid data lines exceeds the given threshold.
+* [3.9.3] xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_max_percent_error_mpe[Added `-max_percent_error`] option to `RUN LOADING JOB` to automatically abort the job if the number of invalid data lines exceeds the given threshold.
 * Moved xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[data connector] setup from `gadmin` to GSQL.
 Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
 ** Introduced a new `STREAM` data loading type that simplifies the xref:3.9@tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
@@ -75,6 +77,7 @@ Streamlined the user experience for creating loading jobs for data stored in AWS
 multiple edges of the same type] between vertices, to simplify application design for time series data and other complex large data sets.
 
 ==== Querying and Query Management
+* [3.9.3] Added parameters for xref:tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[GPE query routing] based on CPU usage.
 * `to_string()` is now a built-in GSQL function, supporting all xref:3.9@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[primitive] and xref:3.9@gsql-ref:querying:accumulators.adoc#_vertex_attached_accumulators
 [scalar accumulator] data types. This means xref:3.9@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined functions] in `Exprfunctions.hpp` may no longer use the name `to_string()` (case-insensitive).
 * Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
@@ -91,12 +94,12 @@ vertex function can also be used with vertex input parameters in the query-body 
 
 === Kubernetes Operator
 * [3.9.3] Added a link to TigerGraph Kubernetes xref:tigergraph-server:kubernetes:k8s-operator/index.adoc[preview documentation] on GitHub.
-* [3.9.3] Improved help message menu of kubectl-tg plugin.
-* [3.9.3] Made `.spec.initTGConfig.version` an optional field, so users don’t need to specify this field when using create/update in the TigerGraph CR.
-* [3.9.3] Improved security by replace static passwords with private keys when executing cluster operations jobs.
-* [3.9.3] Installed `make` command to support installing `tsar` and disabled the password when building TigerGraph docker image.
-* [3.9.3] Improved database by supporting an automatic restart of TigerGraph service under any circumstances.
-* [3.9.3] Enabled service auto-restart in operator by setting TigerGraph configuration `Controller.ServiceManager.AutoRestart`.
+* [3.9.3] Improved help message menu of https://github.com/tigergraph/ecosys/blob/master/k8s/docs/02-get-started/get_started.md#install-kubectl-tg-plugin[kubectl-tg plugin].
+* [3.9.3] Made `.spec.initTGConfig.version` an optional field, so users don’t need to specify this field when using https://github.com/tigergraph/ecosys/blob/master/k8s/docs/02-get-started/get_started.md#-getting-started-tigergraph-on-kubernetes-[create/update] in the TigerGraph CR.
+* [3.9.3] https://github.com/tigergraph/ecosys/blob/master/k8s/docs/08-release-notes/operator-0.0.9.md#improvements[Improved security] by replace static passwords with private keys when executing cluster operations jobs.
+* [3.9.3] https://github.com/tigergraph/ecosys/blob/master/k8s/docs/08-release-notes/operator-0.0.9.md#improvements[Installed `make`] command to support installing `tsar` and disabled the password when building TigerGraph docker image.
+* [3.9.3] https://github.com/tigergraph/ecosys/blob/master/k8s/docs/08-release-notes/operator-0.0.9.md#improvements[Improved database] by supporting an automatic restart of TigerGraph service under any circumstances.
+* [3.9.3] https://github.com/tigergraph/ecosys/blob/master/k8s/docs/08-release-notes/operator-0.0.9.md#improvements[Enabled service] auto-restart in operator by setting TigerGraph configuration `Controller.ServiceManager.AutoRestart`.
 * Enhanced the functionality of the xref:3.9@kubernetes:k8s-operator/index.adoc[] so it is now the standard way to perform cluster operations with Kubernetes.
 * Added support for https://github.com/tigergraph/ecosys/blob/master/k8s/docs/04-manage/backup-and-restore/README.md[Backup and Restore], https://github.com/tigergraph/ecosys/blob/master/k8s/docs/02-get-started/get_started.md#upgrade-a-tigergraph-cluster[Upgrading the version of the TigerGraph server], and https://github.com/tigergraph/ecosys/blob/master/k8s/docs/02-get-started/get_started.md#update-the-resources-cpu-and-memory-of-the-tigergraph-cluster[Updating cluster resources]
 * [3.9.2] Support for https://github.com/tigergraph/ecosys/blob/master/k8s/docs/03-deploy/custom-containers.md[Custom Containers and Volumes].
@@ -159,7 +162,6 @@ vertex function can also be used with vertex input parameters in the query-body 
 * Fixed GSE crash when `lease_expire_time_ms_` was not updating (CORE-2693).
 * Fixed issue where AWS credential user with access permission failed to `create data_source` to specified bucket (TP-4049).
 * Fixed issue where there was a failure to backup during upgrading from a free tier (TP-3922).
-* Fixed issue of wrong result for `DISTINCT` with aggregation functions (GLE-3386).
 * Fixed the case when the configured backup’s s3 service, such as ceph s3, only supported bucket path style (TP-3931).
 * Fixed issue to avoid cloning cluster again when restore had already succeeded (TP-3948).
 * Fixed TG container `PostStart` Handler script error handling problem (TP-3914).
@@ -285,7 +287,7 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * GSQL `EXPORT GRAPH` may fail and cause a GPE to crash when UDT type has a fixed STRING size.
 * After a global loading job is running for a while a fail can be encountered when getting the loading status due to `KAFKASTRM-LL` not being online, when actually the status is online.
 Then the global loading process will exit and fail the local job after timeout while waiting the global loading job to finish.
-* For v3.9.1 and v3.9.2 when inserting a new edge in `GPR` and `INTERPRET` mode, the GPE will print out a warning message because a discriminator string is not set for new-inserted edges. Creating an inconsistent problem in delta message for GPR and `INTERPRET` mode. (FIXED in 3.9.3)
+* *[FIXED 3.9.3]* For v3.9.1 and v3.9.2 when inserting a new edge in `GPR` and `INTERPRET` mode, the GPE will print out a warning message because a discriminator string is not set for new-inserted edges. Creating an inconsistent problem in delta message for GPR and `INTERPRET` mode.
 * When the memory usage approaches 100%, the system may stall because the process to elect a new GSE leader did not complete correctly.
 This lockup can be cleared by restarting the GSE.
 * If the CPU and memory utilization remain high for an extended period during a schema change on a cluster, a GSE follower could crash, if it is requested to insert data belonging to the new schema before it has finished handling the schema update. 
