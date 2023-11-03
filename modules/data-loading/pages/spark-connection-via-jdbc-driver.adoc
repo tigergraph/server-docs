@@ -26,27 +26,24 @@ This limits the concurrent JDBC connections to 40.
 ----
 ====
 
-== Load From a Data Lake Via Spark
+== Load From a Data Lake via Spark
+. Use the `write()` function of the `DataFrame` to build a Spark `DataFrameWriter`.
++
+.. Specify the `mode("overwrite")` to set the save mode.
+.. Specify `format("jdbc")` to leverage the xref:https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html[JDBC Data Source].
+.. Specify the JDBC connection properties in configuration options.
+. Create a GSQL xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Loading Job], where you map the source column index to target vertex/edge attribute.
 
-=== Prerequisites: General Loading from Spark
-* Create a GSQL xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Loading Job], where you map the source column index to target vertex/edge attribute.
-* Use the `write()` function of the `DataFrame` to build a `DataFrameWriter`.
-* Specify `format("jdbc")` to leverage the xref:https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html[JDBC Data Source].
-* Specify the `mode("overwrite")` to set the save mode.
-* Specify the JDBC connection properties in configuration options.
 
-.Example: Create a Loading Job
-[source, gsql]
-CREATE LOADING JOB load_Social FOR GRAPH Social {
-    DEFINE FILENAME file1;
-    DEFINE FILENAME file2;
-    LOAD file1 TO VERTEX Person VALUES ($0, $1, $2);
-    LOAD file2 TO EDGE Friendship VALUES ($0, $1);
-}
+=== 1) Write a Spark `DataFrameWriter`
 
-The loading job above, `load_Social` loads the 1st, 2nd, and 3rd columns of source file, `file1`, to the 1st, 2nd, and 3rd attributes of the vertex `Person`.
+Write a Spark DataFrameWriter function that will write data to CSV files, following the example below.
 
-.Example: Use `write()` to build a `DataFrameWriter`, specify a `format("jdbc")`, specify a `mode("overwrite")`, and to specify the JDBC connection properties.
+NOTE: You need to choose names for a GSQL loading job and its data files that you will be using in Step 2.
+
+
+
+.Example: `DataFrameWriter` as  "df"
 [source, gsql]
 df.write.mode("overwrite").format("jdbc").options(
     Map(
@@ -84,14 +81,32 @@ Jerry,45,male
 Jenny,33,female
 Lizzy,19,female
 
-.Example: Post Request to TigerGraph
+=== 2) Create a Loading Job
+
+Write a GSQL loading job, using the job and file names that you used in step 1, to map data from the CSV file(s) to TigerGraph vertices and edges.
+
+.Example:
 [source, gsql]
-http://host:port/restpp/ddl/Social?tag=load_Person&filename=file1
---data <delimited_data>
+CREATE LOADING JOB load_Social FOR GRAPH Social {
+    DEFINE FILENAME file1;
+    DEFINE FILENAME file2;
+    LOAD file1 TO VERTEX Person VALUES ($0, $1, $2);
+    LOAD file2 TO EDGE Friendship VALUES ($0, $1);
+}
 
-=== Advanced Usages
+The loading job above, `load_Social` loads the 1st, 2nd, and 3rd columns of source file, `file1`, to the 1st, 2nd, and 3rd attributes of the vertex `Person`.
 
-==== Enable SSL with Spark
+//Alternatively, loading jobs can be run as post requests.
+//.Example: Post Request to TigerGraph
+//[source, gsql]
+//http://host:port/restpp/ddl/Social?tag=load_Social&filename=file1
+//--data <delimited_data>
+
+See the pages xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[], xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[] and xref:tigergraph-server:API:built-in-endpoints.adoc#_loading_jobs[Loading Jobs as a REST Endpoint] for more information about loading jobs in TigerGraph.
+
+== Advanced Usages with Spark
+
+=== Enable SSL with Spark
 Add the following options to your scala script:
 
 [source, gsql]
@@ -106,7 +121,7 @@ And run it with `--files` option like this:
 
 The `--files` should be provided the JKS file path, while the `"trustStore" -> "trust.jks"` should be the JKS filename only.
 
-==== Loading statistics
+=== Load Statistics
 
 [WARNING]
 ====
@@ -162,7 +177,7 @@ NOTE: For a more detailed example, please refer to the https://github.com/tigerg
 
 To bypass the disk IO limitation, it is better to put the raw data file on a different disk other than the one used by TigerGraph.
 
-===  Configuration Options
+==  Configuration Options with Spark
 [cols="4"]
 |===
 | Property Name |Default| Meaning |Required
@@ -192,9 +207,9 @@ To bypass the disk IO limitation, it is better to put the raw data file on a dif
 | `connectTimeout` | 30 | The connect timeout (s) for HTTP client. | No
 |===
 
-=== Specific Usages for a Spark DataFrame in TigerGraph
+== Specific Usages for a Spark DataFrame in TigerGraph
 
-==== Bulk Load
+=== Bulk Load
 To read the full delta table as a Spark DataFrame and a bulk load to TigerGraph:
 
 [source, gsql]
@@ -206,7 +221,7 @@ df.write.mode("overwrite").format("jdbc").options(
         ...))
     .save()
 
-==== Capture Changes in Batch Queries
+=== Capture Changes in Batch Queries
 
 . Enable the change data feed option on the Delta table:
 +
@@ -277,7 +292,7 @@ df.write.mode("overwrite").format("jdbc").options(
         ...))
     .save()
 
-==== Full Example
+=== Full Example
 
 Below is a full example of the previous steps with more options.
 
