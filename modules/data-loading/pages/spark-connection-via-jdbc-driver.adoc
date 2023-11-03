@@ -26,14 +26,7 @@ This limits the concurrent JDBC connections to 40.
 ----
 ====
 
-== Load From a Data Lake via Spark
-. Use the `write()` function of the `DataFrame` to build a Spark `DataFrameWriter`.
-+
-.. Specify the `mode("overwrite")` to set the save mode.
-.. Specify `format("jdbc")` to leverage the https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html[JDBC Data Source].
-.. Specify the JDBC connection properties in configuration options.
-. Create a GSQL xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Loading Job], where you map the source column index to target vertex/edge attribute.
-
+== Load from a Data Lake via Spark
 
 === 1) Write a Spark `DataFrameWriter`
 
