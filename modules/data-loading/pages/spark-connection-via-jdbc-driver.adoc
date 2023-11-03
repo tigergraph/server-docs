@@ -37,14 +37,11 @@ This limits the concurrent JDBC connections to 40.
 
 === 1) Write a Spark `DataFrameWriter`
 
-Write a Spark DataFrameWriter function that will write data to CSV files, following the steps and example below.
+Write a Spark DataFrameWriter function that will write data to CSV files, following the example below.
 
 NOTE: You need to choose names for a GSQL loading job and its data files that you will be using in Step 2.
 
-. Build a `DataFrameWriter`, with `write()`.
-.. Specify a `mode("overwrite")`.
-.. Specify a `format("jdbc")`.
-.. Specify the JDBC connection properties in configuration options.
+
 
 .Example: `DataFrameWriter` as  "df"
 [source, gsql]
@@ -65,6 +62,25 @@ df.write.mode("overwrite").format("jdbc").options(
 
 The `sep` and `eol` will be used to convert the `DataFrame` to delimited data and that will be sent to the filename defined by the loading job.
 
+.Example: DataFrame
+[source, gsql]
+> DataFrame
++-----+---+------+
+|  _c0|_c1|   _c2|
++-----+---+------+
+|  Tom| 23|  male|
+|Jerry| 45|  male|
+|Jenny| 33|female|
+|Lizzy| 19|female|
++-----+---+------+
+
+.Example: Delimited Data
+[source, gsql]
+Tom,23,male
+Jerry,45,male
+Jenny,33,female
+Lizzy,19,female
+
 === 2) Create a Loading Job
 
 Write a GSQL loading job, using the job and file names that you used in step 1, to map data from the CSV file(s) to TigerGraph vertices and edges.
@@ -80,31 +96,13 @@ CREATE LOADING JOB load_Social FOR GRAPH Social {
 
 The loading job above, `load_Social` loads the 1st, 2nd, and 3rd columns of source file, `file1`, to the 1st, 2nd, and 3rd attributes of the vertex `Person`.
 
-.Example: DataFrame
-[source, gsql]
-> DataFrame
-+-----+---+------+
-|  _c0|_c1|   _c2|
-+-----+---+------+
-|  Tom| 23|  male|
-|Jerry| 45|  male|
-|Jenny| 33|female|
-|Lizzy| 19|female|
-+-----+---+------+
+//Alternatively, loading jobs can be run as post requests.
+//.Example: Post Request to TigerGraph
+//[source, gsql]
+//http://host:port/restpp/ddl/Social?tag=load_Social&filename=file1
+//--data <delimited_data>
 
-.Example: Post Request to TigerGraph
-[source, gsql]
-http://host:port/restpp/ddl/Social?tag=load_Person&filename=file1
---data <delimited_data>
-
-.Example: Delimited Data
-[source, gsql]
-Tom,23,male
-Jerry,45,male
-Jenny,33,female
-Lizzy,19,female
-
-
+See the pages xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[], xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[] and xref:tigergraph-server:API:built-in-endpoints.adoc#_loading_jobs[Loading Jobs as a REST Endpoint] for more information about loading jobs in TigerGraph.
 
 == Advanced Usages with Spark
 
