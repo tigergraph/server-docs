@@ -1,0 +1,10 @@
+[NOTE]
+====
+When loading JSON or Parquet data, please make sure:
+
+* The USING option JSON_FILE="true" is used
+* Refer to JSON keys (≈ Parquet "column names") instead of column indices.
+
+E.g., `LOAD file_Comment TO VERTEX Comment VALUES ($"id", $"content")
+USING JSON_FILE="TRUE"`
+====

@@ -1,0 +1,20 @@
+=== Define filenames
+First we define _filenames_, which are local variables referring to data files (or data objects).
+
+[NOTE]
+The terms `FILENAME` and `filevar` are used for legacy reasons, but a `filevar` can also be an object in a data object store.
+
+[source,php]
+.DEFINE FILENAME syntax
+----
+DEFINE FILENAME filevar ["=" file_descriptor ];
+----
+
+The file descriptor can be specified at compile time or at runtime.
+Runtime settings override compile-time settings:
+
+[source,php]
+.Specifying file descriptor at runtime
+----
+RUN LOADING JOB job_name USING filevar=file_descriptor_override
+----

@@ -1,0 +1,27 @@
+=== Example loading job from cloud storage
+
+The following example uses AWS S3 as the source.
+
+[source,php,linenums]
+.Example loading job from cloud storage
+----
+USE GRAPH ldbc_snb
+CREATE LOADING JOB load_data FOR GRAPH ldbc_snb {
+  DEFINE FILENAME file_Comment =
+    "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment";
+  DEFINE FILENAME file_Person =
+    "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Person";
+  DEFINE FILENAME file_Comment_hasCreator_Person =
+    "$s1:s3://s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment_hasCreator_Person";
+  LOAD file_Comment
+    TO VERTEX Comment
+      VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+  LOAD file_Person
+    TO VERTEX Person
+      VALUES ($1, $2, $3, $4, $5, $0, $6, $7, SPLIT($8,";"), SPLIT($9,";"))
+      USING header="true", separator="|";
+  LOAD file_Comment_hasCreator_Person
+    TO EDGE HAS_CREATOR
+      VALUES ($1, $2) USING header="true", separator="|";
+}
+----

@@ -1,0 +1,13 @@
+[NOTE]
+====
+When loading JSON or Avro data,
+
+* The USING option JSON_FILE="true" must be included.
+* Refer to JSON keys (or Avro field names) instead of column index numbers.
+
+E.g.,
+
+[source,php]
+LOAD file_Comment TO VERTEX Comment
+  VALUES ($"id", $"content") USING JSON_FILE="TRUE"
+====
