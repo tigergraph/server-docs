@@ -1,6 +1,10 @@
 = Stream from an External Kafka Cluster (Deprecated)
 :sectnums:
 
+[NOTE]
+This describes support for data loading from an External Kafka Cluster for v3.9.2 and earlier.
+If you have v3.9.3 or higher, we recommend that you use xref:data-loading/load-from-kafka.adoc[].
+
 You can create a data connector to stream data from an external Kafka cluster (source cluster) to a destination cluster, which is often TigerGraph's internal Kafka cluster.
 If the data from the source cluster is in AVRO format, the connector can transform the data into JSON format.
 You can then create and run a loading job to load data from the destination cluster into graphs in your database using the xref:kafka-loader/index.adoc[Kafka loader].
