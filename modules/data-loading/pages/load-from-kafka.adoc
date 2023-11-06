@@ -1,32 +1,40 @@
 :toc:
 :toclevels: 4
-= Load from Local Files
+= Load from External Kafka
+
+[WARNING]
+====
+This method is for only for v3.9.3 and higher versions.
+For earlier versions, please refer to xref:data-streaming-connector/kafka.adoc[].
+====
+
 
 include::partial$load-part1-intro-and-schema.adoc[]
 
-// Local file loading DOES NOT use DATA_SOURCE
-//include::partial$load-part2-create-data-source.adoc[]
+include::partial$load-part2-create-data-source.adoc[]
+
 // Custom data source content for <source type>
-include::partial$local/local-data-source-details.adoc[]
+include::partial$kafka/kafka-data-source-details.adoc[]
 
 include::partial$load-part3-create-loading-job.adoc[]
 
 // Example loading job for <source type>
-include::partial$local/local-example-loading-job.adoc[]
+include::partial$kafka/kafka-example-loading-job.adoc[]
 
 include::partial$load-part3A-define-filenames.adoc[]
 
 // For <source type>, the following format rules apply for filenames.
-include::partial$local/local-file-descriptors.adoc[]
+include::partial$kafka/kafka-filename-details.adoc[]
 
 include::partial$load-part3B-specify-mapping.adoc[]
 
 // Custom data mapping notes for <source type>
+include::partial$kafka/kafka-specify-mapping-details.adoc[]
 
 include::partial$load-part4-run-job.adoc[]
 
 // Custom notes about run loading for <source type>
-include::partial$local/local-run-loading-details.adoc[]
+include::partial$kafka/kafka-run-loading-details.adoc[]
 
 include::partial$load-part5-monitor-and-manage.adoc[]
 

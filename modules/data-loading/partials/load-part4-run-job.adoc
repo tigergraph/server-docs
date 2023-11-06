@@ -1,0 +1,25 @@
+== Run the loading job
+
+Use the command `RUN LOADING JOB` to run the loading job.
+
+[source,php]
+.RUN LOADING JOB basic syntax (some options omitted)
+----
+RUN LOADING JOB [-noprint] job_name [
+  USING filevar [="file_descriptor"][, filevar [="file_descriptor"]]*
+  [,EOF="eof_mode"]
+]
+----
+
+*-noprint*
+
+By default, the loading job will run in the foreground and print the loading status and statistics after you submit the job.
+If the `-noprint` option is specified, the job will run in the background after displaying the job ID and the location of the log file.
+
+*filevar list*
+
+The optional `USING` clause may contain a list of file variables. Each file variable may optionally be assigned a `file_descriptor`, obeying the same format as in `CREATE LOADING JOB`. This list of file variables determines which parts of a loading job are run and what data files are used.
+
+When a loading job is compiled, it generates one RESTPP endpoint for each `filevar` and source_object. As a consequence, a loading job can be run in parts. When `RUN LOADING JOB` is executed, only those endpoints whose filevar or file identifier (`__GSQL_FILENAME_n__`) is mentioned in the `USING` clause will be used. However, if the `USING` clause is omitted, then the entire loading job will be run.
+
+If a `file_descriptor` is given, it overrides the `file_descriptor` defined in the loading job. If a particular `filevar` is not assigned a `file_descriptor` either in the loading job or in the `RUN LOADING JOB` statement, an error is reported and the job exits.

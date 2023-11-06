@@ -1,0 +1,65 @@
+Three cloud source types are supported:
+
+* xref:_aws_s3[Amazon S3]
+* xref:_azure_blob_storage[Azure Blob Storage]
+* xref:_google_cloud_storage[Google Cloud Storage]
+
+Also, three data object formats are supported: CSV, JSON, and Parquet.
+
+=== AWS S3
+
+AWS uses the standard IAM credential provider and uses your access key for authentication.
+
+Access keys can be used for an individual user or for an IAM role.
+See Using IAM Roles for Amazon EC2 for more information.
+
+[source,json]
+{
+"type": "s3",
+"access.key": "<access key>",
+"secret.key": "<secret key>"
+}
+
+=== Azure Blob Storage
+
+We support two types of authentication:
+
+*Shared key authentication*:
+
+Get the account key on the Access Keys tab of your storage account.
+TigerGraph can automatically extract the account name from the file URI, so there's no need to provide the account name.
+
+[source,json]
+{
+"type" : "abs",
+"account.key" : "<account key>"
+}
+
+image::data-loading:azure-storage-account.png[Azure Access Keys tab]
+
+**S**ervice principal authentication*:
+
+To use service principal authentication, you must first register your TigerGraph instance as an application and grant it access to your storage account.
+
+[source,json]
+{
+"type" : "abs",
+"client.id" : "<client id>",
+"client.secret" : "<client secrect>",
+"tenant.id" : "<tenant id>"
+}
+
+=== Google Cloud Storage
+
+For GCS, the TigerGraph data source configuration object is based on the _GCS service account key_ format.
+
+[source,json]
+{
+"type": "gcs",
+"project_id": "<project id>",
+"private_key_id": "<private key id>",
+"private_key": "<private key>",
+"client_email": "<email address>"
+}
+
+You can follow Google Cloud's instructions for creating a service account key, and then replace the `"type"` value with `"gcs"`.

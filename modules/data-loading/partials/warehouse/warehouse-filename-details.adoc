@@ -1,0 +1,71 @@
+NOTE: While a loading job may have multiple `FILENAME` variables , they must all refer to the same `DATA_SOURCE` object.
+
+==== Data warehouse file descriptors
+
+For data warehouses, you run a SQL query to get the data.
+The file descriptor has three valid formats.
+You can simply provide the file URI. Or, you can provide optional configuration details, either in a JSON file or as inline JSON content.
+[source,php,linenum]
+DEFINE FILENAME file_name = "$[data source name]:[SQL]";
+DEFINE FILENAME file_name = "$[data source name]:[json config file]";
+DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
+
+For example:
+
+[source,go]
+----
+// Format 1: URI only
+DEFINE FILENAME query_person = "$s1:SELECT id,name,gender FROM ldbc.person";
+
+// Format 2: URI and configuration file
+DEFINE FILENAME bq_inline_json = """$s1:myfile.json""";
+
+// Format 3: URI and inline JSON
+DEFINE FILENAME query_person="""$s1:{
+  "query": "SELECT id,name,gender
+            FROM ldbc.person where age < 10;
+            SELECT id,name,gender
+            FROM ldbc.person where age > 50",
+  "num.partitions": 6,
+  "tasks.max": 2
+}""";
+----
+
+==== Filename parameters
+
+These are the required and optional configuration parameters:
+
+[%header,cols="1,4,1,4"]
+|===
+|Parameter |Description |Required? |Default value
+
+|query
+|One or more SQL queries separated by commas.
+To avoid timeout in a large query, you can break it into multiple smaller queries based on the partitioning key.
+These queries may be assigned to multiple tasks for execution, while the execution order is not guaranteed.
+|Required
+|N/A
+
+|batch.max.rows
+|Maximum number of rows to include in a single batch when polling for new data from the query result.
+|Optional
+|1000
+
+|num.partitions
+|The number of partitions to use.
+When loading data, each partition is distributed evenly across each node.
+If one filename contains much more data than others, consider using a larger partition number.
+|Optional
+|3
+
+|tasks.max
+|The maximum number of tasks used to execute queries.
+When `query` contains multiple queries, you can increase this parameter to execute queries in parallel.
+|Optional
+|1
+
+|poll.interval.ms
+|Time interval in ms for periodic executoion of the query.
+|Optional
+|5000
+|===
