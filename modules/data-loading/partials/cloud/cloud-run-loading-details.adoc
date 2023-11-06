@@ -1,0 +1,55 @@
+=== Continuous Loading from Cloud Storage
+
+`EOF` (End-of-file) is a boolean parameter.
+The loader has two modes: streaming mode ("False") and EOF mode ("True").
+The default mode is ("True"): EOF mode.
+
+* In EOF mode, loading will stop after consuming the provided file objects, i.e, when it reaches the `EOF` character for each file object.
+* In streaming mode, the loading job remains active and keeps for new data until the job is aborted.
+The loader can detect both new lines in existing files and new files added to the designated source folder.
+
+[NOTE]
+Streaming mode checks for new content based on _increased line number_.
+Only new lines in existing files and new files will be loaded.
+If any existing lines are changed or deleted, these changes will not be part of the loading job.
+
+For example, consider a file `data.txt` in cloud storage
+
+[source,txt,linenum]
+.Initial state of `data.txt`
+line-1
+
+1) We load `data.txt` using streaming mode.
+[source,php]
+RUN LOADING JOB stream_csv USING EOF="false"
+
+
+The line of data is loaded successfully into the loading job for ingestion to TigerGraph.
+
+2) If a user edits the file and adds a new line, the stream loader notices the addition and loads the new line, starting from where it previously left off.
+
+[source,txt,linenum]
+.`data.txt` after a line is added
+line-1
+line-2
+
+In this case, the new line `line-2` is successfully ingested to TigerGraph,for a total of two lines.
+
+3) If a user edits the file and inserts a line _before_ the end, as shown below, the entire file is loaded again.
+
+[source,txt,linenum]
+.data.txt after a new line is added before the end
+line-1
+added-line
+line-2
+
+Because two lines had already been loaded, the first two lines are skipped, even though the second contains new data. The third line from the file is then loaded, resulting in a repeat of `line-2`.
+
+[source,txt,linenum]
+.Data in TigerGraph
+line-1
+line-2
+line-2
+
+[WARNING]
+To insure data is loaded correctly, only use stream mode when there is no chance of data being altered or added to the middle of a file.

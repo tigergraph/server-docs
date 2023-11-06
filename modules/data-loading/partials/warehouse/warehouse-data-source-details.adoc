@@ -1,0 +1,39 @@
+[NOTE]
+BigQuery is the only data warehouse is supported in v3.9.
+More data warehouses will be supported in future releases.
+
+=== BigQuery
+
+TigerGraph's BigQuery loader makes use of the https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC connector provided by Google], in collaboration with Simba.
+Use the following configuration for the `DATA_SOURCE`.
+
+[source,php,linenums]
+.Data source configuration for BigQuery
+----
+{
+  "type":"bigquery",
+  "ProjectId":"tigergraph-dev",
+  "OAuthType":2,
+  "parameters" : {
+    "OAuthRefreshToken":"<refresh token>",
+    "OAuthClientId":"<client ID>.apps.googleusercontent.com",
+    "OAuthClientSecret":"<client secret>"
+    #other Simba JDBC parameters
+  }
+}
+----
+
+[IMPORTANT]
+In addition, for large query results, we highly recommended specifying the following parameters:
+
+[source,php,linenums]
+.Addition parameter setting for large BigQuery results
+----
+"EnableHighThroughputAPI":"1" -> Storage Read API
+"AllowLargeResults":"1" -> Large Query Result Support
+"LargeResultDataset":"<target_dataset>" -> Storage for Temp Result
+"LargeResultsDatasetExpirationTime":"<time_ms>" -> Expiration of Temp Result
+----
+
+For more information about Simba/Google BigQuery JDBC connection parameters, please refer the
+https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC Installation and Configuration Guide].

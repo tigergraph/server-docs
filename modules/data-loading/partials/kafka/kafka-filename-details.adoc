@@ -1,0 +1,68 @@
+NOTE: While a loading job may have multiple `FILENAME` variables , they must all refer to the same `DATA_SOURCE` object.
+
+==== Kafka file descriptors
+The file descriptor has three valid formats.
+You can simply provide the Kafka topic name and use default settings. Or, you can provide configuration details including the topic, either in a JSON file or as inline JSON content.
+
+[source,php,linenum]
+DEFINE FILENAME file_name = "$[data source name]:[topic]";
+DEFINE FILENAME file_name = "$[data source name]:[json config file]";
+DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
+
+For example:
+
+[source,go]
+----
+// Format 1: topic only
+DEFINE FILENAME file_Person = "$s1:topic_Person";
+
+// Format 2: topic and configuration file
+DEFINE FILENAME file_Person = "$s1:myfile.json";
+
+// Format 3: topic and inline configuration
+DEFINE FILENAME file_Person="""$s1:{
+    "topic": "topic_Person",
+    "tasks.max": "10"
+}""";
+----
+
+~~~~~~~~~~~~~~~~
+
+==== Filename parameters
+
+These are the required and optional configuration parameters:
+
+[%header,cols="1,4,1,4"]
+|===
+|Parameter |Description |Required? |Default value
+
+| topic
+| The source topic name
+| Required
+| N/A
+
+| tasks.max
+| The maximum number of tasks used to consume the source topic.
+You can increase this value when the source topic contains multiple partitions.
+| Optional
+| 1
+
+| num.partitions
+| The number of partitions to use.
+When loading data, each partition is distributed evenly across each node.
+If one filename contains much more data than others, consider using a larger partition number.
+| Optional
+| 3
+
+| value.converter
+| Converter class used to convert between Kafka Connect format and the serialized form that is written to Kafka.
+This controls the format of the values in messages written to or read from Kafka.
+If records are in Avro format with Schema Registry service, use `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter`.
+If records are in Avro format without using Schema Registry service, use `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverterWithoutSchemaRegistry`.
+If records are in plaintext or JSON format, use `org.apache.kafka.connect.converters.ByteArrayConverter`.
+| Optional
+| N/A
+|===
+
+[NOTE]
+For Avro data with schema registry,you must set both `value.converter.schema.registry.url` when defining the DATA_SOURCE and `value.converter` when defining a FILENAME.

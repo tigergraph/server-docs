@@ -1,0 +1,26 @@
+=== Example loading job from external Kafka
+
+The following is an example loading job from and external Kafka cluster.
+
+[source,php,linenums]
+.Example loading job for BigQuery
+----
+USE GRAPH ldbc_snb
+CREATE DATA_SOURCE s1 = "ds_config.json" FOR GRAPH ldbc_snb
+CREATE LOADING JOB load_data FOR GRAPH ldbc_snb {
+  DEFINE FILENAME file_Comment = "$s1:topic_Comment";
+  DEFINE FILENAME file_Person = "$s1:topic_Person";
+  DEFINE FILENAME file_Comment_hasCreator_Person =
+    "$s1:topic_Comment_hasCreator_Person";
+  LOAD file_Comment
+    TO VERTEX Comment
+      VALUES ($1, $0, $2, $3, $4, $5) USING separator="|";
+  LOAD file_Person
+    TO VERTEX Person
+      VALUES ($1, $2, $3, $4, $5, $0, $6, $7,
+        SPLIT($8,";"), SPLIT($9,";")) USING separator="|";
+  LOAD file_Comment_hasCreator_Person
+    TO EDGE HAS_CREATOR
+      VALUES ($1, $2) USING separator="|";
+}
+----

@@ -1,0 +1,24 @@
+== Create a loading job
+
+A loading job tells the database how to construct vertices and edges from data sources. The loading job body has two parts:
+
+. DEFINE statements create variables to refer to data sources.
+These can refer to actual files or be placeholder names. The actual data sources can be given when running the loading job.
+
+. LOAD statements specify how to take the data fields from files to construct vertices or edges.
+
+////
+[source,php]
+.CREATE LOADING JOB syntax
+----
+CREATE LOADING JOB <job_name> FOR GRAPH <graph_name> {
+  <DEFINE statements>
+  <LOAD statements>
+}
+----
+The opening line does some naming:
+
+* assigns a name to this job: (`<job_name>`)
+* associates this job with a graph (`<graph_name>`)
+////
+

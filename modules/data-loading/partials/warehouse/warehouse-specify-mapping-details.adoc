@@ -1,0 +1,36 @@
+==== Data Mapping from BigQuery reuslts
+
+The columns of SQL results are joined by a specified separator to form delimited content.
+
+[source,php]
+LOAD bq_sql TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING separator="|";
+
+In order to load nested or repeated records from BigQuery, some conversion functions need to be applied to the SQL statement.
+
+*Querying STRUCT Data*
+
+* Method 1:
+
+. Apply the BigQuery `TO_JSON_STRING` function to the columns of the STRUCT, e.g.,
++
+[source,sql]
+SELECT TO_JSON_STRING(col) FROM table
+
+. Flatten the JSON object to CSV format.
+
+* Method 2:
+
+** Retrieve the fields from the STRUCT directly, e.g.,
++
+[source,sql]
+SELECT col.field1, col.field2, col.field3 FROM table
+
+*Querying Arrays*
+
+. Apply function `ARRAY_TO_STRING` to the columns of `ARRAY` type, e.g.,
++
+[source,sql]
+SELECT ARRAY_TO_STRING(col_arr,separator) FROM table
+
+. In the LOAD statement, use the GSQL
+xref:gsql-ref:ddl-and-loading:functions/token/split.adoc[SPLIT function].

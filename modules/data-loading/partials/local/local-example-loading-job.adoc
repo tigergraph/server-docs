@@ -1,0 +1,25 @@
+=== Example loading job for local files
+
+The following is an example loading job for local files.
+
+[source,php,linenums]
+.Example loading job for local files
+----
+USE GRAPH ldbc_snb
+CREATE LOADING JOB load_data FOR GRAPH ldbc_snb {
+  DEFINE FILENAME file_Person = "/data/person.csv";
+  DEFINE FILENAME file_Comment = "m3:/data/comment.csv";
+  DEFINE FILENAME file_Comment_hasCreator_Person=
+    "ALL:/data/hasCreator.json";
+  LOAD file_Person TO VERTEX Person
+    VALUES($1, $2, $3, $4, $5, $0, $6, $7,
+      SPLIT($8, ";"), SPLIT($9, ";"))
+    USING SEPARATOR="|", HEADER="true", EOL="\n";
+  LOAD file_Comment TO VERTEX Comment
+    VALUES($1, $0, $2, $3, $4, $5)
+    USING SEPARATOR="|", HEADER="true", EOL="\n";
+  LOAD file_Comment_hasCreator_Person TO EDGE HAS_CREATOR
+    VALUES($1 Comment, $2 Person)
+    USING JSON_FILE="true";
+}
+----

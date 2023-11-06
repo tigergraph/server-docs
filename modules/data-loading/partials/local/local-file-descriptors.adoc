@@ -1,0 +1,21 @@
+==== Local file descriptors
+For local file loading, the `file_desciptor`  is a file path or folder path string, enclosed in quotation marks.  Here are examples of the syntax for various cases:
+
+* An absolute or relative path for either a file or a folder *on the machine where the job is run*:
++
+[source,json]
+"/data/graph.csv"
+
+* An absolute or relative path for either a file or a folder *on all machines in the cluster*:
++
+[source,json]
+"ALL:/data/graph.csv"
+
+* An absolute or relative path for either a file or a folder *on any machine in the cluster*:
++
+[source,json]
+"ANY:/data/graph.csv"
+
+* A list of *machine-specific paths*:
+[source,json]
+"m1:/data1.csv, m2|m3|m5:/data/data2.csv"
