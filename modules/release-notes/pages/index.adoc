@@ -5,7 +5,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server {page-component-version}.3 LTS was released on November [], 2023.
+TigerGraph Server {page-component-version}.3 LTS was released on November 7th, 2023.
 
 TigerGraph Server {page-component-version}.2-1 LTS was released on October 10, 2023.
 
@@ -22,10 +22,10 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 
 * *xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[Multiple edges of the same type between vertices]* - Simplifies application design for time series data and other complex large data sets
 * *xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[Data Streaming Connector]* - Simplifies and unifies setup for data loading, employs robust Kafka-based design, supports cloud-hosted data sources in many formats, including Parquet
-* *xref:tigergraph-server:system-management:workload-management.adoc[Workload Management]* — Automatically assigns query tasks to the least-busy resources to maximize productivity. Added parameters for xref:tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[GPE query routing based on CPU usage]
-* *Real-time data Ingestion Monitoring* - Monitors the progress and integrity for high-speed data loading up to terabytes. Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
+* *xref:tigergraph-server:system-management:workload-management.adoc[Workload Management]* — Automatically assigns query tasks to the least-busy resources to maximize productivity. *[3.9.3]* Added parameters for xref:tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[GPE query routing based on CPU usage]
+* *Real-time data Ingestion Monitoring* - Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs]. [3.9.3] Monitors the progress and integrity for high-speed data loading up to terabytes.
 * *xref:tigergraph-server:kubernetes:[Support for Kubernetes]* — Enables simple, automated deployment and scaling of software components to meet dynamic needs, lowering operational costs.
-* *xref:gsql-ref:appendix:openCypher-in-gsql.adoc[Integrates OpenCypher]* - Adds a language familiar to many developers, to speed up creating and migrating graph queries, before leaning into GSQL for advanced and high-performance graph analytics.
+* *xref:gsql-ref:appendix:openCypher-in-gsql.adoc[Integrates OpenCypher]* - [3.9.3] Adds a language familiar to many developers, to speed up creating and migrating graph queries, before leaning into GSQL for advanced and high-performance graph analytics.
 
 
 == Detailed List of New and Modified Features
@@ -51,6 +51,7 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 ** `KafkaConnect.AllowedTaskPerCPU` limits the number of concurrent kafka loading tasks.
 ** The GSQL environment variable `GPE_DSC_APPLY_TIMEOUT_MINUTE` is the maximum allowed time for dynamic schema changes (DSC).
 
+* [3.9.3] Real-time data Ingestion monitors the progress and integrity for high-speed data loading up to terabytes.
 * [3.9.3] Simplified the xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[cross-cluster restore] process by including metadata with the backup files.
 * Added a new command for `gadmin backup` to xref:3.9@tigergraph-server:backup-and-restore:backup-cluster.adoc#_back_up_a_database_cluster[control the number of backups], for better storage space management.
 * Expanded the list of xref:3.9@tigergraph-server:reference:error-codes.adoc[system response codes] to include one for an invalid vertex ID.
@@ -72,11 +73,13 @@ Streamlined the user experience for creating loading jobs for data stored in AWS
 * [3.9.2] The default mode for the Kafka Connector is `EOF="true"`
 
 ==== Schema
+* [3.9.3] xref:gsql-ref:appendix:openCypher-in-gsql.adoc[Integrates OpenCypher] to speed up creating and migrating graph queries.
 * [3.9.3] Relaxed the rules for xref:tigergraph-server:user-access:user-management.adoc[GSQL usernames].
 * Full support for xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
 multiple edges of the same type] between vertices, to simplify application design for time series data and other complex large data sets.
 
 ==== Querying and Query Management
+* [3.9.3] Added parameters for xref:tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[GPE query routing based on CPU usage]
 * `to_string()` is now a built-in GSQL function, supporting all xref:3.9@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[primitive] and xref:3.9@gsql-ref:querying:accumulators.adoc#_vertex_attached_accumulators
 [scalar accumulator] data types. This means xref:3.9@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined functions] in `Exprfunctions.hpp` may no longer use the name `to_string()` (case-insensitive).
 * Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
@@ -115,7 +118,6 @@ vertex function can also be used with vertex input parameters in the query-body 
 * [3.9.2] Added support for xref:gui:admin-portal:components/README.adoc[configuring two additional components]: GPE and Kafka.
 
 === GraphStudio
-* [3.9.3] Improved and simplified user workflow by merging the “Map Data to Graph” and “Load Data” pages into one xref:gui:graphstudio:load-data.adoc[single page].
 * [3.9.3] Added an openCypher xref:gui:graphstudio:write-open-cypher-queries-in-tigergraph.adoc[option] to the Add New Query dialog, to simplify writing and running openCypher in GraphStudio.
 * [3.9.3] Users can now xref:insights:intro:applications.adoc[share] Insights widgets and applications to third-party websites and users without a TigerGraph login via a URL token.
 * [3.9.2] Enabled GraphStudio to run on any node in a cluster, whether or not the node hosts a GUI server.
