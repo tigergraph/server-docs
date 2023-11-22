@@ -1,0 +1,70 @@
+:toc:
+= High Availability Overview
+:description: Overview of High Availability functionality and supported features.
+
+A TigerGraph system with High Availability (HA) is a cluster of server machines which uses replication.
+Allowing for the database to continue to run with minimal impact to operations until the offline nodes are restored or removed permanently.
+
+For example, an application's predefined queries will continue to run and file-based loading will continue with files resident at any of the working nodes.
+
+Additionally, incorporating HA can yield a number of other system benefits including:
+
+* Distribution of workloads across all primary and secondary nodes.
+* Data load operations to be distributed across all nodes.
+* Individual nodes to fail without impacting workloads.
+* Individual nodes can be re-paved or replaced without impacting workloads.
+
+IMPORTANT: Considerations should be placed on the following instances when a node is offline:
+
+* A file-based data load can only be loaded when the node is back online.
+* A data partition slated for a kafka-based data load, can resume once the node is back online.
+* New query installation will only resume once a node is back online; however, interpreted queries will continue as before.
+* A schema changes will return an error until the node is back online.
+* Backup and export operations continue as normal once failed nodes are back online or removed.
+
+NOTE: Workarounds to the above instances can be archived by the xref:_removal_of_failed_nodes[removal of the failing nodes].
+
+== High Availability Cluster Configuration
+
+High Availability (HA) xref:tigergraph-server:cluster-and-ha-management:ha-cluster.adoc[Cluster Configuration] provides a resilient framework with flexibility for resizing and optimizing data distribution in TigerGraph systems.
+
+Key factors include:
+
+* The replication factor.
+* The partitioning factor.
+* The cluster size.
+
+== High Availability Support for GSQL Server
+
+High Availability (HA) support for xref:tigergraph-server:cluster-and-ha-management:ha-for-gsql-server.adoc[GSQL Server] ensures robustness by allowing components to take over in case of unavailability.
+Incorporating a primary GSQL server and standby servers, collectively referred to as leaders and followers, offering HA for client connections.
+
+NOTE: It is recommended to couple this with a client-side retry logic, so failing user query will complete once the system adjusts to accommodate the failed node (typically up to 30 seconds).
+
+== High Availability Support for Application Server
+
+TigerGraph incorporates native High Availability (HA) support for its xref:tigergraph-server:cluster-and-ha-management:ha-for-application-server.adoc[application server], ensuring uninterrupted service for GraphStudio and Admin Portal APIs.
+The active-active architecture runs on the first three nodes by default, in case of server failure, users can switch to an available server within the cluster.
+
+NOTE: If the primary node is offline, access to GraphStudio is interrupted, but resumes once the primary node is back online.
+
+In the event of a server failure, users can transition to the next available server within the cluster to resume operations,
+with a reminder that any ongoing long-running operations will be lost.
+
+.Additionally, load balancing supports the following services:
+* Nginx
+* AWS Elastic Load Balancer
+* Azure Application Gateway
+* GCP External HTTP(s) Load Balancer
+
+== Cluster Commands
+
+xref:tigergraph-server:cluster-and-ha-management:cluster-commands.adoc[Advanced Linux commands] that simplify platform operations can performed by the platform owner during debugging on HA clusters.
+
+== Removal of Failed Nodes
+
+HA cluster configuration allows for the xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removal of failed nodes] without data loss, facilitating cluster maintenance and recovery.
+This feature is especially useful when addressing individual node failures or handling multiple concurrent node failures in a prepared environment, covering:
+
+* Removing a Single Node
+* Removing Multiple Nodes
