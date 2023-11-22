@@ -2,27 +2,34 @@
 = High Availability Overview
 :description: Overview of High Availability functionality and supported features.
 
-A TigerGraph system with High Availability (HA) is a cluster of server machines which uses replication.
-Allowing for the database to continue to run with minimal impact to operations until the offline nodes are restored or removed permanently.
+A TigerGraph system with High Availability (HA) is a cluster of server nodes which uses replication to provide continuous operation of most services in the event that one or more nodes is offline.
 
 For example, an application's predefined queries will continue to run and file-based loading will continue with files resident at any of the working nodes.
 
-Additionally, incorporating HA can yield a number of other system benefits including:
+Incorporating HA can yield a number of other system benefits, such as:
 
-* Distribution of workloads across all primary and secondary nodes.
-* Data load operations to be distributed across all nodes.
-* Individual nodes to fail without impacting workloads.
-* Individual nodes can be re-paved or replaced without impacting workloads.
+* The query workload is distributed across all replicas.
+* Data loading operations are distributed across all nodes.
+* Individual nodes can fail without impacting query workloads.
+* Individual nodes can be re-paved without impacting query workloads.
 
-IMPORTANT: Considerations should be placed on the following instances when a node is offline:
+NOTE: Re-pavement of a node, is the process that takes a node offline intentionally for maintenance or updates and then is brought back online.
 
-* A file-based data load can only be loaded when the node is back online.
-* A data partition slated for a kafka-based data load, can resume once the node is back online.
-* New query installation will only resume once a node is back online; however, interpreted queries will continue as before.
-* A schema changes will return an error until the node is back online.
-* Backup and export operations continue as normal once failed nodes are back online or removed.
+== HA Considerations
 
-NOTE: Workarounds to the above instances can be archived by the xref:_removal_of_failed_nodes[removal of the failing nodes].
+TigerGraph HA provides continuous operation of some but not all services.
+Please note the following exceptions and consider your options for taking additional steps to maintain continuous operation or to restore service as quickly as possible.
+
+If an HA system is operating with a failed node, unless the system is reconfigured to xref:tigergraph-server:cluster-and-ha-management:crr-index.adoc#_exclusions[exclude that node], the following services are limited or unavailable:
+
+* A file-based data load cannot be loaded.
+* A data partition slated for a kafka-based data load cannot be loaded.
+* New queries cannot be installed.
+* Schema changes are not allowed.
+* Backup and export operations are not available and will be rejected.
+
+NOTE: As a workaround, full operation can be restored temporarily by the xref:_removal_of_failed_nodes[removal of the failing nodes].
+For example, a 5 x 2 cluster with one node removed would become a 5 x 4 cluster, with only partial replication.
 
 == High Availability Cluster Configuration
 
@@ -39,7 +46,7 @@ Key factors include:
 High Availability (HA) support for xref:tigergraph-server:cluster-and-ha-management:ha-for-gsql-server.adoc[GSQL Server] ensures robustness by allowing components to take over in case of unavailability.
 Incorporating a primary GSQL server and standby servers, collectively referred to as leaders and followers, offering HA for client connections.
 
-NOTE: It is recommended to couple this with a client-side retry logic, so failing user query will complete once the system adjusts to accommodate the failed node (typically up to 30 seconds).
+NOTE: It is recommended to couple this with a client-side retry logic, so the failing user query will complete once the system adjusts to accommodate the failed node (typically up to 30 seconds).
 
 == High Availability Support for Application Server
 
