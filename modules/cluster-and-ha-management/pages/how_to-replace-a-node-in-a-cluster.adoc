@@ -1,0 +1,62 @@
+= How to Replace a Node in a Cluster
+:page-aliases: tigergraph-server:cluster-and-ha-management:how_to-replace-a-node-in-a-cluster.adoc
+:description: This page describes the procedure to replace a node in a non-ha cluster.
+
+//welcome and introduction
+The following guide is intended to show steps to replace and reduce downtime for a failed cluster that is not using High Availability (HA) [link to HA overview].
+
+Please see the xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[] for systems using HA.
+However, if the cluster is not HA, use following steps.
+
+== Prerequisites
+//List out any prerequisites
+Are there any prerequisites?
+
+== Procedure
+
+//Steps
+=== 1)
+
+On the new nodes,
+create linux user with same user name/password with your tigergraph cluster
+
+[console, gsql]
+----
+sudo useradd tigergraph
+sudo passwd tigergraph
+----
+
+On the new nodes, prepare files not in tigergraph directory
+
+[console, gsql]
+----
+~/.ssh/
+~/.tg.cfg
+~/.bashrc
+/etc/security/limits.d/98-tigergraph.conf
+----
+
+.You can copy these from any live nodes
+. Stop all service`
+. `gadmin stop all`
+. Use `gadmin stop all --ignore-errors` if the node fails
+Shut down single node
+
+Unmount the disk which tigergraph directory on from old node and mount to the new machine.
+
+.ensure disk contains these folder be correctly mounted to the new machine with same mount point.
+[console, gsql]
+----
+gadmin config get System.AppRoot --file ~/.tg.cfg
+gadmin config get System.DataRoot --file ~/.tg.cfg
+gadmin config get System.LogRoot --file ~/.tg.cfg
+gadmin config get System.TempRoot --file ~/.tg.cfg
+----
+
+Get the IP address of the new node.
+[console, gsql]
+----
+gadmin config entry System.HostList --file ~/.tg.cfg #to change the node ip
+gadmin init cluster --skip-stop
+gadmin init etcd  #if etcd node is being replaced
+----
