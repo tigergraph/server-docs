@@ -309,3 +309,10 @@ There are two modes for the Kafka Loader: EOF mode and streaming mode.
 
 Starting from v3.9.2, the default mode is EOF mode. +
 Prior to v3.9.2, the default mode was streaming mode.
+
+To set streaming mode, an optional parameter, `USING EOF="false"`  is added to the `RUN LOADING JOB` syntax:
+
+[.wrap,gsql]
+----
+RUN LOADING JOB -noprint load_company USING EOF="false"
+----
