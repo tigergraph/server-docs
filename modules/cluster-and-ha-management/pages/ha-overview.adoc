@@ -1,77 +1,53 @@
-:toc:
-= High Availability Overview
+= High Availability (HA) Overview
 :description: Overview of High Availability functionality and supported features.
 
 A TigerGraph system with High Availability (HA) is a cluster of server nodes which uses replication to provide continuous operation of most services in the event that one or more nodes is offline.
 
 For example, an application's predefined queries will continue to run and file-based loading will continue with files resident at any of the working nodes.
 
-Incorporating HA can yield a number of other system benefits, such as:
-
+.Incorporating HA can yield a number of other system benefits, such as:
 * The query workload is distributed across all replicas.
+** This includes replicas used for long-running queries or with the xref:tigergraph-server:API:built-in-endpoints.adoc#_headers[GSQL-REPLICA] header.
 * Data loading operations are distributed across all nodes.
 * Individual nodes can fail without impacting query workloads.
+** If a query does fail during a node failure the system adjusts to accommodate the failed node (typically up to 30 seconds). It is highly recommended to adopt client-side retry logic as a workaround.
 * Individual nodes can be re-paved without impacting query workloads.
 
-NOTE: Re-pavement of a node, is the process that takes a node offline intentionally for maintenance or updates and then is brought back online.
+
+NOTE: The re-pavement of a node, is an offline process that takes a node offline intentionally for maintenance or updates and then is brought back online for service.
 
 == HA Considerations
 
 TigerGraph HA provides continuous operation of some but not all services.
 Please note the following exceptions and consider your options for taking additional steps to maintain continuous operation or to restore service as quickly as possible.
 
-If an HA system is operating with a failed node, unless the system is reconfigured to xref:tigergraph-server:cluster-and-ha-management:crr-index.adoc#_exclusions[exclude that node], the following services are limited or unavailable:
-
-* A file-based data load cannot be loaded.
+.If an HA system is operating with a failed node, unless the node is recovered or the system is reconfigured to xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[exclude that node], the following services are limited or unavailable:
+* A file-based data load cannot be loaded for the failed node.
 * A data partition slated for a kafka-based data load cannot be loaded.
 * New queries cannot be installed.
 * Schema changes are not allowed.
 * Backup and export operations are not available and will be rejected.
+* If the primary node is offline, access to Graph Studio is interrupted, but resumes once the primary node is back online.
 
-NOTE: As a workaround, full operation can be restored temporarily by the xref:_removal_of_failed_nodes[removal of the failing nodes].
-For example, a 5 x 2 cluster with one node removed would become a 5 x 4 cluster, with only partial replication.
+NOTE: As a workaround, if the failed node cannot be recovered (e.g. hardware issue), full operation can be restored temporarily by the xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removal of the failing nodes].
+For example, a 5 x 2 cluster with one node removed would become a 4x2 + 1, where 1 is the data partition that is not being replicated.
 
-== High Availability Cluster Configuration
+== xref:tigergraph-server:cluster-and-ha-management:ha-cluster.adoc[High Availability Cluster Configuration]
 
-High Availability (HA) xref:tigergraph-server:cluster-and-ha-management:ha-cluster.adoc[Cluster Configuration] provides a resilient framework with flexibility for resizing and optimizing data distribution in TigerGraph systems.
+Here you will find detailed information about terminology, system requirements, and how to configure an HA cluster.
 
-Key factors include:
+== xref:tigergraph-server:cluster-and-ha-management:ha-for-gsql-server.adoc[High Availability Support for GSQL Server]
 
-* The replication factor.
-* The partitioning factor.
-* The cluster size.
+Learn how TigerGraph incorporates built-in HA for all the internal critical components.
 
-== High Availability Support for GSQL Server
+== xref:tigergraph-server:cluster-and-ha-management:ha-for-application-server.adoc[High Availability Support for Application Server]
 
-High Availability (HA) support for xref:tigergraph-server:cluster-and-ha-management:ha-for-gsql-server.adoc[GSQL Server] ensures robustness by allowing components to take over in case of unavailability.
-Incorporating a primary GSQL server and standby servers, collectively referred to as leaders and followers, offering HA for client connections.
+Here you will find detailed information about how TigerGraph supports native HA functionality for its application server, which serves the APIs for TigerGraph’s GUI - GraphStudio and Admin Portal.
 
-NOTE: It is recommended to couple this with a client-side retry logic, so the failing user query will complete once the system adjusts to accommodate the failed node (typically up to 30 seconds).
+== xref:tigergraph-server:cluster-and-ha-management:cluster-commands.adoc[Cluster Commands]
 
-== High Availability Support for Application Server
+Here platform owners can learn advanced Linux commands that simplify platform operations and can be performed during debugging on HA clusters.
 
-TigerGraph incorporates native High Availability (HA) support for its xref:tigergraph-server:cluster-and-ha-management:ha-for-application-server.adoc[application server], ensuring uninterrupted service for GraphStudio and Admin Portal APIs.
-The active-active architecture runs on the first three nodes by default, in case of server failure, users can switch to an available server within the cluster.
+== xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[Removal of Failed Nodes]
 
-NOTE: If the primary node is offline, access to GraphStudio is interrupted, but resumes once the primary node is back online.
-
-In the event of a server failure, users can transition to the next available server within the cluster to resume operations,
-with a reminder that any ongoing long-running operations will be lost.
-
-.Additionally, load balancing supports the following services:
-* Nginx
-* AWS Elastic Load Balancer
-* Azure Application Gateway
-* GCP External HTTP(s) Load Balancer
-
-== Cluster Commands
-
-xref:tigergraph-server:cluster-and-ha-management:cluster-commands.adoc[Advanced Linux commands] that simplify platform operations can performed by the platform owner during debugging on HA clusters.
-
-== Removal of Failed Nodes
-
-HA cluster configuration allows for the xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removal of failed nodes] without data loss, facilitating cluster maintenance and recovery.
-This feature is especially useful when addressing individual node failures or handling multiple concurrent node failures in a prepared environment, covering:
-
-* Removing a Single Node
-* Removing Multiple Nodes
+Here you find detailed Instructions for the removal of a failed node.
