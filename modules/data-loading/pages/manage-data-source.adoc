@@ -1,10 +1,14 @@
-= Kafka Data Source Management
+= Manage Data Sources
+:page-aliases: data-loading:kafka-loader:manage-data-source.adoc
 
-Kafka loader loading jobs use data sources, which is a type of object that you can define in a graph's schema.
+Loading jobs which using the Kafka Loader
+(from xref:data-loading:load-from-cloud.adoc[cloud storage],
+xref:data-loading:load-from-warehouse.adoc[data warehouses],
+or xref:data-loading:load-from-kafka.adoc[external Kafka])
+make use of _data sources_, objects that you define and which become part of a graph's catalog.
 Data sources are defined with a configuration file, which specify the configurations to apply to the data source.
 
 This page describes the permissions required for different operations concerning data sources, as well as how to delete a data source.
-See xref:kafka-loader/load-data.adoc#_1_define_the_data_source[Loading data with Kafka loader] for how to define a data source.
 
 == Data source operation permissions
 
@@ -19,7 +23,7 @@ The following are examples of permitted `DATA_SOURCE` operations.
 
 [source,gsql]
 ----
-GSQL > CREATE DATA_SOURCE KAFKA k1 = "/path/to/config"
+GSQL > CREATE DATA_SOURCE k1 = "/path/to/config"
 ----
 
 * Users with the `WRITE_DATASOURCE` privilege on the global scope may grant/revoke a data source to/from one or more graphs:
@@ -34,7 +38,7 @@ GSQL > REVOKE DATA_SOURCE k1 FROM GRAPH graph1, graph2
 
 [source,gsql]
 ----
-GSQL > CREATE DATA_SOURCE KAFKA k1 = "/path/to/config" FOR GRAPH test_graph
+GSQL > CREATE DATA_SOURCE k1 = "/path/to/config" FOR GRAPH test_graph
 ----
 
 [NOTE]
@@ -58,8 +62,8 @@ Below are several examples of Kafka data source `CREATE` and `DROP` commands.
 
 [source,gsql]
 ----
-GSQL > CREATE DATA_SOURCE KAFKA k1 = "/home/tigergraph/kafka.conf"
-GSQL > CREATE DATA_SOURCE KAFKA k2 = "/home/tigergraph/kafka2.conf"
+GSQL > CREATE DATA_SOURCE k1 = "/home/tigergraph/kafka.conf"
+GSQL > CREATE DATA_SOURCE k2 = "/home/tigergraph/kafka2.conf"
 
 GSQL > DROP DATA_SOURCE k1, k2
 GSQL > DROP DATA_SOURCE *
