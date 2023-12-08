@@ -37,9 +37,9 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 
 === TigerGraph Server
 * xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[]:
-** Added support for the xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc#_define_the_parameters[Parquet file format], widely used for big data.
+** Added support for the xref:3.9@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_loading_parquet_data[Parquet file format], widely used for big data.
 ** Moved data connector setup from `gadmin` to xref:3.9@tigergraph-server:data-loading:data-streaming-connector/[GSQL commmands], to better align with user personas and privileges.
-** Added xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc#_continuous_file_loading [auto-detection of new files] when in Stream mode.
+** Added xref:3.9@tigergraph-server:data-loading:load-from-cloud.adoc#_continuous_file_loading[auto-detection of new files] when in Stream mode.
 ** Significantly improved CPU usage after connector finishes data loading.
 ** Documented additional xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_system[S3 authentication configuration parameters].
 ** `/library` is a set of endpoints for showing and running template queries.
@@ -317,7 +317,7 @@ This lockup can be cleared by restarting the GSE.
 * Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
 * If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC (fixed in 3.9.1)
 * The data streaming connector does not handle NULL values; the connector may operate properly if a NULL value is submitted. Users should replace NULL with an alternate value, such as empty string "" for STRING data, 0 for INT data, etc.  (NULL is not a valid value for the TigerGraph graph data store.)
-* Automatic message removal is an Alpha feature of the Kafka connector.  It has several xref:tigergraph-server:data-loading:data-streaming-connector/index.adoc#_known_issues[known issues].
+* Automatic message removal is an Alpha feature of the Kafka connector.  It has several xref:3.9@tigergraph-server:data-loading:load-from-cloud.adoc#_known_issues_with_loading[known issues].
 * The `DATETIME` data type is not supported by the `PRINT … TO CSV` statement (fixed in 3.9.1).
 * The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
 
