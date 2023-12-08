@@ -2,10 +2,12 @@
 
 `EOF` (End-of-file) is a boolean parameter.
 The loader has two modes: streaming mode ("False") and EOF mode ("True").
-The default mode is ("True"): EOF mode.
 
-* In EOF mode, loading will stop after consuming the provided file objects, i.e, when it reaches the `EOF` character for each file object.
-* In streaming mode, the loading job remains active and keeps for new data until the job is aborted.
+Prior to version 3.9.2, the default value of `EOF` was "False".
+Beginning with 3.9.2, the default value is "True".
+
+* If `EOF` = "True" (EOF mode), loading will stop after consuming the provided file objects, i.e, when it reaches the `EOF` character for each file object.
+* If `EOF` = "False" (streaming mode), the loading job remains active and keeps for new data until the job is aborted.
 The loader can detect both new lines in existing files and new files added to the designated source folder.
 
 [NOTE]
