@@ -14,7 +14,7 @@ You have several options for data sources:
 
 * *Local Files*: Files residing on a TigerGraph server can be loaded without the need to create a GSQL DATA_SOURCE object. This option can have the highest performance.
 
-* *Outside Sources*: Loading data from an outside source, such as cloud storage, requires one additional step to first define a DATA_SOURCE object, which uses the *Kafka Connect* framework.
+* *Outside Sources*: Loading data from an outside source, such as cloud storage, requires one additional step to first define a DATA_SOURCE object, which uses the https://docs.confluent.io/platform/current/connect/index.html[Kafka Connect] framework.
 Kafka offers a distributed, fault-tolerant, real-time data pipeline with concurrency.
 By encapsulating the details of the data source connection in a DATA_SOURCE object, GSQL can treat the source like it treats a local file.
 You can use this approach for the following data sources:
