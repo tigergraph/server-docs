@@ -67,3 +67,88 @@ Running `gadmin config entry backup` allows you to enter the value for each para
 Alternatively, you can also use `gadmin config set <parameter>` to change the value of any parameter.
 
 After configuring the parameters, run `gadmin config apply` to apply the new parameter values.
+
+== Configure backup to AWS S3 Endpoint
+
+Typically, there's no need to configure the `System.Backup.S3.Endpoint` parameter on a TigerGraph Server.
+This is because the system auto-detects the regional endpoint for AWS S3 backups.
+
+.Users should configure this parameter *only* for special cases, such as:
+* When using S3 in FIPS mode.
+* When connecting to a private or localized cloud environment.
+* When integrating with an S3-compatible service that requires a specific endpoint.
+
+For more information please see https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_region[AWS Service Endpoints], generally,
+to configure backup files to an AWS S3 Bucket for an on-premise TigerGraph Server cluster, users need to complete the following steps:
+
+. Create an S3 bucket in AWS
+. Create an AWS IAM user
+. Create an IAM policy that ensures the IAM user has sufficient access to the bucket itself, and contents within the bucket
++
+[console,]
+----
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:PutObject",
+                "s3:ListBucket",
+                "s3:GetObject",
+                "s3:GetBucketLocation"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::<bucket-name>",
+                "arn:aws:s3:::<bucket-name>/*"
+            ]
+        }
+    ]
+}
+----
+
+. Create an `AccessKeyID` and `SecretAccessKey` for the IAM user
++
+Long-lived credentials are what TigerGraph clusters use to authenticate to AWS as the IAM user.
+Allowing TigerGraph access to put backup files into the S3 bucket.
+Also, to read/copy the files during the restore process.
++
+NOTE: TigerGraph does not support short-lived credentials as of TigerGraph 3.9.3.
+
+. Configure each of the following parameters on the linux command line:
++
+.Enable storing backup data in S3
+[console,]
+----
+gadmin config set "System.Backup.S3.Enable" "true"
+----
++
+.Specify bucket name
+[console,]
+----
+gadmin config set "System.Backup.S3.BucketName" "<bucket-name>"
+----
++
+.Set S3 backup AccessKeyID
+[console,]
+----
+gadmin config set "System.Backup.S3.AWSAccessKeyID" "<access-key-id>"
+----
++
+.Set S3 backup SecretAccessKey
+[console,]
+----
+gadmin config set "System.Backup.S3.AWSSecretAccessKey" "<secret-access-key>"
+----
++
+.Apply the new parameter values
+[console,]
+----
+gadmin config apply -y
+----
++
+.Restart all services
+[console,]
+----
+gadmin restart all -y
+----
