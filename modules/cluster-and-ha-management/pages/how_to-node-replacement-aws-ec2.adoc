@@ -1,0 +1,687 @@
+= How to replace a Node from Cluster on AWS EC2
+:page-aliases: tigergraph-server:cluster-and-ha-management:how_to-node-replacement-aws-ec2.adoc
+:description: This page describes the procedure to replace a node on a AWS EC2 cluster.
+
+//welcome and introduction
+This is considered an advanced topic, if you are new to TigerGraph we recommend you start with these tutorials first:
+
+* [Getting Started]
+* [GSQL 101]
+*
+
+== Prerequisites
+//List out any prerequisites
+* If you are not already, familiarize yourself with these Amazon:
+** https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html[AWS Volumes]
+** instances
+** volumes
+** File systems?
+** Detaching volumes attach volumes
+* If you are not already famlize yourself with these TigerGraph docs
+** Installation
+** Loading data
+*** Social example
+** built-in queries
+** data backup
+** GSQL Commands
+
+
+== Procedure
+
+== 1) Prepare cluster
+=== Instances
+.Create 6 instances
+[console, gsql]
+----
+aws ec2 run-instances --image-id ami-0affd4508a5d2481b --count 6 --instance-type m5.2xlarge --key-name qe_ec2 --security-group-ids sg-073a3f75e97b5a90d --subnet-id subnet-39548b18 --block-device-mapping '[{"DeviceName":"/dev/sda1", "Ebs":{"VolumeSize":10,"DeleteOnTermination":true}}]' --tag-specifications 'ResourceType=instance,Tags=[{Key=test_plan,Value=install-load-17419},{Key=owner,Value=peng.xiao},{Key=os,Value=centos7},{Key=vcpu,Value=8},{Key=memory_size,Value=32},{Key=created_from,Value=release-pipeline},{Key=Name,Value=install-load-17419_0928004117},{Key=last_start_time,Value=2023-10-12-00-41-17}]' --query 'Instances[*].[InstanceId]' --output text
+----
+
+.Instance Info:
+[cols="3"]
+|===
+| Instance ID | HostID | Private IP
+| i-03d300cf7a4e7a45a | m1 | 172.31.92.8
+| i-0345e0475c5c26595 | m2 | 172.31.91.127
+| i-0e11b21b765260a14 | m3 | 172.31.94.151
+| i-0a7c89e23169b35ad | new m1 | 172.31.89.25
+| i-0a25bb1907a504a15 | new m2 | 172.31.93.15
+| i-01675efc662017cd6 | new m3 | 172.31.91.10
+|===
+
+=== Volumes
+.Create 3 volumes
+[console, gsql]
+----
+aws ec2 create-volume --availability-zone us-east-1a --size 50 --volume-type gp2
+----
+
+[cols="2"]
+|===
+| Volume ID | Target Host
+| vol-03cf9eb49cab9b401 | m1
+| vol-0bc519d8fb9424f5f | m2
+| vol-076508f0f488ee58b | m3
+|===
+
+== Attach and Mount Volumes
+
+Do these steps for m1~m3
+
+.Attach volumes
+[console, gsql]
+----
+aws ec2 attach-volume --volume-id vol-076508f0f488ee58b --instance-id i-0e11b21b765260a14 --device /dev/sdf
+----
+
+.Output:
+[console,]
+----
+{
+"AttachTime": "2023-10-12T08:56:11.389Z",
+"Device": "/dev/sdf",
+"InstanceId": "i-0e11b21b765260a14",
+"State": "attaching",
+"VolumeId": "vol-076508f0f488ee58b"
+}
+----
+
+.Get device name
+[console, gsql]
+----
+sudo fdisk -l
+----
+
+Output:
+[console,]
+----
+[centos@ip-172-31-92-8 ~]$ sudo fdisk -l
+
+Disk /dev/nvme0n1: 10.7 GB, 10737418240 bytes, 20971520 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk label type: dos
+Disk identifier: 0x000b723c
+
+        Device Boot      Start         End      Blocks   Id  System
+/dev/nvme0n1p1   *        2048    20971486    10484719+  83  Linux
+
+Disk /dev/nvme1n1: 53.7 GB, 53687091200 bytes, 104857600 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+----
+
+You should be able to see the volume you attached here.
+
+== Create file system
+
+.Create filesystem on the volume
+[console, gsql]
+----
+sudo mkfs -t xfs /dev/nvme1n1
+----
+
+Mount volume
+[console, gqsl]
+----
+sudo mkdir /data
+sudo mount /dev/nvme1n1 /data
+sudo chmod 777 /data
+----
+
+== Install TG
+
+.Modify RootDir
+[console, gsql]
+----
+"RootDir": {
+"AppRoot": "/data/tigergraph/app",
+"DataRoot": "/data/tigergraph/data",
+"LogRoot": "/data/tigergraph/log",
+"TempRoot": "/data/tigergraph/tmp"
+},
+----
+
+.And NodeList and SSH config
+[console, gsql]
+----
+"NodeList": [
+"m1: 172.31.92.8",
+"m2: 172.31.91.127",
+"m3: 172.31.94.151"
+]
+----
+
+Then
+[console, gsql]
+----
+./install.sh -n
+----
+
+Load some data and run builtin query
+[console, gsql]
+----
+[tigergraph@ip-172-31-91-127 sample]$ gsql load.gsql
+Using graph 'social'
+[Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS <jobid>" to track the loading progress again]
+[Tip: Manage loading jobs with "ABORT/RESUME LOADING JOB <jobid>"]
+Running the following loading job:
+Job name: load_social
+Jobid: social.load_social.file.m2.1697106377109
+Log directory: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697106377109
+Job "social.load_social.file.m2.1697106377109" loading status
+Current timestamp is 2023-10-12 10:26:22.619
+Loading status was last updated at 2023-10-12 10:26:17.607.
+[FINISHED] m2 ( Finished: 2 / Total: 2 )
++-------------------------------------------------------------------------------------------------------+
+|                    FILENAME |   LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION |   PERCENTAGE|
+|tigergraph/sample/friend.csv |      43 |        42 |        1 |      <1 l/s |     0.20 s |        100 %|
+|tigergraph/sample/person.csv |      57 |        56 |        1 |      <1 l/s |     0.10 s |        100 %|
++-------------------------------------------------------------------------------------------------------+
+[WARNING] bad data in m2 /home/tigergraph/sample/friend.csv:friendship: 1 object(s) have invalid attributes.
+[WARNING] bad data in m2 /home/tigergraph/sample/person.csv:person: 1 object(s) have invalid attributes.
+The source data used in the loading job has errors. Check the summary file located in
+/data/tigergraph/log/fileLoader/social.load_social.file.m2.1697106377109 for an example of failed lines.
+LOAD SUCCESSFUL for loading jobid: social.load_social.file.m2.1697106377109
+Job ID: social.load_social.file.m2.1697106377109
+Elapsed time: 0 sec
+Log directory: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697106377109
+Summary: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697106377109/summary
+
+[tigergraph@ip-172-31-91-127 ~]$ gstatusgraph
+=== graph ===
+[GRAPH  ] Graph was loaded (/data/tigergraph/data/gstore):
+[m1     ] Partition size: 4.2KiB, IDS size: 69KiB, Vertex count: 15, Edge count: 16, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[m2     ] Partition size: 4.8KiB, IDS size: 69KiB, Vertex count: 14, Edge count: 27, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[m3     ] Partition size: 5.5KiB, IDS size: 63KiB, Vertex count: 27, Edge count: 39, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
+
+[tigergraph@ip-172-31-91-127 ~]$ curl -X GET "http://localhost:9000/graph/social/vertices/person/Tom"
+{"version":{"edition":"enterprise","api":"v2","schema":1},"error":false,"message":"","results":[{"v_id":"Tom","v_type":"person","attributes":{"name":"Tom","age":40,"gender":"male","state":"ca"}}]}
+----
+
+[console, gsql]
+----
+[tigergraph@ip-172-31-91-127 ~]$ gsql -g social
+
+Please take the following steps to improve your TG system security:
+* Change default tigergraph user's password
+
+Welcome to TigerGraph.
+GSQL > select * from person limit 3
+[
+  {
+    "v_id": "Kevin5",
+    "v_type": "person",
+    "attributes": {
+      "name": "Kevin5",
+      "age": 28,
+      "gender": "male",
+      "state": "az"
+    }
+  },
+  {
+    "v_id": "Amily5",
+    "v_type": "person",
+    "attributes": {
+      "name": "Amily5",
+      "age": 22,
+      "gender": "female",
+      "state": "ca"
+    }
+  },
+  {
+    "v_id": "Amily8",
+    "v_type": "person",
+    "attributes": {
+      "name": "Amily8",
+      "age": 22,
+      "gender": "female",
+      "state": "ca"
+    }
+  }
+]
+----
+
+== Backup none-TG dir files
+Backup these files to all volumes
+
+[console, gsql]
+----
+cp -pr ~/.ssh/ /data/backup/
+cp -p ~/.tg.cfg /data/backup
+cp -p ~/.bashrc /data/backup
+cp -p /etc/security/limits.d/98-tigergraph.conf /data/backup
+----
+
+== Replace machine
+
+.Stop all service
+[console, gsql]
+----
+gadmin stop all
+----
+
+== Prepare new node
+
+=== Detach and attach
+
+.detach volume on m1
+[console,]
+----
+aws ec2 detach-volume --volume-id vol-03cf9eb49cab9b401
+----
+
+.attach volume to new m1
+[console,]
+----
+aws ec2 attach-volume --volume-id vol-03cf9eb49cab9b401 --instance-id i-0a7c89e23169b35ad --device /dev/sdf
+----
+
+.mount volume
+[console,]
+----
+sudo mkdir /data
+sudo mount /dev/nvme1n1 /data
+sudo chmod 777 /data
+----
+
+=== Create TG user
+
+[console,]
+----
+sudo useradd tigergraph
+sudo passwd tigergraph
+----
+
+=== Restore backup files
+
+[console,]
+----
+TG user
+cp -r /data/backup/.ssh/ /home/tigergraph/
+cp /data/backup/.bashrc /home/tigergraph/
+cp /data/backup/.tg.cfg /home/tigergraph/
+# Sudo user
+sudo cp /data/backup/98-tigergraph.conf /etc/security/limits.d/
+----
+
+== Reinit cluster
+
+//Explain the Reinit command here
+//This step we update the host list in config and let every service update the config.
+// (Since the new nodes have different IP from old nodes)
+
+[console, gsql]
+----
+gadmin config entry System.HostList --file ~/.tg.cfg
+gadmin init cluster --skip-stop
+gadmin init etcd
+----
+
+.Output:
+[console, gsql]
+----
+[tigergraph@ip-172-31-91-127 ~]$ gadmin config entry System.HostList --file ~/.tg.cfg
+
+System.HostList [ [{"Hostname":"172.31.92.8","ID":"m1","Region":""},{"Hostname":"172.31.91.127","I...(too long to show the full content, please use 'gadmin config get System.HostList' to get it) ]: The aliases and hostnames/IPs for nodes
+New: [{"Hostname":"172.31.89.25","ID":"m1","Region":""},{"Hostname":"172.31.91.127","ID":"m2","Region":""},{"Hostname":"172.31.94.151","ID":"m3","Region":""}]
+[tigergraph@ip-172-31-91-127 ~]$ gadmin init cluster --skip-stop
+[   Info] Starting EXE
+[   Info] Starting CTRL
+[   Info] Generating config files to all machines
+[   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+[   Info] Initializing KAFKA
+[   Info] Starting EXE
+[   Info] Starting CTRL
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 IFM GUI
+[   Info] Applying config
+[   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+[   Info] Cluster is initialized successfully
+[tigergraph@ip-172-31-91-127 ~]$ gadmin init etcd
+[   Note] This will restore ETCD data directories with snapshots of etcd keyspace.
+Are you sure you wish to continue? (y/N)y
+[   Info] Initializing ETCD
+[   Info] Stopping CTRL
+[   Info] Starting CTRL
+----
+
+== Verify new cluster
+
+.Query
+[console, gsql]
+----
+[tigergraph@ip-172-31-91-127 ~]$ gstatusgraph
+=== graph ===
+[GRAPH  ] Graph was loaded (/data/tigergraph/data/gstore):
+[m1     ] Partition size: 4.2KiB, IDS size: 141KiB, Vertex count: 15, Edge count: 16, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[m2     ] Partition size: 4.8KiB, IDS size: 142KiB, Vertex count: 14, Edge count: 27, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[m3     ] Partition size: 5.5KiB, IDS size: 133KiB, Vertex count: 27, Edge count: 39, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
+
+[tigergraph@ip-172-31-91-127 ~]$ gsql -g social
+
+Please take the following steps to improve your TG system security:
+* Change default tigergraph user's password
+
+Welcome to TigerGraph.
+GSQL > select * from person limit 3
+[
+  {
+    "v_id": "Jack6",
+    "v_type": "person",
+    "attributes": {
+      "name": "Jack6",
+      "age": 26,
+      "gender": "male",
+      "state": "fl"
+    }
+  },
+  {
+    "v_id": "Jack4",
+    "v_type": "person",
+    "attributes": {
+      "name": "Jack4",
+      "age": 26,
+      "gender": "male",
+      "state": "fl"
+    }
+  },
+  {
+    "v_id": "Jack5",
+    "v_type": "person",
+    "attributes": {
+      "name": "Jack5",
+      "age": 26,
+      "gender": "male",
+      "state": "fl"
+    }
+  }
+]
+----
+
+.Loading
+[console, gsql]
+----
+[tigergraph@ip-172-31-91-127 sample]$ gsql load.gsql
+Using graph 'social'
+[Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS <jobid>" to track the loading progress again]
+[Tip: Manage loading jobs with "ABORT/RESUME LOADING JOB <jobid>"]
+Running the following loading job:
+Job name: load_social
+Jobid: social.load_social.file.m2.1697118499490
+Log directory: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697118499490
+Job "social.load_social.file.m2.1697118499490" loading status
+Current timestamp is 2023-10-12 13:48:20.306
+Loading status was last updated at 2023-10-12 13:48:20.002.
+[FINISHED] m2 ( Finished: 2 / Total: 2 )
++-------------------------------------------------------------------------------------------------------+
+|                    FILENAME |   LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION |   PERCENTAGE|
+|tigergraph/sample/friend.csv |      43 |        42 |        1 |      <1 l/s |     0.20 s |        100 %|
+|tigergraph/sample/person.csv |      57 |        56 |        1 |      <1 l/s |     0.10 s |        100 %|
++-------------------------------------------------------------------------------------------------------+
+[WARNING] bad data in m2 /home/tigergraph/sample/friend.csv:friendship: 1 object(s) have invalid attributes.
+[WARNING] bad data in m2 /home/tigergraph/sample/person.csv:person: 1 object(s) have invalid attributes.
+The source data used in the loading job has errors. Check the summary file located in
+/data/tigergraph/log/fileLoader/social.load_social.file.m2.1697118499490 for an example of failed lines.
+LOAD SUCCESSFUL for loading jobid: social.load_social.file.m2.1697118499490
+Job ID: social.load_social.file.m2.1697118499490
+Elapsed time: 1 sec
+Log directory: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697118499490
+Summary: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697118499490/summary
+----
+
+.Configs
+[console, gsql]
+----
+[tigergraph@ip-172-31-89-25 ~]$ gssh | grep nodes
+#cluster.nodes: m1:172.31.89.25,m2:172.31.91.127,m3:172.31.94.151
+
+[tigergraph@ip-172-31-89-25 conf]$ cat zoo.cfg | grep server
+server.1=172.31.89.25:2888:3888
+server.2=172.31.91.127:2888:3888
+server.3=172.31.94.151:2888:3888
+
+[tigergraph@ip-172-31-91-127 conf]$ cat server.properties | grep zookeeper.connect
+zookeeper.connect=172.31.89.25:19999,172.31.91.127:19999,172.31.94.151:19999
+
+[tigergraph@ip-172-31-89-25 etcd]$ ./etcdctl --endpoints=172.31.89.25:20000 member list
+a4e2638403a4796f, started, ETCD#2, http://172.31.91.127:20001, http://172.31.91.127:20000
+ca02e3c7a09d5564, started, ETCD#3, http://172.31.94.151:20001, http://172.31.94.151:20000
+d078c0026a644669, started, ETCD#1, http://172.31.89.25:20001, http://172.31.89.25:20000
+----
+
+.Repeat replace machine steps to replace m2 and m3
+[console, gsql]
+----
+[tigergraph@ip-172-31-89-25 ~]$ gadmin config entry System.HostList --file ~/.tg.cfg
+
+System.HostList [ [{"Hostname":"172.31.89.25","ID":"m1","Region":""},{"Hostname":"172.31.91.127","...(too long to show the full content, please use 'gadmin config get System.HostList' to get it) ]: The aliases and hostnames/IPs for nodes
+New: [{"Hostname":"172.31.89.25","ID":"m1","Region":""},{"Hostname":"172.31.93.15","ID":"m2","Region":""},{"Hostname":"172.31.94.151","ID":"m3","Region":""}]
+
+[tigergraph@ip-172-31-89-25 ~]$ gadmin config entry System.HostList --file ~/.tg.cfg
+
+System.HostList [ [{"Hostname":"172.31.89.25","ID":"m1","Region":""},{"Hostname":"172.31.93.15","I...(too long to show the full content, please use 'gadmin config get System.HostList' to get it) ]: The aliases and hostnames/IPs for nodes
+New: [{"Hostname":"172.31.89.25","ID":"m1","Region":""},{"Hostname":"172.31.93.15","ID":"m2","Region":""},{"Hostname":"172.31.91.10","ID":"m3","Region":""}]
+----
+
+.Verify again
+[console, gsql]
+----
+[tigergraph@ip-172-31-89-25 ~]$ gssh | grep nodes
+#cluster.nodes: m1:172.31.89.25,m2:172.31.93.15,m3:172.31.91.10
+
+curl -X GET "http://localhost:9000/graph/social/vertices/person/Tom"
+{"version":{"edition":"enterprise","api":"v2","schema":1},"error":false,"message":"","results":[{"v_id":"Tom","v_type":"person","attributes":{"name":"Tom","age":40,"gender":"male","state":"ca"}}]}
+
+[tigergraph@ip-172-31-89-25 ~]$ gstatusgraph
+=== graph ===
+[GRAPH  ] Graph was loaded (/data/tigergraph/data/gstore):
+[m1     ] Partition size: 4.2KiB, IDS size: 152KiB, Vertex count: 15, Edge count: 16, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[m2     ] Partition size: 4.8KiB, IDS size: 153KiB, Vertex count: 14, Edge count: 27, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[m3     ] Partition size: 5.5KiB, IDS size: 140KiB, Vertex count: 27, Edge count: 39, NumOfDeletedVertices: 0 NumOfSkippedVertices: 0
+[WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
+----
+
+[console, gsql]
+----
+[tigergraph@ip-172-31-89-25 ~]$ gadmin status -v
++--------------------+-------------------------+-------------------------+-------------------------+
+|    Service Name    |     Service Status      |      Process State      |       Process ID        |
++--------------------+-------------------------+-------------------------+-------------------------+
+|      ADMIN#1       |         Online          |         Running         |          28537          |
+|      ADMIN#2       |         Online          |         Running         |          29370          |
+|      ADMIN#3       |         Online          |         Running         |          29301          |
+|       CTRL#1       |         Online          |         Running         |          30099          |
+|       CTRL#2       |         Online          |         Running         |          30965          |
+|       CTRL#3       |         Online          |         Running         |          30804          |
+|       DICT#1       |         Online          |         Running         |          27781          |
+|       DICT#2       |         Online          |         Running         |          28618          |
+|       DICT#3       |         Online          |         Running         |          28530          |
+|       ETCD#1       |         Online          |         Running         |          30079          |
+|       ETCD#2       |         Online          |         Running         |          30950          |
+|       ETCD#3       |         Online          |         Running         |          30786          |
+|       EXE_1        |         Online          |         Running         |          30182          |
+|       EXE_2        |         Online          |         Running         |          27191          |
+|       EXE_3        |         Online          |         Running         |          27122          |
+|      GPE_1#1       |         Online          |         Running         |          28586          |
+|      GPE_2#1       |         Online          |         Running         |          29426          |
+|      GPE_3#1       |         Online          |         Running         |          29315          |
+|      GSE_1#1       |         Online          |         Running         |          28548          |
+|      GSE_2#1       |         Online          |         Running         |          29383          |
+|      GSE_3#1       |         Online          |         Running         |          29302          |
+|       GSQL#1       |         Online          |         Running         |          29037          |
+|       GSQL#2       |         Online          |         Running         |          29972          |
+|       GSQL#3       |         Online          |         Running         |          29612          |
+|       GUI#1        |         Online          |         Running         |          29432          |
+|       GUI#2        |         Online          |         Running         |          30401          |
+|       GUI#3        |         Online          |         Running         |          29986          |
+|       IFM#1        |         Online          |         Running         |          29246          |
+|       IFM#2        |         Online          |         Running         |          30260          |
+|       IFM#3        |         Online          |         Running         |          29790          |
+|      KAFKA#1       |         Online          |         Running         |          30344          |
+|      KAFKA#2       |         Online          |         Running         |          27375          |
+|      KAFKA#3       |         Online          |         Running         |          27304          |
+|    KAFKACONN#1     |         Online          |         Running         |          28731          |
+|    KAFKACONN#2     |         Online          |         Running         |          29607          |
+|    KAFKACONN#3     |         Online          |         Running         |          29375          |
+|   KAFKASTRM-LL_1   |         Online          |         Running         |          28639          |
+|   KAFKASTRM-LL_2   |         Online          |         Running         |          29485          |
+|   KAFKASTRM-LL_3   |         Online          |         Running         |          29318          |
+|      NGINX#1       |         Online          |         Running         |          28561          |
+|      NGINX#2       |         Online          |         Running         |          29394          |
+|      NGINX#3       |         Online          |         Running         |          29305          |
+|      RESTPP#1      |         Online          |         Running         |          28597          |
+|      RESTPP#2      |         Online          |         Running         |          29436          |
+|      RESTPP#3      |         Online          |         Running         |          29316          |
+|     TS3SERV#1      |         Online          |         Running         |          28884          |
+|       TS3_1        |         Online          |         Running         |          29119          |
+|       TS3_2        |         Online          |         Running         |          30102          |
+|       TS3_3        |         Online          |         Running         |          29675          |
+|        ZK#1        |         Online          |         Running         |          30212          |
+|        ZK#2        |         Online          |         Running         |          27247          |
+|        ZK#3        |         Online          |         Running         |          27180          |
++--------------------+-------------------------+-------------------------+-------------------------+
+----
+
+.Change config and make a backup
+[console, gsql]
+----
+[tigergraph@ip-172-31-89-25 ~]$ gadmin config entry System.Backup
+
+System.Backup.TimeoutSec [ 18000 ]: The backup timeout in seconds
+New: 18000
+[   Info] no changes for System.Backup.TimeoutSec
+
+System.Backup.CompressProcessNumber [ 10 ]: The number of concurrent processes for compression during backup. Value 0 means the number of processes used to compress equals the node CPU's cores.
+New: 10
+[   Info] no changes for System.Backup.CompressProcessNumber
+
+System.Backup.DecompressProcessNumber [ 8 ]: The number of concurrent processes for decompression during the restore.
+New: 8
+[   Info] no changes for System.Backup.DecompressProcessNumber
+
+System.Backup.CompressionLevel [ DefaultCompression ]: The backup compression level("BestSpeed", "DefaultCompression", "BestCompression"), default is DefaultCompression, it strikes a balance between size and speed. The better compression, the longer it takes.
+New: DefaultCompression
+[   Info] no changes for System.Backup.CompressionLevel
+
+System.Backup.Local.Enable [ false ]: Backup data to local path
+New: true
+
+System.Backup.Local.Path [  ]: The path to store the backup files
+New: /data/backup
+
+System.Backup.S3.Enable [ false ]: Backup data to S3 path
+New: false
+[   Info] no changes for System.Backup.S3.Enable
+
+System.Backup.S3.AWSAccessKeyID [ <masked> ]: The AWS access key ID for s3 bucket of backup
+New:
+[   Info] no changes for System.Backup.S3.AWSAccessKeyID
+
+System.Backup.S3.AWSSecretAccessKey [ <masked> ]: The secret access key for s3 bucket
+[Warning] Please use @filepath to set value of System.Backup.S3.AWSSecretAccessKey in interactive mode, or leave it empty to skip
+New:
+[   Info] no changes for System.Backup.S3.AWSSecretAccessKey
+
+System.Backup.S3.BucketName [  ]: The S3 bucket name
+New:
+[   Info] no changes for System.Backup.S3.BucketName
+
+System.Backup.S3.Endpoint [  ]: An alternative S3 endpoint URL (a fully qualified URI, such as https://s3.amazonaws.com/) that overrides the default endpoint for the S3 client. Note that this needs to be set only when in a private network or you are talking to a non-AWS S3-compatible endpoint. In most cases, it can be left empty to use the default S3 endpoint.
+New:
+[   Info] no changes for System.Backup.S3.Endpoint
+
+System.Backup.Scheduler.Enable [ false ]: Schedule automatic backup (System.Backup.Local.Enable or System.Backup.S3.Enable should be enabled).The default scheduling policy is daily run at 12:00 AM UTC (not customizable for on-prem env)
+New: false
+[   Info] no changes for System.Backup.Scheduler.Enable
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+[tigergraph@ip-172-31-89-25 ~]$ gadmin config apply -y
+[   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+[tigergraph@ip-172-31-89-25 ~]$ gadmin restart all
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 IFM GUI
+[   Info] Stopping CTRL
+[   Info] Stopping EXE
+[   Info] Starting EXE
+[   Info] Starting CTRL
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 IFM GUI
+[tigergraph@ip-172-31-89-25 ~]$ gadmin backup create
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Tag is backup-2023-10-12T143024
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Backup timeout is 18000 seconds
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Backup path: /data/backup/backup-2023-10-12T143024
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Staging path: /data/tigergraph/data/backup/backup-2023-10-12T143024 (shared: false)
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Created backup directories
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Begin to check needed disk space...
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Exporting GSQL data... (async)
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Exporting GPE data... (async)
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] Exporting GUI data... (async)
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] GUI exported
+[   Info] [Thu Oct 12 14:30:24 UTC 2023] GSQL exported
+[   Info] [Thu Oct 12 14:30:27 UTC 2023] Exporting GSE data... (async)
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] GSE exported
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] GPE exported
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculating the raw size of the exported data...
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculate the raw size of GPE_3_1
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculate the raw size of GSE_2_1
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculate the raw size of GUI
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculate the raw size of GSQL
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculate the raw size of GSE_1_1
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculate the raw size of GPE_1_1
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculate the raw size of GSE_3_1
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Calculate the raw size of GPE_2_1
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving exported data...
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving GSE_3_1 data
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving GPE_3_1 data
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving GPE_1_1 data
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving GSQL data
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving GUI data
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving GPE_2_1 data
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving GSE_2_1 data
+[   Info] [Thu Oct 12 14:30:28 UTC 2023] Archiving GSE_1_1 data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculating the file size of the archives...
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculate the file size of GSQL.tgdat data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculate the file size of GUI.tgdat data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculate the file size of GPE_1_1.tgdat data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculate the file size of GSE_1_1.tgdat data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculate the file size of GSE_3_1.tgdat data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculate the file size of GPE_2_1.tgdat data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculate the file size of GPE_3_1.tgdat data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Calculate the file size of GSE_2_1.tgdat data
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Saving the backup metadata...
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Backup completes, backup files are under the path: /data/backup/backup-2023-10-12T143024
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Clean staging directory: /data/tigergraph/data/backup/backup-2023-10-12T143024
+[   Info] [Thu Oct 12 14:30:29 UTC 2023] Clean staging directory /data/tigergraph/data/backup/backup-2023-10-12T143024 successfully
+----
+
+.Load
+[console, gsql]
+----
+[tigergraph@ip-172-31-93-15 sample]$ gsql load.gsql
+Using graph 'social'
+[Tip: Use "CTRL + C" to stop displaying the loading status update, then use "SHOW LOADING STATUS <jobid>" to track the loading progress again]
+[Tip: Manage loading jobs with "ABORT/RESUME LOADING JOB <jobid>"]
+Running the following loading job:
+Job name: load_social
+Jobid: social.load_social.file.m2.1697121105096
+Log directory: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697121105096
+Job "social.load_social.file.m2.1697121105096" loading status
+Current timestamp is 2023-10-12 14:31:51.085
+Loading status was last updated at 2023-10-12 14:31:45.774.
+[FINISHED] m2 ( Finished: 2 / Total: 2 )
++-------------------------------------------------------------------------------------------------------+
+|                    FILENAME |   LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION |   PERCENTAGE|
+|tigergraph/sample/friend.csv |      43 |        42 |        1 |      <1 l/s |     0.10 s |        100 %|
+|tigergraph/sample/person.csv |      57 |        56 |        1 |      <1 l/s |     0.10 s |        100 %|
++-------------------------------------------------------------------------------------------------------+
+[WARNING] bad data in m2 /home/tigergraph/sample/friend.csv:friendship: 1 object(s) have invalid attributes.
+[WARNING] bad data in m2 /home/tigergraph/sample/person.csv:person: 1 object(s) have invalid attributes.
+The source data used in the loading job has errors. Check the summary file located in
+/data/tigergraph/log/fileLoader/social.load_social.file.m2.1697121105096 for an example of failed lines.
+LOAD SUCCESSFUL for loading jobid: social.load_social.file.m2.1697121105096
+Job ID: social.load_social.file.m2.1697121105096
+Elapsed time: 1 sec
+Log directory: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697121105096
+Summary: /data/tigergraph/log/fileLoader/social.load_social.file.m2.1697121105096/summary
+----
