@@ -1,0 +1,62 @@
+= How to Replace a Node in a Cluster
+:page-aliases: tigergraph-server:cluster-and-ha-management:how_to-replace-a-node-in-a-cluster.adoc
+:description: This page describes the procedure to replace a node in a non-ha cluster.
+
+//welcome and introduction
+This guide outlines the procedure for replacing a node in a non-High Availability (HA) cluster. If your system uses xref:ha-overview.adoc[High Availability], refer to the documentation on removing a failed node in xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[].
+
+== Procedure
+//steps
+. Create a Linux User on New Nodes:
++
+Create a Linux user with the same username/password as your TigerGraph cluster.
++
+[console, gsql]
+----
+sudo useradd tigergraph
+sudo passwd tigergraph
+----
++
+. Prepare Files on New Nodes:
++
+Prepare the following files not in the TigerGraph directory. These can be copied from any live nodes.
++
+[console, gsql]
+----
+~/.ssh/
+~/.tg.cfg
+~/.bashrc
+/etc/security/limits.d/98-tigergraph.conf
+----
+. Stop All Services:
+Stop all services using the command:
++
+[console, gsql]
+----
+gadmin stop all
+----
+Use `gadmin stop all --ignore-errors` if the node fails
+. Shut Down Single Node:
++
+Shut down the single node to be replaced.
+. Unmount and Mount Disk:
++
+Unmount the disk containing the TigerGraph directory from the old node and mount it to the new machine. Ensure the disk contains the required folders correctly mounted to the new machine with the same mount point.
++
+[console, gsql]
+----
+gadmin config get System.AppRoot --file ~/.tg.cfg
+gadmin config get System.DataRoot --file ~/.tg.cfg
+gadmin config get System.LogRoot --file ~/.tg.cfg
+gadmin config get System.TempRoot --file ~/.tg.cfg
+----
+. Get the IP Address of the New Node:
++
+Retrieve the IP address of the new node using the following commands:
++
+[console, gsql]
+----
+gadmin config entry System.HostList --file ~/.tg.cfg #to change the node ip
+gadmin init cluster --skip-stop
+gadmin init etcd  #if etcd node is being replaced
+----
