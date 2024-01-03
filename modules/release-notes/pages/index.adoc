@@ -5,6 +5,8 @@
 :toc:
 :toclevels:2
 
+TigerGraph Server {page-component-version}.3-2 LTS was released on January [], 2024.
+
 TigerGraph Server {page-component-version}.3-1 LTS was released on December 5th, 2023.
 
 TigerGraph Server {page-component-version}.3 LTS was released on November 7th, 2023.
@@ -144,6 +146,14 @@ vertex function can also be used with vertex input parameters in the query-body 
 * Added a mini-map to the xref:3.9@insights:widgets:graph-widget.adoc[graph widgets] for easier navigation.
 
 == Fixed issues
+
+=== Fixed and Improved in 3.9.3-2
+
+==== Functionality
+* Fixed issue where an external Kafka loading records, 7 days or older, would fall short of the topic offset (TP-4604).
+* Fixed issue when a deleted vertex type would make `policy_filter_index` very large (GLE-6290).
+* Fixed issue where `gsql --precompile` encountered an `Authentication failed` error during an upgrade if the TigerGraph password was not the default (GLE-6371).
+* Fixed issue where GSQL APIs would encounter occasional slowness due to `initSession` in `BaseInternalHandler` not synchronizing (GLE-6347).
 
 === Fixed and Improved in 3.9.3-1
 
