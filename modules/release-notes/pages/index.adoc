@@ -5,7 +5,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server {page-component-version}.3-2 LTS was released on January [], 2024.
+TigerGraph Server {page-component-version}.3-2 LTS was released on January 9th, 2024.
 
 TigerGraph Server {page-component-version}.3-1 LTS was released on December 5th, 2023.
 
@@ -306,6 +306,11 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
 == Known Issues
+* If the `FROM` clause pattern is a multi-hop and the `ACCUM` clause reads both primitive and container type attributes or accumulators of a vertex, the internal query rewriting logic may generate an invalid rewritten output.
+Resulting in the error message: `It is not allowed to mix primitive types and accumulator types in GroupByAccum`.
+* Users may see a high CPU usage caused by Kafka prefetching when there is no query or posting request.
+* GSQL query compiler may report a false error for a valid query using a vertex set variable (e.g. `Ent` in `reverse_traversal_syntax_err`) to specify the midpoint or target vertex of a path in a FROM clause pattern.
+
 * In 3.9.3, if a loading job is expected to load from a large batch of files or Kafka queues (e.g. more than 500), the job’s status may not be updated for an extended period of time. In this case, users should check the loader log file as an additional reference for loading status.
 * In 3.9.3, when a GPE/GSE is turned off right after initiating a loading job, the loading job is terminated internally. However, users may still observe the loading job as running on their end. Please see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Troubleshooting Loading Job Delays] for additional details.
 * GSQL `EXPORT GRAPH` may fail and cause a GPE to crash when UDT type has a fixed STRING size.
