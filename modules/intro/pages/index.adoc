@@ -3,8 +3,9 @@
 :page-aliases: introduction.adoc
 
 //Introduction and Welcome
-TigerGraph, the world's fastest and most scalable graph analytics platform, breaks through the limitations of other graph technologies to enable real-time big data graph applications. 
-Lowering costs by getting more done with less storage, less memory, and less time.
+The TigerGraph Platform runs on standard, commodity-grade Linux servers and is designed in C++ to fit into your existing environment with a minimum of fuss.
+Compare what is included in the Enterprise Edition vs. TigerGraph Cloud of the TigerGraph platform.
+
 
 To keep up-to-date on key new features of the most recent LTS versions of TigerGraph, please see:
 
@@ -14,75 +15,91 @@ To keep up-to-date on key new features of the most recent LTS versions of TigerG
 NOTE: To view the documentation of a particular TigerGraph version, use the dropdown in the upper left to pick a specific version.
 
 == Get to Know Your TigerGraph DB
-[.home-card,cols="2,2",grid=none,frame=none]
+[.home-card,cols="3,3,3",grid=none,frame=none]
 |===
 a|
-*Internal Architecture*
+image:ArchtectureOverview-homecard.png[alt=ArchtectureOverview,width=74,height=74]
+*Architecture*
 
-The TigerGraph Platform runs on standard, commodity-grade Linux servers and is designed in C++ to fit into your existing environment with a minimum of fuss.
+Learn what's behind the platform.
 
-xref:internal-architecture.adoc[]
-a|
-*Multi-graph Overview*
-
-One TigerGraph instance can manage multiple graphs, each with its own set of user privileges.
-
-xref:multigraph-overview.adoc[Multi-graph Overview]
+xref:internal-architecture.adoc[Internal Architecture ↗]
+xref:multigraph-overview.adoc[Multi-graph ↗]
+xref:transaction-and-acid.adoc[Transaction and ACID ↗]
 
 a|
-*ACID Transactions*
+image:getstarted-homecard.png[alt=getstarted,width=74,height=74]
+*Get Started*
 
-The TigerGraph distributed database provides full ACID transactions with sequential consistency.
+Step-by-step guides to help you get up and running.
 
-xref:transaction-and-acid.adoc[]
-
-a|
-*Continuous Availability*
-
-TigerGraph goes beyond the standard scope and definition of High Availability (HA) and provides Continuous Availability.
-
-xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc[],
-xref:continuous-availability-overview.adoc[]
+xref:tigergraph-server:getting-started:index.adoc[Get Started ↗]
+xref:tigergraph-server:getting-started:docker.adoc[Docker ↗]
+xref:tigergraph-server:getting-started:cloud-images/index.adoc[Cloud Images ↗]
 
 a|
-*Comparing Editions*
+image:installation-homecard.png[alt=installation,width=74,height=74]
+*Installation*
 
-Compare what is included in the Enterprise Edition vs. TigerGraph Cloud of the TigerGraph platform.
+Learn what you need to install TigerGraph.
 
-xref:comparison-of-editions.adoc[]
-a|
-*Release and Patch Process*
-
-We create a new branch of documentation for every major and minor release.
-
-xref:release-process.adoc[Release and Patch Process].
+xref:tigergraph-server:installation:bare-metal-install.adoc[]
+xref:tigergraph-server:installation:hw-and-sw-requirements.adoc[]
 
 a|
-|===
+image:systemconig-homecard.png[alt=systemconig,width=74,height=74]
+*System Config*
 
-Go hands on with TigerGraph in the xref:tigergraph-server:getting-started:index.adoc[Getting Started] documentation.
-Or explore more of TigerGraph DB's key components below.
+Learn how to manage clusters and setup high availability (HA).
 
-== Key Components
-[.home-card,cols="2,2",grid=none,frame=none]
-|===
+xref:tigergraph-server:cluster-and-ha-management:index.adoc[Overview ↗]
+xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc[High Availability ↗]
+
 a|
+image:security-homecard.png[alt=security,width=74,height=74]
+*User Access Management*
+
+Learn about TigerGraphs role-based access control (RBAC) model and other security access features.
+
+xref:tigergraph-server:user-access:index.adoc[User Access Management ↗]
+xref:tigergraph-server:security:index.adoc[Security ↗]
+
+a|
+image:systemmanagment-homecard.png[alt=useraccess,width=74,height=74]
+*Operations Mgmt*
+
+Understand `gadmin` the tool for managing TigerGraph servers and how to setup system backups.
+
+xref:tigergraph-server:system-management:management-with-gadmin.adoc[System Management ↗]
+xref:tigergraph-server:backup-and-restore:index.adoc[Backup and Restore ↗]
+
+a|
+
+*Data Loading*
+
+Learn how to load data into a TigerGraph system.
+
+xref:tigergraph-server:data-loading:index.adoc[]
+
+a|
+image:designdatbase-homecard.png[alt=designdatbase,width=74,height=74]
+*Designing a Database, Designing Loading Jobs, Writing Queries*
+
+xref:tigergraph-server:gsql-shell:index.adoc[]
+
 *GSQL Language*
 
 The xref:gsql-ref:intro:index.adoc[GSQL™] software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis.
 
-a|
-*Data Science Library*
-
-TigerGraph provides a xref:graph-ml:intro:index.adoc[Graph Data Science Library] of expertly written GSQL queries that efficiently implement common graph algorithms.
 
 a|
-*Admin Portal and GraphStudio*
+image:documentation-homecard.png[alt=relaseAndPatchProcess,width=74,height=74]
+*Release and Patch Process*
 
-xref:gui:intro:index.adoc[] are TigerGraph's graphic user interfaces (GUI).
+We create a new branch of documentation for every major and minor release.
 
+xref:release-process.adoc[Release and Patch Process]
 a|
-*TigerGraph Cloud*
-
-xref:cloud:start:overview.adoc[] is a fully-managed cloud database built on the same TigerGraph Enterprise Server engine that is delivering the fastest and most scalable graph database.
 |===
+
+
