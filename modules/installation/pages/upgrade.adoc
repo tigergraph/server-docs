@@ -139,47 +139,34 @@ If you want to upgrade your Cloud Marketplace image from v2.x on any cloud platf
 
 == Known Issues and Workarounds
 
-When coming from older releases, we want to take as many preventative steps to update our UDF files to 3.9.0.
+Several things may have changed between your current release and 3.9.x and these steps should help to upgrade the UDF file before starting the upgrade process or prepare users to address anything that may come up as a result of the upgrade.
 
-Several things may have changed between your current release and 3.9.0 and these steps should help to upgrade the UDF file before starting the upgrade process or prepare you to address anything that may come up as a result of the upgrade.
+=== to_string() function is now a built-in function:
 
+In previous releases, `to_string()` was included in the default `ExprFunctions` file and is a common utility function added to the `ExprFunctions` file.
+Now that it is added as a built-in function, it is no longer needed in the `ExprFunctions` file.
+
+=== tg_ is now a reserved keyword
+
+Please rename the corresponding functions in: `ExprFunctions.hpp`.
+This is to avoid naming collisions with queries.
+TigerGraph uses the `tg_` prefix to denote functions provided by TigerGraph.
+Users can either rename, remove, or comment out any functions in their `ExprFunctions` file that contain this prefix and avoid prefixing future functions with this reserved prefix.
 
 === UDF file policy
 
-possible links
-
-Security - TigerGraph Server
-
-In addition to the above changes, there is a new UDF File Policy.
 It is recommended that users consult with the entire policy.
-This policy is enforced through UDF file scanning to ensure there are none of the following (see the link above for more details on the file output policy):
+This policy is enforced through:
+https://docs.tigergraph.com/tigergraph-server/current/security/#_udf_file_scanning[UDF File Scanning].
 
-Macros with replacement
+This is to ensure there are none of the following:
 
-Headers/Includes from potentially vulnerable C++ features
+* Macros with replacement
+* Headers/Includes from potentially vulnerable C++ features
 
-Users can, at their own discretion, add C++ headers to an allow list through a config in gadmin
-
-they can also just disable the policy after upgrade, so the restrictions won’t take effect.
-
-=== ExprFunctions.hpp defined following GSQL built-in functions:[to_string] ,
-
-(fixed with auto remove, user don't need extra work in 3.10)
-Insert Workaround for previous releases and any applicable links to current documentation
-
-this is current behavior.
-step 1 the original ExprFunctions.hpp produces a copy under same folder named with ExprFunctions.hpp+timestamp
-step 2 the to_string functions (including the function header and body) will be completely deleted from ExprFunctions.hpp
-That's what's been done for to_string functions during upgrade.
-previously the customer will stuck at upgrade process since to_string is not allowed to use in ExprFunctions.hpp starting from 3.9.x version
-Please feel free to contact me if you any other questions. Thanks.
-
+Users can, at their own discretion, add C++ headers to an allow list through a config in `gadmin`.
+Additionally, user can also disable the file policy after upgrade, so the restrictions won’t take effect.
 
 === Input/output file policy
 
-Insert Workaround and any applicable links to current documentation
-
-this will require user to either modify existing queries/loading jobs, or modify file input/output policy after upgrade
-
-=== Other issues
-{Insert Workaround and any applicable links to current documentation}
+Users to either modify existing queries/loading jobs, or modify file input/output policy after upgrade.
