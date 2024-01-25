@@ -185,7 +185,13 @@ This is to ensure there are none of the following:
 If the header file is not included in our default `allowlist`, users can, at their own discretion, add C++ headers to an `allowlist`.
 Users are free to edit the `allowlist` via `gadmin` config set `GSQL.UDF.Policy.HeaderAllowlist`.
 +
-Additionally, user can also disable a file policy after an upgrade, so the restrictions won’t take effect.
+Additionally, users can also disable a file policy after an upgrade with this command:
++
+[source,]
+----
+gadmin config set GSQL.UDF.Policy.Enable false
+----
+This is so the restrictions won’t take effect.
 
 ==== What to do:
 
@@ -200,7 +206,7 @@ GSQL restricts where a query can produce output to files through a file output p
 Sometimes users can encounter a issue with this policy after an upgrade.
 
 ==== What to do:
-After an upgrade users should:
+Before (recommended) or after an upgrade users should:
 
 . Change or use different constant paths for queries and loading jobs that do *not* violate policy.
 
