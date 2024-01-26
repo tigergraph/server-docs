@@ -125,7 +125,7 @@ For detailed upgrade procedures, see our support article on the
 link:https://tigergraph.zendesk.com/hc/en-us/articles/8173584319892-2-6-x-to-3-x-upgrade-flow[2.6.x to 3.x upgrade flow]
 
 [[upgrading-cloud-marketplace-image]]
-== Upgrading Cloud Marketplace images
+== Upgrading Cloud Marketplace Images
 
 === Upgrading from 3.x
 
@@ -136,3 +136,70 @@ link:https://tigergraph.zendesk.com/hc/en-us/articles/8173584319892-2-6-x-to-3-x
 === Upgrading from 2.x
 
 If you want to upgrade your Cloud Marketplace image from v2.x on any cloud platform, please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket]. for instructions and assistance.
+
+== Known Issues and Workarounds
+
+Several things may have changed between your current release and 3.9.x and these steps should help to upgrade the UDF file before starting the upgrade process or prepare users to address anything that may come up as a result of the upgrade.
+
+=== `to_string()` Function is Now a Built-in Function:
+
+In previous releases, `to_string()` was included in the default `ExprFunctions` file and is a common utility function added to the `ExprFunctions` file.
+
+==== What To Do:
+
+Users need to rename or remove UDFs that are called `to_string()`.
+Now, that it is added as a built-in function users are no longer needing to include the `ExprFunctions` file.
+
+For more reference on how to prepare for an upgrade please refer back to the section: xref:tigergraph-server:installation:upgrade.adoc#_before_you_begin[Before You Begin].
+
+=== `tg_` is Now a Reserved Keyword
+
+TigerGraph uses the `tg_` prefix to denote functions provided by TigerGraph.
+
+==== What to do:
+
+Users can either rename, remove, or comment out any functions in their `ExprFunctions` file that contain this prefix.
+Additionally, users should avoid prefixing future functions with this reserved prefix.
+This is to avoid naming collisions with queries.
+
+For more reference on how to prepare for an upgrade please refer back to the section: xref:tigergraph-server:installation:upgrade.adoc#_before_you_begin[Before You Begin].
+
+=== UDF File Policy
+
+There is some UDF enforcement taking place.
+The UDF files are scanned to make sure they comply with the file policy.
+This is to ensure there are none of the following:
+
+. *Macros with a `replacement`.*
++
+.Example:
+[source,]
+#define TABLE_SIZE 100
++
+.Notice the macro without `replacement` is allowed
+[source,]
+#define EXPRFUNCTIONS_HPP_
+
+. *`Headers` and `Includes` from potentially vulnerable C++ features*
++
+If the header file is not included in our default `allowlist`, users can, at their own discretion, add C++ headers to an `allowlist`.
+Users are free to edit the `allowlist` via `gadmin` config set `GSQL.UDF.Policy.HeaderAllowlist`.
++
+Additionally, users can also disable a file policy after an upgrade with this command:
++
+[source,]
+----
+gadmin config set GSQL.UDF.Policy.Enable false
+----
+This is so the restrictions won’t take effect.
+
+==== What to do:
+
+It is recommended that users consult with the entire policy and adjust the UDF files to comply with the file policy.
+
+For more reference please see:
+https://docs.tigergraph.com/tigergraph-server/current/security/#_udf_file_scanning[UDF File Scanning].
+
+=== Other issues
+
+For any other issues encountered please contact support@tigergraph.com.
