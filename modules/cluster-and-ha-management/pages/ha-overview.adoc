@@ -5,7 +5,8 @@ A TigerGraph system with High Availability (HA) is a cluster of server nodes whi
 
 For example, an application's predefined queries will continue to run and file-based loading will continue with files resident at any of the working nodes.
 
-.Incorporating HA can yield a number of other system benefits, such as:
+Incorporating HA can yield a number of other system benefits, such as:
+
 * The query workload is distributed across all replicas.
 ** This includes replicas used for long-running queries or with the xref:tigergraph-server:API:built-in-endpoints.adoc#_headers[GSQL-REPLICA] header.
 * Data loading operations are distributed across all nodes.
@@ -35,7 +36,8 @@ NOTE: However, new interpreted and any existing queries can still be executed.
 
 * If the primary node is offline, access to Graph Studio is *interrupted*, but resumes once the primary node is back online.
 
-NOTE: As a workaround, if the failed node cannot be recovered (e.g. hardware issue), full operation can be restored temporarily by the xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removal of the failing nodes].
+NOTE: As a workaround, if the failed node cannot be recovered (e.g. hardware issue), full operation can be restored temporarily by the xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removal of the failing nodes] or
+xref:tigergraph-server:cluster-and-ha-management:how_to-replace-a-node-in-a-cluster.adoc[replacing a node].
 For example, a 5 x 2 cluster with one node removed would become a 4x2 + 1, where 1 is the data partition that is not being replicated.
 
 == xref:tigergraph-server:cluster-and-ha-management:ha-cluster.adoc[High Availability Cluster Configuration]
