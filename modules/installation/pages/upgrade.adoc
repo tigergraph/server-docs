@@ -141,14 +141,14 @@ If you want to upgrade your Cloud Marketplace image from v2.x on any cloud platf
 
 Several things may have changed between your current release and 3.9.x and these steps should help to upgrade the UDF file before starting the upgrade process or prepare users to address anything that may come up as a result of the upgrade.
 
-=== `to_string()` Function is Now a Built-in Function:
+=== `to_string()` is Now a Built-in Function:
 
 In previous releases, `to_string()` was included in the default `ExprFunctions` file and is a common utility function added to the `ExprFunctions` file.
 
 ==== What To Do:
 
 Users need to rename or remove UDFs that are called `to_string()`.
-Now, that it is added as a built-in function users are no longer needing to include the `ExprFunctions` file.
+Now, that it is added as a built-in function users are no longer needing to include it in the `ExprFunctions` file.
 
 For more reference on how to prepare for an upgrade please refer back to the section: xref:tigergraph-server:installation:upgrade.adoc#_before_you_begin[Before You Begin].
 
@@ -191,7 +191,7 @@ Additionally, users can also disable a file policy after an upgrade with this co
 ----
 gadmin config set GSQL.UDF.Policy.Enable false
 ----
-This is so the restrictions won’t take effect.
+This is so the restrictions will not take effect.
 
 ==== What to do:
 
