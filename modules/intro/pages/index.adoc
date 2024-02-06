@@ -1,102 +1,124 @@
-= TigerGraph Server
+= Welcome to TigerGraph DB
 :description:This page provides a brief overview of TigerGraph's key features, the GSQL language, versioning, and internal architecture.
 :page-aliases: introduction.adoc
 
-TigerGraph, the world's fastest and most scalable graph analytics platform, breaks through the limitations of other graph technologies to enable real-time big data graph applications. 
+//Introduction and Welcome
+The TigerGraph Platform runs on standard, commodity-grade Linux servers and is designed in C++ to fit into your existing environment with minimum fuss.
 
-It also lowers cost by getting more done with less storage, less memory, and less time.
+To keep up-to-date on key new features of the most recent LTS versions of TigerGraph, please see:
 
-== Key New Features in TigerGraph 3.9 LTS (xref:release-notes:index.adoc[Release Notes])
+* xref:release-notes:index.adoc[Release Notes - TigerGraph 3.9]
+* xref:3.6@tigergraph-server:release-notes:index.adoc[Release Notes - TigerGraph 3.6]
 
-=== 3.9.0
-* *xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[Multiple edges of the same type between vertices]* - Simplifies application design for time series data and other complex large data sets
-* *xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[Data streaming connector]* - Simplifies and unifies setup for data loading, employs robust Kafka-based design, supports cloud-hosted data sources in many formats, including Parquet
-* *Improved monitoring and logging* - Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
+NOTE: To view the documentation of a particular TigerGraph version, please see xref:tigergraph-server:additional-resources:legacy-tg-versions.adoc[].
 
-=== 3.9.3
-* *xref:gsql-ref:ddl-and-loading:managing-loading-job.adoc[Real-time data Ingestion Monitoring]* - Improved stability and performance of real-time loading job status updates for high speed and volume data.
-* *xref:tigergraph-server:system-management:workload-management.adoc[Workload Management]* — Automatically assigns query tasks to the least-busy resources to maximize productivity by adding parameters xref:tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[based on CPU usage]
-* *xref:tigergraph-server:kubernetes:[Support for Kubernetes]* — Enables simple, automated deployment and scaling of software components to meet dynamic needs, lowering operational costs.
-* *xref:gsql-ref:appendix:openCypher-in-gsql.adoc[Integrates OpenCypher]* - Adds a language familiar to many developers, to speed up creating and migrating graph queries, before leaning into GSQL for advanced and high-performance graph analytics.
+== Get to Know Your TigerGraph DB
+[.home-card,cols="2",grid=none,frame=none, separator=¦ ]
+|===
+¦
+image:getstarted-homecard.png[alt=getstarted,width=74,height=74]
+*Get Started*
+
+Step-by-step guides to help you get up and running.
+
+xref:tigergraph-server:installation:hw-and-sw-requirements.adoc[System Requirements |]
+xref:tigergraph-server:getting-started:index.adoc[Get Started |]
+xref:tigergraph-server:gsql-shell:index.adoc[The GSQL Shell]
+
+¦
+image:installation-homecard.png[alt=installation,width=74,height=74]
+*Installation*
+
+Learn what you need to install TigerGraph.
+
+xref:tigergraph-server:installation:bare-metal-install.adoc[Bare Metal |]
+xref:tigergraph-server:getting-started:docker.adoc[On Docker |]
+xref:tigergraph-server:getting-started:cloud-images/index.adoc[On Cloud Marketplace]
+
+¦
+image:designdatbase-homecard.png[alt=designdatbase,width=74,height=74]
+*Create Database*
+
+Learn how to design a database, create loading jobs and write queries.
+
+xref:tigergraph-server:getting-started:database-definition.adoc[Database Definition |]
+xref:multigraph-overview.adoc[Multi-graph |]
+xref:gsql-ref:intro:index.adoc[GSQL Language Reference]
+
+¦
+image:DataLoading-Homecard.png[alt=dataloading,width=74,height=74]
+*Load Data*
+
+Learn how to load and export data into a TigerGraph system.
+
+xref:tigergraph-server:data-loading:index.adoc[Data Loading |]
+xref:tigergraph-server:backup-and-restore:database-import-export.adoc[]
+
+|===
+
+== Advanced Topics
+[.home-card,cols="2",grid=none,frame=none, separator=¦ ]
+|===
+¦
+image:systemmanagment-homecard.png[alt=useraccess,width=74,height=74]
+*Operations Mgmt*
+
+Understand `gadmin` the tool for managing TigerGraph servers and how to setup system backups.
+
+xref:tigergraph-server:system-management:management-with-gadmin.adoc[System Management |]
+xref:tigergraph-server:backup-and-restore:index.adoc[Backup and Restore ]
+
+¦
+image:security-homecard.png[alt=security,width=74,height=74]
+*User Access Mgmt*
+
+Learn about TigerGraph's role-based access control (RBAC) model and other security access features.
+
+xref:tigergraph-server:user-access:index.adoc[User Access Management |]
+xref:tigergraph-server:security:index.adoc[Security ]
+
+¦
+image:systemconig-homecard.png[alt=systemconig,width=74,height=74]
+*System Config*
+
+Learn how to manage clusters and setup high availability (HA).
+
+xref:tigergraph-server:cluster-and-ha-management:index.adoc[Overview |]
+xref:tigergraph-server:cluster-and-ha-management:crr-index.adoc[Cross-Region Replication |]
+xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc[High Availability ]
+
+¦
+image:ArchtectureOverview-homecard.png[alt=ArchtectureOverview,width=74,height=74]
+*Architecture*
+
+Go deeper and learn what's behind the platform.
+
+xref:internal-architecture.adoc[Internal Architecture |]
+xref:transaction-and-acid.adoc[Transaction and ACID |]
+xref:tigergraph-server:intro:continuous-availability-overview.adoc[]
+
+¦
+image:TG_Icon_Library-08.png[alt=ArchtectureOverview,width=74,height=74]
+*Kubernetes (Preview)*
+
+Learn how deploy TigerGraph single servers and clusters using Kubernetes. (Currently in Preview)
 
 
-== Key Components
-=== GSQL
-The GSQL™ software program is the TigerGraph comprehensive environment for designing graph schemas, loading and managing data to build a graph, and querying the graph to perform data analysis.  In short, TigerGraph users do most of their work via the GSQL program. 
+xref:tigergraph-server:kubernetes:index.adoc[Kubernetes |]
+xref:tigergraph-server:kubernetes:k8s-operator/index.adoc[]
 
-To learn more about GSQL, see the xref:gsql-ref:intro:index.adoc[GSQL Language Reference].
+¦
+image:documentation-homecard.png[alt=ArchtectureOverview,width=74,height=74]
+*Additional Resources*
 
-=== TigerGraph Data Science Library
-TigerGraph provides a collection of expertly written GSQL queries that efficiently implement common graph algorithms.
-For more information, see xref:graph-ml:intro:index.adoc[TigerGraph Graph Data Science Library].
+Explore additional resources to find our troubleshooting guide and other references.
 
-=== GraphStudio and Admin Portal
-GraphStudio and Admin Portal are TigerGraph's Graphic User Interfaces. 
+xref:tigergraph-server:troubleshooting:troubleshooting-guide.adoc[Troubleshooting Guide |]
+xref:tigergraph-server:reference:glossary.adoc[Glossary |]
+xref:tigergraph-server:reference:ports.adoc[List of Ports |]
+xref:tigergraph-server:reference:configuration-parameters.adoc[Configuration Parameters]
 
-The TigerGraph GraphStudio™ UI (User Interface) provides an intuitive, browser-based interface that helps users get started quickly with graph-based application development tasks: designing a graph schema, creating a schema mapping, loading data, exploring the graph, and writing GSQL queries. 
+¦
+|===
 
-The TigerGraph Admin Portal is a browser-based devops tool which provides users an overview of a running TigerGraph system, from an application and infrastructure point of view. It also allows the users to configure the TigerGraph system through a user-friendly interface. 
-
-To learn more about GraphStudio and Admin Portal, see xref:gui:graphstudio:overview.adoc[GraphStudio and Admin Portal].
-
-=== TigerGraph Cloud
-TigerGraph Cloud is a fully-managed cloud database built on the same TigerGraph Enterprise Server engine that is delivering the fastest and most scalable graph database.
-TigerGraph Cloud handles all the complexity of deploying and managing your deployments on the cloud service provider of your choice (AWS, Azure, and GCP).
-
-For more information, see xref:cloud:start:overview.adoc[].
-
-=== Versioning
-TigerGraph uses https://en.wikipedia.org/wiki/Software_versioning[sequence-based identifiers]. 
-Versions are numbered in the format `MAJOR.MINOR.PATCH`:
-
-* `MAJOR` version releases indicate the most significant full releases.
-* `MINOR` version releases indicate less significant releases.
-* `PATCH` version releases indicate backward compatible bug fixes.
-
-We create a new branch of documentation for every major and minor release.
-To view the documentation of a particular TigerGraph version, use either of the version selectors in the upper right or lower left corners of the page.
-
-For a more detailed description of the TigerGraph release process, please see the xref:release-process.adoc[Release and Patch Process] section of the documentation.
-
-== Architecture overview
-The TigerGraph Platform runs on standard, commodity-grade Linux servers. 
-The core components of the Graph Storage Engine (GSE) and the Graph Processing Engine (GPE) are implemented in C++ for optimal performance. TigerGraph is designed to fit into your existing environment with a minimum of fuss.
-
-* Data Sources: The platform includes a flexible, high-performance data loader which can stream in tabular or semi-structured data, while the system is online.
-* Infrastructure : The platform is available for on-premises, cloud, or hybrid use.
-* Integration : REST APIs are provided to integrate your TigerGraph with your existing enterprise data infrastructure and workflow.
-
-The TigerGraph system uses a message-passing design to coordinate the activities of the components. RESTPP, an enhanced RESTful server, is central to the task management. Users can choose how they wish to interact with the system:
-
-* *GSQL client*: One TigerGraph instance can support multiple GSQL clients, on remote nodes.
-* *GraphStudio*: Our intuitive graphical user interface, which provides most of the basic GSQL functionality.
-* *REST API*: Enterprise applications which need to run the same queries many times can maximize their efficiency by communicating directly with RESTPP.
-* *gAdmin* is used for system administration.
-
-== Key features
-=== High performance
-TigerGraph provides high-performance data ingestion and querying. In particular:
-
-* Fast data loading speed to build graphs - able to load 50 to 150 GB of data per hour, per machine.
-* Fast execution of parallel graph algorithms - able to traverse hundreds of million of vertices/edges per second, per machine.
-* Real-time updates and inserts using REST - able to stream 2B+ daily events in real-time to a graph with 100B+ vertices and 600B+ edges on a cluster of only 20 commodity machines.
-* Ability to unify real-time analytics with large scale offline data processing - the first and only such system.
-
-=== Rich query language
-TigerGraph's GSQL is a turing-complete language for the exploration and analysis of large scale graphs. 
-
-=== Continuous Availability
-TigerGraph goes beyond the standard scope and definition of High Availability (HA) and provides Continuous Availability with the following functionality: 
-
-* Fault tolerance against loss of database server(s) 
-** Automated recovery of services for Intra-cluster failure
-* Full native HA support for user-facing applications 
-** Seamless automatic client reconnection to standby GSQL server and GraphStudio servers 
-* Failover to remote cluster during Disaster Recovery
-* Improve RoI with additional Replicas
-** Enhanced Query Throughput performance
-** Increased concurrency for operational workloads
-
-=== ACID transactions
-The TigerGraph distributed database provides full ACID transactions with sequential consistency.
 
