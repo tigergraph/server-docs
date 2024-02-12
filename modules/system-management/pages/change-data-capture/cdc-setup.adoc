@@ -1,6 +1,8 @@
 = CDC Setup
 :TOC:
 
+When using the CDC feature, a “CDC service” running in GPE nodes will process data updates ("deltas") and write CDC messages to the external Kafka maintained by the user.
+
 [IMPORTANT]
 ====
 Users are required to establish and manage an external Kafka service independently from TigerGraph.
@@ -156,10 +158,16 @@ $KAFKA_ROOT/bin/kafka-topics.sh --bootstrap-server $MYIP:9092 --delete \ --topic
 
 . Setup TigerGraph CDC service
 +
-Now, to start the CDC service in TigerGraph use the setup configuration commands.
+Now, start the CDC service in TigerGraph.
++
+.Use the setup configuration commands as followed.
++
+[console]
+----
 System.CDC.ProducerConfig
 System.CDC.TopicConfig
 System.CDC.Enable
+
 MYIP=127.0.0.1
 echo -e "bootstrap.servers=$MYIP:9092\nenable.idempotence=true" > /home/tigergraph/test_cdc/cdc_producer_config
 
@@ -170,17 +178,32 @@ gadmin config set System.CDC.TopicConfig "/home/tigergraph/test_cdc/cdc_topic_co
 gadmin config set System.CDC.Enable true
 gadmin config apply
 gadmin restart gpe restpp
-3. Test TigerGraph CDC service
-3.1 Make an update to data
-Now, once the service is up and running, test it with data modifications to an existing graph through statements like update, running custom or built-in queries, or running a loading job.
-
-If an existing graph is not available, create a new graph by following TigerGraph’s GSQL 101 tutorial documentation and using the provided example graphs data.
-3.2 Check CDC messages
-To consume and display CDC messages, run:
+----
++
+. Test TigerGraph CDC service
++
+Once the service is up and running, test it, by making an update to an existing graph with xref:3.9@gsql-ref:querying:data-modification-statements.adoc[].
++
+Statements like:
++
+* xref:3.9@gsql-ref:querying:data-modification-statements.adoc#_update_statement[Update]
+* Running a custom or xref:3.9@gsql-ref:tutorials:gsql-101/built-in-select-queries.adoc[built-in query]
+* Running a xref:tigergraph-server:API:built-in-endpoints.adoc#_loading_jobs[loading job].
++
+[NOTE]
+====
+If an existing graph is not available, create a new graph by following TigerGraph’s xref:3.9@gsql-ref:tutorials:gsql-101/index.adoc[] tutorial documentation and using the provided xref:3.9@gsql-ref:appendix:example-graphs.adoc[] data.
+====
++
+. Lastly, check CDC messages.
++
+.To consume and display CDC messages, run:
+[console]
+----
 KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1 MYIP=127.0.0.1
 
-$KAFKA_ROOT/bin/kafka-console-consumer.sh --topic cdc_topic --from-beginning --bootstrap-server $MYIP:9092
-
+KAFKA_ROOT/bin/kafka-console-consumer.sh --topic cdc_topic --from-beginning --bootstrap-server $MYIP:9092
+----
 
 
 == Other Configuration Settings Table
