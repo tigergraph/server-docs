@@ -5,307 +5,78 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server {page-component-version}.3-2 LTS was released on January 16th, 2024.
-
-TigerGraph Server {page-component-version}.3-1 LTS was released on December 5th, 2023.
-
-TigerGraph Server {page-component-version}.3 LTS was released on November 7th, 2023.
-
-TigerGraph Server {page-component-version}.2-1 LTS was released on October 10, 2023.
-
-TigerGraph Server {page-component-version}.2 LTS was released on June 29, 2023.
-
-TigerGraph Server {page-component-version}.1 LTS was released on March 22, 2023.
-
-TigerGraph Server {page-component-version}.0 LTS was released on February 28th, 2023.
+TigerGraph Server {page-component-version} LTS was released on Febuary 28th, 2024.
 
 LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
 
-
 == Key New Features
+=== 3.10.1
+* xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc[Change Data Capture (CDC)] - This equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems maintained by the user.
 
-=== 3.9.0
-* *xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[Multiple edges of the same type between vertices]* - Simplifies application design for time series data and other complex large data sets
-* *xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[Data streaming connector]* - Simplifies and unifies setup for data loading, employs robust Kafka-based design, supports cloud-hosted data sources in many formats, including Parquet
-* *Improved monitoring and logging* - Facilitates better workload management for xref:3.9@gui:admin-portal:monitoring/queries.adoc[queries] and xref:3.9@gsql-ref:ddl-and-loading:managing-loading-job.adoc[loading jobs].
-
-=== 3.9.3
-* *xref:gsql-ref:ddl-and-loading:managing-loading-job.adoc[Real-time data Ingestion Monitoring]* - Improved stability and performance of real-time loading job status updates for high speed and volume data.
-* *xref:tigergraph-server:system-management:workload-management.adoc[Workload Management]* — Automatically assigns query tasks to the least-busy resources to maximize productivity by adding parameters xref:tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[based on CPU usage]
-* *xref:tigergraph-server:kubernetes:[Support for Kubernetes]* — Enables simple, automated deployment and scaling of software components to meet dynamic needs, lowering operational costs.
-* *xref:gsql-ref:openCypher-in-gsql:openCypher-in-gsql.adoc[Integrates OpenCypher]* - Adds a language familiar to many developers, to speed up creating and migrating graph queries, before leaning into GSQL for advanced and high-performance graph analytics.
 
 == Detailed List of New and Modified Features
 
 === TigerGraph Server
-* xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[]:
-** Added support for the xref:3.9@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_loading_parquet_data[Parquet file format], widely used for big data.
-** Moved data connector setup from `gadmin` to xref:3.9@tigergraph-server:data-loading:data-streaming-connector/[GSQL commmands], to better align with user personas and privileges.
-** Added xref:3.9@tigergraph-server:data-loading:load-from-cloud.adoc#_continuous_file_loading[auto-detection of new files] when in Stream mode.
-** Significantly improved CPU usage after connector finishes data loading.
-** Documented additional xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_system[S3 authentication configuration parameters].
-** `/library` is a set of endpoints for showing and running template queries.
-** `/showdelayedlistall` shows how many queries are in the Workflow Manager's delay queue.
-** `:14240/informant/metrics` replaces `:9167/metrics`
-** `/informant/metrics/get/{metrics_category}` provides filterable JSON formatted system performance metrics.
-** [3.9.2] The filter for `/informant/metrics/get/cpu-memory` now accepts a list of ServiceDescriptors instead of a single ServiceDescriptor.
-** [3.9.2] `/gsqlserver/gsql/clear-store` is equivalent to `GSQL CLEAR GRAPH STORE -HARD`
-** [3.9.3] Added MirrorMaker (xref:tigergraph-server:data-loading:data-streaming-connector/kafka.adoc[external Kafka]) as a new type of GSQL data source.
-** [3.9.3] Added new REST parameter `/allowExisting` to the `POST /requestoken` xref:tigergraph-server:API:built-in-endpoints.adoc[endpoint].
-
-* Added or changed xref:3.9@tigergraph-server:reference:configuration-parameters.adoc[configuration parameters]:
-** `KafkaConnect.AllowedTaskPerCPU` limits the number of concurrent kafka loading tasks.
-** The GSQL environment variable `GPE_DSC_APPLY_TIMEOUT_MINUTE` is the maximum allowed time for dynamic schema changes (DSC).
-** [3.9.3] xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_system[Added parameters] `System.Backup.DecompressProcessNumber` and `System.Backup.CompressionLevel` to adjust the compression level of backups.
-
-* Added a new command for `gadmin backup` to xref:3.9@tigergraph-server:backup-and-restore:backup-cluster.adoc#_back_up_a_database_cluster[control the number of backups], for better storage space management.
-* Expanded the list of xref:3.9@tigergraph-server:reference:error-codes.adoc[system response codes] to include one for an invalid vertex ID.
-* Improved the backend security infrastructure for the Kafka loader.
-* [3.9.2] Changed the default retention times for the
-xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_informant[Informant.RetentionPeriodDay] and
-xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_ts3[TS3.RetentionPeriodDay] configuration parameters from 30 days to 7 days, to reduce disk consumption and improve system history query performanace.
-* [3.9.3] Real-time data Ingestion monitors the progress and integrity for high-speed data loading up to terabytes.
-* [3.9.3] Simplified the xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[cross-cluster restore] process by including metadata with the backup files.
+* TBD
 
 === GSQL Command and Querying Language
+* TBD
 
 ==== Loading
 
-* Moved xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[data connector] setup from `gadmin` to GSQL.
-Streamlined the user experience for creating loading jobs for data stored in AWS, GCP, and Azure, directly integrating the data streaming connector with GSQL and reducing the steps needed to load data.
-** Introduced a new `STREAM` data loading type that simplifies the xref:3.9@tigergraph-server:data-loading:index.adoc[data loading process] from remote data storage.
-* Added a new set of loading job xref:3.9@gsql-ref:ddl-and-loading:functions/token/index.adoc[token functions for string manipulation].
-* [3.9.2] Added configuration parameter xref:tigergraph-server:reference:configuration-parameters.adoc#_kafkaconnect[`KafkaConnect.AllowedTaskPerCPU`] to set a maximum number of concurrent connector tasks.
-* [3.9.2] The default mode for the Kafka Connector is `EOF="true"`
-* [3.9.3] xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_max_percent_error_mpe[Added `-max_percent_error`] option to `RUN LOADING JOB` to automatically abort the job if the number of invalid data lines exceeds the given threshold.
-
 ==== Schema
-* Full support for xref:3.9@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[
-multiple edges of the same type] between vertices, to simplify application design for time series data and other complex large data sets.
-* [3.9.3] xref:gsql-ref:openCypher-in-gsql:openCypher-in-gsql.adoc[Integrates OpenCypher] to speed up creating and migrating graph queries.
-* [3.9.3] Relaxed the rules for xref:tigergraph-server:user-access:user-management.adoc[GSQL usernames].
-* [3.9.3] `FUNCTION`, `ROW`, `POLICY` added to xref:gsql-ref:appendix:keywords-and-reserved-words.adoc#_reserved_word_list[reserved words list].
 
 ==== Querying and Query Management
-* `to_string()` is now a built-in GSQL function, supporting all xref:3.9@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[primitive] and xref:3.9@gsql-ref:querying:accumulators.adoc#_vertex_attached_accumulators
-[scalar accumulator] data types. This means xref:3.9@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined functions] in `Exprfunctions.hpp` may no longer use the name `to_string()` (case-insensitive).
-* Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
-* Standardized `SHOW PACKAGE` for xref:3.9@graph-ml:using-an-algorithm:index.adoc[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
-* [3.9.2] `outdegree`
-xref:gsql-ref:querying:func/vertex-methods.adoc[vertex function]
-vertex function can also be used with vertex input parameters in the query-body statements, not only with SELECT block vertex aliases.
-* [3.9.3] Added parameters for xref:tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[GPE query routing based on CPU usage]
-
-//=== JDBC Spark Connector
-//
-//* [Alex] Added support for loading job monitoring on xref:3.9@data-loading:spark-connection-via-jdbc-driver.adoc[JDBC Spark connector] loading jobs.
-//* [Alex] Added the ability to assign a specific job ID to a JDBC loading job.
-//* [Alex] Added error limiting parameters to JDBC loading jobs to cancel loading automatically when errors surpass a certain threshold.
 
 === Kubernetes Operator
-* Enhanced the functionality of the xref:3.9@kubernetes:k8s-operator/index.adoc[] so it is now the standard way to perform cluster operations with Kubernetes.
-* Added support for https://github.com/tigergraph/ecosys/blob/master/k8s/docs/04-manage/backup-and-restore/README.md[Backup and Restore], https://github.com/tigergraph/ecosys/blob/master/k8s/docs/02-get-started/get_started.md#upgrade-a-tigergraph-cluster[Upgrading the version of the TigerGraph server], and https://github.com/tigergraph/ecosys/blob/master/k8s/docs/02-get-started/get_started.md#update-the-resources-cpu-and-memory-of-the-tigergraph-cluster[Updating cluster resources]
-* [3.9.2] Support for https://github.com/tigergraph/ecosys/blob/master/k8s/docs/03-deploy/custom-containers.md[Custom Containers and Volumes].
-* [3.9.3] Added a link to TigerGraph Kubernetes xref:tigergraph-server:kubernetes:k8s-operator/index.adoc[preview documentation] on GitHub.
-* [3.9.3] Improved help message menu of https://github.com/tigergraph/ecosys/blob/master/k8s/docs/02-get-started/get_started.md#install-kubectl-tg-plugin[kubectl-tg plugin].
-* [3.9.3] Made `.spec.initTGConfig.version` an optional field, so users don’t need to specify this field when using https://github.com/tigergraph/ecosys/blob/master/k8s/docs/02-get-started/get_started.md#-getting-started-tigergraph-on-kubernetes-[create/update] in the TigerGraph CR.
-* [3.9.3] https://github.com/tigergraph/ecosys/blob/master/k8s/docs/08-release-notes/operator-0.0.9.md#improvements[Improved security] by replace static passwords with private keys when executing cluster operations jobs.
-* [3.9.3] https://github.com/tigergraph/ecosys/blob/master/k8s/docs/08-release-notes/operator-0.0.9.md#improvements[Installed `make`] command to support installing `tsar` and disabled the password when building TigerGraph docker image.
-* [3.9.3] https://github.com/tigergraph/ecosys/blob/master/k8s/docs/08-release-notes/operator-0.0.9.md#improvements[Improved database] by supporting an automatic restart of TigerGraph service under any circumstances.
-* [3.9.3] https://github.com/tigergraph/ecosys/blob/master/k8s/docs/08-release-notes/operator-0.0.9.md#improvements[Enabled service] auto-restart in operator by setting TigerGraph configuration `Controller.ServiceManager.AutoRestart`.
 
 === Security
-* Improved the backend security infrastructure for the Kafka loader.
-* Added xref:3.9@tigergraph-server:security:index.adoc#_udf_file_scanning[configurable security scanning for UDFs].
-* Updated our response to xref:master@home::cve-2022-30331.adoc[CVE-2022-30331].
 
 == TigerGraph Suite Updates
 === Admin Portal
 
-* Reworked the xref:3.9@gui:admin-portal:dashboard.adoc[Admin Portal dashboard] to show the relationship hierarchy and status of all TigerGraph components for at-a-glance understanding of the TigerGraph system.
-* [3.9.2] Added support for xref:gui:admin-portal:components/README.adoc[configuring two additional components]: GPE and Kafka.
-
 === GraphStudio
-* [3.9.2] Enabled GraphStudio to run on any node in a cluster, whether or not the node hosts a GUI server.
-* [3.9.2] Removed the *All Paths* option from the Explore Graph page, as this feature is not practical for large graphs.
-* [3.9.3] Added an openCypher xref:gui:graphstudio:write-open-cypher-queries-in-tigergraph.adoc[option] to the Add New Query dialog, to simplify writing and running openCypher in GraphStudio.
-* [3.9.3] Users can now xref:insights:intro:applications.adoc[share] Insights widgets and applications to third-party websites and users without a TigerGraph login via a URL token.
 
 === GDS Library and ML Workbench
-* Added xref:1.3@pytigergraph:gds:dataloaders.adoc#nodepieceloader[NodePiece] node embedding algorithm.
-* Added pyTigerGraph support for xref:1.3@pytigergraph:core-functions:query.adoc#_runinstalledquery[running queries asynchronously] (i.e., running in the background).
-* [3.9.2] Added xref:graph-ml:using-an-algorithm:packaged-template-algorithms.adoc[packaged templated versions] of four xref:3.9@graph-ml:link-prediction:index.adoc[topological link prediction algorithms].
-* [3.9.2] Characterized each algorithm by readiness: Alpha, Beta, or Production.
-* [3.9.2] In the documentation, added a xref:graph-ml:intro:algorithm-table.adoc[table for Algorithm Availability and Dependencies].
-* [3.9.2] In the documentation, added a fuller explanation of how to xref:graph-ml:using-an-algorithm:index.adoc[install and run algorithms] using Python.
-* [3.9.2] The node2vec node embedding algorithm has been retired because better alternatives are now available.
 
 === TigerGraph Insights
-* Added support for multi-user editing and sharing of the same xref:3.9@insights:intro:applications.adoc[applications].
-* Added the ability for users to xref:3.9@insights:widgets:index.adoc#_save_a_widget[save a widget] independently instead of tying it to an application.
-* Added a mini-map to the xref:3.9@insights:widgets:graph-widget.adoc[graph widgets] for easier navigation.
 
 == Fixed issues
-
-=== Fixed and Improved in 3.9.3-2
-
-==== Functionality
-* Fixed issue where an external Kafka loading records, 7 days or older, would fall short of the topic offset (TP-4604).
-* Fixed issue when a deleted vertex type would make `policy_filter_index` very large (GLE-6290).
-* Fixed issue where `gsql --precompile` encountered an `Authentication failed` error during an upgrade if the TigerGraph password was not the default (GLE-6371).
-* Fixed issue where GSQL APIs would encounter occasional slowness due to `initSession` in `BaseInternalHandler` not synchronizing (GLE-6347).
-
-=== Fixed and Improved in 3.9.3-1
+=== Fixed and Improved in 3.10.1
 
 ==== Functionality
-* Fixed issue where after a gbar/gadmin restore the query would return an error response if GSE was not restarted (CORE-3148).
-* Fixed issue where deleted attribute would store the original value (CORE-3154).
-* Fixed issue where GSE may reuse segments in the cases where the GSE leader switches (CORE-3161).
-
-=== Fixed and Improved in 3.9.3
 
 ==== Crashes and Deadlocks
-* Fixed crash when query thread would keep running after `JobListener` is shutdown (CORE-1730).
-* Fixed GPE crash when using `INSERT` with an `UNKNOWN` accumulator (GLE-5038).
-* Fixed crash when running interpret query with dynamic value (GLE-5600).
-* Fixed JSON Viewer crash on browser when displaying a large response (TOOLS-2283).
-
-==== Functionality
-* Fixed issue where `DISTINCT` for aggregation functions wasn't working (GLE-5678).
-* Fixed issue of missing files in AdminPortal when downloading an output (TOOLS-2499).
-* Fixed issue primary id could not set a color config for a vertex (TOOLS-2478).
-* Fixed issue where administrator could not set a privilege to vertex `primary_id` in Role Management page of Admin Portal (TOOLS-2430).
-* Fixed issue where error messages of abort requests created large file sizes (CORE-2705).
-* Fixed issue where user could download query results from the label “View Table Result” without proper privilege (TOOLS-2404).
-* Fixed issue where multiple vertex types return when selecting one vertex type (GLE-5325).
-* Fixed issue of `SHOW` statement parser error for catalog object created using `CREATE` statement (GLE-5719).
-* Fixed support for `outdegree()` with a collection of edge types in `INTERPRET` mode (GLE-5476).
-* Fixed issue where delete or edit vertex attributes were incorrect in GraphStudio (TOOLS-2258).
-* Fixed issue in GraphStudio when "=” appeared as a missing parameter in an `INTERPRET` query (TOOLS-2298).
-* Fixed argument error when passing a negative float parameter in GSQL cli in a `{key: value}` format. (GLE-6004).
-* Fixed GSE crash when `lease_expire_time_ms_` was not updating (CORE-2693).
-* Fixed issue where AWS credential user with access permission failed to `create data_source` to specified bucket (TP-4049).
-* Fixed issue where there was a failure to backup during upgrading from a free tier (TP-3922).
-* Fixed the case when the configured backup’s s3 service, such as ceph s3, only supported bucket path style (TP-3931).
-* Fixed issue to avoid cloning cluster again when restore had already succeeded (TP-3948).
-* Fixed TG container `PostStart` Handler script error handling problem (TP-3914).
-* Fixed restpp status refresh issue (CORE-1905).
-* Fixed GSQL jobs getting stuck when a related service is down (GLE-5365).
-* Fixed expansion getting stuck at importing to GSQL/GUI (TOOLS-2306).
 
 ==== Improvements
-* Improved Restore when aborting all loading and the connect-offset will also clear (TP-3670).
-* Improved Kubernetes Operator by upgrading the Golang version to a higher to resolve previous version vulnerabilities (TP-3711).
-* Improved Insights table widget to be more consistent with GraphStudio (TOOLS-2375).
-* Improved insights search for two replicas when generating a pattern (TOOLS-2443).
-* Improved logs to show sso username and login related information (GLE-5970).
-* Improved error message details when during a failure to find a request record when deleting (CORE-2686).
-* Improved when a default user is deleted and the leader API would do a user check when permission is not needed (GLE-5678).
-* Added memory check in `DistrbutedTopologyStore` (CORE-2496).
-* LDAP now has more detailed error messages (GLE-5559).
-* Implemented a  new connector fail status to show error messages in GSQL console (TP-3465).
-* Improved Insights tables by adding overflow (TOOLS-2312).
-* Updated aws-sdk-go version to fix CVE scan vulnerability (TP-2879).
-
-=== Fixed and Improved in 3.9.2-1
-
-==== Crashes and Deadlocks
-* Fixed GPE crash caused by aborted query still being used by running thread.
-* Fixed crash issue after RESTPP auth refresh.
-* Fixed GSE crash due to check failure when refreshing leader info after 60 minute timeout.
-* Fixed GPE crash and non-recovery due to Kafka and GPE offset when adjacent vertices were deleted.
-
-==== Functionality
-* Fixed data inconsistency when GSE consumed deletion requests from Kafka on update of `committed_next_id_map`
-* Fixed `GRAPH` scope command failure due to missing privilege check in v3.9.2. 
-* Fixed failure to compile query when using edge variables in DML-sub delete statement.
-* Fixed `subtypeid` error message inconsistency.
-* Fixed `/deleted_vertex_check` false alert when GSE doesn't have a segment.
 
 ==== Security
-* Security: Updated JDK to 11.0.20 to address vulnerability scan issues.
 
 ==== Performance
-* Improved performance of GPE abort function.
-
-=== Fixed and Improved in 3.9.2
-
-==== Crashes and Deadlocks
-* Fixed a GPE crash caused by `GetVertexTypeId` failing to get the type from a vertex.
-* Fixed a RESTPP/WorkloadManager deadlock when multiple queries are waiting to execute.
-* Fixed a deadlock-like state when free disk space became very low during data loading.
-* Fixed a problem with GSQL not responding because no GSQL leader was elected.
-
-==== Functionality
-* Fixed importing pre-3.7 user-defined tuple (UDT) data which uses default-width INT or UINT fields.
-The import process will set pre-3.7 default-width fields to be 4 bytes.  3.7+ default-width fields are explicitly
-* Fixed GSQL not installing queries with certain collection accumulator expressions.
-* Restored the functionality of the -`-ssl` option of the GSQL Client.
-* Fixed a situation that can result in different cluster nodes having differently compiled versions of the same query, resulting in an MD5 check error.
-* Fixed a situation where a request to install one query results in several other queries also being installed.
-* Removed an exclusive lock when Interpret Query is running, which had been preventing concurrent GSQL operations
-* Fixed a null pointer error when attempting to import into GraphStudio a Solution tarball of a tag-based graph.
-* Fixed a case where a schema change did not run because not all libudf.so files had been cleared out.
-* Fixed an internal classification error for `FIXED_BINARY` data, which caused a schema_check test failure.
-* Fixed a bug where if a loading job used `TEMP_TABLE` and `VERTEX_MUST_EXIST`, then the VERTEX_MUST_EXIST option would not be displayed (by `LS` or `SHOW JOB`), nor would it included in a database export.
-* Fixed a GSQL query bug where it did not handle string parameters properly if they contained “&”.
-* Fixed a bug when upgrading to 3.9 that caused the old installation’s default `QueryUDF` files to be copied and overwrite the new 3.9 default QueryUDF files, so that queries using UDFs could not be installed.
-* Fixed a GSQL log bug where the `PermissionUtil.java` function was logging a stale Command Type rather than the current Command Type.
-* Restored limited ability to run xref:gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[
-subqueries having a SET<VERTEX> parameter].
-* Modified the `/deleted_vertex_check` and `/data_consistency_check` endpoints to be global, not associated with any particular graph.
-* Fix a SET type attribute bug in which the set’s values were not being deduplicated.
-* Patched a user authorization issue that prevented a user registered on a primary cluster from running a query on the secondary cluster.
-* Provided a more comprehensive fix to a node sorting issue when upgrading a cluster with 10 or more nodes to v3.9.
-* Removed a restriction when load data into an edge defined for multiple FROM-TO vertex type pairs. The load statement no longer must have a USING clause.
-* Fixed a signed integer overflow error in loader status report messages, if more than 2^31 lines of data were loaded.
-set to 8 bytes.
-* Improved the display of FLOAT and DOUBLE numbers so they have the correct number of digits of precision (max. 7 or 16, respectively).
-* Fixed a GraphStudio bug in which a vertex attribute which had been deleted was still showing until the browserpage was refreshed.
-* When adding a UDF with PUT, check that the UDF is defined as an inline function, as required.
-
-==== Security
-* Security: Updated JDK to 11.9.18-10 to address some vulnerability scan issues.
-* Security: Updated JSON to 20230227 to address some vulnerability scan issues.
-* Improved system security by applying more restrictive file permissions to several files.
-* No longer include examples of the data being loading in the Kafka loader log file, for better data security.
-
-==== Performance
-* Added lazy initialization of vertex data, for large graphs with more that 20K segments in the gstore.
-* Improved query installation memory usage and speed by optimizing gcc9 options.
-* Fixed a GraphStudio slowness issue when creating or editing vertices with hundreds of attributes.
-* Removed the 5-minute wait that the streaming loader used to decide if all the input data had been consumed.
-
-=== Fixed and Improved in 3.9.1
-* Fixed sorting issue in a script for upgrading a cluster with more than 9 nodes.
-* If a user runs gadmin and the  `~/.tg.cfg` link is missing, display an error message with guidance on how to recreate the link.
-* Fixed: GraphStudio not displaying queries for users with the QueryReader role.
-* Removed extraneous automatic backup at 12:00am UTC if the user sets `System.Backup.Local.Enable` to `true`.
-* Fixed accidental erasure of the `UserCatalog.yaml` file, which caused users to lose access to the database.
-* Added support for `DATETIME` datatype in `PRINT … TO_CSV` statements.
-* Added error handling in the case of a name conflict or use of reserved query names among UDF functions.
-* Fixed an issue with nested group access in LDAP.
-* Fixed an issue with perceived "schema error", which then causes an upgrade to abort.
-* Fixed issue with `DISTRIBUTED QUERY` not able to insert on edge.
-* Removed C++ headers not on the allowlist from default UDF files.
-* Fixed a GSE crash in rare synchronization circumstances in HA clusters.
-* Fixed an issue with a query syntax error not being detected at the root cause stage where a clear error message could be issued.
-* Added options to configure the frequency of checking for license key violations
-* Fixed: GSE does not start or restart after upgrading to 3.9.0 due to change in log synchronization.
-* Fixed an issue with lost attribute of a local vertex having `PRIMARY_ID_AS_ATTRIBUTE` =`true`.
-* Fixed inability to enable SSL in an HA cluster via the AdminPortal.
-* Fixed issue with GPE crashing during heavy workload of a backup restore operation.
-
-=== Fixed in 3.9.0
-
-* Improved stability and security across all components.
-* Fixed an issue with the GSQL `SELECT * FROM` and `PRINT` functions converting some special characters from UTF-8 to UTF-16.
-Previously affected character sets included the Unicode range `0080` to `00A0` and `2000` to `2100` (Near Eastern scripts and some special typographical marks).
-* The `SELECT * FROM` and `PRINT` functions no longer convert large integers to strings before printing, which had resulted in quotation marks printed along with the number.
-* xref:3.9@tigergraph-server:cluster-and-ha-management:expand-a-cluster.adoc[Cluster resizing] no longer requires a graph schema.
-* Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
 == Known Issues
+
+[cols="4", separator=¦ ]
+|===
+¦ Description ¦ Found In ¦ Fixed In ¦ Issue ID
+
+¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+
+¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+
+¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+
+¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+
+¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+
+¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+
+
+|===
+
+
+
 * If the `FROM` clause pattern is a multi-hop and the `ACCUM` clause reads both primitive and container type attributes or accumulators of a vertex, the internal query rewriting logic may generate an invalid rewritten output.
 Resulting in the error message: `It is not allowed to mix primitive types and accumulator types in GroupByAccum`.
 * Users may see a high CPU usage caused by Kafka prefetching when there is no query or posting request.
@@ -337,6 +108,19 @@ This lockup can be cleared by restarting the GSE.
 * The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
 
 === Compatibility Issues
+
+[cols="3", separator=¦ ]
+|===
+¦ Description ¦ Issue ID ¦ Version Introduced
+
+¦ TBD ¦ TBD ¦ TBD
+¦ TBD ¦ TBD ¦ TBD
+¦ TBD ¦ TBD ¦ TBD
+|===
+
+
+
+
 * v3.9.3
 ** When a PRINT argument is an expression, the output uses the expression as the key (label) for that output value.
 To better support Antlr processing, PRINT now removes any spaces from that key. For example, `count(DISTINCT @@ids)` becomes `count(DISTINCT@@ids)`.
@@ -356,12 +140,22 @@ To better support Antlr processing, PRINT now removes any spaces from that key. 
 
 
 === Deprecations
+
+[cols="3", separator=¦ ]
+|===
+¦ Description ¦ Deprecated ¦ Removed
+¦ TBD ¦ TBD ¦ TBD
+¦ TBD ¦ TBD ¦ TBD
+¦ TBD ¦ TBD ¦ TBD
+|===
+
 * As of 3.9.3, `Build Graph Patterns` is deprecated and will not be updated or supported and instead
 we are focusing on xref:insights:widgets:index.adoc[Insights] as the tool of choice for building visual queries.
 * Kubernetes classic  mode (non-operator) is deprecated, as of v3.9.
 * The `WRITE_DATA` RBAC privilege is deprecated, as of v3.7.
 
 == Release notes for previous versions
+* xref:3.9@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.9]
 * xref:3.8@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.8]
 * xref:3.7@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.7]
 * xref:3.6@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.6]

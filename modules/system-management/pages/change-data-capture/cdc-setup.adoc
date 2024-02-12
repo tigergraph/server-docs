@@ -1,0 +1,231 @@
+= CDC Setup
+:TOC:
+
+[IMPORTANT]
+====
+Users are required to establish and manage an external Kafka service independently from TigerGraph.
+The TigerGraph CDC service will then generate CDC messages directed to the external Kafka service.
+For guidance on setting up the external Kafka service, refer to the https://kafka.apache.org/quickstart[Official Apache Kafka documentation].
+====
+
+== Setup Configuration
+TigerGraph employs librdkafka 1.1.0 for the Kafka producer in the CDC service.
+Refer to the Global configuration properties and the Topic configuration properties sections of the librdkafka documentation for all other properties not mentioned in this guide, noting the applicable ones marked with “P”(Producer) or with “*” for both Producer and Consumer.
+
+To configure CDC Producer and Topic settings in TigerGraph, utilize gadmin commands below.
+
+[NOTE]
+====
+If you use `gadmin config` to change any of these parameters, you need to run `gadmin config apply -y` for it to take effect.
+You can change multiple parameters and then run `gadmin config apply` for all of them together
+
+.After modifying, run the following command to apply the changes:
+[console]
+----
+gadmin config apply
+gadmin restart gpe restpp
+----
+====
+
+== CDC Configuration Parameters
+=== System.CDC.Enable
+
+.This is the CDC enable config entry:
+[console]
+----
+gadmin config entry
+----
+
+=== System.CDC.Enable
+.Set it to true or false, to enable CDC or not as in these examples:
+[console]
+----
+gadmin config set System.CDC.Enable true
+gadmin config set System.CDC.Enable false
+----
+
+CDC messages will only generate after the CDC is enabled and services have been applied and restarted.
+
+=== System.CDC.ProducerConfig
+.This is the CDC producer config entry:
+[console]
+----
+gadmin config entry System.CDC.ProducerConfig
+----
+This configuration entry is designated for the CDC producer.
+
+Properties are passed through a file, with each line adhering to the format `<property name>=<property value>` separated by “new line”.
+
+It is mandatory to include the property `bootstrap.servers`, specifying the IP and port for the broker(s) that the CDC producer connects to as in the example below:
+[console]
+----
+mkdir -p /home/tigergraph/test_cdc
+
+# The ip:port is bind to target external kafka server
+echo -e "bootstrap.servers=$(gmyip):9092\nenable.idempotence=true" > /home/tigergraph/test_cdc/cdc_producer_config
+
+gadmin config set System.CDC.ProducerConfig "/home/tigergraph/test_cdc/cdc_producer_config"
+----
+
+=== System.CDC.TopicConfig
+.This is the CDC topic config entry:
+[console]
+----
+gadmin config entry System.CDC.TopicConfig
+----
+
+Utilize a file to pass properties, separating them with a "new line."
+The prescribed format for each line is `<property name>=<property value>`.
+It is imperative to employ the property name to designate the CDC topic, such as `name=<CDC topic name>`, as in the following example:
+[console]
+----
+echo -e "name=cdc_topic" > /home/tigergraph/test_cdc/cdc_topic_config
+
+gadmin config set System.CDC.TopicConfig "/home/tigergraph/test_cdc/cdc_topic_config"
+----
+
+For other configuration settings please see the xref:_other_configuration_settings_table[Other Configuration Settings Table].
+
+== Setup Tutorial
+
+This tutorial will walk you through how to set up a TigerGraph CDC service.
+
+. Setup external Kafka service for CDC messages
++
+.Download external Kafka package
++
+.First make the folder it will be downloaded to:
+[console]
+----
+mkdir -p /home/tigergraph/test_cdc/download_kafka
+----
++
+.Use this package:
+[console]
+----
+`https://archive.apache.org/dist/kafka/3.3.1/kafka_2.13-3.3.1.tgz`
+----
++
+.And run this command to download Kafka to the folder that was just created:
+[console]
+----
+curl https://archive.apache.org/dist/kafka/3.3.1/kafka_2.13-3.3.1.tgz \ | tar -xzf - -C "/home/tigergraph/test_cdc/download_kafka"
+----
++
+.Check if it's successfully downloaded and extracted with this command:
+[console]
+----
+ls -l /home/tigergraph/test_cdc/download_kafka
+----
++
+Next, start a Zookeeper server
++
+.Open a new terminal to start the Zookeeper service. Use the default configuration `Zookeeper.properties`, where it is using default port `2181`:
++
+[console]
+----
+KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1
+
+KAFKA_ROOT/bin/zookeeper-server-start.sh $KAFKA_ROOT/config/zookeeper.properties
+----
+Now, start a Kafka server
++
+.Use the default configuration `server.properties`, where it is using default port `9092`:
+[console]
+----
+KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1
+
+$KAFKA_ROOT/bin/kafka-server-start.sh $KAFKA_ROOT/config/server.properties
+----
++
+[NOTE]
+====
+To listen to messages produced from remote servers, edit the `server.properties` to add `listeners=PLAINTEXT://<my ip>:9092`.
+For the value of `<my ip>`,  use the command `ifconfig` or `ip addr show`, and find the ip after `inet`.
+====
++
+*(Optional)* clear Kafka topic
++
+.Run this command to clear existing old Kafka messages in the Kafka.
+[console]
+----
+KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1 MYIP=127.0.0.1
+
+$KAFKA_ROOT/bin/kafka-topics.sh --bootstrap-server $MYIP:9092 --delete \ --topic cdc_topic
+----
+
+. Setup TigerGraph CDC service
++
+Now, to start the CDC service in TigerGraph use the setup configuration commands.
+System.CDC.ProducerConfig
+System.CDC.TopicConfig
+System.CDC.Enable
+MYIP=127.0.0.1
+echo -e "bootstrap.servers=$MYIP:9092\nenable.idempotence=true" > /home/tigergraph/test_cdc/cdc_producer_config
+
+echo -e "name=cdc_topic" > /home/tigergraph/test_cdc/cdc_topic_config
+
+gadmin config set System.CDC.ProducerConfig "/home/tigergraph/test_cdc/cdc_producer_config"
+gadmin config set System.CDC.TopicConfig "/home/tigergraph/test_cdc/cdc_topic_config"
+gadmin config set System.CDC.Enable true
+gadmin config apply
+gadmin restart gpe restpp
+3. Test TigerGraph CDC service
+3.1 Make an update to data
+Now, once the service is up and running, test it with data modifications to an existing graph through statements like update, running custom or built-in queries, or running a loading job.
+
+If an existing graph is not available, create a new graph by following TigerGraph’s GSQL 101 tutorial documentation and using the provided example graphs data.
+3.2 Check CDC messages
+To consume and display CDC messages, run:
+KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1 MYIP=127.0.0.1
+
+$KAFKA_ROOT/bin/kafka-console-consumer.sh --topic cdc_topic --from-beginning --bootstrap-server $MYIP:9092
+
+
+
+== Other Configuration Settings Table
+[cols="4", separator=¦ ]
+|===
+¦ Command ¦ Name ¦ Description ¦ Default (Unit: Value)
+¦ `gadmin config entry GPE.BasicConfig.Env`
+
+¦ `CDCKafkaFlushTimeoutMs`
+¦ When a GPE service shuts down, CDC will try to flush all generated cdc messages to external kafka.
+¦ ms: -1.
+
+When set to -1, there is an infinite timeout, which may slow the GPE shutdown.
+
+¦ ¦ `CDCDeltaBufferCapInMB`
+¦ In-memory buffer limit for delta message in CDC service.
+¦ megabytes: 10.
+
+¦ ¦ `DIMDeltaBufferCapInMB`
+¦ In-memory buffer limit for “vertex-deletion“ delta message in deleted id map service.
+¦ megabytes: 100.
+
+¦ ¦ `DIMCacheLimitInMB`
+¦ In-memory cache limit for deleted id map.
+¦ megabytes: 1024.
+
+¦ ¦ `DIMPurgeIntervalInMin`
+¦ Interval for purging outdated entries in deleted id map.
+¦ minutes: 30.
+|===
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

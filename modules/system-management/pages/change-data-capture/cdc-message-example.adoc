@@ -1,0 +1,197 @@
+= CDC Message Examples
+:TOC:
+
+== Message Format
+
+=== Fields
+"Mid" is a message identifier field composed of concatenated elements, as exemplified by 2|1701548849757|33|2|1. It is constructed by combining four or five elements, depending on its type, and each element is separated by '|'.
+There are two types: Non-transaction and Transaction:
+4 elements (Non-transaction): partitionID | timestamp | tid | index
+5 elements (Transaction): partitionID | timestamp | tid | split_index | index
+
+In this example, it signifies a Transaction with five elements: originating from partition 2, committed at epoch time 1701548849757, with transaction ID 33. The current message is the second message in the third batch of the transaction.
+
+This table breaks down the “mid” field elements:
+“mid” Field Elements
+Explain
+partitionID
+Source GPE partition of the CDC message. It starts from 1.
+timestamp
+Same as the timestamp field in the CDC message.
+tid
+A CDC message consistently corresponds to a delta message, both of which are part of a "delta batch" in the delta Kafka queue. The "tid" denotes the position or index of the delta batch to which the original delta message is mapped. This index starts from 1, and a transaction encompasses multiple delta batches. For CDC messages within a transaction, the "tid" corresponds to the “tid” of the last message, specifically the COMMIT message.
+split_index
+This element is exclusive to transactions. In the context of a transaction, the split_index represents the position of the delta batch among all delta batches for the same transaction. It follows a 0-indexed format.
+index
+The index of the delta message in its delta batch. It’s 0-indexed.
+
+
+Other message fields are outlined in the table below:
+Field
+Value Type: “Possible Values”
+type
+String: “vertex” / ”vertex-type” / ”edge”
+operator
+String: ”insert” / ”insert-only” / ”delete”
+timestamp
+UINT64:
+“Non-transaction: birth epoch time.” /
+“Transaction: epoch time of transaction commit message.”
+typename
+String: “type name of updated type”.
+content
+Json object:
+
+Key: affected attribute name
+Value is json object with 2 fields:
+
+“op”, this defines how to apply the value to existing attribute value. It can be one of: "Overwrite", "Add", "Max", "Min", "And", "Or", "IgnoreIfExisted", "Minus", "ReplaceOrAdd".
+“Value”. As in this example below:
+"content": {
+"actors": {
+"op": "Add",
+"value": [
+"i1",
+"m2"
+]
+},
+...
+}
+
+
+
+== Message Examples
+CDC Message with type vertex
+This CDC message example indicates insertion, modification, or deletion of a vertex entity:
+{
+"mid": "1|1701548849757|1|0",
+"operator": "insert",
+"timestamp": 1701548849757,
+"type": "vertex",
+"typename": "Company",
+"vid": 99999999,
+"uid": "comp1",
+"content": {
+"cid": {
+"op": "Overwrite",
+"value": 2345
+},
+"startDate": {
+"op": "Overwrite",
+"value": "2001-01-01 08:00:00"
+}
+}
+}
+Fields for CDC Message with type vertex
+Field
+Descrition
+vid
+Internal vertex id, eg: 1234567890.
+uid
+External vertex id, eg: "abc123". This could be primary_id/primary key/composite keys. And it won’t appear in the content.
+
+Possible operators for CDC Message with type vertex
+“operator”
+Note
+insert
+Insert a new vertex, or modify some attribute values
+insert-only
+Insert new vertex if not existing, otherwise ignore it.
+For now, this is only triggered in one case: when inserting an edge, the target vertex will be implicitly inserted with this “insert-only” operator.
+delete
+Delete a vertex will implicitly delete all edges that use that vertex as source or target. TigerGraph CDC service will NOT produce CDC messages for such “implicit edge deletion”.
+
+
+CDC Message with type vertex-type
+This CDC message example indicates operations on all existing entities of a specific vertex-type:
+{
+"mid": "1|1701548854014|2|0",
+"operator": "delete",
+"timestamp": 1701548854014,
+"type": "vertex-type",
+"typename": "Person",
+"content": {}
+}
+Possible operators for CDC Message with type vertex-type
+The "operator" can only be "delete":
+“operator”
+Note
+delete
+Delete will delete all vertices of a vertex type and will also implicitly delete all edges that use that vertex as source or target. TigerGraph CDC service will NOT produce CDC messages for such “implicit edge deletion”.
+
+CDC Message with type edge
+This CDC message example indicate insertion, modification, or deletion of a edge entity:
+{
+"mid": "1|1701569966031|3|0",
+"operator": "insert",
+"timestamp": 1701569966031,
+"type": "edge",
+"typename": "Creates",
+"hasreverseedge": true,
+"discriminator": "c1:1",
+"from": {
+"type": "Person",
+"vid": 12345678,
+"uid": "person2"
+},
+"to": {
+"type": "Company",
+"vid": 87654321,
+"uid": "comp2"
+},
+"content": {
+"attr_list_tuple": {
+"op": "Add",
+"value": [
+"i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
+]
+},
+"attr_map_tuple": {
+"op": "ReplaceOrAdd",
+"value": {
+"2011-10-20": "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
+}
+}
+}
+}
+Fields for CDC Message with type edge
+Field
+Optional?
+Note
+from
+No
+Json object with 3 fields:
+type: vertex type name of source vertex
+vid: internal vertex id of source vertex
+uid: external vertex id of source vertex. This could be primary_id/primary key/composite keys. For composite keys, the key is separated by a ",".
+to
+No
+Same as “from” field, but for target vertex.
+hasreverseedge
+Yes
+Bool type. When the value is “true”, it means the updated edge type has also reverse edge types.
+If it's “false” this field will be omitted.
+discriminator
+Yes
+String type. Only exists if the updated edge is multi-edge. It’s the discriminator string separated by a ":".
+
+Possible operators for CDC Message with type edge
+“operator”
+Note
+insert
+Insert a new edge, or modified attribute values.
+If source vertex is missing when inserting edge, TigerGraph will implicitly insert source vertex with all default values on its attributes. For now, TigerGraph CDC Service will NOT produce CDC messages for such “implicit source vertex insertion”.
+delete
+delete a edge
+
+Extra CDC message for Edge Update
+Typically, CDC messages generate from individual data updates like insertions,	 modifications, or deletions. However, edge updates may include additional information in specific scenarios. In such cases, TigerGraph CDC will generate an additional CDC message for the corresponding "extra" edge.
+Case
+Description
+For directed edge without reverse edge type
+For insertion or modification on directed edge type without a reverse edge type, TigerGraph CDC will generate an extra CDC message with a field "operator": "insert-only" for a target vertex, however, there is no CDC message for source vertex.
+For undirected edge, and directed edge with reverse edge type
+For insertion/modification/deletion on an undirected edge, or directed edge with a reverse edge type, TigerGraph will update 2 edges simultaneously.
+The “origin” edge and
+“extra” edge with switched source and target vertex.
+
