@@ -1,40 +1,45 @@
 = OIDC JWT Authentication
 :TOC:
 
-== Introduction
-We're excited to introduce JWT Token-Based Authentication to TigerGraph through private preview. This will enhance our platform's security and meet the evolving needs of our customers. This document is designed to provide a detailed outline and user guide to explore this new feature.
-Why We Created JWT Token-Based Authentication?
-OIDC Token-Based Authentication in JSON Web Token (JWT) format allows better control over application access, securing users and their data, while also laying the groundwork for more intricate authorization scenarios in the future.
+OpenID Connect (OIDC) token-based authentication in JSON web token (JWT) format, allows TigerGraph users better control over application access.
+Helping to secure users and their data.
 
-== What is OIDC?
-OpenID Connect (OIDC) serves as an identity layer integrated with the OAuth 2.0 framework. It enables third-party applications to authenticate the end-user's identity and access basic user profile information.
-For more information please see OpenID’s documentation.
+== OIDC JWT Authentication in TigerGraph
+Some basic understanding of TigerGraph’s user access through xref:tigergraph-server:user-access:enabling-user-authentication.adoc[] and xref:tigergraph-server:API:built-in-endpoints.adoc#_authentication[Built-in API Endpoints] is recommended before continuing.
 
-== What is JWT?
-OIDC utilizes JSON web tokens (JWTs), obtainable through flows that adhere to OAuth 2.0 specifications. JWTs are an open standard. It allows for a JSON object to be exchanged between two parties securely and in a compact and easily containable way.
-For more information please see the documentation Introduction to JSON Web Tokens.
+=== What is OIDC?
+OpenID Connect (OIDC) serves as an identity layer integrated with the OAuth 2.0 framework.
+It enables third-party applications to authenticate the end-user's identity and access basic user profile information.
 
-== What this Guide Covers
-This guide will cover any prerequisites, the authentication workflow, and JWT key concepts before delving into a user guide with commands to get started.
+For more information on OIDC see https://openid.net/developers/how-connect-works/[OpenID’s documentation].
 
-== Prerequisites
-This guide assumes some basic understanding of TigerGraph’s user access through RESTPP and Built-in API Endpoints.
-Authentication Workflow
+=== What is JWT?
+OIDC utilizes JSON web tokens (JWTs), obtainable through flows that adhere to OAuth 2.0 specifications.
+JWTs are an open standard.
+It allows for a JSON object to be exchanged between two parties securely and in a compact and easily containable way.
+
+For more information please see the documentation https://jwt.io/introduction[Introduction to JSON Web Tokens].
+
+=== Authentication Workflow
 
 At a high level the authentication workflow is as following:
 
-The user application or the client requests authorization from the third-party OIDC server or authorization server.
-The authorization server validates the request and, if successful, responds with an access token.
-The user application or the client uses the access token with the Bearer authentication scheme in the HTTP Authorization header to access a protected resource from the TG RESTPP server.
+image::AutheticationWorkflow.png[]
 
-== Key concepts of JWT
+. The user application or the client requests authorization from the third-party OIDC server or authorization server.
+. The authorization server validates the request and, if successful, responds with an access token.
+. The user application or the client uses the access token with the Bearer authentication scheme in the HTTP Authorization header to access a protected resource from the TG RESTPP server.
 
-Now that we are familiar with the authentication workflow let's dive into some JWT key concepts to help us understand the format the data is stored and transferred in.
-
-=== Access Token
+== Access Token
 A JSON Web Token (JWT) includes a JSON object containing information meant for sharing.
-To ensure data integrity, each JWT is cryptographically signed, preventing unauthorized modification by clients or malicious parties. The payload data within the JWT consists of key-value pairs, commonly referred to as JWT claims. These claims encompass essential information such as details about the authenticated user, issue time, expiration time, and various other attributes.
-For more information on claims, please see this link on Json Web Token Claims.
+
+To ensure data integrity, each JWT is cryptographically signed, preventing unauthorized modification by clients or malicious parties.
+
+The payload data within the JWT consists of key-value pairs, commonly referred to as JWT claims.
+
+These claims encompass essential information such as details about the authenticated user, issue time, expiration time, and various other attributes.
+
+For more information on claims, please see this link on https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims[Json Web Token Claims].
 
 .Here is a sample encoded JWT Token:
 [Console]
@@ -95,8 +100,9 @@ Supported cryptographic algorithms for both signing and verification are below:
 |===
 
 ==== Payload
-The payload contains statements about the entity (typically, the user) and any additional attributes, which are again, referred to as “claims”. In this example, our entity is a user.
+The payload contains statements about the entity (typically, the user) and any additional attributes, which are again, referred to as “claims”.
 
+.In this example, our entity is a user.
 [console]
 ----
 # payload data
@@ -156,14 +162,15 @@ To use a JWT token for authentication three things should be done first.
 * Generate a 3rd Party JWT Token
 
 These three steps can be done in any order.
-For testing purposes, users can generate a public key using a public tool such as https://cryptotools.net/rsagen[] or use the public key generated from the JWT token generator.
+
+For testing purposes, users can generate a public key using a public tool such as https://cryptotools.net/rsagen[] or use the public key generated from the https://docs.google.com/document/d/1aIfIM6fmjbFaqjbQtTeA9gEigdt9nx7JCw09-Fwp3C4/edit?not_in_iframe=true#heading=h.3ogx2q89izf3[JWT token generator].
 
 [NOTE]
 ====
 Ensure that the public key configured and the public key in the JWT Token match.
 ====
 
-== Scope of Access
+=== Scope of Access
 Access tokens *without* the `graph` claim are global tokens and inherit all permissions of the user on any graph.
 
 Tokens *with* the `graph` claim only inherit permissions for the specified graph assigned to the user.
@@ -187,9 +194,7 @@ gadmin restart restpp -y
 gadmin config set RESTPP.Factory.EnableAuth true
 ----
 
-== Configure the JWT Token
-
-=== Setup JWT Token gadmin Configuration
+== Setup JWT Token gadmin Configuration
 There are two ways to configure a public key or secret of a JWT token in TigerGraph through `gadmin config` set.
 
 * Non-Interactive
@@ -287,7 +292,7 @@ New:
 [   Info] no changes for Security.JWT.HMAC.Secret
 ----
 
-=== Generate a 3rd Party JWT Token
+== Generate a 3rd Party JWT Token
 The JWT token is generated by a 3rd party authentication server from the customer side. For testing purposes, we recommend using a tool such as this one though any JWT token generated will also work.
 
 .Below you can take this sample data and use it as a test payload:
@@ -313,7 +318,7 @@ For example, this is used to run the query {queryName} on the graph {graphName}:
 curl -s -H "Authorization: Bearer <JWT-TOKEN>" -X GET http://127.0.0.1:9000/query/{graphName}/{queryName}
 ----
 
-=== Potential Error Messages
+== Potential Error Messages
 When using a JWT token for authentication, please consider these scenarios and handle the corresponding errors appropriately when working with JWT tokens for authentication.
 
 [cols="2", separator=¦ ]
