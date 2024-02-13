@@ -1,0 +1,224 @@
+= Audit Logs
+
+Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
+
+Audit logs enable organizations to meet certain compliance and business policy requirements.
+Additionally, Administrators use audit logs to track user activity, and security teams use them to investigate breaches and ensure regulatory compliance.
+
+== Key Features
+
+* The audit logs are structured in JSON format, ensuring machine-readability.
+
+* This format facilitates easy integration with third-party tools.
+
+* It eliminates the need for customers to navigate through numerous log files.
+
+== Considerations
+
+=== Security
+
+* Like other `gadmin` configurations, only the Linux user with server access can enable and configure the audit log.
+
+* Access to the audit log is restricted to those who have access to TigerGraph logs.
+
+* Sensitive data or PII in the audit log, such as credentials or sensitive query payload information is masked.
+
+=== Performance and Scalability
+* Enabling audit logging records audit logs to separate files, adding a slight disk I/O workload.
+However, compared to the debug log, the audit log contains significantly less data, ensuring negligible performance impact.
+
+== Configuration Commands
+
+.Users can enable, disable, and configure audit logging with the following `gadmin` configs:
+[cols="3", separator=¦ ]
+|===
+¦ Configuration ¦ Description ¦ Type (Default Value)
+
+¦ `System.Audit.Enable` ¦ Setting to enable audit logs. ¦ boolean (false)
+
+¦ `System.Audit.DataBaseName` ¦ Modify the DataBaseName Field. ¦ name (TigerGraph)
+
+¦ `System.Audit.LogDirRelativePath` ¦ Modify the relative audit log path. ¦ path string (<TG_LogRoot>/AuditLog/)
+
+¦ `System.Audit.LogConfig.LogFileMaxDurationDay` ¦ Modify the audit log file’s modification date. ¦ Integer (90)
+
+¦ `System.Audit.LogConfig.LogFileMaxSizeMB` ¦ Modify the audit log file’s max size. ¦ Integer (100)
+
+¦ `System.Audit.LogConfig.LogRotationFileNumber` ¦ Modify the max amount of Audit Log files in the Audit Log folder. ¦ Integer (100)
+
+|===
+
+Additionally, all audit log files are stored in JSON format.
+Each log entry is a JSON object, and the log file is one JSON array of these objects.
+
+For more information see section xref:audit-log.adoc#_consuming_audit_logs[].
+
+=== Apply Configuration Changes
+
+If you use `gadmin` config to change any of these parameters, you need to run `gadmin config apply -y` for it to take effect.
+You can change multiple parameters and then run `gadmin config apply` for all of them together
+
+.After modifying the configurations, run the following command to apply the changes:
+[console]
+----
+$ gadmin config apply -y
+$ gadmin restart gsql -y
+----
+
+== Setup Environment
+
+Audit logging is disabled by default in a TigerGraph system.
+
+.To enable audit logging, use `gadmin` to run the following command to enable the setting:
+[console]
+----
+$ gadmin config set System.Audit.Enable true
+----
+
+Once enabled, the audit log will be found in the `<System.LogRoot>/AuditLog` folder.
+The `<System.LogRoot>` represents the default path for all TigerGraph logs, set to `tigergraph/log` by default.
+
+.To customize the relative path for the audit log (in relation to `<System.LogRoot>`), execute the following command:
+[console]
+----
+$ gadmin config set System.Audit.LogDirRelativePath <audit-log-relative-path>
+----
+
+.You can also modify the <System.LogRoot> on your environment by:
+[console]
+----
+$ gadmin config set System.LogRoot <log-root-path>
+----
+
+[CAUTION]
+====
+Take note that altering `<System.LogRoot>` impacts the root path for all TigerGraph logs.
+====
+
+== Log File Policy
+A new audit log file will be created when *any* of the following situations occur:
+
+* The GSQL service is restarted.
+* The latest audit log file size exceeds the `System.Audit.LogConfig.LogFileMaxSizeMB` value.
+The value of this field is `100MB` by default.
++
+.You can modify this value by running the following command:
+[console]
+----
+$ gadmin config set System.Audit.LogConfig.LogFileMaxSizeMB <file-size>
+----
+
+* The latest audit log file modification date exceeds the `System.Audit.LogConfig.LogFileMaxDurationDay` value.
+The value of this field is `90` days by default.
++
+.You can modify this value by running the following command:
+[console]
+----
+$ gadmin config set System.Audit.LogConfig.LogFileMaxDurationDay <max-duration-day>
+----
+
+* Lastly, the oldest audit log file will be automatically deleted, if the amount of audit logs in the audit log folder exceeds the `System.Audit.LogConfig.LogRotationFileNumber` value.
+The default of this value is `100` audit logs.
++
+.You can modify this value by running the following command:
+[console]
+----
+$ gadmin config set System.Audit.LogConfig.LogRotationFileNumber <file-number>
+----
+
+=== Other Customizable Configs
+There is a “DatabaseName” field appended to the header of each audit log file.
+The value of this field is "TigerGraph" by default.
+
+.You can modify this value by running the following command:
+[console]
+----
+$ gadmin config set System.Audit.DataBaseName <database-name>
+----
+
+== Consuming Audit Logs
+=== Log Format
+
+All audit log files are stored in JSON format, even when users are actively interacting with TigerGraph, so audit logs can be consumed at run time.
+
+.Here is an example of a whole audit log file:
+[console]
+----
+[
+    {"serverHostIP":"127.0.0.1","databaseName":"TigerGraph","version":"1.0","timestamp":"2023-12-04 07:56:20.8"},
+    {"endpoint":"/gsql/login","clientHost":"127.0.0.1:43746","failedAttempts":0,"userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"login succeed","timestamp":"2023-12-04 07:56:34.128","actionName":"login","status":“SUCCESS”},
+    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:43746","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created user 'u1'.","timestamp":"2023-12-04 07:56:34.984","actionName":"createUser","status":“SUCCESS”},
+    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:54746","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created query 'printVertex'.","timestamp":"2023-12-04 07:58:53.045","actionName":"createQuery","status":“SUCCESS”},
+    {"endpoint":"/gsql/library","clientHost":"127.0.0.1:54770","userName":"tigergraph","authType":"USER_PASS","message":"callTemplateQuery succeed","timestamp":"2023-12-04 08:00:14.703","actionName":"callTemplateQuery","status":“SUCCESS”}
+]
+----
+
+Each audit log file is a JSON array of JSON objects, one object per log entry.
+Each object is formatted as a single line for better readability of high volume data.
+
+.The first JSON object is the header of this file, which consists of the following fields:
+[console]
+----
+{
+    "version": "1.0",
+    "timestamp":"2023-12-04 07:56:20.8",
+    "dataBaseName": "TigerGraph",
+    "serverHostIP": "192.168.1.1",
+}
+----
+
+The audit log will record any user-triggered activity, such as:
+
+* login,
+* Password change,
+* grant role,
+* create a query,
+* etc...
+
+Each activity will have its own audit log entry and fields.
+
+.Ex. The `createQuery` activity will produce an audit log entry with the following fields:
+[console]
+----
+{
+    "timestamp":"2023-12-04 08:37:29.789",
+    "userName": "tigergraph",
+    "authType": "password",
+    "clientHost": "<IP or FQDN>:<Port>",
+    "userAgent": "GSQL Shell",
+    "endpoint": "/gsql/file",
+    "actionName": "createQuery",
+    "status": “SUCCESS”,
+    "message": "Successfully created query 'query_name'"
+}
+----
+
+For user `login/auth` related activities, one more field called `failedAttempts` is added to the JSON.
+This field indicates how many times this user failed to provide the correct credentials.
+
+.Here is an example for user login event:
+[console]
+----
+{
+    "timestamp": "2023-12-04 08:37:29.789",
+    "userName": "tigergraph",
+    "authType": "SAML SSO",
+    "clientHost": "<IP or FQDN>:<Port>",
+    "userAgent": "GraphStudio",
+    "endpoint": "/gsql/simpleauth",
+    "actionName": "login",
+    "failedAttempts" : 1,
+    "status" : "FAILURE",
+    "message": "Username doesn't exist"
+}
+----
+
+== Known Issues
+
+* The real client IP address could be removed or masked by a firewall or another intermediate redirect layer before arriving at the TigerGraph service.
+Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.
+
+* Direct RESTPP API calls are not recorded in this version of the audit log feature. (e.g. all built-in RESTPP endpoints access).
+
+* If the user logs into TG Cloud using SSO, they will not be required to provide credentials again when opening GraphStudio.
+Therefore, the login event would not be reflected in the audit log, but the user’s subsequent operations (`create query`, `install query`, etc.) will be recorded in the audit log as normal.
