@@ -119,3 +119,38 @@ All `deleted vid-uid` entries with `tid_orgin` smaller than this already have be
 
 Configure this with `GPE.BasicConfig.Env: DIMPurgeIntervalInMin`), and update this `tid` if purging is actually performed.
 |===
+
+== CDC Reset
+
+Please run the following steps to reset cdc.
+
+. Stop related services
++
+[console]
+----
+gadmin stop gpe -y
+----
++
+[NOTE]
+====
+After a CDC reset, the previous data updates before `stop gpe` will be ignored by TigerGraph CDC.
+Only new data updates will be produced to external kafka.
+====
+
+
+. Clear state and data files for cdc
++
+[console]
+----
+grun_p gpe "rm $(gadmin config get System.DataRoot)/files/cdc#*"
+grun_p gpe "rm $(gadmin config get System.DataRoot)/gstore/0/part/cdc.yaml"
+grun_p gpe "rm $(gadmin config get System.DataRoot)/gstore/0/part/deleted_idmap_state.yaml"
+grun_p gpe "rm -rf $(gadmin config get System.DataRoot)/gstore/0/part/deletedID_store"
+----
+
+. Start services
++
+[console]
+----
+gadmin start all
+----
