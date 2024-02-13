@@ -1,0 +1,67 @@
+= Change Data Capture (CDC) Overview
+
+The Change Data Capture (CDC) equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems.
+
+== Key Features
+* Captures and publishes change log data to external Kafka topics.
+* Pauses the publication process during external Kafka downtime and upon recovery the system resumes publishing from the last successfully published point.
+* Maintains sequence of changes to facilitate reproduction of data updates for debugging.
+* Structured in JSON format, promoting readability and compatibility with third-party tools.
+
+== xref:tigergraph-server:system-management:change-data-capture/cdc-setup.adoc[]
+Learn about xref:tigergraph-server:system-management:change-data-capture/cdc-setup.adoc#_setup_configuration[setup configurations] and get started with the xref:tigergraph-server:system-management:change-data-capture/cdc-setup.adoc#_setup_tutorial[setup tutorial].
+
+== xref:tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc[]
+Deep dive into the xref:tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_format[CDC messages format] and showcased xref:tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[message examples].
+
+== xref:tigergraph-server:system-management:change-data-capture/cdc-state-monitoring.adoc[]
+Here users can delve into xref:tigergraph-server:system-management:change-data-capture/cdc-state-monitoring.adoc#_state_monitoring[state monitoring], including xref:tigergraph-server:system-management:change-data-capture/cdc-state-monitoring.adoc#_state_of_dim_service[DIM state monitoring] with the CDC service.
+
+== CDC Reaction to Other Features
+
+=== When GPE is reset
+
+When the GPE is reset (`gadmin reset gpe`), all deltas that have not been rebuilt to the snapshot are lost.
+The TigerGraph CDC is also reset at the same time.
+When that happens, TigerGraph CDC will skip all historical data updates.
+Some commands will call `gadmin reset gpe` implicitly, so the CDC will reset simultaneously with these commands:
+
+* `gadmin backup` and `gadmin restore`
+* node xref:tigergraph-server:cluster-and-ha-management:expand-a-cluster.adoc[expansion] and xref:tigergraph-server:cluster-and-ha-management:shrink-a-cluster.adoc[shrink].
+* gsql command: `clear graph store`
+* gsql command: `drop all`
+* gsql command: `import graph all`
+
+=== When GSE is reset
+
+When GSE is reset (`gadmin reset gse`), the CDC may lose some mapping between vid and uid.
+The "uid" field in generated CDC message results as "UNKNOWN".
+
+== CDC Limitations
+
+=== Limitation on CDC Setup
+==== No HA support
+This CDC feature does not yet support xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc[High Availability (HA)].
+Additionally, the “CDC service” only runs on Replica 1.
+When Replica 1 is down, the CDC service will also stop working.
+
+==== Not applicable on DR cluster
+CDC is intended to record changes to a data source.
+DR clusters are replicas, not sources.
+
+=== Limitation on CDC Message
+When distinguishing between modification and insertion for vertex/edge attribute modification, the TigerGraph CDC message will have the `"operator": "insert"` key value pair, same as vertex/edge insertion.
+However, the `"content"` will only contain the field for the modified attribute.
+
+==== No CDC message for implicit edge deletion
+When a vertex is deleted, any edge that uses the vertex as source or target will be implicitly deleted.
+However, TigerGraph CDC currently does not generate a CDC message for such “implicit edge deletion”.
+
+==== No CDC message for implicit source vertex insertion
+For insertion/modification on undirected edge, or directed edge with reverse edge type, the TigerGraph database will implicitly insert source and target vertex if it does not exist (This behavior can be configured via `VERTEX_MUST_EXIST` in a loading job and `POST` data api).
+In this scenario, TigerGraph CDC will generate a CDC message with `"operator": "insert-only"` for target vertex (See the section “Extra CDC message for Edge Update“ ), however there is no CDC message for source vertex.
+
+==== Stuck at special uid “UNKNOWN”
+If the uid is `"UNKNOWN"` for either insertion or deletion delta messages, TigerGraph CDC will get stuck at that message.
+TigerGraph CDC will resume once it receives another vertex deletion message with a uid that is not `"UNKNOWN"`.
+

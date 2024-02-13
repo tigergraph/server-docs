@@ -1,0 +1,155 @@
+= CDC State Monitoring
+
+== State Monitoring
+.Check the state of CDC Service with this command:
+[console]
+----
+grun_p gpe "cat $(gadmin config get System.DataRoot)/gstore/0/part/cdc.yaml"
+----
+
+The cdc state file should only exist on GPE Replica 1 node of each partition:
+
+* `GPE_1#1`
+* `GPE_2#1`
+
+.The response will look like this:
+[console]
+----
+------------------ Output example for cdc.yaml on 1x2 cluster -------------------
+### ---- (m1)_10.128.0.77 ---0--
+tid: 3752092
+safe_persistent_tid: 3752091
+split_index: 0
+index: 0
+### ---- (m2)_10.128.0.84 ---1--
+cat: /home/tigergraph/tigergraph/data/gstore/0/part/cdc.yaml: No such file or directory
+----
+
+.For each CDC state field, see the table below:
+[cols="2", separator=¦ ]
+|===
+¦ Field ¦ Meaning
+
+¦ `tid`
+¦ The tid is the tid of the delta batch (largest tid) that was most recently written to external kafka.
+For a transaction, it’s the tid of the last delta batch for the transaction (must be COMMIT), which can be used to represent the transaction id.
+
+¦ `safe_persistent_tid`
+¦ The `safe_persistent_tid` is the tid of the earliest delta batch among all open transactions that are not committed/rolled-back in CDC.
+If there’s no open transactions, this is the same as tid.
+
+All delta batches with tid `<safe_persistent_tid>` must have been written to external kafka.
+
+¦ `split_index`
+¦ For non-transaction, it’s always 0. For transactions, the split_index is the index of the delta batch that was most recently written to external kafka among all delta batches for the same transaction.
+
+¦`index`
+¦ The index is an index of delta messages in a delta batch that was most recently written to external kafka.
+|===
+
+== State of DIM Service
+
+.Check the state of DIM(Deleted Id Map) service with this command:
+[console]
+----
+grun_p gpe "cat $(gadmin config get System.DataRoot)/gstore/0/part/deleted_idmap_state.yaml"
+----
+
+.Check disk usage of DIM(Deleted Id Map) service with this command:
+[console]
+----
+grun_p gpe "du -sh $(gadmin config get System.DataRoot)/gstore/0/part/deletedID_store"
+----
+
+The dim state file exists on all GPE nodes, unlike the cdc state file.
+
+.The response will look like this:
+[console]
+----
+------------ Output example for deleted_idmap_state.yaml on 1x2 cluster ------------
+### ---- (m1)_10.128.0.77 ---0--
+posted_delta_curr_tid: 3752092
+posted_delta_next_split_index: 1
+stored_deletedvid_curr_tid: 2275848
+purged_deletedvid_curr_tid: 3752091
+### ---- (m2)_10.128.0.84 ---0--
+posted_delta_curr_tid: 3752092
+posted_delta_next_split_index: 1
+stored_deletedvid_curr_tid: 2275848
+purged_deletedvid_curr_tid: 3752091
+----
+
+[CAUTION]
+====
+The purging task runs every 30 minutes by default.
+====
+
+.For each DIM state field, see the table below:
+[cols="2", separator=¦ ]
+|===
+¦ Field ¦ Meaning
+
+¦`posted_delta_curr_tid`
+¦ When reading a delta message with `tid=tid_origin` that contains a vertex deletion message, TigerGraph will collect `uid` for deleted vertex, then build a special vid-uid delta, and post back to deltaQ.
+The `posted_delta_curr_tid` is the most recently posted delta’s `tid_origin`.
+
+¦ `posted_delta_next_split_index`
+¦ The `posted_delta_next_split_index` is the most recently posted delta’s `split_index` + 1.
+
+All `vertex-deletion` deltas with (`tid`, `split_index`) smaller than (`posted_delta_curr_tid`, `posted_delta_next_split_index`) will be handled by main delta handling process to generate an extra `deleted vid` delta into deltaQ.
+
+¦ `stored_deletedvid_curr_tid`
+¦ When processing the special `vid-uid` delta for a deleted vertex, TigerGraph saves the `vid-uid` entry in the local RocksDB.
+The variable `stored_deletedvid_curr_tid` represents the `tid_origin` of the most recently stored delta, indicating it has been flushed to disk, not solely in memory.
+
+All `deleted vid` deltas with an origin `tid` smaller than this value (excluding it) have already been processed and stored in RocksDB.
+
+Note: The `idmap` is cached in memory, and if the map size is small (configured in `GPE.BasicConfig.Env` as `DIMCacheLimitInMB`, set at `30MB`), it is not flushed to disk.
+Consequently, this `tid` may lag behind in such cases.
+
+¦`purged_deletedvid_curr_tid`
+¦ Periodically, TigerGraph purges the entries in RocksDB based on the `safe_persistent_tid`.
+This is because the CDC already used some of the `vid-uid` entries and wrote to external Kafka, hence we don’t need these entries anymore.
+
+¦ `purged_deletedvid_next_tid`
+¦ Purges `deleted vid` delta’s `tid_origin`.
+The `tid_orgin` represents the `tid` of origin delta that contains the vertex deletion message.
+All `deleted vid-uid` entries with `tid_orgin` smaller than this already have been purged from RocksDB.
+
+Configure this with `GPE.BasicConfig.Env: DIMPurgeIntervalInMin`), and update this `tid` if purging is actually performed.
+|===
+
+== CDC Reset
+
+Please run the following steps to reset cdc.
+
+. Stop related services
++
+[console]
+----
+gadmin stop gpe -y
+----
++
+[NOTE]
+====
+After a CDC reset, the previous data updates before `stop gpe` will be ignored by TigerGraph CDC.
+Only new data updates will be produced to external kafka.
+====
+
+
+. Clear state and data files for cdc
++
+[console]
+----
+grun_p gpe "rm $(gadmin config get System.DataRoot)/files/cdc#*"
+grun_p gpe "rm $(gadmin config get System.DataRoot)/gstore/0/part/cdc.yaml"
+grun_p gpe "rm $(gadmin config get System.DataRoot)/gstore/0/part/deleted_idmap_state.yaml"
+grun_p gpe "rm -rf $(gadmin config get System.DataRoot)/gstore/0/part/deletedID_store"
+----
+
+. Start services
++
+[console]
+----
+gadmin start all
+----
