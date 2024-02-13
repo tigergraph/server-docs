@@ -30,12 +30,11 @@ image::AutheticationWorkflow.png[]
 . The authorization server validates the request and, if successful, responds with an access token.
 . The user application or the client uses the access token with the Bearer authentication scheme in the HTTP Authorization header to access a protected resource from the TG RESTPP server.
 
-== Access Token
-A JSON Web Token (JWT) includes a JSON object containing information meant for sharing.
+=== Access Token
+A JWT includes a JSON object containing information meant for sharing.
 
 To ensure data integrity, each JWT is cryptographically signed, preventing unauthorized modification by clients or malicious parties.
-
-The payload data within the JWT consists of key-value pairs, commonly referred to as JWT claims.
+The `payload` data within the JWT consists of key-value pairs, commonly referred to as JWT "claims".
 
 These claims encompass essential information such as details about the authenticated user, issue time, expiration time, and various other attributes.
 
@@ -115,7 +114,7 @@ The payload contains statements about the entity (typically, the user) and any a
 }
 ----
 
-This preview version supports the following claims:
+Currently supported claims are as follows:
 [cols="3", separator=¦ ]
 |===
 ¦ Claim / Payload Field ¦ Type ¦ Description
@@ -154,7 +153,7 @@ To create the signature, the Base64-encoded header and payload are taken, along 
 
 HMAC and RSA algorithms are supported for signing and verification.
 
-== User Guide
+== User Guide Overview
 To use a JWT token for authentication three things should be done first.
 
 * Enable RESTPP Authentication
@@ -170,12 +169,12 @@ For testing purposes, users can generate a public key using a public tool such a
 Ensure that the public key configured and the public key in the JWT Token match.
 ====
 
-=== Scope of Access
+==== Scope of Access
 Access tokens *without* the `graph` claim are global tokens and inherit all permissions of the user on any graph.
 
 Tokens *with* the `graph` claim only inherit permissions for the specified graph assigned to the user.
 
-=== Apply Configuration Changes
+==== Apply Configuration Changes
 When using `gadmin config` to change any parameters, you need to run `gadmin config apply -y` for it to take effect.
 You can change multiple parameters and then run `gadmin config apply` for all of them together.
 
@@ -186,7 +185,7 @@ gadmin config apply -y
 gadmin restart restpp -y
 ----
 
-=== Enable RESTPP Authentication
+==== Enable RESTPP Authentication
 
 .Enable RESTPP Authentication with this command:
 [console]
@@ -203,8 +202,9 @@ There are two ways to configure a public key or secret of a JWT token in TigerGr
 Both instances, users need to specify the URL of the public key or secret in the configuration or use `“@filepath”` when specifying either the public or secret key content from a separate file in your environment.
 
 === Non-Interactive
-Users can configure JWT token non-interactively by using the gadmin CLI tool by running one of these commands for RSA or HMAC.
+Users can configure JWT token non-interactively by using the `gadmin` CLI tool by running one of these commands for RSA or HMAC.
 
+==== RSA
 .For RSA, run the command below:
 [console]
 ----
@@ -237,8 +237,13 @@ $ gadmin config set Security.JWT.RSA.PublicKey https://storage.com/qe-test-data/
 ----
 $ gadmin config set Security.JWT.RSA.PublicKey @test.pem
 [   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+----
 
- 	Or for HMAC, run the command below:
+==== HMAC
+
+.For HMAC, run the command below:
+[console]
+----
 $ gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>
 ----
 
