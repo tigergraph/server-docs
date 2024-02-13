@@ -1,0 +1,338 @@
+= OIDC JWT Authentication
+:TOC:
+
+== Introduction
+We're excited to introduce JWT Token-Based Authentication to TigerGraph through private preview. This will enhance our platform's security and meet the evolving needs of our customers. This document is designed to provide a detailed outline and user guide to explore this new feature.
+Why We Created JWT Token-Based Authentication?
+OIDC Token-Based Authentication in JSON Web Token (JWT) format allows better control over application access, securing users and their data, while also laying the groundwork for more intricate authorization scenarios in the future.
+
+== What is OIDC?
+OpenID Connect (OIDC) serves as an identity layer integrated with the OAuth 2.0 framework. It enables third-party applications to authenticate the end-user's identity and access basic user profile information.
+For more information please see OpenID’s documentation.
+
+== What is JWT?
+OIDC utilizes JSON web tokens (JWTs), obtainable through flows that adhere to OAuth 2.0 specifications. JWTs are an open standard. It allows for a JSON object to be exchanged between two parties securely and in a compact and easily containable way.
+For more information please see the documentation Introduction to JSON Web Tokens.
+
+== What this Guide Covers
+This guide will cover any prerequisites, the authentication workflow, and JWT key concepts before delving into a user guide with commands to get started.
+
+== Prerequisites
+This guide assumes some basic understanding of TigerGraph’s user access through RESTPP and Built-in API Endpoints.
+Authentication Workflow
+
+At a high level the authentication workflow is as following:
+
+The user application or the client requests authorization from the third-party OIDC server or authorization server.
+The authorization server validates the request and, if successful, responds with an access token.
+The user application or the client uses the access token with the Bearer authentication scheme in the HTTP Authorization header to access a protected resource from the TG RESTPP server.
+
+== Key concepts of JWT
+
+Now that we are familiar with the authentication workflow let's dive into some JWT key concepts to help us understand the format the data is stored and transferred in.
+
+=== Access Token
+A JSON Web Token (JWT) includes a JSON object containing information meant for sharing.
+To ensure data integrity, each JWT is cryptographically signed, preventing unauthorized modification by clients or malicious parties. The payload data within the JWT consists of key-value pairs, commonly referred to as JWT claims. These claims encompass essential information such as details about the authenticated user, issue time, expiration time, and various other attributes.
+For more information on claims, please see this link on Json Web Token Claims.
+
+.Here is a sample encoded JWT Token:
+[Console]
+----
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+----
+
+.And here is an example of the decoded output:
+[console]
+----
+# header
+{
+"alg":"RS256",
+"typ":"JWT"
+}
+
+# payload data
+{
+"iss": "TigerGraph Inc",
+"exp": 1647334196,
+"sub": "kevin",
+"iat": 1516239022,
+"graph": "test_graph"
+}
+
+# signature
+RSASHA256(
+base64UrlEncode(header) + "." +
+base64UrlEncode(payload),
+<Public-Key>,
+<Private-Key>)
+)
+----
+
+Let's now break down this output in more detail.
+
+==== Header
+The JSON Object Signing and Encryption Header comprises a set of Header Parameters.
+That consists of a name/value pairs like the hashing algorithm being used (e.g. HMAC, or RSA) as “alg” and the “typ” or type of token.
+
+[console]
+----
+# header
+{
+"alg":"RS256",
+"typ":"JWT"
+}
+----
+
+Supported cryptographic algorithms for both signing and verification are below:
+[cols="2", separator=¦ ]
+|===
+¦ Supported Algorithm ¦ Types
+
+¦ HMAC¦ HS256, HS384, HS512
+
+¦ RSA ¦ RS256, RS384, RS512
+|===
+
+==== Payload
+The payload contains statements about the entity (typically, the user) and any additional attributes, which are again, referred to as “claims”. In this example, our entity is a user.
+
+[console]
+----
+# payload data
+{
+"iss": "TigerGraph Inc",
+"exp": 1647334196,
+"sub": "kevin",
+"iat": 1516239022,
+"graph": "test_graph"
+}
+----
+
+This preview version supports the following claims:
+[cols="3", separator=¦ ]
+|===
+¦ Claim / Payload Field ¦ Type ¦ Description
+
+¦`iss` ¦ string ¦ [optional] Issuer of the JWT Token.
+
+¦ `exp` ¦ int ¦ Time after which the JWT expires.
+
+¦ `sub` ¦ string ¦ Subject of the JWT, this is the TigerGraph Username
+
+¦ `iat` ¦ int ¦ Time at which the JWT was issued; can be used to determine age of the JWT
+
+¦ `graph` ¦ string
+¦ [optional] Graph reference in the token.
+
+Defines the scope of the privileges for the user.
+
+The scope is set to global if no “graph” is specified.
+|===
+
+For more information on claims and claims not yet supported, please see https://jwt.io/introduction.[JWT documentation], under the section head “Payload”.
+
+==== Signature
+The signature is used to verify that the sender of the JWT is who it says it is and to ensure that the message wasn't changed along the way.
+[console]
+----
+# signature
+RSASHA256(
+base64UrlEncode(header) + "." +
+base64UrlEncode(payload),
+<Public-Key>,
+<Private-Key>)
+)
+----
+To create the signature, the Base64-encoded header and payload are taken, along with a secret or private key, and signed with the algorithm specified in the header.
+
+HMAC and RSA algorithms are supported for signing and verification.
+
+== User Guide
+To use a JWT token for authentication three things should be done first.
+
+* Enable RESTPP Authentication
+* Configure the JWT Token
+* Generate a 3rd Party JWT Token
+
+These three steps can be done in any order.
+For testing purposes, users can generate a public key using a public tool such as https://cryptotools.net/rsagen[] or use the public key generated from the JWT token generator.
+
+[NOTE]
+====
+Ensure that the public key configured and the public key in the JWT Token match.
+====
+
+== Scope of Access
+Access tokens *without* the `graph` claim are global tokens and inherit all permissions of the user on any graph.
+
+Tokens *with* the `graph` claim only inherit permissions for the specified graph assigned to the user.
+
+=== Apply Configuration Changes
+When using `gadmin config` to change any parameters, you need to run `gadmin config apply -y` for it to take effect.
+You can change multiple parameters and then run `gadmin config apply` for all of them together.
+
+.After modifying the configurations, run the following commands to apply the changes:
+[console]
+----
+gadmin config apply -y
+gadmin restart restpp -y
+----
+
+=== Enable RESTPP Authentication
+
+.Enable RESTPP Authentication with this command:
+[console]
+----
+gadmin config set RESTPP.Factory.EnableAuth true
+----
+
+== Configure the JWT Token
+
+=== Setup JWT Token gadmin Configuration
+There are two ways to configure a public key or secret of a JWT token in TigerGraph through `gadmin config` set.
+
+* Non-Interactive
+* Interactive
+
+Both instances, users need to specify the URL of the public key or secret in the configuration or use `“@filepath”` when specifying either the public or secret key content from a separate file in your environment.
+
+=== Non-Interactive
+Users can configure JWT token non-interactively by using the gadmin CLI tool by running one of these commands for RSA or HMAC.
+
+.For RSA, run the command below:
+[console]
+----
+$ gadmin config set Security.JWT.RSA.PublicKey <public-key content or URL or @filepath>
+----
+
+.Ex: Public-key content
+[console]
+----
+$ gadmin config set Security.JWT.RSA.PublicKey "
+> -----BEGIN PUBLIC KEY-----
+> MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCmFEHTpcKKKUl/L/gu5Vt5xKTT
+> FCj1YpJmsGabB6p5MqlDhXP/UZg29vVxN5eTXKULv8ITWcSDfYQ1YmDmj0cP8kDu
+> n5WhOYiBK7vufuECtgQ1B8fMMCd7RMoqdnQLrwGDTFqqVm6jfOXnbXDX6zfkAnmv
+> qDxmUcsvNZMzoDOvyQIDAQAB
+> ----END PUBLIC KEY----
+> "
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+----
+
+.Ex: URL
+[console]
+----
+$ gadmin config set Security.JWT.RSA.PublicKey https://storage.com/qe-test-data/public_key_test.pem
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+----
+
+.Ex: @”filepath”
+[console]
+----
+$ gadmin config set Security.JWT.RSA.PublicKey @test.pem
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+
+ 	Or for HMAC, run the command below:
+$ gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>
+----
+
+.Ex: shared-secret-key content:
+[console]
+----
+$ gadmin config set Security.JWT.HMAC.Secret "S2V5LU11c3QtQmUtYXQtbGVhc3QtMzItYnl0ZXMtaW4tbGVuZ3RoIQ=="
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+----
+
+.Ex: URL
+[console]
+----
+$ gadmin config set Security.JWT.HMAC.Secret https://storage.com/qe-test-data/public_key_test.pem
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+----
+
+.Ex: @”filepath”
+[console]
+----
+$ gadmin config set Security.JWT.HMAC.Secret @test.pem
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+----
+
+This next configuration is optional, but you may also specify the JWT issuer as well, the default of this claim is left empty:
+[console]
+----
+$ gadmin config set Security.JWT.Issuer "<issuer-name>"
+----
+
+If Security.JWT.Issuer is configured, the `iss` claim will be verified against this configured value. Otherwise, the issuer will not be verified.
+
+=== Interactive
+Additionally, users can set up JWT, interactively, by running this command to begin security configuration:
+`gadmin config` entry security
+
+.This initiates interactive mode and by following the prompts, one by one, users are guided to setup JWT, as shown in the following example:
+[console]
+----
+$ gadmin config entry security
+Security.JWT.Issuer [ ]: The Issuer for jwt token header
+New: User
+
+Security.JWT.RSA.PublicKey [  ]: Set Public key for JWT token auth
+[Warning] Please use @filepath to set value of Security.JWT.RSA.PublicKey in interactive mode, or leave it empty to skip
+New: @/path/to/pub.file
+
+Security.JWT.HMAC.Secret [  ]: Set Secret for JWT token auth
+[Warning] Please use @filepath to set value of Security.JWT.HMAC.Secret in interactive mode, or leave it empty to skip
+New:
+[   Info] no changes for Security.JWT.HMAC.Secret
+----
+
+=== Generate a 3rd Party JWT Token
+The JWT token is generated by a 3rd party authentication server from the customer side. For testing purposes, we recommend using a tool such as this one though any JWT token generated will also work.
+
+.Below you can take this sample data and use it as a test payload:
+[console]
+----
+{
+"iat": 1699205547,
+"exp": 1703865599,
+"iss": "TigerGraph",
+"sub": "tigergraph",
+"graph": "graph"
+}
+----
+
+Here is an example of the generated token from the payload data.
+
+=== Use JWT Token
+Now that the JWT token is generated, its usage is the same as using a GSQL plain text token, allowing access to RESTPP endpoints.
+
+For example, this is used to run the query {queryName} on the graph {graphName}:
+[console]
+----
+curl -s -H "Authorization: Bearer <JWT-TOKEN>" -X GET http://127.0.0.1:9000/query/{graphName}/{queryName}
+----
+
+=== Potential Error Messages
+When using a JWT token for authentication, please consider these scenarios and handle the corresponding errors appropriately when working with JWT tokens for authentication.
+
+[cols="2", separator=¦ ]
+|===
+¦ Error Type ¦ Description
+
+¦ Expiration ¦ If the token has expired, an error is thrown to indicate its expiration.
+
+¦ User/Graph Existence ¦ If the user specified by sub claim does not exist in the TigerGraph system, an error is thrown to indicate the user does not exist.
+
+¦ Graph Scope ¦ If the graph specified in the token is not accessible to the user due to insufficient permissions, an error is thrown to indicate permission denied.
+
+¦ Issuer Match ¦ If the issuer in the token does not match the configured issuer value set by gadmin, an error throws to indicate an invalid issuer.
+
+¦ Format ¦ If the token is in an incorrect format, contains invalid JSON or fails in base64 decoding, an error throws to indicate format or decoding failure.
+
+¦ Verification ¦ If the verification process of the JWT token fails, an error is thrown to indicate verification failure.
+
+¦ Other ¦ Any other exceptions not mentioned above, an error throws to indicate an invalid token.
+|===
+
+
