@@ -1,0 +1,435 @@
+= Setup Row Policy
+:toc:
+
+== Prerequisites
+
+This guide assumes some basic understanding of xref:rbac-row-policy/rbac-row-policy.adoc[].
+
+Additionally, before going through the examples below it's a good idea to read through creating a user and assigning roles in our current documentation on xref:tigergraph-server:user-access:user-management.adoc[] and xref:tigergraph-server:user-access:role-management.adoc[].
+
+Lastly, it helps to create users or have users ahead of time, one with the role of `superuser` and with a role other than `superuser`, to switch between and see the row policies take effect.
+
+== Row Policy
+Row Policies are used for fine-grained control over who can access specific data in your TigerGraph graph database. They help ensure that only authorized users with specific roles or attribute values can see certain pieces of information.
+
+Here's what you need to know:
+
+* Row policies can be applied to vertices, which are data entries, and dictate who gets access to what based on roles and attributes.
+* Use xref:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions] to manage these fine-grained controls and permissions.
+* A GSQL function used in a row policy must have a boolean return type, meaning it returns either "true" or "false."
+
+=== Creating Row Policies
+This guide will give an example of how to set a new row policy for graph `Social_Net`.
+
+For the schema and data of graph `Social_Net`, refer to xref:gsql-ref:appendix:example-graphs.adoc[] and for more information on loading data and defining a schema in GSQL.
+
+See our documentation on xref:gsql-ref:tutorials:gsql-101/load-data-gsql-101.adoc[Load Data] and xref:gsql-ref:tutorials:gsql-101/define-a-schema.adoc[Define a Schema] in the xref:gsql-ref:tutorials:gsql-101/index.adoc[] tutorial.
+
+In this example, a row policy will be applied on the vertex `Person`, only the users who have the role, `superuser`, can see all vertices of type `Person`, other users can only access the vertices whose attribute `gender` is `Male`.
+
+=== Define Your Row Policy
+Prepare a GSQL Function to act as your row policy's "filter."
+This function will determine who gets access to what.
+
+1. Switch to the global context in GSQL:
++
+[console,gsql]
+----
+GSQL > use global
+----
+
+2. Create a GSQL package to store the functions:
++
+[console,gsql]
+----
+GSQL > create package lib
+----
+
+3. Now, create the filter GSQL function.
++
+This function should return true if the user meets the criteria for access.
+In this example, it allows access if the attribute `gender` is `Male` or if the user has the `superuser` role:
++
+[console,gsql]
+----
+GSQL > create function lib.myFilter(string str) returns(bool) {
+return str == "Male" OR is_granted_to_current_roles("superuser");
+}
+----
+
+=== Apply the Row Policy
+Now, that the filter function is ready, apply the row policy to a specific `vertex` type.
+
+For this example, use the `Person` vertex type.
+
+1. Make sure that the scope is still in global:
++
+[console,gsql]
+----
+GSQL > use global
+----
+
+2. Apply the row policy to the `Person` vertex type using the filter function on the gender attribute:
++
+[console, gsql]
+----
+GSQL > ALTER VERTEX Person IN GLOBAL SET ROW POLICY lib.myFilter on (gender)
+----
++
+[NOTE]
+====
+If the filter function is not already installed, it will be installed automatically when applying the row policy.
+====
+
+3. Double check if this policy can be seen at the global level.
++
+.Ex. To view row policies applied globally:
+[console, gsql]
+----
+GSQL > show row policy
+- ROW_POLICY ON Person:
+lib.myFilter (gender)
+----
+
+4. Create a Query to Test Row Policy.
++
+.Ex. From here create a simple query to test:
+[console,gsql]
+----
+GSQL > use graph Social_Net
+
+GSQL > create query myTest() for graph Social_Net {
+vSet = {Person.*};
+print vSet;
+}
+----
++
+This query should print all vertices with the type `Person`.
+After the row policy is applied, if a user with the role `superuser` wants to run this query, they should see all vertices with the `Person` type.
++
+.Ex. Run query:
+[console,gsql]
+----
+GSQL > install query myTest
+GSQL > run query myTest()
+{
+    "version": {
+        "edition": "enterprise",
+        "api": "v2",
+        "schema": 0
+    },
+    "error": false,
+    "message": "",
+    "results": [
+    {
+        "vSet": [
+    {
+    "v_id": "person7",
+    "v_type": "person",
+    "attributes": {
+        "id": "person7",
+        "gender": "Male"
+    }
+},
+{
+    "v_id": "person5",
+    "v_type": "person",
+    "attributes": {
+        "id": "person5",
+        "gender": "Female"
+    }
+}
+...
+}
+----
++
+But if a user is not granted the role of `superuser`, they should only see the vertices of the `Person` type, whose attribute `gender` is `Male`.
++
+[console,gsql]
+----
+GSQL > run query myTest()
+{
+    "version": {
+        "edition": "enterprise",
+        "api": "v2",
+        "schema": 0
+    },
+    "error": false,
+    "message": "",
+    "results": [
+    {
+        "vSet": [
+        {
+            "v_id": "person1",
+            "v_type": "person",
+            "attributes": {
+                "id": "person1",
+                "gender": "Male"
+            }
+        }
+        ]
+    }
+    ]
+}
+----
+
+5. Now, to specify a row policy which is used as a vertex parameter, block the query with an exception, if this provided parameter is blocked by a row policy.
++
+.Ex. Create another simple query:
+[console,gsql]
+----
+GSQL > use graph Social_Net
+GSQL > create query myTest2(vertex v1) for graph Social_Net {
+print v1;
+}
+GSQL > install query myTest2
+----
++
+This query will accept a universal parameter and print it.
+As well, users can verify if this row policy works for this query,
++
+.Ex. Run the query using "person1" on `Person`:
+[console,gsql]
+----
+GSQL > run query myTest2(("person1" ,"Person"))
+{
+"version": {
+"edition": "enterprise",
+"api": "v2",
+"schema": 0
+},
+"error": false,
+"message": "",
+"results": [
+{
+"v1": "person1"
+}
+]
+}
+----
++
+But, if a user, which is not granted the role of `superuser`, they will only see an exception message
++
+.Ex. Result:
+[console,gsql]
+----
+GSQL > run query myTest2(("person2" ,"Person"))
+Used a generic vertex v1 blocked by a row policy.
+----
++
+In this case, "person1" has the attribute `gender` of `Male`, but "person2" has the attribute `gender` of `Female`.
+Hence, when using "person2" as the parameter, this query will raise an exception, informing the user that this query is blocked by a row policy.
+
+=== Applying Row Policies Beyond Queries
+Row policies also influence built-in functions and REST API endpoints.
+The behavior of these functions and endpoints depends on whether the user is authorized to access certain vertices.
+For more information on REST API and REST API endpoints see the documentation on xref:tigergraph-server:API:index.adoc[] and xref:tigergraph-server:API:built-in-endpoints.adoc[].
+
+.Row polices can be applied to these endpoints:
+[cols="1", separator=¦ ]
+|===
+¦ REST API
+
+¦ GET /api/restpp/graph/{graph_name}/vertices/{vertex_type}
+¦ GET /api/restpp/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}
+¦ DELETE /api/restpp/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}
+¦ GET /api/restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
+¦ DELETE /api/restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
+¦ GET/POST /api/restpp/kstep_expansion/{graph_name}
+¦ GET/POST /api/restpp/shortestpath/{graph_name}
+¦ GET/POST /api/restpp/allpaths/{graph_name}
+¦ GET/POST /api/restpp/searchvertex/{graph_name}
+¦ DELETE /api/restpp/graph/{graph_name}/delete_by_type/vertices/{vertex_type}/
+
+|===
+
+For the endpoints above, row policies will affect the result if the current user is not authorized to access some vertices.
+
+Before running built-in endpoints, a user will need to generate the token, so as to enable REST++ authentication.
+Refer to the doc here to xref:master@cloud:solutions:access-solution/rest-requests.adoc#_3_generate_a_token[generate a token].
+
+Similar to the previous example above, to print the vertex "person2" using a built-in query a user can do so with the following command:
+
+[console]
+----
+curl -w "\n" -H "Authorization: Bearer {your_token}" -s -X GET 'http://127.0.0.1:9000/graph/socialNet/vertices/person/person2'
+----
+
+If you are using a user that does not hold the role of `superuser`, you will get the following:
+
+.Ex. Result:
+[console]
+----
+{
+    "code": "611",
+    "error": true,
+    "message": "This entity access operation has been denied by a RBAC filter.",
+    "version": {
+        "api": "v2",
+        "edition": "enterprise",
+        "schema": 1
+    }
+}
+----
+
+For other cases, there are multiple results for this query.
+For example, the batch retrieve methods for vertex type of `Person`, will only get the vertices that pass the row policy, if a user does not hold the role of `superuser`.
+
+[conosole]
+----
+curl -w "\n" -H "Authorization: Bearer {your_token}" -s -X GET 'http://127.0.0.1:9000/graph/socialNet/vertices/person/'
+----
+
+.Ex. Result:
+[console]
+----
+{
+    "error": false,
+    "message": "",
+    "results": [
+    {
+        "attributes": {
+        "gender": "Male",
+        "id": "person1"
+    },
+    "v_id": "person1",
+    "v_type": "person"
+    },
+    {
+    "attributes": {
+        "gender": "Male",
+        "id": "person3"
+    },
+    "v_id": "person3",
+    "v_type": "person"
+    },
+    {
+    "attributes": {
+        "gender": "Male",
+        "id": "person6"
+    },
+    "v_id": "person6",
+    "v_type": "person"
+    },
+    {
+    "attributes": {
+        "gender": "Male",
+        "id": "person7"
+    },
+    "v_id": "person7",
+    "v_type": "person"
+    },
+    {
+    "attributes": {
+        "gender": "Male",
+        "id": "person8"
+    },
+    "v_id": "person8",
+    "v_type": "person"
+    }
+    ],
+    "version": {
+    "api": "v2",
+    "edition": "enterprise",
+    "schema": 1
+    }
+}
+----
+
+=== Clear Row Policies
+In order to release restrictions users can always clear the row policy.
+
+For example, the built-in query `delete_by_type`, will be blocked if the vertex type specified in the query has a row policy.
+
+.To clear an existing row policy and to release the restriction, follow these commands:
+[console,gsql]
+----
+GSQL > use global
+GSQL > ALTER VERTEX person IN GLOBAL CLEAR ROW POLICY
+----
+
+.After this policy is cleared successfully,  show the row policies on the `global` scope again:
+[console,gsql]
+----
+GSQL > use global
+GSQL > show row policy
+There is no row policy on global
+----
+
+.Then, run the same query again to verify the result:
+[conosle, gsql]
+----
+GSQL > run query myTest()
+----
+
+=== Show Policy
+.A schema like the one below can be used to show what policies are currently active:
+
+[console,gsql]
+----
+create vertex person(PRIMARY_ID id string, name string, code int)
+create graph poc_graph(*)
+use graph poc_graph
+CREATE SCHEMA_CHANGE JOB poc_graph_sc_job {
+ADD VERTEX company(PRIMARY_ID id string, name string, code int);
+}
+run schema_change job poc_graph_sc_job
+----
+
+Assume a `global` vertex type of `person` and a graph called `poc_graph`, with a local vertex of: `company`.
+
+.Ex. Set the row policies for them:
+[console,gsql]
+----
+use global
+alter vertex person in global set row policy lib.func on (code)
+
+use graph poc_graph
+alter vertex company in graph poc_graph set row policy lib.func on (code)
+----
+
+.Ex. To show row policies on different scopes:
+[console,gsql]
+----
+GSQL > use global
+GSQL > show row policy
+- ROW_POLICY ON person:
+lib.func (code)
+
+GSQL > show row policy on person
+- ROW_POLICY ON person:
+lib.func (code)
+
+GSQL > use graph poc_graph
+GSQL > show row policy
+- ROW_POLICY ON person:
+lib.func (code)
+- ROW_POLICY ON company:
+lib.func2 (code)
+
+GSQL > show row policy on person
+- ROW_POLICY ON person:
+lib.func (code)
+
+GSQL > show row policy on company
+- ROW_POLICY ON company:
+lib.func2 (code)
+----
+
+After a row policy is applied or cleared, the affected queries will be deprecated and then reinstalled automatically.
+
+* For a `global` type it will affect the queries in all graphs that have the `global` scope.
+* For a `local` type it will affect the queries in this corresponding `local` graph scope.
+
+Similarly, if a schema change, which is related to a row policy, (ex: a vertex is removed from a graph) the row policy applied to this vertex will be removed as well, and queries will be reinstalled after this schema change job.
+This operation will reinstall all installed queries.
+
+=== Options
+
+==== -n
+Option `-n`, will only deprecate affected queries rather than additionally reinstall them.
+It is helpful when applying multiple policies in a short time and after all the policies are applied, queries can be reinstall manually or be run in the `INTERPRET` mode.
+
+
+
+
