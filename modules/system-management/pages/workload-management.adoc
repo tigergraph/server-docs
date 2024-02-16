@@ -6,7 +6,9 @@ TigerGraph provides the following mechanisms for you to manage workload in your 
 
 [#_workload_queue]
 == Workload Queue
-You can configure workload queues so that queries are routed to the appropriate queues during runtime. Each queue has a few properties, such as the maximum number of concurrent queries allowed and the maximum number of queries that can be queued so it can help prevent the system overload. You can grant workload queues to users based on their roles so that the users can submit queries to the appropriate workload queues to be managed.
+You can configure workload queues so that queries are routed to the appropriate queues during runtime.
+Each queue has a few properties, such as the maximum number of concurrent queries allowed and the maximum number of queries that can be queued so it can help prevent the system overload.
+You can grant workload queues to users based on their roles so that the users can submit queries to the appropriate workload queues to be managed.
 
 === What APIs are managed by the workload queue?
 The following types of requests will be routed to either the default workload queue or the one specified by the user:
@@ -56,6 +58,7 @@ The request body must have the following fields at the top level:
 [cols="20h,~,20h"]
 |===
 |Field|Description|Data type
+
 |`isEnabled`|The feature flag to enable or disable the workload queue.|`BOOL`
 |`queues`|The map of the available workload queues.|`OBJECT`
 |===
@@ -68,6 +71,7 @@ Each queue has the following properties:
 [cols="20h,~,~"]
 |===
 |Field|Description|Data type
+
 |`description`|The description of the queue.|`STRING` (< 256 characters)
 |`isDefault` (optional)|The flag to indicate if the queue is the default queue. Must be set to `true` for exactly one queue.|`BOOL`
 |`maxConcurrentQueries`|The maximum number of concurrent queries allowed in the queue.|`UINT` in the range of `(0, 131072)`
@@ -136,7 +140,9 @@ PUT WORKLOAD QUEUE FROM "{\"queues\":{\"OLTP\":{\"description\":\"OLTP queries\"
 ----
 GET /gsqlserver/gsql/workload-manager/configs
 ----
-Dump the queue configs so that the response would be the equivalent of the payload for `POST`. The purpose of this API is to retrieve the active configs and modify them on top of it. Other than the administrative purposes, one may use `SHOW WORKLOAD QUEUE` instead.
+Dump the queue configs so that the response would be the equivalent of the payload for `POST`.
+The purpose of this API is to retrieve the active configs and modify them on top of it.
+Other than the administrative purposes, one may use `SHOW WORKLOAD QUEUE` instead.
 
 ===== Example Request
 [source.warp, bash]
@@ -197,7 +203,9 @@ The request body must have the following fields at the top level:
 |`role` (optional)|The list of the role names to be granted/revoked.|`STRING` or `STRING[]`
 |===
 
-TIP: You can use the wildcard `"*"` to grant/revoke the queue to all users, groups, or roles. Note that `"*"` must be the only entry in the list when available.
+TIP:
+You can use the wildcard " * " to grant/revoke the queue to all users, groups, or roles.
+Note that " * " must be the only entry in the list when available.
 
 ===== Example Request
 Grant the queue `OLTP` to the user `u1` and `u2`:
@@ -248,7 +256,9 @@ REVOKE WORKLOAD QUEUE "OLTP" FROM ALL USERS
 REVOKE WORKLOAD QUEUE "OLTP" FROM ALL GROUPS
 REVOKE WORKLOAD QUEUE "OLTP" FROM ALL ROLES
 ----
-NOTE: Unlike REST API, the GSQL commands don't allow you to specify USER, GROUP, and ROLE in a command. You must use separate commands for each entity type.
+
+NOTE: Unlike REST API, the GSQL commands don't allow you to specify USER, GROUP, and ROLE in a command.
+You must use separate commands for each entity type.
 
 ==== Show Workload Queue
 
@@ -261,7 +271,10 @@ Show info on a specific workload queue or all.
 [cols="20h,~,20h"]
 |===
 |Parameter|Description|Data type
-|`id` (optional)|The ID of the queue to be shown. If not specified, all queues will be shown.|`STRING`
+
+|`id` (optional)|The ID of the queue to be shown.
+If not specified, all queues will be shown.
+|`STRING`
 |===
 
 ===== Example Request
@@ -297,6 +310,7 @@ The response will be the combination of configs and permission, e.g.
 [cols="20h,~"]
 |===
 |Status Code|Description
+
 |200|The queue info has been retrieved successfully.
 |403|The user doesn't have the privilege `READ_WORKLOAD_QUEUE`.
 |===
@@ -351,6 +365,7 @@ The response will include the information available to the general users.
 [cols="20h,~"]
 |===
 |Status Code|Description
+
 |200|The queue info has been retrieved successfully.
 |403|The user doesn't have the privilege `READ_DATA`.
 |===
@@ -395,7 +410,9 @@ Suppose we have configured the following workload queues that are the output of 
 }
 ----
 ===== Running a Query
-When running a query, you can specify the workload queue to run the query on. If the queue is not specified, the query will be routed to the default queue. To specify the queue in the GSQL shell, you can use the `-queue` option, e.g.
+When running a query, you can specify the workload queue to run the query on.
+If the queue is not specified, the query will be routed to the default queue.
+To specify the queue in the GSQL shell, you can use the `-queue` option, e.g.
 ----
 RUN QUERY -queue AdHoc q1()
 ----
@@ -408,7 +425,10 @@ curl \
   <hostname>:14240/restpp/query/ldbc_snb/q1"
 ----
 
-NOTE: If the given queue is not granted to the current user, the query will be rejected with the error code `REST-14000` and return `HTTP 422 Unprocessable Entity`. For example, if the user `tigergraph` who does not belong to the group `g3` or holds the role `r2` tries to run a query on the queue `AdHoc`, the query will be rejected.
+If the given queue is not granted to the current user, the query will be rejected with the error code `REST-14000` and return `HTTP 422 Unprocessable Entity`.
+
+For example, if the user `tigergraph` who does not belong to the group `g3` or holds the role `r2` tries to run a query on the queue `AdHoc`, the query will be rejected.
+
 
 NOTE: If the queue is full of capacity, the query will be rejected.
 
@@ -430,7 +450,9 @@ Return the status of the given workload queue on each GPE instance.
 |mode|`stats` or `verbose` (case-sensitive)|`STRING`
 |===
 
-NOTE: If the parameter `mode` is not specified, it will fall back to the default value `stats` which only gives the number of queries in the delay queue and the running set. If `verbose` is specified, the response will include the request IDs in the delay queue and the running set.
+If the parameter `mode` is *not* specified, it will fall back to the default value `stats` which only gives the number of queries in the delay queue and the running set.
+
+If `verbose` is specified, the response will include the request IDs in the delay queue and the running set.
 
 ===== Example Request
 [source.warp, bash]
@@ -518,7 +540,9 @@ curl \
 == Other Query Concurrency Control Methods
 
 === Limit the number of current built-in heavy queries
-WARNING: This configuration is deprecated as of TG 3.10.0 and will be removed in a future release. This is ignored once the xref:#_workload_queue[workload queue] feature is enabled.
+
+WARNING: This configuration is deprecated as of TG 3.10.0 and will be removed in a future release.
+This is ignored once the xref:#_workload_queue[workload queue] feature is enabled.
 
 TigerGraph has a few built-in queries that are memory-intensive, here referred to as "heavy".
 These queries tend to be invoked by applications such as GraphStudio.
@@ -534,7 +558,9 @@ $ gadmin config set RESTPP.WorkLoadManager.MaxHeavyBuiltinQueries 10
 You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
 
 === Limit number of concurrent queries
-WARNING: This configuration is deprecated as of TG 3.10.0 and will be removed in a future release. This is ignored once the xref:#_workload_queue[workload queue] feature is enabled.
+
+WARNING: This configuration is deprecated as of TG 3.10.0 and will be removed in a future release.
+This is ignored once the xref:#_workload_queue[workload queue] feature is enabled.
 
 You can use the `RESTPP.WorkLoadManager.MaxConcurrentQueries` parameter to set a limit of how many queries are allowed to be running concurrently.
 The count of these queries *does not include* the built-in heavy queries.
@@ -590,7 +616,9 @@ NOTE: If xref:_specify_replica_to_run_query_on[GSQL-REPLICA] header is used when
 
 === Round Robin routing
 
-The default query routing scheme is round-robin. The first query is managed by GPE 0, the next query by GPE 1, and so on. After the last GPE, the cycle returns to GPE 0.
+The default query routing scheme is round-robin.
+The first query is managed by GPE 0, the next query by GPE 1, and so on.
+After the last GPE, the cycle returns to GPE 0.
 
 Version 3.9.3 adds a system configuration parameter `RESTPP.CPULoadAware.Mode` to enable system administrators to select other query routing schemes:
 
