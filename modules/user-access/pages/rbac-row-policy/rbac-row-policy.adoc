@@ -3,7 +3,7 @@
 == Prerequisites
 
 This guide assumes some basic understanding of TigerGraph's query language GSQL.
-Refer to the xref:3.9@gsql-ref:tutorials:gsql-101/index.adoc[] and xref:3.9@gsql-ref:intro:index.adoc[] to get started using GSQL.
+Refer to the xref:gsql-ref:tutorials:gsql-101/index.adoc[] and xref:gsql-ref:intro:index.adoc[] to get started using GSQL.
 
 == Key Concepts
 RBAC Row policy introduces a number of key concepts:
@@ -111,8 +111,8 @@ Follow these rules to ensure it works seamlessly within row policies.
 * *Simplicity for Efficiency*: To keep things simple and optimized, GSQL Functions can only have one level of nested control flows.
 
 * *Calling Other Functions*: GSQL functions, can utilize some built-in functions:
-** xref:3.9@gsql-ref:querying:func/string-functions.adoc[]
-** xref:3.9@gsql-ref:querying:func/mathematical-functions.adoc[]
+** xref:gsql-ref:querying:func/string-functions.adoc[]
+** xref:gsql-ref:querying:func/mathematical-functions.adoc[]
 
 * *Context Function*: GSQL functions support new xref:#_context_functions[] like:
 ** xref:#_current_roles[]
@@ -331,7 +331,7 @@ Here are some important terms and details for object-based privileges:
 They can be things like `GLOBAL`, `VERTEX`, `EDGE`, etc.
 * *Privilege Scopes*: Define where these privileges apply, like `GRAPH`, `PACKAGE`, or `GLOBAL`.
 
-To see a complete list, as well as the legacy privilege syntax that the object-base privilege relate to, go to the xref:rbac-row-policy/row-policy-privlages-table.adoc[].
+To see a complete list, as well as the xref:tigergraph-server:reference:list-of-privileges.adoc[legacy privilege syntax] that the object-base privilege relate to, go to the xref:rbac-row-policy/row-policy-privlages-table.adoc[].
 
 === Privilege Commands
 
@@ -385,11 +385,14 @@ apply row policy
 ¦ Privilege ¦ Levels ¦ Operations
 
 ¦ READ ¦ global/graph ¦ show applied policy
-¦ WRITE ¦ global/graph ¦ apply row policy
+¦ WRITE ¦ global/graph
+
+¦ apply row policy
 
 clear row policy
 |===
 
+[#_built-in-roles]
 .For built-in roles, there are some changes as well:
 [cols="2", separator=¦ ]
 |===
@@ -411,6 +414,11 @@ READ_POLICY
 
 WRITE_POLICY on graph level
 |===
+
+[NOTE]
+====
+For a complete list of Built-in roles see xref:tigergraph-server:user-access:access-control-model.adoc#_built_in_roles[Built-in Roles]
+====
 
 == Context Functions
 
