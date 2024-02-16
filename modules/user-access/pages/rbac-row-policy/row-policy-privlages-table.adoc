@@ -1,0 +1,138 @@
+= RBAC: Row Policy Privileges Tables
+
+== App Data
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ ACCESS ¦ APP_DATA ¦ APP_DATA ¦ GLOBAL, GRAPH ¦ ACCESS_APP_DATA
+|===
+
+== Vertex
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ VERTEX ¦ DATA (means all vertices and edges) ¦ GLOBAL, GRAPH, TYPE, ATTRIBUTE ¦ READ_DATA ON VERTEX
+¦ CREATE ¦ VERTEX ¦ DATA (means all vertices and edges) ¦ GLOBAL, GRAPH, TYPE, ATTRIBUTE ¦ CREATE_DATA ON VERTEX
+¦ UPDATE ¦ VERTEX ¦ DATA (means all vertices and edges) ¦ GLOBAL, GRAPH, TYPE, ATTRIBUTE ¦ UPDATE_DATA ON VERTEX
+¦ DELETE ¦ VERTEX ¦ DATA (means all vertices and edges) ¦ GLOBAL, GRAPH, TYPE ¦ DELETE_DATA ON VERTEX
+|===
+
+== Edge
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ EDGE ¦ DATA (means all vertices and edges) ¦ GLOBAL, GRAPH, TYPE, ATTRIBUTE ¦ READ_DATA ON EDGE
+¦ CREATE ¦ EDGE ¦ DATA (means all vertices and edges) ¦ GLOBAL, GRAPH, TYPE, ATTRIBUTE ¦ CREATE_DATA ON EDGE
+¦ UPDATE ¦ EDGE ¦ DATA (means all vertices and edges) ¦ GLOBAL, GRAPH, TYPE, ATTRIBUTE ¦ UPDATE_DATA ON EDGE
+¦ DELETE ¦ EDGE ¦ DATA (means all vertices and edges) ¦ GLOBAL, GRAPH, TYPE ¦ DELETE_DATA ON EDGE
+|===
+
+== Datasource
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ WRITE ¦ DATASOURCE ¦ DATASOURCES ¦ GLOBAL, GRAPH ¦ WRITE_DATASOURCE
+|===
+
+== File
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ FILE ¦ FILES ¦ GLOBAL ¦ READ_FILE
+¦ WRITE ¦ FILE ¦ FILES ¦ GLOBAL ¦ WRITE_FILE
+|===
+
+== Function
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ USE ¦ FUNCTION ¦ FUNCTIONS ¦ GLOBAL, PACKAGE, FUNCTION ¦ USE_FUNCTION (only on global)
+¦ WRITE ¦ FUNCTION ¦ FUNCTIONS ¦ GLOBAL ¦ WRITE_FUNCTION (only on global)
+|===
+
+== Global
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ CLEAR_GRAPHSTORE ¦ GLOBAL ¦  ¦  ¦ CLEAR_GRAPHSTORE
+¦ DROP_ALL ¦ GLOBAL ¦ ¦ ¦ DROP_ALL
+|===
+
+== Graph
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ DROP ¦ GRAPH ¦ GRAPHS ¦ GLOBAL  ¦ DROP_GRAPH
+¦ EXPORT ¦GRAPH ¦ GRAPHS ¦ GLOBAL ¦ EXPORT_GRAPH
+|===
+
+== Loading Job
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ LOADINGJOB ¦ LOADINGJOBS ¦ GLOBAL, GRAPH  ¦ READ_LOADINGJOB
+¦ EXECUTE ¦ LOADINGJOB ¦ LOADINGJOBS ¦  GLOBAL, GRAPH  ¦ EXECUTE_LOADINGJOB
+¦ WRITE ¦ LOADINGJOB ¦ LOADINGJOBS ¦  GLOBAL, GRAPH  ¦ WRITE_LOADINGJOB
+|===
+
+== Policy
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ POLICY ¦ POLICIES ¦ GLOBAL, GRAPH  ¦ READ_POLICY
+¦ WRITE ¦ POLICY ¦ POLICIES  ¦  GLOBAL, GRAPH  ¦ WRITE_POLICY
+|===
+
+== Proxy Groups
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ PROXYGROUP ¦ PROXYGROUPS ¦ GLOBAL, GRAPH  ¦ READ_PROXYGROUP
+¦ WRITE ¦ PROXYGROUP ¦ PROXYGROUPS  ¦  GLOBAL ¦ WRITE_PROXYGROUP
+|===
+
+== Query
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ QUERY ¦ QUERIES ¦ GLOBAL, GRAPH  ¦ READ_QUERY
+¦ WRITE ¦ QUERY ¦ QUERIES ¦ GLOBAL, GRAPH ¦ WRITE_QUERY
+|===
+
+== Role
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ ROLE ¦ ROLES ¦ GLOBAL, GRAPH  ¦ READ_ROLE
+¦ WRITE ¦ ROLE ¦ ROLES ¦ GLOBAL, GRAPH ¦ WRITE_ROLE
+|===
+
+== Schema
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ READ ¦ SCHEMA ¦ SCHEMA ¦ GLOBAL, GRAPH  ¦ READ_SCHEMA
+¦ WRITE ¦ SCHEMA ¦ SCHEMA ¦ GLOBAL, GRAPH ¦ WRITE_SCHEMA
+|===
+
+== Tag
+[cols="5", separator=¦]
+|===
+¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
+
+¦ ACCESS ¦ TAG ¦ TAGS ¦ GLOBAL, GRAPH  ¦ ACCESS_TAG
+|===

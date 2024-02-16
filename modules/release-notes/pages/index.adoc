@@ -5,12 +5,12 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server {page-component-version} LTS was released on Febuary 28th, 2024.
+TigerGraph Server 3.10.0 LTS was released on Febuary 28th, 2024.
 
 LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
 
 == Key New Features
-=== 3.10.1
+=== 3.10.0
 * xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc[Change Data Capture (CDC)] - This equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems maintained by the user.
 
 
@@ -20,7 +20,9 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 * xref:tigergraph-server:troubleshooting:audit-log.adoc[] - Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
 === GSQL Command and Querying Language
-* TBD
+
+* xref:gsql-ref:querying:func/context-functions.adoc[] - Context functions are a set of new built-in functions that provide insights into the user's information and work inside `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
+
 
 ==== Loading
 
@@ -31,6 +33,7 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 === Kubernetes Operator
 
 === Security
+* xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy] - is used to control access to specific rows of data in TigerGraph.
 
 == TigerGraph Suite Updates
 === Admin Portal
@@ -42,9 +45,12 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 === TigerGraph Insights
 
 == Fixed issues
-=== Fixed and Improved in 3.10.1
+=== Fixed and Improved in 3.10.0
+
 
 ==== Functionality
+* Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258)
+* Fixed issue where some `GPR` and `Interpret` queries that specified the built-in `filter()` function would fail installation because of a row policy or tag filter (GLE-6448).
 
 ==== Crashes and Deadlocks
 
@@ -56,9 +62,9 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 
 == Known Issues
 
-[cols="4", separator=¦ ]
+[cols="5", separator=¦ ]
 |===
-¦ Description ¦ Found In ¦ Fixed In ¦ Issue ID
+¦ Description ¦ Found In ¦ Workaround ¦ Fixed In ¦ Issue ID
 
 ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
 

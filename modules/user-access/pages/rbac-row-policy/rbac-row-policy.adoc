@@ -1,0 +1,513 @@
+= RBAC: Row Policy Key Concepts
+
+== Prerequisites
+
+This guide assumes some basic understanding of TigerGraph's query language GSQL.
+Refer to the xref:3.9@gsql-ref:tutorials:gsql-101/index.adoc[] and xref:3.9@gsql-ref:intro:index.adoc[] to get started using GSQL.
+
+== Key Concepts
+RBAC Row policy introduces a number of key concepts:
+
+* xref:#_packages[]: were created to serve as containers for functions, making it easier to organize and manage user created access control rules.
+
+* xref:#_gsql_functions[]: are a new concept to help customize how to handle attribute values and processes. Think of these as tools for fine-tuning access control.
+
+* xref:#_object_based_privileges[]: are new mechanisms for managing privileges.
+
+* xref:#_context_functions[]: are new built-in functions which can retrieve user information in a current session.
+
+* xref:#_privilege_protection[]: adds new RBAC privileges for `FUNCTION` and `POLICY`.
+
+
+== Packages
+Packages act like containers, helping keep everything tidy.
+A package can also contain sub-packages, giving an even more organized workspace.
+
+=== Creating Packages
+
+.Ex. To create a package called `lib1`:
+[console, gsql]
+----
+GSQL > create package lib1
+Successfully created Packages: [lib1].
+----
+
+.Ex. To create a sub-package `lib2` inside `lib1`:
+[console, gsql]
+----
+GSQL > create package lib1.lib2
+Successfully created Packages: [lib1.lib2].
+----
+
+=== Showing Packages
+Use the `show package` command to get a glimpse of the package organization.
+
+.Ex. To see all packages in the global scope, just type:
+[console, gsql]
+----
+GSQL > show package
+Packages on global:
+- lib1
+- lib3
+----
+The result will be a list of all the packages that have been created.
+To get a more detailed view, including sub-packages and objects within a specific package specify the package name.
+
+.Ex. To see details of `lib1`:
+[console]
+----
+GSQL > show package lib1
+Packages "lib1":
+- Sub-Packages:
+- lib2
+- Object:
+- Functions:
+- lib1.func1(string s) RETURNS (bool)
+- Template Queries:
+- test1(string a, int b)
+----
+
+This command will reveal what's inside "lib1" including GSQL functions and Template Queries.
+
+To `show packages` based on a naming pattern like "lib" use `-r "[pattern].*"`
+
+.Ex. To show packages that start with `lib`:
+[console]
+----
+GSQL > show package -r "lib.*"
+lib1
+lib1.lib2
+lib3
+lib3.lib2
+----
+
+== Dropping Packages
+
+Dropping a package is to remove the package.
+Doing this will also remove all sub-packages and objects within it.
+
+.Ex. To drop the `lib1` package, including all sub-packages:
+[console]
+----
+GSQL > drop package lib1
+Successfully dropped Packages: [lib1].
+----
+
+== GSQL Functions
+A GSQL Function is a new schema-free catalog object, which only supports limited GSQL syntax.
+GSQL functions are like custom tools for performing specific tasks in GSQL, but it's important to note that they can't use schema related entities like vertices and edges.
+
+[NOTE]
+====
+Right now, GSQL Functions can only be used specifically in the context of row policies and to control access at the row level.
+====
+
+Follow these rules to ensure it works seamlessly within row policies.
+
+* *Parameter Types*: Use primitive data types like `bool`, `uint`, `int`, `float`, `double`, `string`, and `datetime` as building blocks and inputs to GSQL Functions.
+
+* *Return Types*: GSQL Functions can give one of three results: `bool`, `uint`, or `int`.
+
+* *Simplicity for Efficiency*: To keep things simple and optimized, GSQL Functions can only have one level of nested control flows.
+
+* *Calling Other Functions*: GSQL functions, can utilize some built-in functions:
+** xref:3.9@gsql-ref:querying:func/string-functions.adoc[]
+** xref:3.9@gsql-ref:querying:func/mathematical-functions.adoc[]
+
+* *Context Function*: GSQL functions support new xref:#_context_functions[] like:
+** xref:#_current_roles[]
+** xref:#_is_granted_to_current_rolesstring_rolename[]
+
+* *No Custom Functions Inside GSQL*: Users are restricted from creating their own functions within a GSQL function.
+
+=== Create Function
+
+To create a GSQL Function, declare the function, specify its parameters, define its body, and set the expected return type.
+
+.Ex. Here's a simple example creating a function called `func2` in the `lib1` package:
+[console, gsql]
+----
+GSQL > create function lib1.func2(int param1, float param2, string param3) returns (bool)
+{
+    // Function's code goes here
+    // Use parameters, variables, control flows, and more
+    // In the end, the function returns a result of type bool
+}
+----
+
+.Ex. Here's a more detailed example with some example values:
+[console]
+----
+GSQL > create function lib1.func2(int param1, float param2, string param3) returns (bool)
+{
+    EXCEPTION zero (40001);             // Exception declaration
+    int i = 0;                       	// Variable declaration
+    bool result = false;             	// Variable declaration
+    i = param1;                     	// Variable assignment
+    string j = upper(param3); 		// Variable declaration with function call
+    SumAccum<String> @@ss;     		// Global accum declaration
+    @@ss += param3;             			// Global accum assignment
+
+    IF i == 0 THEN              			// If control flow
+    raise zero ("Error: i is zero"); 	// Raise exception statement
+    END;                              			// end of control flow
+
+    CASE param3                     			 // Case-when control flow
+    WHEN "ENG" THEN result = true;
+    WHEN "MANAGER" THEN result = false;
+    ELSE result = param2 > 2.1;
+    END;                             			// end of control flow
+
+    RETURN result;                  			// Return statement
+}
+----
+
+It is important to note, GSQL Functions *do not* support cases where functions have two nested control flows.
+
+.Ex. The example below will *not* work:
+[console]
+----
+GSQL > create function p1.f6(string label, string company_name, int age) returns (bool)
+{
+    if label == "ENG" then
+        if age > 2 then
+            return true;
+        end;
+    end;
+    return false;
+}
+----
+
+In order to support nested control flows, a GSQL Function would need to be written like the case below.
+
+.Ex. The example below will work:
+[console]
+----
+create function p1.f6(string label, string company_name, int age) returns (bool)
+{
+    if label == "ENG" AND age > 2 then
+            return true;
+        end;
+    return false;
+}
+----
+
+=== Drop Function
+
+To remove a GSQL function from a package, use `drop function`.
+
+.Ex. This drops the "lib1.func2" function:
+[console, gsql]
+----
+GSQL > drop function lib1.func2
+Successfully dropped function: [lib1.func2].
+----
+
+.Ex. To drop functions, but that does not include functions in the sub-packages:
+[console, gsql]
+----
+GSQL > drop function lib1.*
+Successfully dropped functions: [lib1.func1, lib1.func2].
+----
+
+=== Install Function
+To make functions available for use, they must be installed.
+
+.Ex. This installs the `lib1.func2` and shows an example install message:
+[console, gsql]
+----
+GSQL > install function lib1.func1
+Start installing functions for package 'lib1' ...
+Package function: lib1-func1
+Select 'm1' as compile server, now connecting ...
+Node 'm1' is prepared as compile server.
+[=================================================] 100% (1/1)
+Function installation finished for package 'lib1'.
+----
+
+.Ex. To install all functions use one of these commands:
+[console]
+----
+GSQL > install function  ALL
+GSQL > install function **
+----
+
+Specific functions can also be excluded or included.
+To install functions in a specific package (ex. `lib1`).
+
+.Ex. This command would *exclude* functions in the `lib1` sub-packages.
+[console]
+----
+GSQL > install function lib1.*
+----
+
+.Ex. This command would install functions in a specific package (ex. `lib1`) and also include functions in the sub-packages:
+[conosole]
+----
+GSQL > install function lib1.**
+----
+
+=== Install Options
+Additionally, two options are available for function installation.
+
+.Ex. The `-force` option forcefully installs this GSQL function.
+[console]
+----
+GSQL > install function -force lib1.func2
+----
+
+.Ex. The `-debug` option enables a debug feature for this GSQL function.
+[console]
+----
+GSQL > install function -debug lib1.func2
+----
+
+=== Show Function
+To see what functions are available, use the `show function` command.
+This command shows specific functions, functions within a package, or even all functions.
+
+.Ex. To show details for the `lib1.func2` function:
+[console, gsql]
+----
+GSQL > show function lib1.func2
+create function lib1.func2() returns (bool) {
+RETURN true;
+}
+----
+
+.Ex. To show all functions in the `lib1` package, but do not include functions in the sub-packages:
+[console]
+----
+GSQL > show function lib1.*
+create function lib1.func1() returns (bool) {
+RETURN true;
+}
+create function lib1.func2() returns (bool) {
+RETURN true;
+}
+----
+
+.Ex. Use `-r` to show all functions that start with `lib`:
+[console]
+----
+GSQL > show function -r "lib.*"
+create function lib1.func1() returns (bool) {
+RETURN true;
+}
+create function lib1.func2() returns (bool) {
+RETURN true;
+}
+create function lib2.func1() returns (bool) {
+RETURN true;
+}
+----
+
+.Ex. To show all functions available:
+[console]
+----
+GSQL > show function *
+create function lib1.func1() returns (bool) {
+RETURN true;
+}
+create function lib1.func2() returns (bool) {
+RETURN true;
+}
+create function lib2.func1() returns (bool) {
+RETURN true;
+}
+----
+
+== Object-Based Privileges
+
+This mechanism allows users to grant or revoke privileges based on specific objects.
+Allowing users to specify the privilege names, objects, and other details.
+
+=== Privilege Details
+
+Here are some important terms and details for object-based privileges:
+
+* *Privilege Names*: Are the specific privileges that can be granted or revoked, such as `ACCESS`, `CREATE`, `READ`, etc.
+* *Privilege Objects*: Are the objects to which the privileges apply.
+They can be things like `GLOBAL`, `VERTEX`, `EDGE`, etc.
+* *Privilege Scopes*: Define where these privileges apply, like `GRAPH`, `PACKAGE`, or `GLOBAL`.
+
+To see a complete list, as well as the legacy privilege syntax that the object-base privilege relate to, go to the xref:rbac-row-policy/row-policy-privlages-table.adoc[].
+
+=== Privilege Commands
+
+To grant or revoke object-based privileges, use these commands.
+
+.Ex. Granting Privileges:
+[console, gsql]
+----
+GRANT privilegeNames ON privilegeObjects IN privilegeScopes TO roleNames
+----
+
+.Ex. Revoking Privileges:
+[console, gsql]
+----
+REVOKE privilegeNames ON privilegeObjects IN privilegeScopes FROM roleNames
+----
+
+For users that grant privileges in the legacy privilege syntax, transitioning to object-based privilege syntax is simple.
+
+.Compare Legacy and Object based syntax:
+[cols="2", separator=¦ ]
+|===
+¦ Privilege Syntax ¦  Example
+
+¦  Legacy ¦ grant privilege READ_DATA, CREATE_DATA, UPDATE_DATA, DELETE_DATA on global to role1
+
+¦  Object-Based ¦ grant READ, CREATE, UPDATE, DELETE on ALL DATA in global to role1
+
+|===
+
+=== Privilege Protection
+Additionally, there are new RBAC privileges to protect the `FUNCTION` and `POLICY`.
+
+.FUNCTION
+[cols="3", separator=¦ ]
+|===
+¦ Privilege ¦ Levels ¦ Operations
+
+¦ USE ¦ global/package/function ¦
+
+show function
+
+apply row policy
+¦ WRITE ¦ global/package/function ¦ create/replace/drop function
+
+|===
+
+.Policy
+[cols="3", separator=¦ ]
+|===
+¦ Privilege ¦ Levels ¦ Operations
+
+¦ READ ¦ global/graph ¦ show applied policy
+¦ WRITE ¦ global/graph ¦ apply row policy
+
+clear row policy
+|===
+
+.For built-in roles, there are some changes as well:
+[cols="2", separator=¦ ]
+|===
+¦ Built-in Role ¦ New Privilege
+
+¦ superuser ¦
+
+USE_FUNCTION
+
+WRITE_FUNCTION on global level
+
+READ_POLICY
+
+WRITE_POLICY on global level
+
+¦ admin ¦
+
+READ_POLICY
+
+WRITE_POLICY on graph level
+|===
+
+== Context Functions
+
+xref:gsql-ref:querying:func/context-functions.adoc[] are a set of new built-in functions that provide insights into the user's information during their current session.
+They offer valuable insights into user roles, making it easier to manage access and privileges within TigerGraph.
+
+They work in: `INSTALLED` queries, `INTERPRET` queries, and xref:#_gsql_functions[].
+
+Before users can use Context Functions, they must enable REST++ authentication.
+If it's not enabled, users will see an error message.
+To learn more about REST++ authentication see xref:tigergraph-server:API:authentication.adoc[REST API Authentication].
+
+Additionally, in order to use the context functions explicitly, ensure that the user holds the `READ_ROLE` privilege on the current graph, unless a xref:tigergraph-server:user-access:rbac-row-policy/setup-row-policy.adoc#_row_policy[Row Policy] already includes the context functions.
+
+
+=== current_roles()
+The `current_roles()` function gives users the role names granted to the current user, presented as a `SetAccum` of strings.
+For instance, a user holds the roles `USregion` and `NAregion`, when this user runs a query or GSQL Function with `current_roles()`, it will return a `SetAccum` containing the strings, `USregion` and `NAregion`.
+
+.Ex. Create the roles:
+[console,gsql]
+----
+GSQL > create role USregion
+GSQL > create role NAregion
+GSQL > grant role USregion, NAregion to user1
+GSQL > grant read on all roles in global to USregion
+GSQL > grant read on all data in global to USregion
+----
+
+.Ex. Create a query with `current_roles()` :
+[console,gsql]
+----
+GSQL > create query test() {
+print current_roles();
+}
+----
+
+.Ex. The result will show the user's roles:
+[console,gsql]
+----
+GSQL > run query test()
+{
+    "version": {
+        "edition": "enterprise",
+        "api": "v2",
+        "schema": 0
+    },
+    "error": false,
+    "message": "",
+    "results": [
+    {
+        "current_roles()": [
+            "USregion",
+            "NAregion"
+        ]
+    }
+    ]
+}
+----
+
+=== is_granted_to_current_roles(string roleName)
+
+`is_granted_to_current_roles()` tells if the current user holds a particular role specified in the parameter.
+This function returns a boolean value.
+
+.Ex. Syntax:
+[console,gsql]
+----
+is_granted_to_current_roles("USregion")
+----
+
+This should return true, because the user's role set contains `USregion` that was granted in the previous section.
+
+.Ex. Create a query that prints `is_granted_to_current_roles()` and input `USregion`:
+[console, gsql]
+----
+create query test2() {
+print is_granted_to_current_roles("USregion");
+}
+----
+
+.Ex. Run the query and the result will show whether the user has the specified role:
+[console,gsql]
+----
+GSQL > run query test2()
+{
+    "version": {
+        "edition": "enterprise",
+        "api": "v2",
+        "schema": 0
+    },
+    "error": false,
+    "message": "",
+    "results": [
+    {
+        "is_granted_to_current_roles(\"USregion\")": true
+    }
+    ]
+}
+----
