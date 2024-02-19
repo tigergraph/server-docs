@@ -21,7 +21,7 @@ Additionally, Administrators use audit logs to track user activity, and security
 
 * Access to the audit log is restricted to those who have access to TigerGraph logs.
 
-* Sensitive data or PII in the audit log, such as credentials or sensitive query payload information is masked.
+* Sensitive data or PII in the audit log, such as credentials or sensitive query payload information is masked by default.
 
 === Performance and Scalability
 * Enabling audit logging records audit logs to separate files, adding a slight disk I/O workload.
@@ -36,7 +36,7 @@ However, compared to the debug log, the audit log contains significantly less da
 
 ¦ `System.Audit.Enable` ¦ Setting to enable audit logs. ¦ boolean (false)
 
-¦ `System.Audit.DataBaseName` ¦ Modify the DataBaseName Field. ¦ name (TigerGraph)
+¦ `System.Audit.DataBaseName` ¦ Modify the DataBaseName field in log file header. ¦ name (TigerGraph)
 
 ¦ `System.Audit.LogDirRelativePath` ¦ Modify the relative audit log path. ¦ path string (<TG_LogRoot>/AuditLog/)
 
@@ -46,12 +46,16 @@ However, compared to the debug log, the audit log contains significantly less da
 
 ¦ `System.Audit.LogConfig.LogRotationFileNumber` ¦ Modify the max amount of Audit Log files in the Audit Log folder. ¦ Integer (100)
 
+¦ `System.Audit.MaskPII`
+¦ Mask Sensitive data or PII in the audit log.
+¦ Default value is: `true`
+
 |===
 
 Additionally, all audit log files are stored in JSON format.
 Each log entry is a JSON object, and the log file is one JSON array of these objects.
 
-For more information see section xref:audit-log.adoc#_consuming_audit_logs[].
+For more information see section xref:audit-log.adoc#_consuming_audit_logs[] or for a complete list of TigerGraph `gadmin` configs see xref:tigergraph-server:reference:configuration-parameters.adoc[].
 
 === Apply Configuration Changes
 
@@ -146,10 +150,10 @@ All audit log files are stored in JSON format, even when users are actively inte
 ----
 [
     {"serverHostIP":"127.0.0.1","databaseName":"TigerGraph","version":"1.0","timestamp":"2023-12-04 07:56:20.8"},
-    {"endpoint":"/gsql/login","clientHost":"127.0.0.1:43746","failedAttempts":0,"userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"login succeed","timestamp":"2023-12-04 07:56:34.128","actionName":"login","status":“SUCCESS”},
-    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:43746","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created user 'u1'.","timestamp":"2023-12-04 07:56:34.984","actionName":"createUser","status":“SUCCESS”},
-    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:54746","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created query 'printVertex'.","timestamp":"2023-12-04 07:58:53.045","actionName":"createQuery","status":“SUCCESS”},
-    {"endpoint":"/gsql/library","clientHost":"127.0.0.1:54770","userName":"tigergraph","authType":"USER_PASS","message":"callTemplateQuery succeed","timestamp":"2023-12-04 08:00:14.703","actionName":"callTemplateQuery","status":“SUCCESS”}
+    {"endpoint":"/gsql/login","clientHost":"127.0.0.1:43746","clientOSUsername":"OSusername","failedAttempts":0,"userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"login succeed","timestamp":"2023-12-04 07:56:34.128","actionName":"login","status":“SUCCESS”},
+    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:43746","clientOSUsername":"OSusername","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created user 'u1'.","timestamp":"2023-12-04 07:56:34.984","actionName":"createUser","status":“SUCCESS”},
+    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:54746","clientOSUsername":"OSusername","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created query 'printVertex'.","timestamp":"2023-12-04 07:58:53.045","actionName":"createQuery","status":“SUCCESS”},
+    {"endpoint":"/gsql/library","clientHost":"127.0.0.1:54770","clientOSUsername":"OSusername",,"userName":"tigergraph","authType":"USER_PASS","message":"callTemplateQuery succeed","timestamp":"2023-12-04 08:00:14.703","actionName":"callTemplateQuery","status":“SUCCESS”}
 ]
 ----
 
@@ -185,6 +189,7 @@ Each activity will have its own audit log entry and fields.
     "userName": "tigergraph",
     "authType": "password",
     "clientHost": "<IP or FQDN>:<Port>",
+    "clientOSUsername":"OSusername",
     "userAgent": "GSQL Shell",
     "endpoint": "/gsql/file",
     "actionName": "createQuery",
@@ -204,6 +209,7 @@ This field indicates how many times this user failed to provide the correct cred
     "userName": "tigergraph",
     "authType": "SAML SSO",
     "clientHost": "<IP or FQDN>:<Port>",
+    "clientOSUsername":"OSusername",
     "userAgent": "GraphStudio",
     "endpoint": "/gsql/simpleauth",
     "actionName": "login",
