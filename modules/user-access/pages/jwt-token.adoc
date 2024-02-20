@@ -194,7 +194,7 @@ gadmin config set RESTPP.Factory.EnableAuth true
 
 == Setup JWT Token gadmin Configuration
 
-=== CA certificate
+=== Configuration
 
 Users can set the URL for public key or secret settings with:
 
@@ -209,63 +209,6 @@ or
 ----
 Security.JWT.HMAC.Secret
 ----
-
-Users need to rely on a CA certificate (corresponding to the xref:tigergraph-server:reference:configuration-parameters.adoc#_environment_variables[environment variable] `SSL_CA_CERT`) to establish the connection with the URL being set.
-This env config is only needed when the URL fails with `Problem with the SSL CA cert (path? access rights?)` or a related error.
-
-For all potential JWT errors see the section xref:tigergraph-server:user-access:jwt-token.adoc#_potential_error_messages[potential error messages].
-
-The storage location of the CA certificate also may differ with the operating system being used.
-
-* In Ubuntu, as a single file (PEM bundle) in `/etc/ssl/certs/ca-certificates.crt`.
-
-* In Centos, by default, the SSL certificates on CentOS are stored in the `/etc/pki/tls/certs/` directory.
-
-Provided is an option for users to customized their own storage location of CA certificate by setting `SSL_CA_CERT` in `RESETPP.BasicConfig.Env`.
-
-For Example:
-
-1. Get the current environment variable list in TigerGraph with:
-+
-[conosle]
-----
-gadmin config get restpp.BasicConfig.Env
-----
-2. Then add `SSL_CA_CERT = /path/to/cacertificate` in the `RESETPP.BasicConfig.Env` list with:
-+
-[console]
-----
-gadmin config set rsestpp.BasicConfig.Env ${new env variables list}
-----
-
-.Here is the example:
-[console]
-----
-gadmin config get restpp.BasicConfig.Env
-LSAN_OPTIONS=suppressions=/home/tigergraph/suppressions.txt;
-LD_PRELOAD=/home/tigergraph/tigergraph/app/3.10.0/.syspre/usr/lib/x86_64-linux-gnu/libasan.so.5:$LD_PRELOAD;
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH;
-ASAN_OPTIONS=detect_leaks=0:alloc_dealloc_mismatch=0;
-
-gadmin config set RESTPP.BasicConfig.Env
-LSAN_OPTIONS=suppressions=/home/tigergraph/suppressions.txt;
-LD_PRELOAD=/home/tigergraph/tigergraph/app/3.10.0/.syspre/usr/lib/x86_64-linux-gnu/libasan.so.5:$LD_PRELOAD;
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH;
-ASAN_OPTIONS=detect_leaks=0:alloc_dealloc_mismatch=0;
-SSL_CA_CERT=/home/tigergraph/cacertificate/example/;
-
-gadmin config apply -y
-gadmin restart -y
-----
-
-[NOTE]
-====
-Existing environment variable may have some influence on the current use of TigerGraph.
-====
-
-If the `SSL_CA_CERT` is not set the default value is: `default value`.
-
-=== Configuration
 
 There are two ways to configure a public key or secret of a JWT token in TigerGraph through `gadmin config` set.
 
@@ -418,4 +361,61 @@ When using a JWT token for authentication, please consider these scenarios and h
 ¦ Other ¦ Any other exceptions not mentioned above, an error throws to indicate an invalid token.
 |===
 
+=== CA certificate
 
+Users need to rely on a CA certificate (corresponding to the xref:tigergraph-server:reference:configuration-parameters.adoc#_environment_variables[environment variable] `SSL_CA_CERT`) to establish the connection with the URL being set.
+This env config is only needed when the URL fails with the error log recorded in the RESTPP log file:
+
+[console]
+----
+I1207 11:57:25.605924 10349 sys_utility.cpp:275] Engine_RESTPP_system_utility|read URL content encountered an error in curl_easy_perform():
+Problem with the SSL CA cert (path? access rights?).
+----
+
+The storage location of the CA certificate also may differ with the operating system being used.
+
+* In Ubuntu, by defualt, it is set as a single file (PEM bundle) in `/etc/ssl/certs/ca-certificates.crt`.
+
+* In Centos, by default, the SSL certificates on CentOS are stored in the `/etc/pki/tls/certs/` directory.
+
+Provided is an option for users to customized their own storage location of CA certificate by setting `SSL_CA_CERT` in `RESETPP.BasicConfig.Env`.
+
+For Example:
+
+1. Get the current environment variable list in TigerGraph with:
++
+[conosle]
+----
+gadmin config get restpp.BasicConfig.Env
+----
+2. Then add `SSL_CA_CERT = /path/to/cacertificate` in the `RESETPP.BasicConfig.Env` list with:
++
+[console]
+----
+gadmin config set rsestpp.BasicConfig.Env ${new env variables list}
+----
+
+.Here is the example:
+[console]
+----
+gadmin config get restpp.BasicConfig.Env
+LSAN_OPTIONS=suppressions=/home/tigergraph/suppressions.txt;
+LD_PRELOAD=/home/tigergraph/tigergraph/app/3.10.0/.syspre/usr/lib/x86_64-linux-gnu/libasan.so.5:$LD_PRELOAD;
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH;
+ASAN_OPTIONS=detect_leaks=0:alloc_dealloc_mismatch=0;
+
+gadmin config set RESTPP.BasicConfig.Env
+LSAN_OPTIONS=suppressions=/home/tigergraph/suppressions.txt;
+LD_PRELOAD=/home/tigergraph/tigergraph/app/3.10.0/.syspre/usr/lib/x86_64-linux-gnu/libasan.so.5:$LD_PRELOAD;
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH;
+ASAN_OPTIONS=detect_leaks=0:alloc_dealloc_mismatch=0;
+SSL_CA_CERT=/home/tigergraph/cacertificate/example/;
+
+gadmin config apply -y
+gadmin restart -y
+----
+
+[NOTE]
+====
+Existing environment variable may have some influence on the current use of TigerGraph.
+====
