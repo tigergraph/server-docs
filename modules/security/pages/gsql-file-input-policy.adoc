@@ -1,0 +1,430 @@
+= File Input Policy
+
+GSQL file input policy allows users to apply restrictions on the location of local files used to load data to TigerGraph.
+
+== Allowlist and Blocklist
+
+The policy consists of an _allowlist_ and a _blocklist_:
+
+* Only paths that belongs to one of the `allowlists` will be allowed for input.
+* The blocklist has higher priority over the `allowlist`.
+** Ex. If a path belongs to both the `allowlist` and `blocklist` simultaneously, the path will be blocked.
+* Users can use `gadmin config` to set the `blocklist` and `allowlist` for the file input policy.
+
+[console]
+----
+gadmin config set GSQL.FileInputPolicy '["/__TG_DATA_ROOT__/gui/loading_data", "!/etc", "!/usr/lib"]'
+gadmin config apply -y
+gadmin restart gsql restpp -y
+----
+
+Similar to the xref:tigergraph-server:security:file-output-policy.adoc[] the value for the config is a list of strings that start with either `!/` for the `blocklist` or `/` for the `allowlist`.
+
+== Format
+
+The format of an entry in the `blocklist` or `allowlist` follow the rules below:
+
+* Paths can use data root: `__TG_DATA_ROOT__`, which will be translated to actual data root when it’s used.
++
+[NOTE]
+This is the same as `gadmin config get System.DataRoot`.
+
+* Paths must be an absolute path.
+** Paths must start with either `/` for `allowlist`, or `!/` for `blocklist`.
+** Dots are *not* allowed in the path (EX. `/a/../b`, `/a/./b`).
+** Paths should not end with `/` (EX.`/tmp/ → /tmp`).
+*** The only exception is for the root path.
+** Some commands will convert the input relative path to an absolute path with the GSQL client working directory (where the GSQL client was invoked)
+*** Examples include: `CREATE LOADING JOB`, `RUN LOADING JOB`, `CREATE CONNECTOR`.
+* No hidden path/files can be added to the `allowlist` (EX. `/home/.ssh`).
+** Hidden paths/files are allowed fto be added to the `blocklist` (EX.`!/home/.ssh`).
+
+== Default value for File Input Policy
+The default value for the GSQL.FileInputPolicy is the same as File Output Policy:
+`/`
+
+== Unmodifiable Implicit Blocklist
+
+[NOTE]
+====
+3.10 INPUT policy may cause back compatibility issue for customer upgrade from old version. See xref:#_backward_compatibility[] for more details.
+====
+
+This is applicable for both file `INPUT` and `OUTPUT` policy.
+
+The unmodifiable implicit blocklist includes:
+
+1. Any paths with hidden directory or file, (EX. `/home/tg/.ssh/id_rsa`, `/tmp/.mydata`)
+2. Any TigerGraph sensitive paths, including:
++
+[console]
+----
+[
+  APP_ROOT,
+  DATA_ROOT/configs,
+  DATA_ROOT/kafka,
+  DATA_ROOT/zk,
+  DATA_ROOT/etcd,
+  DATA_ROOT/gstore,
+  DATA_ROOT/ssh
+]
+----
++
+`APP_ROOT` is the `PARENT` directory from the path `gadmin config get System.AppRoot`.
+And `DATA_ROOT` is same from `gadmin config get System.DataRoot`.
+
+3. Linux's system sensitive directories, including:
++
+[console]
+----
+[
+  /bin,
+  /boot,
+  /dev,
+  /etc,
+  /lib,
+  /lib32,
+  /libx32,
+  /lib64,
+  /opt,
+  /proc,
+  /run,
+  /sbin,
+  /srv,
+  /sys,
+  /usr,
+  /var
+]
+----
+
+== Affected Operations
+
+During an upgrade, TigerGraph checks all existing queries and loading jobs and shows a `WARNING` message, if there exists blocked constant paths in queries or loading jobs.
+If there are any `WARNING` messages users are also prompted with a `Y/N` during upgrade to let the user decide to continue or abort upgrade.
+
+[NOTE]
+====
+For a non-interactive upgrade the default is `Y`.
+====
+
+=== Loading Job
+
+For a loading job, the input policy only takes into account the loading jobs on local files that are `RUN` and/or `CREATE`.
+
+[NOTE]
+====
+“CREATE LOADING JOB” and “RUN LOADING JOB” can use relative path, and GSQL server will use the working directory (where GSQL client was invoked) as base path to resolve absolute path.
+====
+
+==== RUN LOADING JOB
+
+When starting to run a file loading job check the given path and apply the file input policy to it.
+
+Below are two example cases:
+
+. Path for local data file:
+
++
+[console, gsql]
+----
+CREATE LOADING JOB load_ip FOR GRAPH test_graph {
+    DEFINE FILENAME f1 = "any:/tmp/data1.csv";;
+    LOAD f1
+        TO VERTEX account VALUES ($0, $0),
+        TO VERTEX actorIP VALUES ($1, $1),
+        TO EDGE event_property VALUES ($0 account, $1 actorIP)
+        ;
+}
+
+// Notice the path can be either absolute or relative
+RUN LOADING JOB load_ip USING f1="m1:./resources/data_set/gsql/k_step_neighber.csv"
+----
+
+. Path for config file:
++
+[console, gsql]
+----
+CREATE DATA_SOURCE KAFKA ka = "/tmp/kafka_broker.json" FOR GRAPH g
+CREATE LOADING JOB load_kafka {
+    // This path should also be considered
+    DEFINE FILENAME f1 = "$ka:/tmp/kafka_topic.json";
+    LOAD f1 TO VERTEX v1 VALUES($0, $1);
+}
+----
+
+==== Loading job from Directory
+
+Additionally, a loading job can use a directory instead of specific data file path for `FILENAME`.
+For example, when using the directory `/dir_1` as `FILENAME`, the TigerGraph loader will traverse all files in the directory to load data.
+
+If users define the input policy as `['/dir_1', '!/dir_1/data_1']`, so that the directory `/dir_1` is in `allowlist`, while a file `/dir_1/data_1` is in `blocklist` the TigerGraph Loader will skip the data file `/dir_1/data_1`.
+While still loading other files that are not in `blocklist`. (Ex. `/dir_1/data_2`, `/dir_1/data_3`, etc...).
+
+.Users will see a warning message in RESTPP log:
+[console]
+----
+[WARNING] The file "/dir_1/data_1" is skipped because it violates file input policy.
+----
+
+There are 2 ways to run loading jobs:
+
+1. The GSQL command:
++
+[console]
+----
+gsql -g G1 'run loading job load_job1'
+----
+2. The GSQL API:
++
+.Use the API to start the loading job and pass in the configuration json directly in string:
+[console]
+----
+curl --user tigergraph:tigergraph  -d '
+[
+   {
+      "name":"load_person",
+      "dataSources":[
+         {
+            "filename":"f1",
+            "name":"k1",
+            "path":"",
+            "config":{
+               "topic":"kiwi",
+               "partition_list":[
+                  {
+                     "start_offset":-2,
+                     "partition":0
+                  }
+               ]
+            }
+         }
+      ],
+      "streaming":false
+   }
+]
+' -X POST "http://localhost:8123/gsql/loading-jobs?graph=test_graph&action=start"
+----
+
+==== CREATE LOADING JOB
+
+If a path is explicitly given (Ex. `sys.data_root`) when creating a loading job, users can check the path during creation of the loading job and block it immediately if not allowed.
+
+== User-Created Query
+
+=== Installed Mode
+
+==== selectVertex
+
+`selectVertex` eill read existing vertices from a local file directly.
+
+[NOTE]
+====
+Users should check filepath for the function.
+====
+
+[console,gsql]
+----
+CREATE QUERY selectVertexEx(STRING filename) FOR GRAPH socialNet {
+    S1 = {SelectVertex(filename, $"c1", $1, ",", true)};
+    S2 = {SelectVertex(filename, $0, person, ",", true)};
+    PRINT S1, S2; # Both sets of inputs product the same result
+}
+----
+
+==== LoadAccum
+
+`LoadAccum` is supported in a query to load data from local file into global accumulator.
+
+[console, gsql]
+----
+CREATE QUERY load_accum_ex (STRING filename) FOR GRAPH Social_Net {
+    TYPEDEF TUPLE<STRING aaa, VERTEX<Post> ddd> Your_Tuple;
+        MapAccum<VERTEX<Person>, MapAccum<INT, Your_Tuple>> @@test_map;
+        GroupByAccum<STRING a, STRING b, MapAccum<STRING, STRING> strList> @@test_group_by;
+
+        @@test_map = { LOADACCUM (filename, $0, $1, $2, $3, ",", false)};
+        @@test_group_by = { LOADACCUM ( filename, $1, $2, $3, $3, ",", true) };
+    PRINT @@test_map, @@test_group_by;
+}
+----
+
+== Path for Configurations
+We also allow `parse` and `read` configurations from local file system.
+These commands can be protected by file input policy as well, including:
+
+[console, gsql]
+----
+CREATE DATA_SOURCE KAFKA k1 = "/path/to/config"
+
+// from 3.9.0
+CREATE CONNECTOR FROM "/tmp/conn.cfg"
+CREATE DATA_SOURCE STREAM s1 = "/tmp/ds_config.json"
+----
+
+[NOTE]
+====
+If the object `DATA_SOURCE/CONNECTOR` is already created, and users can change the file input policy.
+Then the existing object won’t be affected because the config file is already read when creating the object.
+
+Also, `CREATE DATA_SOURCE` can only run with *local gsql client*, because the file is `read` from GSQL server.
+====
+
+== Put UDF file
+
+File input policy can also be applied to where UDF files are uploaded from.
+
+[console, gsql]
+----
+gsql '
+PUT ExprFunctions FROM "resources/gsql/common/ExprFunctions.hpp"
+'
+----
+
+[NOTE]
+====
+Similar to xref:_execute_gsql_file[], this restriction *does not* apply to remote GSQL client.
+It only apply to local GSQL client.
+====
+
+== Execute GSQL File
+There are 2 ways to execute GSQL file.
+
+1. In a GSQL shell:
++
+[console, gsql]
+----
+GSQL > @hello.gsql
+----
+
+2. From GSQL client directly:
++
+[console, gsql]
+----
+gsql hello.gsql
+gsql -f hello.gsql
+----
+
+[NOTE]
+====
+For a remote GSQL client, users do not need to apply file input policy.
+
+However, users need to apply the file input policy to local GSQL clients to avoid reading local files.
+====
+
+== Backward Compatibility
+When upgrading from an old version:
+
+* GSQL will scan constant file paths in all queries and loading jobs in all graphs.
+* If violations of default file input/output policy are found (due to xref:_unmodifiable_implicit_blocklist[], a message will prompt the user to let them choose to continue or abort the upgrade.
+
+=== 3.9.3 to 3.10.0
+
+For more details, here is an example when upgrading from 3.9.3 to 3.10.0 and when there exists some violations of file input and output paths.
+
+* The TigerGraph upgrade displays 1 loading job (`loadData_1`) and 2 queries (`q1_FileInput` and `q2_FileOutput`).
+These 3 objects include constant paths that do not comply with the unmodifiable blocklist of file input or output policy.
+
+User can choose to continue or abort the upgrade.
+
+[IMPORTANT]
+====
+If continued, after the upgrade, the affected queries will fail to install and the loading jobs will fail to run.
+Users must rewrite the query/loading job in order to install them again.
+====
+
+[console]
+----
+>> bash install.sh -U
+
+...
+
+Do you want to switch platform to the new version now (it can be delayed to a later time)? (y/N): y
+
+...
+
+[PROGRESS]: 23:30:16 Verify dict and UDF file ...
+======= UPGRADE_OLD_VERSION: 3.9.3 =======
+Run UDF Policy check since the config GSQL.UDF.Policy.Enable is true.
+
+Verify UDF file at path: /home/tigergraph/tigergraph/data/gsql/udf/ExprUtil.hpp
+Uploaded UDF file does not exist. Skip compatibility check on it.
+
+Verify UDF file at path: /home/tigergraph/tigergraph/data/gsql/udf/ExprFunctions.hpp
+Uploaded UDF file does not exist. Skip compatibility check on it.
+Successfully finished verifying UDF compatibility.
+======== Start: Backward Compatibility Check on File Input/Output Policy ========
+Collecting constant paths that violate file policy ...
+------ Start graph: test_graph ------
+- Query q1_FileInput: [/etc/os_data]
+- Query q2_FileOutput: [/home/tigergraph/tigergraph/data/gstore/tg_data]
+- Loading Job loadData_1: [/tmp/.hidden/data.csv]
+------ Finish graph: test_graph ------
+======== Complete: Backward Compatibility Check on File Input/Output Policy ========
+File input/output violations were observed on constant paths from the listed objects above.
+The default file input/output policy requires file path must:
+1. Use absolute path, not use relative path.
+2. Not use hidden path or file like "/.ssh/data", "/.mydata".
+3. Not use any TigerGraph sensitive paths, including System.AppRoot and some paths under System.DataRoot.
+4. Not use Linux system sensitive paths, like "/etc", "/sys"
+For more details, please check our documentation on file input/output policy.
+If continue, after upgrade the affected queries will fail to install, and loading jobs will fail to run.
+Successfully finished verifying catalog.
+[GTEST_IL] Please check debug log at: /home/tigergraph/tigergraph-3.10.0-offline-fileinput/gsql-checker-log/DEBUG.20240208-233017.776
+
+Do you want to continue this upgrade? [y/N]:
+----
+
+[NOTE]
+====
+For a non-interactive upgrade (`bash install.sh -U -n`), the upgrade will choose “continue” automatically.
+====
+
+== Limitations
+
+=== Interpret Mode
+
+Features listed are not yet supported in *INTERPRET* mode yet.
+
+* `selectVertex`
+* `LoadAccum`
+* UDF functions
+
+=== Dynamic Paths during Upgrade
+
+During a TigerGraph upgrade, file input policy is not able to collect dynamic file paths during the check.
+
+.For example:
+[console]
+----
+CREATE QUERY qDynFile(STRING filename) {
+    FILE file1(filename);
+        file1.println("first line");
+}
+----
+
+After an upgrade, TigerGraph may throw runtime errors when a user tries to run an old script to run query or loading jobs.
+
+.For example:
+[console]
+----
+GSQL >> RUN QUERY qDynFile("/etc/os_data")
+Runtime Error: Linux system sensitive directory '/etc' is not allowed in path. Please use another path.
+----
+
+=== File Link
+
+Similar to file output policy a Linux file system supports symbolic links (symlinks) and hard links.
+Both symlinks and hard links are attributes of a file.
+A file can be marked a symlink or be a hard link to another file.
+
+TigerGraph file input policy can only control the link in the path to block or allow it.
+
+=== File System Permission
+
+If the system user of TigerGraph installation does not have a permission to read a file, there might be an error thrown when a user attempts to read the file, even if the file is in `allowlist`.
+
+This is also controlled by the operating system.
+
+=== Import Graph
+
+Applying a file input policy on Import Graph is not yet supported in TigerGraph.
