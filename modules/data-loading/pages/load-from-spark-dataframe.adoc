@@ -1,0 +1,598 @@
+= Load from Spark Dataframe
+
+The TigerGraph Spark Connector is used with
+https://spark.apache.org[Apache Spark] to read data from a Spark DataFrame (or Data Lake) and write to TigerGraph.
+
+Users can leverage it to connect TigerGraph to the Spark ecosystem and load data from any Spark data sources, e.g.:
+
+* Distributed file system: HDFS, S3, GCS and ABS
+* Streaming source: Kafka
+* Data warehouse: BigQuery, Snowflake and Redshift
+* Open table format: xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_delta_lake[Delta Lake], xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_iceberg[Iceberg] and xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_hudi[Hudi]
+
+This connector has multiple optimisations and is backward compatible with TigerGraph v3.6.0+. Although, the job level loading statistics is only available for v3.10.0+.
+
+[IMPORTANT]
+====
+The legacy xref:tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection Via JDBC Driver] will be deprecated. Please migrate to this new connector.
+====
+
+== Prerequisite
+
+
+=== Create a Loading Job
+[console, gsql]
+----
+gsql '
+    CREATE VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME, locationIP STRING, browserUsed STRING, content STRING, length UINT) WITH primary_id_as_attribute="TRUE", STATS="outdegree_by_edgetype"
+    CREATE GRAPH demo_graph (*)
+'
+
+gsql -g demo_graph '
+    CREATE LOADING JOB load_Comment FOR GRAPH test_graph {
+        DEFINE FILENAME file_Comment;
+        LOAD file_Comment
+            TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+}
+'
+----
+
+=== Configure Logging
+
+It’s highly recommended to set log level to info to monitor the loading status.
+Configure a Spark log4j `conf/log4j2.properties` as follows, or other SLF4j bindings if any:
+
+[console]
+----
+logger.tg.name = com.tigergraph
+logger.tg.level = info
+----
+
+== Overview
+TigerGraph Spark loading is leveraging `/ddl` endpoint.
+It requires a pre-defined loading job, then the dataframe will be processed as follows:
+
+.Spark dataframe:
+[console]
+----
++--------------------+-------------+-------------+-----------+--------------------+------+
+|        creationDate|           id|   locationIP|browserUsed|             content|length|
++--------------------+-------------+-------------+-----------+--------------------+------+
+|2012-07-04T06:10:...|7696585588755| 46.23.82.182|    Firefox|                 LOL|     3|
+|2012-08-22T17:22:...|8246341402699|  27.62.125.4|     Chrome|              roflol|     6|
+|2012-05-08T21:02:...|7146829775042|  61.1.50.205|     Chrome|              roflol|     6|
+|2012-11-22T01:25:...|9345853030654|190.95.68.192|    Firefox|About Sergei Eise...|    79|
+|2012-11-11T08:59:...|9345853030710|166.75.225.76|     Chrome|                good|     4|
++--------------------+-------------+-------------+-----------+--------------------+------+
+----
+
+.The connector concatenates columns to delimited data:
+[console]
+----
+- loading.separator = "|"
+- loading.eol = "\n"
+the processed data would be:
+2012-07-04T06:10:43.489+00:00|7696585588755|46.23.82.182|Firefox|LOL|3
+2012-08-22T17:22:20.315+00:00|8246341402699|27.62.125.4|Chrome|roflol|6
+2012-05-08T21:02:39.145+00:00|7146829775042|61.1.50.205|Chrome|roflol|6
+2012-11-22T01:25:39.670+00:00|9345853030654|190.95.68.192|Firefox|About Sergei Eisenstein, pioneering SAbout Steven Spielberg, makers in thAbout|79
+2012-11-11T08:59:21.311+00:00|9345853030710|166.75.225.76|Chrome|good|4
+----
+
+.The processed data will be sent to TigerGraph batch by batch:
+[console]
+----
+- loading.job = "load_Comment"
+- loading.filename = "file_Comment"
+----
+
+To let TigerGraph parse the data chunk correctly, please make sure you are setting `loading.separator` and `loading.eol` to an unique character.
+
+=== Batch Write
+
+.Create the variables:
+[console]
+----
+val GRAPH = "demo_graph"
+val URL = "http(s)://hostname:port<,http(s)://hostname:port>"
+val USERNAME = "tigergraph"
+val PASSWORD = "tigergraph"
+val LOADING_JOB = "load_Comment"
+val FILENAME = "file_Comment"
+val SEPARATOR = "|"
+----
+
+.Read data from any Spark data sources into the dataframe:
+[console]
+----
+val df = spark.read.json("path/to/person.json")
+----
+
+.Batch write the data into TigerGraph:
+[console]
+----
+df.write
+.format("tigergraph")
+.mode("append")
+.options(
+Map(
+"graph" -> GRAPH,
+"url" -> URL,
+"username" -> USERNAME,
+"password" -> PASSWORD,
+"loading.job" -> LOADING_JOB,
+"loading.filename" -> FILENAME,
+"loading.separator" -> SEPARATOR
+)
+)
+.save()
+----
+
+== Write Spark Structured Streaming API
+
+.Create the variables:
+[console]
+----
+val GRAPH = "Social_Net"
+val URL = "http(s)://hostname:port"
+val USERNAME = "tigergraph"
+val PASSWORD = "tigergraph"
+val LOADING_JOB = "load_person"
+val FILENAME = "f1"
+val SEPARATOR = "|"
+----
+
+.Read data from any Spark streaming data sources into the dataframe:
+[console]
+----
+val df = spark.readStream
+.format("kafka")
+.option("subscribe", "person")
+.load()
+.selectExpr("CAST(value AS STRING)").as[(String)]
+----
+
+.Streaming write data to TigerGraph:
+[console]
+----
+df.writeStream
+.outputMode("append")
+.format("tigergraph")
+.option("checkpointLocation", "/path/to/checkpoint")
+.options(
+Map(
+"graph" -> GRAPH,
+"url" -> URL,
+"username" -> USERNAME,
+"password" -> PASSWORD,
+"loading.job" -> LOADING_JOB,
+"loading.filename" -> FILENAME,
+"loading.separator" -> SEPARATOR
+)
+)
+.start()
+.awaitTermination()
+----
+
+[NOTE]
+====
+Authenticate with the username/password or secret to support refreshing the token, otherwise, make sure the lifetime of the token is long enough for your purposes.
+====
+
+== Configuration
+[separator=¦ ]
+|===
+¦ Key ¦ Default Value ¦  Description ¦ Group
+
+¦ `URL`
+¦ (none)
+¦ The connection URL to TigerGraph cluster. It can be a list of URLs separated by comma for load balancing.
+
+Example:
+http://192.168.1.1:14240,
+http://192.168.1.2:14240,
+http://192.168.1.3:14240
+¦ General
+
+¦ `graph`
+¦ (none)
+¦ The graph name.
+¦
+
+¦ `username`
+¦ (none)
+¦ The GSQL username.
+¦ Authentication
+
+(You can choose any authentication method for data loading, but it’s recommended to give username/password pair, which can generate and refresh token automatically.)
+
+¦ `password`
+¦ (none)
+¦ The GSQL password.
+¦ Authentication
+
+¦ `secret`
+¦ (none)
+¦ The GSQL secret.
+¦ Authentication
+
+¦ `token`
+¦ (none)
+¦ The Bearer token for RESTPP.
+¦ Authentication
+
+¦ `loading.job`
+¦ (none)
+¦ The GSQL loading job name.
+¦ Loading Job
+
+¦ `loading.filename`
+¦ (none)
+¦ The filename defined in the loading job.
+¦ Loading Job
+
+¦ `loading.separator`
+¦ ,
+¦ The column separator.
+¦ Loading Job
+
+¦ `loading.eol`
+¦ \n
+¦ The line separator.
+¦ Loading Job
+
+¦ `loading.batch.size.bytes`
+¦ 2097152
+¦ The maximum batch size in bytes.
+¦ Loading Job
+
+¦ `loading.timeout.ms`
+¦ (none)
+¦ The loading timeout per batch.
+¦ Loading Job
+
+¦ `loading.max.percent.error`
+¦ (none)
+¦ The threshold of the error objects count.
+The loading job will be aborted when reaching the limit.
+Only available for TigerGraph version 3.10.0+.
+¦ Loading Job
+
+¦ `loading.max.num.error`
+¦ (none)
+¦ The threshold of the error objects percentage.
+The loading job will be aborted when reaching the limit.
+Only available for TigerGraph version 3.10.0+.
+¦ Loading Job
+
+¦ `loading.retry.interval.ms`
+¦ 5000
+¦ The initial retry interval for transient server errors.
+¦ Loading Job
+
+¦ `loading.max.retry.interval.ms`
+¦ 30000
+¦ The maximum retry interval for transient server errors.
+¦ Loading Job
+
+¦ `loading.max.retry.attempts`
+¦ 10
+¦ The maximum retry attempts for transient server errors.
+¦ Loading Job
+
+¦ `loading.max.retry.interval.ms`
+¦ 30000
+¦ The maximum retry interval for transient server errors.
+¦ Loading Job
+
+¦ `ssl.mode`
+¦ basic
+¦ The SSL mode: basic, verifyCA and verifyHostname.
+
+When setting it to verifyCA and verifyHostname, the truststore file should be given.
+¦ SSL
+
+¦ `ssl.truststore`
+¦ (none)
+¦ Filename of the truststore which stores the SSL certificate chains.
+
+Add `--files /path/to/trust.jks` when submitting the Spark job.
+¦ SSL
+
+¦ `ssl.truststore.type`
+¦ JKS
+¦ Truststore type, e.g., JKS, PKCS12
+¦ SSL
+
+¦ `ssl.truststore.password`
+¦ (none)
+¦ Password of the truststore.
+¦ SSL
+
+¦ `io.connect.timeout.ms`
+¦ 30000
+¦ Connect timeout in ms.
+¦ Transport Timeout
+
+¦ `io.read.timeout.ms`
+¦ 60000
+¦ Socket read timeout in ms.
+¦ Transport Timeout
+
+¦ `io.retry.interval.ms`
+¦ 5000
+¦ The initial retry interval for transport timeout.
+¦ Transport Timeout
+
+¦ `io.max.retry.interval.ms`
+¦ 10000
+¦ The maximum retry interval for transport timeout.
+¦ Transport Timeout
+
+¦ `io.max.retry.attempts`
+¦ 5
+¦ The maximum retry attempts for transport timeout.
+¦ Transport Timeout
+|===
+
+== Use Cases
+
+=== Load Data from Delta Lake
+
+.Load delta table to Spark dataframe:
+[console]
+----
+val df = spark.read.format("delta")
+.load("/path/to/delta/table")
+.select(
+"creationDate",
+"id",
+"locationIP",
+"browserUsed",
+"content",
+"length"
+)
+----
+
+.Batch write the data into TigerGraph:
+[console]
+----
+df.write
+.format("tigergraph")
+.mode("append")
+.options(opts)
+.save()
+Streaming Write(CDC)
+----
+
+.Streaming read from delta table:
+[console]
+----
+val df = spark.readStream
+.format("delta")
+.option("readChangeFeed", "true")
+.load("/path/to/delta/table")
+.filter(
+$"_change_type" === "insert" || $"_change_type" === "update_postimage"
+)
+.select(
+"creationDate",
+"id",
+"locationIP",
+"browserUsed",
+"content",
+"length"
+)
+----
+
+.Streaming write data to TigerGraph:
+[console]
+----
+df.writeStream
+.outputMode("append")
+.format("tigergraph")
+.option("checkpointLocation", "/path/to/checkpoint")
+.options(opts)
+.start()
+.awaitTermination()
+----
+
+For more details on Delta Lake see https://docs.delta.io/latest/index.html[Welcome to the Delta Lake documentation — Delta Lake Documentation].
+
+=== Load Data from Iceberg
+
+.Load Iceberg table to Spark dataframe:
+[console]
+----
+val df = spark.table("catalog.db.table")
+.select(
+"creationDate",
+"id",
+"locationIP",
+"browserUsed",
+"content",
+"length"
+)
+----
+
+.Batch write the data into TigerGraph:
+[console]
+----
+df.write
+.format("tigergraph")
+.mode("append")
+.options(opts)
+.save()
+Streaming Write(CDC)
+----
+
+.Streaming read from Iceberg table:
+[console]
+----
+val df = spark.readStream
+.format("iceberg")
+.option("stream-from-timestamp", 0L)
+.load("catalog.db.table")
+.select(
+"creationDate",
+"id",
+"locationIP",
+"browserUsed",
+"content",
+"length"
+)
+----
+
+.Streaming write data to TigerGraph:
+[console]
+----
+df.writeStream
+.outputMode("append")
+.format("tigergraph")
+.option("checkpointLocation", "/path/to/checkpoint")
+.options(opts)
+.start()
+.awaitTermination()
+----
+
+For more details on Iceberg see https://iceberg.apache.org/docs/1.3.1/getting-started/[Iceberg Apache: Getting Started]
+
+=== Load Data from Hudi
+
+.Load Hudi table to Spark dataframe:
+[console]
+----
+val df = spark.read
+.format("hudi")
+.load("/path/to/hudi/table")
+.select(
+"creationDate",
+"id",
+"locationIP",
+"browserUsed",
+"content",
+"length"
+)
+----
+
+.Batch write the data into TigerGraph
+[console]
+----
+df.write
+.format("tigergraph")
+.mode("append")
+.options(opts)
+.save()
+Streaming Write(CDC)
+----
+
+.Streaming read from Hudi table:
+[console]
+----
+val df = spark.readStream
+.format("hudi")
+.load("/path/to/hudi/table")
+.select(
+"creationDate",
+"id",
+"locationIP",
+"browserUsed",
+"content",
+"length"
+)
+----
+
+.Streaming write data to TigerGraph:
+[console]
+----
+df.writeStream
+.outputMode("append")
+.format("tigergraph")
+.option("checkpointLocation", "/path/to/checkpoint")
+.options(opts)
+.start()
+.awaitTermination()
+----
+
+For more details on Hudi see https://hudi.apache.org/docs/quick-start-guide/[Spark Guide | Apache Hudi].
+
+=== Loading Statistics
+When you configure the logging properly and set log level to info, the loading statistics will be logged.
+
+There are 3 levels of stats:
+
+* *Batch level*: data will be loaded to TigerGraph by micro batches, malformed or invalid data count of the batch will be logged.
+* *Partition level*: the data source can contain multiple partitions, and the log will show how many rows of the partition has been sent to TigerGraph.
+* *Job Level (only available for TigerGraph 3.10.0 or higher)*: The overall loading statistics of the Spark job aggregated by TigerGraph service KAFKASTRM-LL. It requires providing username and password to query /gsqlserver endpoint.
+
+.Sample loading statistics:
+[console]
+----
+24/01/22 16:15:45 INFO TigerGraphBatchWrite: Overall loading statistics: [ {
+    "overall" : {
+        "duration" : 15792,
+        "size" : 48675207,
+        "progress" : 0,
+        "startTime" : 1706770863875,
+        "averageSpeed" : 29546,
+        "id" : "test_graph.load_Comment.spark.all.1706770859889",
+        "endTime" : 1706770879667,
+        "currentSpeed" : 29546,
+        "statistics" : {
+            "fileLevel" : {
+                "validLine" : 466594,
+                "notEnoughToken" : 0,
+                "tokenExceedsBuffer" : 0,
+                "rejectLine" : 0
+            },
+            "objectLevel" : {
+                "vertex" : [ {
+                "validObject" : 466593,
+                "typeName" : "Comment",
+                "invalidPrimaryId" : 1
+                } ]
+            }
+        }
+    },
+    "workers" : [ {
+        "tasks" : [ {
+            "filename" : "file_Comment"
+        } ]
+    }, {
+    "tasks" : [ {
+        "filename" : "file_Comment"
+        } ]
+    } ]
+} ]
+----
+
+== Level Statistic Reference
+
+=== Row Level Statistics
+[separator=¦ ]
+|===
+¦ Row Level Statistics ¦ Description
+
+¦ `validLine` ¦ Number of valid raw data lines parsed.
+¦ `rejectLine` ¦ Number of raw data lines rejected by the reject line rule in the loading script.
+¦ `notEnoughToken` ¦ Number of raw data lines with fewer tokens than what was specified by the loading script.
+¦ `badCharacter` ¦ Number of raw data lines containing invalid characters.
+¦ `tokenExceedsBuffer` ¦ Number of raw data lines containing oversize tokens (see `gadmin config get GSQL.OutputTokenBufferSize`).
+¦ `emptyLine` ¦ Number of raw data lines that are empty.
+
+|===
+
+=== Object Level Statistics
+[separator=¦ ]
+|===
+¦ Object Level Statistics ¦ Description
+
+¦ `validObject` ¦ Number of data records created.
+¦ `passedCondition` ¦ Number of token lists which passed the WHERE predicate filter.
+¦ `failedCondition` ¦ Number of token lists which failed the WHERE predicate filter.
+¦ `invalidPrimaryId` ¦ Number of token lists where the id token is invalid.
+¦ `noIdFound` ¦ Number of token lists where the id token is empty.
+¦ `invalidAttribute` ¦ Number of token lists where at least one of the attribute tokens is invalid.
+¦ `incorrectFixedBinaryLength` ¦ Number of token lists where at least one of the tokens corresponding to a UDT type attribute is invalid.
+¦ `invalidVertexType` ¦ Number of token lists where at least one of the tokens corresponding to an edge type's source/target vertex type is invalid.
+|===
