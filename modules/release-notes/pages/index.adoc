@@ -78,56 +78,132 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 
 == Known Issues
 
-[cols="5", separator=¦ ]
+[cols="4", separator=¦ ]
 |===
-¦ Description ¦ Found In ¦ Workaround ¦ Fixed In ¦ Issue ID
+¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+¦ If the `FROM` clause pattern is a multi-hop and the `ACCUM` clause reads both primitive and container type attributes or accumulators of a vertex, the internal query rewriting logic may generate an invalid rewritten output.
+¦ 3.9.3
+¦ This results in the error message: `It is not allowed to mix primitive types and accumulator types in GroupByAccum`.
+¦ TBD
 
-¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+¦ Users may see a high CPU usage caused by Kafka prefetching when there is no query or posting request.
+¦ 3.9.3
+¦ TBD
+¦ TBD
 
-¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+¦ GSQL query compiler may report a false error for a valid query using a vertex set variable (e.g. `Ent` in `reverse_traversal_syntax_err`) to specify the midpoint or target vertex of a path in a FROM clause pattern.
+¦ TBD
+¦ TBD
+¦ TBD
 
-¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+¦ If a loading job is expected to load from a large batch of files or Kafka queues (e.g. more than 500), the job’s status may not be updated for an extended period of time.
+¦ 3.9.3
+¦ In this case, users should check the loader log file as an additional reference for loading status.
+¦ TBD
 
-¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+¦ When a GPE/GSE is turned off right after initiating a loading job, the loading job is terminated internally. However, users may still observe the loading job as running on their end.
+¦ 3.9.3
+¦ Please see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Troubleshooting Loading Job Delays] for additional details.
+¦ TBD
 
-¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD ¦ TBD
+¦ For v3.9.1 and v3.9.2 when inserting a new edge in `GPR` and `INTERPRET` mode, the GPE will print out a warning message because a discriminator string is not set for new-inserted edges. Creating an inconsistent problem in delta message for GPR and `INTERPRET` mode.
+¦ 3.9.2
+¦ Please see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Troubleshooting Loading Job Delays] for additional details.
+¦ 3.9.3
 
+¦ GSQL `EXPORT GRAPH` may fail and cause a GPE to crash when UDT type has a fixed STRING size.
+¦ TBD
+¦ TBD
+¦ TBD
 
-|===
-
-
-
-* If the `FROM` clause pattern is a multi-hop and the `ACCUM` clause reads both primitive and container type attributes or accumulators of a vertex, the internal query rewriting logic may generate an invalid rewritten output.
-Resulting in the error message: `It is not allowed to mix primitive types and accumulator types in GroupByAccum`.
-* Users may see a high CPU usage caused by Kafka prefetching when there is no query or posting request.
-* GSQL query compiler may report a false error for a valid query using a vertex set variable (e.g. `Ent` in `reverse_traversal_syntax_err`) to specify the midpoint or target vertex of a path in a FROM clause pattern.
-
-* In 3.9.3, if a loading job is expected to load from a large batch of files or Kafka queues (e.g. more than 500), the job’s status may not be updated for an extended period of time. In this case, users should check the loader log file as an additional reference for loading status.
-* In 3.9.3, when a GPE/GSE is turned off right after initiating a loading job, the loading job is terminated internally. However, users may still observe the loading job as running on their end. Please see xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Troubleshooting Loading Job Delays] for additional details.
-* GSQL `EXPORT GRAPH` may fail and cause a GPE to crash when UDT type has a fixed STRING size.
-* After a global loading job is running for a while a fail can be encountered when getting the loading status due to `KAFKASTRM-LL` not being online, when actually the status is online.
+¦ After a global loading job is running for a while a fail can be encountered when getting the loading status due to `KAFKASTRM-LL` not being online, when actually the status is online.
 Then the global loading process will exit and fail the local job after timeout while waiting the global loading job to finish.
-* *[FIXED 3.9.3]* For v3.9.1 and v3.9.2 when inserting a new edge in `GPR` and `INTERPRET` mode, the GPE will print out a warning message because a discriminator string is not set for new-inserted edges. Creating an inconsistent problem in delta message for GPR and `INTERPRET` mode.
-* When the memory usage approaches 100%, the system may stall because the process to elect a new GSE leader did not complete correctly.
-This lockup can be cleared by restarting the GSE.
-* If the CPU and memory utilization remain high for an extended period during a schema change on a cluster, a GSE follower could crash, if it is requested to insert data belonging to the new schema before it has finished handling the schema update. 
-* When available memory becomes very low in a cluster and there are a large number of vertex deletions to process, some remote servers might have difficulty receiving the metadata needed to be aware of all the deletions across the full cluster. The mismatched metadata will cause the GPE to go down.
-* Subqueries with SET<VERTEX> parameters cannot be run in Distributed or Interpreted mode.
-(xref:3.9@gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[Limited Distributed model support] is added in 3.9.2.)
-* Upgrading a cluster with 10 or more nodes to v3.9.0 requires a patch. Please contact TigerGraph Support if you have a cluster this large. Clusters with nine or fewer nodes do not require the patch. (This issue is fixed in 3.9.1)
-* Downsizing a cluster to have fewer nodes requires a patch. Please contact TigerGraph Support.
-* During peak system load, loading jobs may sometimes display an inaccurate loading status. This issue can be remediated by continuing to run `SHOW LOADING STATUS` periodically to display the up-to-date status.
-* When managing many loading jobs, pausing a data loading job may result in longer-than-usual response time.
-* Schema change jobs may fail if the server is experiencing a heavy workload. To remedy this, avoid applying schema changes during peak load times.
-* User-defined Types (UDT) do not work if exceeding string size limit. Avoid using UDT for variable length strings that cannot be limited by size.
-* Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
-* If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC (fixed in 3.9.1)
-* The data streaming connector does not handle NULL values; the connector may operate properly if a NULL value is submitted. Users should replace NULL with an alternate value, such as empty string "" for STRING data, 0 for INT data, etc.  (NULL is not a valid value for the TigerGraph graph data store.)
-* Automatic message removal is an Alpha feature of the Kafka connector.  It has several xref:3.9@tigergraph-server:data-loading:load-from-cloud.adoc#_known_issues_with_loading[known issues].
-* The `DATETIME` data type is not supported by the `PRINT … TO CSV` statement (fixed in 3.9.1).
-* The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
+¦ TBD
+¦ TBD
+¦ TBD
+
+¦ When the memory usage approaches 100%, the system may stall because the process to elect a new GSE leader did not complete correctly.
+¦ TBD
+¦ This lockup can be cleared by restarting the GSE.
+¦ TBD
+
+¦ If the CPU and memory utilization remain high for an extended period during a schema change on a cluster, a GSE follower could crash, if it is requested to insert data belonging to the new schema before it has finished handling the schema update.
+¦ TBD
+¦ TBD
+¦ TBD
+
+¦ When available memory becomes very low in a cluster and there are a large number of vertex deletions to process, some remote servers might have difficulty receiving the metadata needed to be aware of all the deletions across the full cluster. The mismatched metadata will cause the GPE to go down.
+¦ TBD
+¦ TBD
+¦ TBD
+
+¦ Subqueries with SET<VERTEX> parameters cannot be run in Distributed or Interpreted mode.
+¦ TBD
+¦ (xref:3.9@gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[Limited Distributed model support] is added in 3.9.2.)
+¦ TBD
+
+¦ Upgrading a cluster with 10 or more nodes to v3.9.0 requires a patch.
+¦ 3.9
+¦ Please contact TigerGraph Support if you have a cluster this large. Clusters with nine or fewer nodes do not require the patch.
+¦ 3.9.1
+
+¦ Downsizing a cluster to have fewer nodes requires a patch.
+¦ 3.9.0
+¦ Please contact TigerGraph Support.
+¦ TBD
+
+¦ During peak system load, loading jobs may sometimes display an inaccurate loading status.
+¦ 3.9.0
+¦ This issue can be remediated by continuing to run `SHOW LOADING STATUS` periodically to display the up-to-date status.
+¦ TBD
+
+¦ When managing many loading jobs, pausing a data loading job may result in longer-than-usual response time.
+¦ TBD
+¦ TBD
+¦ TBD
+
+¦ Schema change jobs may fail if the server is experiencing a heavy workload.
+¦ TBD
+¦ To remedy this, avoid applying schema changes during peak load times.
+¦ TBD
+
+¦ User-defined Types (UDT) do not work if exceeding string size limit.
+¦ TBD
+¦ Avoid using UDT for variable length strings that cannot be limited by size.
+¦ TBD
+
+¦ Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
+¦ TBD
+¦ TBD
+¦ TBD
+
+¦ If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC.
+¦ 3.9.0
+¦ TBD
+¦ 3.9.1
+
+¦ The data streaming connector does not handle NULL values; the connector may operate properly if a NULL value is submitted.
+¦ TBD
+¦ Users should replace NULL with an alternate value, such as empty string "" for STRING data, 0 for INT data, etc.  (NULL is not a valid value for the TigerGraph graph data store.)
+¦ TBD
+
+¦ Automatic message removal is an Alpha feature of the Kafka connector. It has several xref:3.9@tigergraph-server:data-loading:load-from-cloud.adoc#_known_issues_with_loading[known issues].
+¦ TBD
+¦ TBD
+¦ TBD
+
+¦ The `DATETIME` data type is not supported by the `PRINT … TO CSV` statement.
+¦ 3.9.0
+¦ TBD
+¦ 3.9.1
+
+¦ The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
+¦ TBD
+¦ TBD
+¦ TBD
+
+|===
 
 === Compatibility Issues
 
@@ -171,7 +247,7 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:sec
 |===
 ¦ Description ¦ Deprecated ¦ Removed
 
-¦ xref:tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection via JDBC Driver] 
+¦ xref:tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection via JDBC Driver] is now deprecated and will no longer be supported.
 ¦ 3.10.0 
 ¦ TBD
 
