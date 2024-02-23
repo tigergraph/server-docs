@@ -34,7 +34,7 @@ This is the same as `gadmin config get System.DataRoot`.
 ** Dots are *not* allowed in the path (EX. `/a/../b`, `/a/./b`).
 ** Paths should not end with `/` (EX.`/tmp/ → /tmp`).
 *** The only exception is for the root path.
-** Some commands will convert the input relative path to an absolute path with the GSQL client working directory (where the GSQL client was invoked)
+** Some commands will implicitly convert the input relative path to an absolute path with the GSQL client working directory (where the GSQL client was invoked)
 *** Examples include: `CREATE LOADING JOB`, `RUN LOADING JOB`, `CREATE CONNECTOR`.
 * No hidden path/files can be added to the `allowlist` (EX. `/home/.ssh`).
 ** Hidden paths/files are allowed fto be added to the `blocklist` (EX.`!/home/.ssh`).
@@ -215,7 +215,7 @@ If a path is explicitly given (Ex. `sys.data_root`) when creating a loading job,
 
 ==== selectVertex
 
-`selectVertex` eill read existing vertices from a local file directly.
+`selectVertex` will read existing vertices from a local file directly.
 
 [NOTE]
 ====
@@ -272,6 +272,7 @@ Also, `CREATE DATA_SOURCE` can only run with *local gsql client*, because the fi
 == Put UDF file
 
 File input policy can also be applied to where UDF files are uploaded from.
+Notice the `PUT` command can also use relative path (implicitly converted to absolute path within the GSQL client working directory)
 
 [console, gsql]
 ----
