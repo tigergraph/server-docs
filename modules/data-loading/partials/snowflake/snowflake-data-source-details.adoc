@@ -1,21 +1,23 @@
 == Snowflake JDBC Connector
 
-TigerGraph's Snowflake JDBC connector ...
+Use the required fields below for a Snowflake data `DATA_SOURCE`:
 
-Use the following configuration for the `DATA_SOURCE`.
+* `connection.url`
+** This should start with `jdbc:snowflake:`.
+* `connection.user`
+* `connection.password`
+** This will be masked and shown as `****`.
+* `type`
+** This must be `snowflake`.
 
-[source,php,linenums]
-.Data source configuration for BigQuery
+[source,]
+.Ex. Create snowflake config:
 ----
+cat >./data/sf_config.json <<EOL
 {
-  "type":"bigquery",
-  "ProjectId":"tigergraph-dev",
-  "OAuthType":2,
-  "parameters" : {
-    "OAuthRefreshToken":"<refresh token>",
-    "OAuthClientId":"<client ID>.apps.googleusercontent.com",
-    "OAuthClientSecret":"<client secret>"
-    #other Simba JDBC parameters
-  }
+    "type":"snowflake",
+    "connection.url":"jdbc:snowflake://https://<account_id>.snowflakecomputing.com/?db=<db>&schema=<schema>&role=<role>",
+    "connection.user": "<username>",
+    "connection.password": "<password>"
 }
 ----
