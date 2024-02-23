@@ -1,6 +1,6 @@
 :toc:
 :toclevels: 4
-= Load from a Data Warehouse
+= Load from Snowflake Data Source
 //:page-aliases: data-loading:data-streaming-connector:big-query.adoc
 
 include::partial$load-part1-intro-and-schema.adoc[]
@@ -8,28 +8,26 @@ include::partial$load-part1-intro-and-schema.adoc[]
 include::partial$load-part2-create-data-source.adoc[]
 
 // Custom data source content for <source type>
-include::partial$warehouse/warehouse-data-source-details.adoc[]
-
+include::partial$snowflake/snowflake-data-source-details.adoc[]
 
 include::partial$load-part3-create-loading-job.adoc[]
 
 // Example loading job for <source type>
-include::partial$warehouse/warehouse-example-loading-job.adoc[]
+include::partial$snowflake/snowflake-example-loading-job.adoc[]
 
 include::partial$load-part3A-define-filenames.adoc[]
 
 // For <source type>, the following format rules apply for filenames.
-include::partial$warehouse/warehouse-filename-details.adoc[]
 
 include::partial$load-part3B-specify-mapping.adoc[]
 
 // Custom data mapping notes for <source type>
-include::partial$warehouse/warehouse-specify-mapping-details.adoc[]
+//No specific mapping for Snowflake
 
 include::partial$load-part4-run-job.adoc[]
 
 // Custom notes about run loading for <source type>
-include::partial$warehouse/warehouse-run-loading-details.adoc[]
+//include::partial$warehouse/warehouse-run-loading-details.adoc[]
 
 include::partial$load-part5-monitor-and-manage.adoc[]
 

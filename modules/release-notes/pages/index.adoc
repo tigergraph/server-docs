@@ -15,6 +15,8 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 
 * xref:tigergraph-server:system-management:workload-management.adoc#_workload_queue[Workload Queue] - Configure workload queues so that queries are routed to the appropriate queues during runtime.
 
+* xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc[Spark Connector] - A new dedicated connector used with Apache Spark to read data from a Spark DataFrame and write to TigerGraph.
+
 == Detailed List of New and Modified Features
 
 === TigerGraph Server
@@ -23,9 +25,13 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 === GSQL Command and Querying Language
 
 * xref:gsql-ref:querying:func/context-functions.adoc[] - Context functions are a set of new built-in functions that provide insights into the user's information and work inside `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
+
 * xref:tigergraph-server:system-management:management-commands.adoc[Command Updates] - Added new flag `--local` to commands xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_start[gadmin start] and xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_stop [gadmin stop] reducing the time required to start/stop local services.
 
+
 ==== Loading
+
+* xref:tigergraph-server:data-loading:load-from-warehouse.adoc[Support for Snowflake Data Warehouse] - Added support for loading data from Snowflake, another popular data warehouse.
 
 ==== Schema
 
@@ -165,8 +171,8 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:sec
 |===
 ¦ Description ¦ Deprecated ¦ Removed
 
-¦ TBD
-¦ TBD
+¦ xref:tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection via JDBC Driver] 
+¦ 3.10.0 
 ¦ TBD
 
 ¦ `Build Graph Patterns` is deprecated and will not be updated or supported and instead
