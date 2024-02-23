@@ -30,3 +30,8 @@ gsql '
     run loading job load_sf
 '
 ----
+
+[WARNING]
+====
+If users set `batch.max.rows` to smaller than `10000`, the loading speed will be much slower. It is suggested to use the setting `100000`.
+====
