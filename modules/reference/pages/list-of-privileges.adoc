@@ -1,14 +1,25 @@
-= List of Privileges
+= List of Legacy Privilege Syntax
 
 This page provides a complete list of privileges in TigerGraph's Role-based Access Control system.
 
-[NOTE]
-====
+
+== Legacy Privilege Syntax Limitations
 * Any privilege marked "`Global only`" can only be granted to a global role.
-It cannot be granted to a local role (See xref:user-access:roles-and-privileges.adoc[Global role vs local role]).
+It cannot be granted to a local role (See xref:user-access:access-control-model.adoc[Global role vs local role]).
 
 * Local roles are deprecated and will be dropped in a later version.
+
+* As of 3.10.0, when using the legacy privilege syntax, a user will receive a warning when trying to grant or revoke a privilege.
+
+* Legacy privilege syntax for function privileges is only supported on the global scope.
+** To add function privileges, it's best to use the Object-Based Privileges syntax.
+
+[NOTE]
 ====
+It’s recommended to use the xref:tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_object_based_privileges[Object-Based Privileges] syntax.
+See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-table.adoc[] for a comparison with the legacy syntax.
+====
+
 
 
 == Table of Privileges

@@ -1,0 +1,103 @@
+= RBAC Row Policy EBNF
+
+== EBNF for a Package
+
+[source,gsql]
+----
+createPackage := CREATE PACKAGE packageName ["." packageName]*
+showPackage := SHOW PACKAGE [ "-r" stringLiteral
+            | [ packageName ["." packageName "."]* [ "." functionName | "*" ]]?
+
+dropPackage := DROP PACKAGE packageName ["." packageName]*
+----
+
+== EBNF overview of the GSQL Functions
+[source,gsql]
+----
+createFunction := CREATE [OR REPLACE] FUNCTION packageName
+                [ "." packageName ]* "." functionName
+                "(" [parameterList] ")"
+                RETURNS "("  baseType ")"
+                "{" functionBody "}"
+
+functionBody := [declStmt | declExceptStmt | functionBodyStmt]+
+declStmt := baseDeclStmt | accumDeclStmt
+functionBodyStmt := assignStmt            // Assignment
+                | vSetVarDeclStmt         // Declaration
+                | gAccumAssignStmt        // Assignment
+                | gAccumAccumStmt         // Assignment
+                | funcCallStmt            // Function Call
+                | functionBodyCaseStmt    // Control Flow
+                | functionBodyIfStmt      // Control Flow
+                | returnStmt              // Output
+                | raiseStmt               // Exception
+
+installFunction := INSTALL FUNCTION [installOptions]
+                [[ packageName [ "." packageName "."]*
+                [ "." functionName | "*" | "**"] | "**"| "ALL"]
+
+showFunction := SHOW FUNCTION [ * | "-r" stringLiteral
+            |[ packageName [ "." packageName "."]*
+            [ "." functionName | "*" ] ]
+
+dropFunction := DROP FUNCTION packageName
+            ["." packageName "."]* [ "." functionName | "*" ]
+----
+
+== EBNF for the Object-Based Privileges
+[source,gsql]
+----
+grantObjectBasePrivilege := GRANT privilegeNames ON privilegeObjects [IN privilegeScopes]? TO roleNames
+
+revokeObjectBasePrivilege := REVOKE privilegeNames ON privilegeObjects [IN privilegeScopes]? FROM roleNames
+
+privilegeNames := privilegeName ["," privilegeName]*
+
+privilegeName := "ACCESS" | "CLEAR_GRAPHSTORE" | "CREATE" |
+                "DELETE" | "DROP" | "DROP_ALL" | "EXPORT" |
+                "EXECUTE" | "READ" | "UPDATE" | "USE" | "WRITE"
+
+privilegeObjects := privilegeObject ["," privilegeObject]*
+
+privilegeObject := "GLOBAL" | "ALL" objectTypePlurals |
+                objectTypeNames
+
+objectTypePlurals := objectTypePlural [","objectTypePlural]*
+
+objectTypePlural := "APP_DATA" | "DATA" | "DATASOURCES"|
+                    "FILES" | "FUNCTIONS" | "GRAPHS" |
+                    "LOADINGJOBS" | "POLICIES" | "PROXYGROUPS" |
+                    "QUERIES" | "ROLES" | "TAGS" | "USERS"
+
+objectTypeNames := objectTypeName ["," objectTypeName]*
+
+objectTypeName := "GLOBAL"| vertexObject | edgeObject |
+                "APP_DATA" | "DATA" | "DATASOURCE"| "FILE" |
+                "FUNCTION" | "GRAPH" | "LOADINGJOB" | "POLICY" | "PROXYGROUP" | "QUERY" | "ROLE" | "TAG" | "USER"
+
+vertexObject := "VERTEX" vertexName ["ATTRIBUTE"attributeNames]?
+
+edgeObject := "EDGE" vertexName ["ATTRIBUTE" attributeNames]? attributeNames := attributeName ["," attributeNames]*
+
+privilegeScopes := privilegeScope ["," privilegeScope]*
+
+privilegeScope := "GLOBAL" | "GRAPH" graphName [","graphName]* |
+                "PACKAGE" packageNameList ["," packageNameList]*
+
+packageNameList := packageName ["." packageName]*
+----
+
+== EBNF for Row Policy
+[source,gsql]
+----
+applyRowPolicy := ALTER VERTEX vertexName IN [ GLOBAL |
+                GRAPH graphName ]
+                SET ROW POLICY packageName ["." packageName "."]* "."
+                functionName ON "(" [ attributeList ] ")" [ "-n" ]?
+
+clearRowPolicy := ALTER VERTEX vertexName IN [ GLOBAL |
+                GRAPH graphName ] CLEAR ROW POLICY [ "-n" ]?
+
+showRowPolicy := SHOW ROW POLICY [ ON vertexName ]?
+attributeList := attributeName [ "," attributeName ]*
+----

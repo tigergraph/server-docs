@@ -31,3 +31,46 @@ TigerGraph supports the read-committed isolation level, the default standard for
 == *Durability*
 
 Committed transactions are written to disk (SSD or HDD). The TigerGraph platform implements write-ahead logging (WAL) to provide durability.
+
+== *Transaction Related Configs*
+
+=== Memory data threshold
+When a transaction is too large on a single gpe node, TigerGraph will convert the transaction binary from memory to file before the transaction is committed or rolled back.
+
+There is a threshold for such conversion.
+
+.The threshold can be configured via `gadmin config`:
+[console]
+----
+GPE.BasicConfig.Env
+----
+
+.with an entry value like:
+[console]
+----
+TransactionStoreMemLimit=4194304
+----
+
+The value must be `uint64_t` type and in `unit: Byte`.
+The default value is `4194304`, which means `4 MB`.
+
+=== Total data threshold
+If a transaction is too large, it will be aborted, even the transaction is already in file mode.
+
+.The transaction size threshold to abort it can be configured via `gadmin config`:
+[console]
+----
+ GPE.BasicConfig.Env
+----
+
+.with an entry value like:
+[console]
+----
+TransactionSizeLimit=1073741824
+----
+
+The value `1073741824` stands for `1GB` threshold.
+The value must be `uint64_t type` and in `uint: Byte`.
+
+The default value is `0`.
+When the value is `0`, the threshold is dynamically decided by TigerGraph, based on current memory usage statistics.

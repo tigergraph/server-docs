@@ -9,7 +9,7 @@ In addition, the last table is for runtime environment variables. Each component
 
 == Admin
 
-[width="100%",cols="34%,33%,33%",options="header",]
+[cols="3", options="header",]
 |===
 |Name |Description |Example
 |Admin.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
@@ -1013,6 +1013,19 @@ concurrent queries in the delay queue |`20`
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
 |Name |Description |Example
+
+| Security.JWT.RSA.PublicKey
+| Configure a RSA public key for xref:tigergraph-server:user-access:jwt-token.adoc[].
+| `gadmin config set Security.JWT.RSA.PublicKey <public-key content or URL or @filepath>`
+
+| Security.JWT.HMAC.Secret
+| Configure a HMAC Secret for xref:tigergraph-server:user-access:jwt-token.adoc[].
+| `gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>`
+
+| Security.JWT.Issuer
+| Configure the `iss` claim that will be verified against this configured value for xref:tigergraph-server:user-access:jwt-token.adoc[].
+| `gadmin config set Security.JWT.Issuer "<issuer-name>"`
+
 |Security.LDAP.AdminDN |Configure the DN of LDAP user who has read
 access to the base DN specified above. Empty if everyone has read access
 to LDAP data: default empty |`nan`
@@ -1148,12 +1161,29 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 
 == System
 
-[width="100%",cols="34%,33%,33%",options="header",]
+[cols="3",options="header",]
 //[%autowidth,options="header",]
 |===
 |Name |Description |Example
+
 |System.AppRoot |The root directory for TigerGraph applications
 |`/home/tigergraph/tigergraph/app`
+
+| System.Audit.Enable | Setting to enable audit logs. | `System.Audit.Enable true`
+
+| System.Audit.DataBaseName | Modify the DataBaseName field in log file header. | `System.Audit.DataBaseName <database-name>`
+
+| System.Audit.LogDirRelativePath | Modify the relative audit log path. | `System.Audit.LogDirRelativePath <audit-log-relative-path>`
+
+| System.Audit.LogConfig.LogFileMaxDurationDay | Modify the audit log file’s modification date. | `System.Audit.LogConfig.LogFileMaxDurationDay <max-duration-day>`
+
+| System.Audit.LogConfig.LogFileMaxSizeMB | Modify the audit log file’s max size. | `System.Audit.LogConfig.LogFileMaxSizeMB <file-size>`
+
+| System.Audit.LogConfig.LogRotationFileNumber | Modify the max amount of Audit Log files in the Audit Log folder. | `System.Audit.LogConfig.LogRotationFileNumber <file-number>`
+
+| System.Audit.MaskPII
+| Mask Sensitive data or PII in the audit log. Default value is: `true`. If it is `false`, the PII data will not be masked.
+| `System.Audit.MaskPII true`
 
 |System.AuthToken |The authorization token for TigerGraph services
 |`Va2V7mdpTY5ErZRmTBBRqYtkgR7CiGbF`
@@ -1387,5 +1417,12 @@ An environment variable is set using its `xxx.Basic.ConfigEnv` configuration par
 |===
 |Name |Description |Example
 
-|GPE_DSC_APPLY_TIMEOUT_MINUTE, GSQL.Basic.ConfigEnv
-| [v3.9.2+] Timeout (minutes) for dynamic schema change. Default = 30| 30|
+|`GPE_DSC_APPLY_TIMEOUT_MINUTE`, GSQL.Basic.ConfigEnv
+| [v3.9.2+] Timeout (minutes) for dynamic schema change. Default = 30
+| 30
+
+| `SSL_CA_CERT`, RESETPP.BasicConfig.Env
+| Set the CA certificate `SSL_CA_CERT` to establish the connection with the URL being set with xref:tigergraph-server:user-access:jwt-token.adoc[].
+| `SSL_CA_CERT=/home/tigergraph/cacertificate/example/;`
+
+|===

@@ -1,0 +1,37 @@
+=== Example loading job from Snowflake
+
+The following is an example loading job from Snowflake.
+
+Users may not need to use `temp_table` if they do not need token functions.
+For more details see xref:gsql-ref:ddl-and-loading:functions/token/flatten_json_array.adoc[].
+
+[NOTE]
+====
+If single quote characters ( `'` ) need to be included in the query in bash,
+use ( `"'"` ) to escape.
+
+If double quotes are needed, use the JSON format for a query instead.
+====
+
+[source, gsql]
+.Ex. With all types of Snowflake data included.
+----
+gsql '
+    CREATE DATA_SOURCE sf_ds FOR GRAPH ldbc_snb
+    SET sf_ds = "./data/sf_config.json"
+    USE GRAPH ldbc_snb
+    BEGIN
+        CREATE LOADING JOB load_data FOR GRAPH ldbc_snb {
+        DEFINE FILENAME f1 = "$sf_ds:select ARRAY_TO_STRING(ARRAY_COLUMN, '"'"','"'"'),BINARY_COLUMN, BOOLEAN_COLUMN, CHAR_COLUMN, DATE_COLUMN, NUMBER_COLUMN, INTEGER_COLUMN, TO_CHAR(OBJECT_COLUMN), REAL_COLUMN, TEXT_COLUMN, TIME_COLUMN, TIMESTAMP_COLUMN, TO_CHAR(VARIANT_COLUMN), ST_ASTEXT(GEOGRAPHY_COLUMN), ST_ASTEXT(GEOMETRY_COLUMN) from SAMPLEDATA";
+    LOAD f1 TO TEMP_TABLE t (c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14) VALUES (SPLIT($0, ","), $1, $2, $3, $4, $5, $6, flatten_json_array($7, $"key"), $8, $9, $10, $11, $13, $14) USING separator="|";
+    LOAD TEMP_TABLE t TO VERTEX sample_data VALUES (SPLIT($"c1", ","), $"c2", $"c3", $"c4", $"c5", $"c6", $"c7", $"c8", $"c9", $"c10", $"c11", $"c12", $"c13", $"c14");
+    }
+    END
+    run loading job load_sf
+'
+----
+
+[WARNING]
+====
+If users set `batch.max.rows` to smaller than `10000`, the loading speed will be much slower. It is suggested to use the setting `100000`.
+====

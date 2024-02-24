@@ -1,4 +1,9 @@
-= Spark Connection Via JDBC Driver
+= Spark Connection Via JDBC Driver (Deprecated)
+
+[NOTE]
+====
+Please see xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc[] for information on the Spark connector.
+====
 
 Apache Spark is a popular big data distributed processing system which is frequently used in data management ETL process and Machine Learning applications.
 
@@ -30,7 +35,9 @@ This limits the concurrent JDBC connections to 40.
 
 === 1) Write a Spark `DataFrameWriter`
 
-Write a Spark DataFrameWriter function that will write data to CSV files, following the example below.
+Spark DataFrame `write` method with TigerGraph JDBC connector supports writing data from arbitrary data sources to pre-defined TigerGraph GSQL loading jobs, through a `/ddl` endpoint.
+
+The DataFrame will be converted to delimited data and sent to TigerGraph by micro batches.
 
 NOTE: You need to choose names for a GSQL loading job and its data files that you will be using in Step 2.
 
