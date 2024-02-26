@@ -78,7 +78,16 @@ Each queue has the following properties:
 |`maxDelayQueueSize`|The maximum number of queries that can be queued in the delay queue.|`UINT` in the range of `[0, 131072)`
 |===
 
+==== maxConcurrentQueries and maxDelayQueueSize
+`maxConcurrentQueries` and `maxDelayQueueSize` are enforced on per machine level. More specifically, it puts a limit on how many requests ONE `GPE` process can handle.
+
+For example, in a TigerGraph cluster with `4` nodes (there will be `4` `GPE` processes), the total number of qureies allowed for a `WorkloadQueue` is `4*maxConcurrentQueries`.
+Similarly, the total number of queries can be put into the corresponding delay queue is `4*maxDelayQueueSize`.
+
+TigerGraph internally would try to evenly distribute queries evenly among the nodes, hence, the `WorkloadQueue` from each `GPE` would be filled at a similar pace.
+
 WARNING: Once the configurations change, GPE must be restarted to take effect.
+WARNING: The query concurrency is also confined by the number of physical cores that the machine has. Therefore, `maxConcurrentQueries` of a `WorkloadQueue` is not recommended to be too large (i.e less than `3 * number of machine's physical cores`).
 
 ===== Examples
 
@@ -497,10 +506,6 @@ curl \
               "65630.RESTPP_1_1.1707799387958.N"
             ]
           }
-        ],
-        "Non-existingQueueNames": [
-          "OLTP",
-          "scheduled_jobs"
         ]
       }
     },
@@ -525,10 +530,6 @@ curl \
               "131167.RESTPP_1_1.1707799387959.N"
             ]
           }
-        ],
-        "Non-existingQueueNames": [
-          "OLTP",
-          "scheduled_jobs"
         ]
       }
     }
