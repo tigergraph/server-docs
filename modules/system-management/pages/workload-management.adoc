@@ -86,8 +86,13 @@ Similarly, the total number of queries can be put into the corresponding delay q
 
 TigerGraph internally would try to evenly distribute queries evenly among the nodes, hence, the `WorkloadQueue` from each `GPE` would be filled at a similar pace.
 
-WARNING: Once the configurations change, GPE must be restarted to take effect.
-WARNING: The query concurrency is also confined by the number of physical cores that the machine has. Therefore, `maxConcurrentQueries` of a `WorkloadQueue` is not recommended to be too large (i.e less than `3 * number of machine's physical cores`).
+[WARNING]
+====
+The query concurrency is also confined by the number of physical cores that the machine has.
+Therefore, `maxConcurrentQueries` of a `WorkloadQueue` is not recommended to be too large (i.e less than `3 * number of machine's physical cores`).
+
+Once the configurations change, GPE must be restarted to take effect.
+====
 
 ===== Examples
 
