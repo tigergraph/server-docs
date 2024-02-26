@@ -1,0 +1,81 @@
+= Online Backup
+
+Online backup is a new feature introduced in 3.10.0, it should be transparent to customers.
+All configurations and usage remain the same.
+
+However, user will find during backups, their TG clusters have much less blocking time.
+Blocking here refers to post request.
+In the past, if users keep doing post request through REST API during a backup is running, users may see most of their post requests timeout.
+Basically, they cannot upsert any data to database while a backup is running.
+
+Now, after online backup, users will see most of those post requests success.
+So they can upsert to database during majority of time window of backups.
+On a simple benchmark of backups on 100GB database, we see GPE blocking for around 4 to 8 seconds.
+Considering the default timeout of a post request, 15 seconds, this blocking time should bring little affects.
+
+Currently, TigerGraph blocks user upserting during almost whole backups process, including full backup and incremental backup. This project tries to minimize the blocking period in backups. Note: the terms online/non-blocking here refers to upsert/write, not running queries. Running queries blocks rebuild, thus blocks full backup is a known issue that won’t be removed in short term.
+Background
+A common limitation of both backups, including Full Snapshot Backup and Differential Backup is write-blocking. During backups, post_listener the component in GPE responsible for reading delta messages from delta queue pause for a period. GSE also pause serving POST request. To achieve non-blocking/online backups, these pauses need to be limited to a minimum period.
+
+The following picture is a diagram of today’s backups, focusing on pausing in Engine. The link of original drawing: Excalidraw — Collaborative whiteboarding made easy
+Open Untitled-2023-10-26-1458-4.png
+Untitled-2023-10-26-1458-4.png
+
+The diagram shows GPE and GSE, and the chain of function calls in them, also the order of Infra(T2P) calling them. Basically, both backups on GPE side have 2 phases, preparation phase and completion phase. The preparation phase is completed in the callback function(T2P_CB_BackupInternal) triggered by Infra. The completion phase is completed in the rebuild management(DeltaRebuilder::CheckCmd()) thread. Preparation phase mostly do some sanity checks and preparation work as the name indicated. Completion phase does the actual work, writing/moving the actual data to the backup destination folder. GSE's backups are completed once in the callback function(T2P_CB_BackupInternal()). The order is that 1. GPE preparation phase. 2. GSE backup starts, once finished, Infra will resume GPE pause. 3. GPE completion phase self triggered. So what mostly happens is that when GPE is still in completion phase, Infra resume GPE because of GSE finished.
+Problem statement/Purpose
+Minimize the write blocking period of TigerGraph during backups.
+Scope
+Include information about the part(s) of the problem this design solves. Also include components/areas that document will cover. Provide references to other documents that addresses other parts of the solution to the problem.
+Sizing and Complexity
+Yong has finished GSE side change.
+To make GPE cooperate with GSE, there is one week person workload.
+Infra side will also need half week workload.
+High Level Implementation Design Overview
+High level design
+After GSE resumePost, it will notify Infra about it. Infra will call the GPEResume callback function to resume GPE. Meanwhile, GSE will continue taking the snapshot. So in new design, the time used by GSE to take snapshot is no longer write blocking.
+Success Criteria
+The write blocking period of backups is less.
+
+
+
+
+Features, Functions and Flowcharts
+This is a diagram shows the changes made by this online backup project. GSE “take snapshot“ is no longer a part in blocking period. The red parts indicate the changed parts.
+Open Untitled-2023-10-26-1458-6.png
+Untitled-2023-10-26-1458-6.png
+The change is focusing on GSE letting Infra know it is resumed. This communication can be achieved by established mechanism.
+
+
+
+GoInt UpdateCmdProgress(GoString cmdId, GoInt rc, GoInt done, GoString output);
+Where the GoString output is output of
+
+
+
+std::string gutil::CommandHelper::SerializeBackupCmdResult(const gutil::Status& returnCode,
+              int done, const gutil::Status& errorCode,
+              const std::string& message, const BackupCmdResultContext&& context)
+Where the BackupCmdResultContext is defined as
+
+
+
+struct BackupCmdResultContext {
+gvector<std::string> restore_paths_;
+std::string suffix_;
+uint64_t tid_;
+gvector<WaterMark> watermarks_;
+uint32_t schema_version_;
+}
+message argument passed into SerializeBackupCmdResult will be used by GSE to indicate resume post.
+
+
+
+
+
+== Limitations
+We have verified, while a loading job is running, user can do a backup concurrently.
+However, if users start running a query, the full backup cannot succeed until that query finished.
+So in this sense, running queries still block full backup.
+
+Tradeoff in online backup:
+At high level, we achieve online/non-blocking backup by keeping the upsert data in memory but not flush to disk. So the backup is running while new in-coming data accumulate in memory. These data will be flushed to disk after backup finished.

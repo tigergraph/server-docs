@@ -1,0 +1,67 @@
+= Differential Backup
+
+== Terminology Definition
+Full backups comprise entire data backup sets, regardless of already existing backups or data change circumstances.
+Differential backups comprise data files that have changed since the most recently completed full backup.
+Incremental backups comprise data files that have changed since the most recently completed incremental backup.
+
+This is the design doc of Incremental Backup Phase 1 (Differential Backup), it will be referred to as Phase 1 Doc.
+
+== Background
+TG has full snapshot backup for long time, which needs all segments rebuild to a same TID and simultaneous running queries will block these rebuilds, thus it takes a long time for backup each time. To mitigate the long backup time even we only have little changes to the database, we implemented Differential Backup in 3.8 release. In Phase 1 Doc, it gives an example of improving the backup time from 7 mins to 10 seconds for a 100GB large TG database.
+
+What Phase 1 does is basically serializing all Kafka messages, including both GPE’s Delta queue and GSE’s Journal queues, since last full snapshot backup, to disk. When user want to restore, infra will call a standalone tool named incremental_backup_restore to deserialize all those Kafka messages and write to Kafka queues.
+
+For 5 limitations of differential Backup we mentioned above, the first 3 limitations will be resolved in this Phase 2 of Differential Backup.
+
+== Scope
+To resolve the schema change limitation, the design will focus on properly handling delta_schema_history.yaml during backups.
+To resolve the restored DB limitation, the design will focus on properly setting watermark during restore from a full backup.
+To resolve the untracked open transactions at full backup, the design will focus on accurately identifying the delta messages belong to those transactions and including them in the following differential backups.
+
+This project will not address the limitation 4, preventing purging too much, for 2 main reasons.
+Kafka purging usually happen when a lot of messages have been written into Kafka queues. If all those messages have not been backed up yet, that means users have a lot of upsert/delete to database but not backup yet, which violates the intention of differential Backup for relative small/short-term changes.
+Once non-blocking/online backups is achieved, users should have less pain to do backup and users will tend to backup regularly and more frequently. Which will make kafka purging too much case (purged watermark) little likely to happen.
+
+This project phase 2 will not address the limitation 5 as well. It should be a solvable problem and planned in our vision, that’s the final version Incremental Backup.
+Sizing and Complexity
+On Engine side, it should be a 1000 lines code change for feature development. Note: Unit Tests are not included. Complexity is medium. 1 person 3 weeks should be enough.
+High Level Implementation Design Overview
+High level design
+In Phase 2, differential backup will properly handle delta_schema_history.yaml to interpret those backuped delta messages. During restore from a full backup, the full backup watermark message will be properly sent to kafka queue to indicate where the differential Backup should start.
+Component #1 Design
+The schema change is not supported in phase 1 is because after schema change, GPE needs a new delta schema to interpret the upcoming delta messages. For example, a full backup happened at tid 100, a schema change happened at tid 150 and an differential backup happened at 200. If we keep using the config.yaml and delta_schema_history.yaml in the full backup, we cannot interpret the delta message between 150 and 200.
+Thus, the solution is while running a differential backup, besides serializing kafka messages, config.yaml and delta_schema_history.yaml will be copied as well. And replaced the original if there is any after restoring full backup.
+Component #2 Design
+During the restore from a full backup, the full backup watermark message will be written back to kafka queue, indicating which TID the full backup has covered. After the restore is finished, will update which backup will be used for the next differential backup. So later differential Backup knows where to start.
+Component #3 Design
+Differential backup will start reading the kafka messages from max_no_transaction_pos_ when last full backup happens. It will markdown all messages belong to any transactions. For those transactions which do not commit or rollback before last_tid_, they will be serialized in the front of the Differential Backup.
+Success Criteria
+Differential Backup can be executed and later successfully restored back, whenever schema changes are performed.
+Differential Backup can be executed and later successfully restored back, on a TG restored from any kind of backups.
+Differential Backup includes open transaction at the full backup it based upon, no data lost.
+Design justification and alternate implementations
+To support schema change and restore, these methods seem to be the only cure.
+Detailed Implementation Design Description
+Features, Functions and Flowcharts
+This will be the new output of differential backup:
+
+
+
+
+
+
+
+
+
+
+
+== Limitatons
+
+But it has these limitations:
+Not supporting schema change. That means users cannot run a differential backup if they have run schema changes since last full snapshot backup. Users have to run a full snapshot backup first, then they can use differential Backup.
+Not supporting on restored TG. If the TG was restored from a full snapshot backup, users cannot run a differential backup. Users have to run a full snapshot backup first, then they can use Differential Backup.
+The open transactions at the full backup happening is not properly handled. It may cause data lost.
+Not supporting Kafka reset or kafka purging too much. Note: Not supporting Kafka reset is an intrinsic limitation comes from the design, no way to pass it.
+Differential Backup must based on last full snapshot backup.
+That means, if you did full backup on Monday, one differential backup on Tuesday, then you want to run a differential Backup on Wednesday, you have to base on Monday’s full backup and save all changes since then. So part of your Wednesday differential backup is actually the same as Tuesday’s differential backup.
