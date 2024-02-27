@@ -456,17 +456,17 @@ POST /restpp/workload-manager/queuestatus
 ----
 Return the status of the given workload queue on each GPE instance.
 
-===== Query Parameters
+===== Request Body
 [cols="20h,~,20h"]
 |===
-|Parameter|Description|Data type
-|queuelist (optional)|The list of the ID of the workload queues. If not specified, all queues will be shown.|`STRING[]`
-|mode|`stats` or `verbose` (case-sensitive)|`STRING`
+|Field|Description|Data type
+|queuelist (optional)|The list of the ID of the WorkloadQueue. If not specified, all queues will be shown.|`STRING[]`
+|mode (optional)|`stats` or `verbose` (case-sensitive). If not specified, `stats` will be used.|`STRING`
 |===
 
-If the parameter `mode` is *not* specified, it will fall back to the default value `stats` which only gives the number of queries in the delay queue and the running set.
+For `mode` field, if `stats` is specified, response only gives the numbers of queries waiting and running. If `verbose` is specified, the response will include the the request Ids of the queries that are waiting and running.
 
-If `verbose` is specified, the response will include the request IDs in the delay queue and the running set.
+If Request Body is not provided, response is generated as if both fields are using the default values.
 
 ===== Example Request
 [source.warp, bash]
