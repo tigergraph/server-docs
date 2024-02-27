@@ -7,8 +7,14 @@ Users can leverage it to connect TigerGraph to the Spark ecosystem and load data
 
 * Distributed file system: HDFS, S3, GCS and ABS
 * Streaming source: Kafka
-* Data warehouse: BigQuery, Snowflake and Redshift
-* Open table format: xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_delta_lake[Delta Lake], xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_iceberg[Iceberg] and xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_hudi[Hudi]
+* Data warehouse:
+xref:tigergraph-server:data-loading:load-from-warehouse.adoc#_bigquery[BigQuery],
+xref:tigergraph-server:data-loading:load-from-warehouse.adoc#_snowflake[Snowflake]
+and Redshift
+* Open table format:
+xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_delta_lake[Delta Lake],
+xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_iceberg[Iceberg]
+and xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_hudi[Hudi]
 
 This connector has multiple optimisations and is backward compatible with TigerGraph v3.6.0+. Although, the job level loading statistics is only available for v3.10.0+.
 
@@ -36,6 +42,34 @@ gsql -g demo_graph '
 }
 '
 ----
+
+=== Compatibility
+* TigerGraph 3.6.0 or higher.
+* Spark 3.2 or higher with Scala 2.12 and Scala 2.13.
+* JAVA 8 or higher.
+
+=== Download the JARs
+This connector can be downloaded from maven central repository:
+https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector/overview[Maven Central]
+it has 3 types of release format:
+
+* `tigergraph-spark-connector-<version>.jar`: The `JAR` file containing only the compiled classes of the connector, which does not include any dependencies.
+* `tigergraph-spark-connector-<version>-jar-with-dependencies.jar`: The `JAR` file that includes compiled classes, as well as all the dependencies.
+* `tigergraph-spark-connector-<version>.tar.gz`: The compressed `TAR` archive that includes `tigergraph-spark-connector-<version>.jar` and dependencies in separate `JAR` files.
+
+To use TigerGraph Spark connector in a Spark Shell:
+
+.use the `--jars` option:
+[console]
+----
+spark-shell --jars tigergraph-spark-connector-<version>-jar-with-dependencies.jar
+----
+
+[NOTE]
+====
+If you want to include TigerGraph Spark Connector in your Spark installation, add the `JAR` with dependencies to Spark's `jars` folder.
+====
+
 
 === Configure Logging
 
