@@ -398,18 +398,20 @@ gadmin config set rsestpp.BasicConfig.Env ${new env variables list}
 .Here is the example:
 [console]
 ----
-gadmin config get restpp.BasicConfig.Env
+gadmin config get restpp.BasicConfig.Env "
 LSAN_OPTIONS=suppressions=/home/tigergraph/suppressions.txt;
 LD_PRELOAD=/home/tigergraph/tigergraph/app/3.10.0/.syspre/usr/lib/x86_64-linux-gnu/libasan.so.5:$LD_PRELOAD;
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH;
 ASAN_OPTIONS=detect_leaks=0:alloc_dealloc_mismatch=0;
+"
 
-gadmin config set RESTPP.BasicConfig.Env
+gadmin config set RESTPP.BasicConfig.Env "
 LSAN_OPTIONS=suppressions=/home/tigergraph/suppressions.txt;
 LD_PRELOAD=/home/tigergraph/tigergraph/app/3.10.0/.syspre/usr/lib/x86_64-linux-gnu/libasan.so.5:$LD_PRELOAD;
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH;
 ASAN_OPTIONS=detect_leaks=0:alloc_dealloc_mismatch=0;
 SSL_CA_CERT=/home/tigergraph/cacertificate/example/;
+"
 
 gadmin config apply -y
 gadmin restart -y

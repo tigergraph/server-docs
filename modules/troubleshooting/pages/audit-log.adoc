@@ -150,10 +150,9 @@ All audit log files are stored in JSON format, even when users are actively inte
 ----
 [
     {"serverHostIP":"127.0.0.1","databaseName":"TigerGraph","version":"1.0","timestamp":"2023-12-04 07:56:20.8"},
-    {"endpoint":"/gsql/login","clientHost":"127.0.0.1:43746","clientOSUsername":"OSusername","failedAttempts":0,"userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"login succeed","timestamp":"2023-12-04 07:56:34.128","actionName":"login","status":“SUCCESS”},
-    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:43746","clientOSUsername":"OSusername","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created user 'u1'.","timestamp":"2023-12-04 07:56:34.984","actionName":"createUser","status":“SUCCESS”},
-    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:54746","clientOSUsername":"OSusername","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created query 'printVertex'.","timestamp":"2023-12-04 07:58:53.045","actionName":"createQuery","status":“SUCCESS”},
-    {"endpoint":"/gsql/library","clientHost":"127.0.0.1:54770","clientOSUsername":"OSusername",,"userName":"tigergraph","authType":"USER_PASS","message":"callTemplateQuery succeed","timestamp":"2023-12-04 08:00:14.703","actionName":"callTemplateQuery","status":“SUCCESS”}
+    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:43746","clientOSUsername":"tigergraph","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created user 'u1'.","timestamp":"2023-12-04 07:56:34.984","actionName":"createUser","status":“SUCCESS”},
+    {"endpoint":"/gsql/file","clientHost":"127.0.0.1:54746","clientOSUsername":"tigergraph","userAgent":"GSQL Shell","userName":"tigergraph","authType":"USER_PASS","message":"Successfully created query 'printVertex'.","timestamp":"2023-12-04 07:58:53.045","actionName":"createQuery","status":“SUCCESS”},
+    {"endpoint":"/gsql/library","clientHost":"127.0.0.1:54770","clientOSUsername":"tigergraph",,"userName":"tigergraph","authType":"USER_PASS","message":"callTemplateQuery succeed","timestamp":"2023-12-04 08:00:14.703","actionName":"callTemplateQuery","status":“SUCCESS”}
 ]
 ----
 
@@ -209,7 +208,7 @@ This field indicates how many times this user failed to provide the correct cred
     "userName": "tigergraph",
     "authType": "SAML SSO",
     "clientHost": "<IP or FQDN>:<Port>",
-    "clientOSUsername":"OSusername",
+    "clientOSUsername":"tigergraph",
     "userAgent": "GraphStudio",
     "endpoint": "/gsql/simpleauth",
     "actionName": "login",
