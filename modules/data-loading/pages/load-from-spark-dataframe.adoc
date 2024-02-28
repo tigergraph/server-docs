@@ -125,7 +125,7 @@ To let TigerGraph parse the data chunk correctly, please make sure you are setti
 === Batch Write
 
 .Create the variables:
-[console]
+[source, scala]
 ----
 val GRAPH = "demo_graph"
 val URL = "http(s)://hostname:port[,http(s)://hostname:port]"
@@ -137,13 +137,13 @@ val SEPARATOR = "|"
 ----
 
 .Read data from any Spark data sources into the dataframe:
-[console]
+[source, scala]
 ----
 val df = spark.read.json("path/to/person.json")
 ----
 
 .Batch write the data into TigerGraph:
-[console]
+[source, scala]
 ----
 df.write
     .format("tigergraph")
@@ -165,7 +165,7 @@ df.write
 == Write Spark Structured Streaming API
 
 .Create the variables:
-[console]
+[source, scala]
 ----
 val GRAPH = "Social_Net"
 val URL = "http(s)://hostname:port"
@@ -177,7 +177,7 @@ val SEPARATOR = "|"
 ----
 
 .Read data from any Spark streaming data sources into the dataframe:
-[console]
+[source, scala]
 ----
 val df = spark.readStream
     .format("kafka")
@@ -187,7 +187,7 @@ val df = spark.readStream
 ----
 
 .Streaming write data to TigerGraph:
-[console]
+[source, scala]
 ----
 df.writeStream
     .outputMode("append")
@@ -374,7 +374,7 @@ Add `--files /path/to/trust.jks` when submitting the Spark job.
 === Load Data from Delta Lake
 
 .Load delta table to Spark dataframe:
-[console]
+[source, scala]
 ----
 val df = spark.read.format("delta")
     .load("/path/to/delta/table")
@@ -391,7 +391,7 @@ val df = spark.read.format("delta")
 ==== Batch Write
 
 .Batch write the data into TigerGraph:
-[console]
+[source, scala]
 ----
 df.write
     .format("tigergraph")
@@ -403,7 +403,7 @@ df.write
 ==== Streaming Write(CDC)
 
 .Streaming read from delta table:
-[console]
+[source, scala]
 ----
 val df = spark.readStream
     .format("delta")
@@ -423,7 +423,7 @@ val df = spark.readStream
 ----
 
 .Streaming write data to TigerGraph:
-[console]
+[source, scala]
 ----
 df.writeStream
     .outputMode("append")
@@ -439,7 +439,7 @@ For more details on Delta Lake see https://docs.delta.io/latest/index.html[Welco
 === Load Data from Iceberg
 
 .Load Iceberg table to Spark dataframe:
-[console]
+[source, scala]
 ----
 val df = spark.table("catalog.db.table")
     .select(
@@ -455,7 +455,7 @@ val df = spark.table("catalog.db.table")
 ==== Batch Write
 
 .Batch write the data into TigerGraph:
-[console]
+[source, scala]
 ----
 df.write
     .format("tigergraph")
@@ -467,7 +467,7 @@ df.write
 ==== Streaming Write(CDC)
 
 .Streaming read from Iceberg table:
-[console]
+[source, scala]
 ----
 val df = spark.readStream
     .format("iceberg")
@@ -484,7 +484,7 @@ val df = spark.readStream
 ----
 
 .Streaming write data to TigerGraph:
-[console]
+[source, scala]
 ----
 df.writeStream
     .outputMode("append")
@@ -500,7 +500,7 @@ For more details on Iceberg see https://iceberg.apache.org/docs/1.3.1/getting-st
 === Load Data from Hudi
 
 .Load Hudi table to Spark dataframe:
-[console]
+[source, scala]
 ----
 val df = spark.read
     .format("hudi")
@@ -518,7 +518,7 @@ val df = spark.read
 ==== Batch Write
 
 .Batch write the data into TigerGraph
-[console]
+[source, scala]
 ----
 df.write
     .format("tigergraph")
@@ -530,7 +530,7 @@ df.write
 ==== Streaming Write(CDC)
 
 .Streaming read from Hudi table:
-[console]
+[source, scala]
 ----
 val df = spark.readStream
     .format("hudi")
@@ -546,7 +546,7 @@ val df = spark.readStream
 ----
 
 .Streaming write data to TigerGraph:
-[console]
+[source, scala]
 ----
 df.writeStream
     .outputMode("append")
@@ -569,7 +569,7 @@ There are 3 levels of stats:
 * *Job Level (only available for TigerGraph 3.10.0 or higher)*: The overall loading statistics of the Spark job aggregated by TigerGraph service KAFKASTRM-LL. It requires providing username and password to query /gsqlserver endpoint.
 
 .Sample loading statistics:
-[console]
+[source, scala]
 ----
 24/01/22 16:15:45 INFO TigerGraphBatchWrite: Overall loading statistics: [ {
     "overall" : {
