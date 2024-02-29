@@ -1,0 +1,79 @@
+= Avro Data Validation with KafkaConnect
+
+== Overview
+
+In certain scenarios, users could load data in Avro format to TigerGraph DB, via an external Kafka connector, such as MirrorMakerConnector and experience malformed data errors during this process.
+This generated vague error messages and loading failures.
+
+The KafkaConnect feature flag `ErrorTolerance` and the new transformations enables data loading services to handle malformed data and report errors effectively.
+
+[NOTE]
+====
+The KafkaConnect feature flag was introduced in 3.10.0.
+====
+
+== `ErrorTolerance`
+
+`ErrorTolerance` can now be set to `none` or `all`.
+
+When set to `all`, malformed data no longer immediately results in a loading failure.
+Instead, the data is ignored, allowing the loading process to continue.
+New converters, specifically KafkaConnect transformations, were created to handle errors appropriately by incorporating headers to record error stack messages.
+
+== Types of Avro Transformation
+
+Two new Avro transformations emerge, derived from existing (value) converters:
+
+[cols="2", separator=¦ ]
+|===
+¦ Transformation ¦ Notes
+
+¦ `TigergraphAvroWithSchemaRegistryTransformation`
+¦ A schema registry (URL) is required.
+
+¦ `TigergraphAvroWithoutSchemaRegistryTransformation`
+¦ A schema registry is *not* required.
+|===
+
+== How to Enable Avro Data Validation
+
+To enable Avro data validation, configure Kafka Connector with `ErrorTolerance` and the new transformation.
+
+Below are the additional settings to be added to the connector config:
+
+[source, gsql]
+----
+connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector
+...
+key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+header.converter=org.apache.kafka.connect.storage.StringConverter
+value.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+transforms=TigerGraphAvroTransform
+transforms.TigerGraphAvroTransform.type=com.tigergraph.kafka.connect.transformations.TigergraphAvroWithSchemaRegistryTransformation
+transforms.TigerGraphAvroTransform.schema.registry.url=<URL to schema registry>
+transforms.TigerGraphAvroTransform.errors.tolerance=all
+----
+
+[NOTE]
+====
+* In the above settings, `MirrorSourceConnector` is the connector.
+* The transformation type is set to `TigergraphAvroWithSchemaRegistryTransformation,` but alternatively, it could be set to `TigergraphAvroWithoutSchemaRegistryTransformation.`
+* Tolerance is set to `all` to prevent data loading failures due to malformation. Errors will also be reported to users. Setting tolerance to `none` will result in immediate failure upon malformation.
+====
+
+
+
+== How to Show Data Malformation Errors
+
+With error tolerance set to `all`, if there’s malformation in the data, errors will be captured and `KafkaStrm-LL` will be able to show the errors when user queries the loading status of the loading jobs.
+
+An example command to query loading status:
+[console]
+----
+curl -s http://$(gmyip):$(gadmin config get KafkaStreamLL.Port)/log-aggregation/local/loading-progress
+----
+
+If data malformation exists, the result will display errors aiding users in identifying problematic files or records, including:
+
+* `errorCode: 55`
+* Other error messages containing error stacks.
