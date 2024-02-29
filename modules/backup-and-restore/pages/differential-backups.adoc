@@ -3,10 +3,12 @@
 == Terminology Definition
 Full backups comprise entire data backup sets, regardless of already existing backups or data change circumstances.
 
-* Differential backups comprise data files that have changed since the most recently completed full backup.
-* Incremental backups involve data files changed since the last incremental backup.
+* Differential backups backup Kafka messages that have changed since the most recently completed or most recently restored full backup.
 
-For example, a full backup happened at `tid:100`, a schema change happened at `tid:150` and an differential backup happened at `tid:200`.
+For example, a full backup happened at `tid:100`, a schema change happened at `tid:150` and a differential backup happened at `tid:200`.
+
+Additionally, for example, if you have _full backup A_ and _full backup B_, _full backup A_ happened before _full backup B_.
+If you restore _full backup A_, then the next differential backup is based on _full backup A_, instead of _full backup B_, although _full backup B_ was completed more recently.
 
 == How Differential Backup works
 
@@ -73,18 +75,7 @@ gadmin backup create <tag>
 
 Differential backup does have some know limitations:
 
-* Currently, schema change is not yet supported.
-This means users cannot run a differential backup, if they have run schema changes since last full snapshot backup.
-Users have to run a full snapshot backup first, then they can use differential Backup.
-
-* Currently, restored TigerGraph is not supported yet.
-If the TigerGraph was restored from a full snapshot backup, users cannot run a differential backup.
-Users have to run a full snapshot backup first, then they can use Differential Backup.
-
-* Open transactions at the full backup happening is not yet supported.
-This may cause data lost.
-
-* Kafka reset or kafka purging too often is not yet supported by differential backups.
+* Kafka reset or Kafka purging of large amounts of Kafka message data is not yet supported by differential backups.
 
 * Differential Backup must based on last full snapshot backup and cannot be based on a previous days differential backup.
 ** For example: If a user did a full backup on _Sunday_ and then one differential backup on _Monday_. Then, if the user wants to run a differential backup on _Tuesday_, they will have to base it on _Sunday's_ full backup and save all changes since then.
