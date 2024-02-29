@@ -12,10 +12,15 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 == Key New Features
 === 3.10.0
 * xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc[Change Data Capture (CDC)] - This equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems maintained by the user.
+Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] in xref:gui:admin-portal:overview.adoc[Admin Portal].
 
 * xref:tigergraph-server:system-management:workload-management.adoc#_workload_queue[Workload Queue] - Configure workload queues so that queries are routed to the appropriate queues during runtime.
 
 * xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc[Spark Connector] - A new dedicated connector used with Apache Spark to read data from a Spark DataFrame and write to TigerGraph.
+
+* xref:tigergraph-server:backup-and-restore:online-backup.adoc[] - Minimizes blocking time during backups, allowing successful execution of post requests for TigerGraph users.
+
+* xref:tigergraph-server:backup-and-restore:differential-backups.adoc[] - Ensure data files that have changed since the most recently completed full backup are backed up without any data lost.
 
 == Detailed List of New and Modified Features
 

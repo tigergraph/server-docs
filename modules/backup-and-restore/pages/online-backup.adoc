@@ -1,0 +1,31 @@
+= Online Backup
+
+The introduction of Online Backup in version 3.10.0 is designed to operate seamlessly.
+This feature maintains the same xref:tigergraph-server:backup-and-restore:configurations.adoc[] as before.
+
+[IMPORTANT]
+====
+Online Backup is automatic and always active.
+====
+
+== User Experience
+
+During backups, users will notice a significant reduction in blocking time for their TigerGraph clusters, particularly in post request handling.
+
+In the past, executing post requests via the xref:tigergraph-server:API:index.adoc[REST API] during a backup could result in timeouts for most post requests to the database.
+Simply, users could not upsert any data to the database while a backup is running.
+
+With the introduction of online backup, users post requests successful execute during the majority of the backup time window.
+Specifically, focusing on upsert/write operations and not impacting running queries.
+
+In a basic benchmark on a `100GB` database, the Graph Processing Engine (GPE) blocking time ranged from `4` to `8` seconds.
+Considering the default post request timeout of `15` seconds, this blocking time should have minimal impact.
+
+== Limitations
+
+Currently, the Online Backup feature has these known limitations:
+
+* If users start running a query, the full backup cannot succeed until that query finished.
+* Running queries also blocks the rebuild process.
+
+
