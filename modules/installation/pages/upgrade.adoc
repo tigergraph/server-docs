@@ -104,11 +104,53 @@ $ ./install.sh -U
 ====
 Please upgrade from the most recent maintenance version in any minor release.
 If you are upgrading from a version that does not have the most recent patches applied to its minor version, upgrade to the most recent patches first before upgrading to another minor or major version.
-For example, if you are upgrading from 3.5.0 to {page-component-version}, upgrade to 3.5.3 first using the installation script and then upgrade to {page-component-version}.
+For example, if you are upgrading from 3.5.0 to 3.10.x, upgrade to 3.5.3 first using the installation script and then upgrade to 3.10.x.
 
 Additionally, versions upgrading from 3.0 or 3.1 must first go through 3.2.4.
-For example, if you are running version 3.1.3, you must first upgrade to 3.1.6, then 3.2.4, then to {page-component-version}.
+For example, if you are running version 3.1.3, you must first upgrade to 3.1.6, then 3.2.4, then to 3.10.x.
 ====
+
+Once binaries and config files are installed on local machine and also distributed to all the other machines, a message will be prompted to user:
+
+[console]
+----
+“Do you want to switch platform to the new version now(it can be delayed to a later time): y/N”.
+----
+
+=== n/N option
+
+If users selects `n/N`, now it is listing a list of scripts taking the same parameters as `gadmin/gsql` commands.
+
+.Ex.
+[console]
+----
+[NOTE    ]: To switch platform to new version, please follow the instructions:
+1.  pre_upgrade_check_infra.sh 3.6.5 3.10.0
+2.  pre_upgrade_check_engine.sh 3.6.5 3.10.0
+3.  pre_upgrade_check_gsql.sh 3.6.5 3.10.0
+4.  pre_upgrade_check_gus.sh 3.6.5 3.10.0
+5.  gadmin config set System.AppRoot /home/graphsql/tigergraph/app/3.10.0
+6.  gadmin config apply -y
+7.  switch_version_infra.sh 3.6.5 3.10.0
+8.  switch_version_engine.sh 3.6.5 3.10.0
+9.  switch_version_gsql.sh 3.6.5 3.10.0
+10. switch_version_gus.sh 3.6.5 3.10.0
+11. post_upgrade_check_infra.sh 3.6.5 3.10.0
+12. post_upgrade_check_engine.sh 3.6.5 3.10.0
+13. post_upgrade_check_gsql.sh 3.6.5 3.10.0
+14. post_upgrade_check_gus.sh 3.6.5 3.10.0
+----
+These scripts are located in `“/home/<user>/tigergraph/app/<version>/upgrade_script` folder.
+
+=== y/Y Option
+
+If users selects `y/Y` the installer will automatically switch TigerGraph to the latest version.
+
+A new message will prompt to user, saying TigerGraph has been upgraded.
+
+If there’s any error, the upgrade process will be terminated immediately.
+Following the instructions in the prompts from the console, the user can tell the progress of the upgrade and manually re-run the failed and the leftover steps to complete the upgrading process.
+
 
 
 [[upgrading-from-v2x]]
