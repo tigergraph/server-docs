@@ -1,18 +1,25 @@
-= Database Import/Export
+= Database Import/Export All Graphs
 :description: This page details the instructions and requirements of importing and exporting a graph in TigerGraph.
 //:page-aliases: tigergraph-server:import-export:database-import-export.adoc
 
-The GSQL `EXPORT GRAPH` and `IMPORT GRAPH` commands perform a logical backup and restore.
-A database export contains the database's data, and optionally some types of metadata.
+The GSQL `EXPORT GRAPH ALL` and `IMPORT GRAPH ALL` commands perform a logical backup and restore.
+A database `EXPORT` contains the database's data, and optionally some types of metadata.
 This data can be subsequently imported in order to recreate the same database, in the original or in a different TigerGraph platform instance.
-Import/export is a complement to backup/restore, but not a substitute.
 
+To see how to Export/Import selected individual graphs in a database refer to xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[].
+
+
+[IMPORTANT]
+====
+Import/export is a complement to xref:tigergraph-server:backup-and-restore:index.adoc[], but not a substitute. See the xref:#_known_issues[] for additional considerations.
+====
+
+== Import Prerequisite
 To import an exported database, ensure that the export files are from a database that was running *the exact same version* of TigerGraph as the database that you are importing into.
 
+== Known Issues
 [WARNING]
 ====
-Known Issues:
-
 * User-defined loading jobs containing xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
 * If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be re-imported.
 * GSQL EXPORT GRAPH may fail and cause a GPE to crash when UDT type has a fixed STRING size.
@@ -62,7 +69,8 @@ CAUTION: The export directory should be empty before running the command.
 to. Must be an absolute path.
 |===
 
-=== Options
+
+=== Export All Options
 
 [cols=",",options="header",]
 |===
@@ -100,7 +108,7 @@ ASCII char 30 (RS) and 31 (US) are reserved separators that cannot be used for d
 
 === Output
 
-The `EXPORT GRAPH` command exports all graphs in the database.
+The `EXPORT GRAPH ALL` command exports all graphs in the database.
 
 The export contains the following categories of files:
 
@@ -247,14 +255,15 @@ importOptions ::= [-P | --PASSWORD ] [ (-KU | -- keep-users]
 Must be an absolute path.
 |===
 
-=== Options
+=== Import All Options
 [cols=",",options="header",]
 |===
 |Option |Description
 |`+-P+` or `+--PASSWORD+` |Decrypt with password. You will be prompted
 to enter a password when using this option.
 
-|`+-KU+` or `+--KEEP-USERS+` a|Keep the current users during the
+|`+-KU+` or `+--KEEP-USERS+`
+a|Keep the current users during the
 import operation.
 New users from the imported graph will still be added.
 Global roles from the current database are kept if you use this option.
@@ -277,7 +286,7 @@ There are two sets of loading jobs:
 
 * Those that were in the *catalog* of the database which was exported.
 These are embedded in the file `DBImportExport_Graph_Name.gsql`
-* Those that are *created by `EXPORT GRAPH` and are used to assist with the import process.
+* Those that are *created by `EXPORT GRAPH ALL` and are used to assist with the import process.
 These are embedded in the file `run_loading_jobs.gsql`.
 
 The catalog loading jobs are not needed to restore the data.
@@ -302,7 +311,7 @@ During an import, `$sys.data_root` is set to the root folder of the import locat
 There are two sets of schema change jobs:
 
 . Those that were in the catalog of the database which was exported. These are stored in the folder `/SchemaChangeJobs`.
-. Those that were created by `EXPORT GRAPH` and are used to assist with the import process.
+. Those that were created by `EXPORT GRAPH ALL` and are used to assist with the import process.
 These are in the `run_loading_jobs.gsql` command file.
 The jobs are dropped after the import command is finished with them.
 
@@ -345,4 +354,3 @@ The export file on every node must share the same absolute path.
 Run the `IMPORT GRAPH ALL` command from the server that corresponds to the server where `EXPORT GRAPH ALL` was run.
 
 For example, if you exported from the m2 node in a cluster, you also need to run the `IMPORT GRAPH ALL` command from the m2 node of the cluster you are importing the export files into.
-

@@ -1,5 +1,5 @@
 [NOTE]
-We currently support xref:#BigQuery[BigQuery] and xref:Snowflake[Snowflake] data warehouses.
+We currently support xref:#BigQuery[BigQuery], xref:Snowflake[Snowflake], and xref:_postgresql[] data warehouses.
 More data warehouses will be supported in future releases.
 
 === BigQuery
@@ -40,22 +40,6 @@ https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC
 
 === Snowflake
 
-Use the required fields below for a Snowflake data `DATA_SOURCE`:
-
-.Required fields for Snowflake `DATA_SOURCE`
-[col="3"separator=¦ ]
-|===
-¦ Field ¦ Example ¦ Notes
-
-¦ `connection.url`
-¦ `"jdbc:snowflake://https://
-<account_id>.snowflakecomputing.com/?db=<db>&schema=<schema>&role=<role>",`
-¦ It should start with `jdbc:snowflake:`
-¦ connection.user ¦ "tigergraph" ¦
-¦ connection.password ¦ "password" ¦ This will be masked and shown as `****`
-¦ type ¦ "snowflake" ¦ This must be `snowflake`.
-|===
-
 [source,php,linenums]
 .Data source configuration for Snowflake:
 ----
@@ -72,14 +56,38 @@ Use the required fields below for a Snowflake data `DATA_SOURCE`:
 For Snowflake loading jobs only the default setting for `batch.max.rows` is set to `100000` for better performance.
 ====
 
+Use the required fields below for a Snowflake data `DATA_SOURCE`:
+
+.Required fields for Snowflake `DATA_SOURCE`
+[col="3"separator=¦ ]
+|===
+¦ Field ¦ Example ¦ Notes
+
+¦ `connection.url`
+¦ `"jdbc:snowflake://https://
+<account_id>.snowflakecomputing.com/?db=<db>&schema=<schema>&role=<role>",`
+¦ It should start with `jdbc:snowflake:`
+¦ connection.user ¦ "tigergraph" ¦
+¦ connection.password ¦ "password" ¦ This will be masked and shown as `****`
+¦ type ¦ "snowflake" ¦ This must be `snowflake`.
+|===
+
 === PostgreSql
 
-These are some required and optional configuration parameters for connection and authentication with a PostgreSql data `DATA_SOURCE`.
+.Data source configuration for PostgreSql:
+[source,php,linenums]
+----
+{
+    "type":"postgresql",
+    "host":"pg_address",
+    "port": 5432,
+    "connection.user":"postgres",
+    "connection.password":"postgres",
+    "db.name":"postgres"
+}
+----
 
-[NOTE]
-====
-PostgreSql shares the same other configuration parameters with BigQuery.
-====
+These are some required and optional configuration parameters for connection and authentication with a PostgreSql data `DATA_SOURCE`.
 
 .Fields for PostgreSql `DATA_SOURCE`
 [col="3"separator=¦ ]
@@ -93,7 +101,7 @@ PostgreSql shares the same other configuration parameters with BigQuery.
 This is *required*.
 
 ¦ `port`
-¦ `"port" 5432`
+¦ `"port": 5432`
 ¦ The port used by the PostgreSql server.
 
 The default is set to `5432`.
@@ -116,17 +124,4 @@ This is *required*
 
 This is *required*
 |===
-
-.Data source configuration for PostgreSql:
-[source,php,linenums]
-----
-{
-    "type":"postgresql",
-    "host":"pg_address",
-    "port" 5432,
-    "connection.user":"postgres",
-    "connection.password":"postgres",
-    "db.name":"postgres"
-}
-----
 
