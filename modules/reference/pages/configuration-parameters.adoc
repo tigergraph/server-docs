@@ -1074,11 +1074,25 @@ path for the certificates used in SSL: default empty |`nan`
 |Security.LDAP.UsernameAttribute |Configure the username attribute name
 in LDAP server: default uid |`uid`
 
+| Security.SSO.OIDC.OP.AccessTokenURL
+| The API to request access token from OP.
+Required for OIDC code flow, not needed for implicit flow.
+
+Type: `STRING`
+| `https://op.example.com/oauth/token`
+
+
 |Security.SSO.OIDC.BuiltinUser |The builtin user for OIDC, default:
 __GSQL__oidc |`__GSQL__oidc`
 
 |Security.SSO.OIDC.CallBackUrl |TigerGraph service provider callback
 URL: default http://127.0.0.1:14240 |`http://127.0.0.1:14240`
+
+| Security.SSO.OIDC.ClaimAsUserID
+| The OIDC claim which will be used as username in TigerGraph
+
+Type: `STRING`
+| `email`
 
 |Security.SSO.OIDC.Enable |Enable OIDC based SSO [true/false]: default
 false |`false`
@@ -1093,6 +1107,13 @@ provider, this config is only needed if algorithm is HMAC type |`nan`
 retrieve the public JSON web key set,
 e.g. https://op.example.com/.well-known/jwks.json. It is only needed if
 algorithm is RSA type |`https://op.example.com/.well-known/jwks.json`
+
+| Security.SSO.OIDC.OP.Issuer
+| Required, not needed for TG-Cloud.
+Entity that issues a set of claims.
+
+Type: `STRING`
+| https://example.issuer.tigergraph.com.
 
 |Security.SSO.OIDC.OP.SSOUrl |Single Sign-On URL: default
 https://op.example.com/oauth/authorize
@@ -1112,6 +1133,13 @@ provider will return [code/token/id_token/code id_token/…]: default code
 |Security.SSO.OIDC.Scope |Specifies the claims (or user attributes) to
 retrieve, separated by a space [openid email/openid profile/…]: default
 openid profile (means user’s full profile). |`openid profile`
+
+| Security.SSO.OIDC.OP.UserInfoURL
+| Required for OIDC code flow, not needed for implicit flow.
+The API to request user information via an access token.
+
+Type: `STRING`
+| `https://op.example.com/userinfo`
 
 |Security.SSO.SAML.AssertionSigned |Require Identity Provider to sign
 assertions: default true |`true`
