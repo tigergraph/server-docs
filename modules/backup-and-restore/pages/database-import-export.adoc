@@ -113,7 +113,12 @@ The `EXPORT GRAPH ALL` command exports all graphs in the database.
 The export contains the following categories of files:
 
 * Data files in CSV format, one file for each type of vertex and each
-type of edge.
+type of edge in a single node.
++
+[NOTE]
+====
+However, for cluster environments, since the data files are spread across the nodes, they will not be included in the zip file.
+====
 * GSQL DDL command files created by the export command.
 The import command uses these files to recreate the graph schema(s) and reload the
 data.
@@ -133,7 +138,7 @@ When exporting graphs, ACLs are only exported when both queries and users are ex
 
 The following files are created in the specified directory when
 exporting and are then zipped into a single file named
-`ExportedGraphs.zip`.
+`ExportedGraph.zip`.
 
 [CAUTION]
 ====

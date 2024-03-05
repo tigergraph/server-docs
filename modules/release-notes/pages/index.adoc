@@ -22,6 +22,23 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * xref:tigergraph-server:backup-and-restore:differential-backups.adoc[] - Ensure data files that have changed since the most recently completed full backup are backed up without any data lost.
 
+* [Add link] New non-interactive mode GSQL operations - Added four new non-interactive mode operations.
+
+* [Add link] Externalizing KafkaConnect Config using Config Provider - TigerGraph’s Kafka connector config will use a reference to retrieve the config value from an external source.
+
+* [Add link] GSQL Data Streaming Improvements - Improvements to GSQL data streaming that reduce the CPU usage, improve performance, optimizes Disk usage, and increases stability and cohesion.
+
+* [Add link] Refined Upgrading Process - Changes to the upgrading process to allow a TigerGraph upgrade without having to upgrade the K8's operator.
+
+* [Add link] Support Non-Interactive Upgrade - The user can use this option to avoid input ( y/n ) to switch to the new version. When it is given, the upgrade flow will switch to the new version automatically without input from the user.
+
+* [Add link] Support Edge Accumulators - Support for edge accumulators for a single-hop distributed query.
+
+* [Add link] Global Schema Restrict to Global Scope - Users must have the appropriate scope to interact with global schema change jobs (create, delete, run).
+
+* [Add link] Kafka Security via SSL - Kafka brokers can be secured by SSL including the connections from Kafka clients to Kafka brokers.
+
+
 == Detailed List of New and Modified Features
 
 === TigerGraph Server
@@ -63,18 +80,22 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 
 * xref:tigergraph-server:security:gsql-file-input-policy.adoc[] - `GSQL.fileInputPolicy` allows users to apply restrictions on the location of local files used to load data to TigerGraph.
 
-
 == TigerGraph Suite Updates
 === Admin Portal
 
 * xref:gui:admin-portal:components/cdc.adoc[Change Data Capture (CDC)] can be enabled in xref:gui:admin-portal:overview.adoc[Admin Portal].
 
-
 === GraphStudio
 
-=== GDS Library and ML Workbench
+* xref:gui:graphstudio:export-and-import-solution.adoc[Single Graph Import and Export Support]  - Allow users to choose a single graph and the data when they export or import data in GraphStudio.
+
+* [Add link] Support for Standard OIDC Authorization Code Flow - Support for OIDC SSO with code flow for general purpose adds more security.
 
 === TigerGraph Insights
+
+* xref:insights:widgets:single-value.adoc[Changing Single Value Widget to Value Widget]  - Modified the value element of insights to support the mapping of multiple values.
+* xref:insights:widgets:markdown-widget.adoc[Added Markdown Widget] - This addition allows users to add formatted text, links, images, and other rich content to the dashboards.
+* [Add link] Added Scatter Chart Widget - The scatter chart will provide a visual representation of the relationship between two numerical variables, allowing users to identify patterns or correlations in the data.
 
 == Fixed issues
 === Fixed and Improved in 3.10.0
