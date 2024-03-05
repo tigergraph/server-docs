@@ -50,29 +50,76 @@ See xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restor
 
 Run the following commands on the DR cluster to enable CRR on the DR cluster.
 
+. Set Kafka Primary IP(s), Primary Port, and TopicPrefix.
++
+.Set Kafka MirrorMaker primary cluster's IPs, with the separator of ( `,` ):
 [source.wrap,console]
 ----
-# Enable cross-region replication
-$ gadmin config set System.CrossRegionReplication.Enabled true
-
-# Kafka mirrormaker primary cluster's IPs, separator by ','
 $ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs <PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3>
-
-# Kafka mirrormaker primary cluster's KafkaPort
+----
++
+.Set Kafka MirrorMaker primary cluster's KafkaPort:
+[source.wrap,console]
+----
 $ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
-
-# The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+----
++
+.The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+[source.wrap,console]
+----
 $ gadmin config set System.CrossRegionReplication.TopicPrefix Primary
+----
++
+[NOTE]
+====
+These steps above can be skipped if these settings are already configured properly.
+====
 
-# Apply the config changes and restart GSE, GPE, GSQL
+. Apply the changes and restart the system.
++
+[source.wrap,console]
+----
 $ gadmin config apply -y
 $ gadmin restart GSE GPE GSQL -y
+----
++
+[NOTE]
+====
+These steps above can be skipped if these settings are already configured properly.
+====
 
-# Start mirrormaker and begin cross-region replication
-$ gadmin crr start
+. Initiate the CRR setup.
++
+.Run with the latest backup from its primary cluster.
+[source.wrap,console]
+----
+gadmin backup restore <latest-backup> --dr
+----
++
+For a new cluster, the latest backup parameter is not necessary.
++
+.Instead, simply run:
+[source.wrap,console]
+----
+gadmin backup restore --dr
 ----
 
+[NOTE]
+====
+In previous version users had to set `System.CrossRegionReplication.Enabled` to `true`, but this is no longer permitted.
 
+.However, setting it to `false` is still permissible.
+[source,console]
+----
+$ gadmin config set System.CrossRegionReplication.Enabled true
+[  Error] ParameterErr (to enable 'System.CrossRegionReplication.Enabled', please use `gadmin restore --dr xxx` to do it instead)
+
+$ gadmin config set System.CrossRegionReplication.Enabled false
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+----
+
+The default value of `System.CrossRegionReplication.Enabled` is `false`.  User can set it back with `gadmin backup restore <latest-backup> --dr`.
+====
 
 === Force install queries on primary
 
