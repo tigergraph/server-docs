@@ -34,19 +34,24 @@ The following setup is needed in order to enable Cross Region Replication.
 
 === Backup primary data
 
-Use GBAR to xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.
-See xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to create a backup.
+Use `gadmin backup` to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[]. If you are restoring a backup form another cluster refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
 
 If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
 
-=== Restore on the DR cluster
+[IMPORTANT]
+====
+Since 3.10.0 the command `gbar` is removed and is no longer available.
+However, if you are using a version of TigerGraph before 3.10.0 you can still use `gbar` to xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.
 
-Copy the backup files from every node to every node on the new cluster.
-xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc#_restore_from_a_backup_archive[Restore from a backup archive] of the primary cluster on the DR cluster.
-
-See xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to restore a backup.
+See also xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to create a backup.
+====
 
 === Enable CRR on the DR cluster
+
+The command `gadmin backup restore --dr` does two things:
+
+* Enables CRR.
+* Restores the backup from the primary cluster.
 
 Run the following commands on the DR cluster to enable CRR on the DR cluster.
 
@@ -70,17 +75,11 @@ $ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
 $ gadmin config set System.CrossRegionReplication.TopicPrefix Primary
 ----
 +
-[NOTE]
-====
-These steps above can be skipped if these settings are already configured properly.
-====
-
-. Apply the changes and restart the system.
+.Apply the changes.
 +
 [source.wrap,console]
 ----
 $ gadmin config apply -y
-$ gadmin restart GSE GPE GSQL -y
 ----
 +
 [NOTE]
@@ -88,7 +87,7 @@ $ gadmin restart GSE GPE GSQL -y
 These steps above can be skipped if these settings are already configured properly.
 ====
 
-. Initiate the CRR setup.
+. Enable the CRR setup.
 +
 .Run with the latest backup from its primary cluster.
 [source.wrap,console]
@@ -96,6 +95,7 @@ These steps above can be skipped if these settings are already configured proper
 gadmin backup restore <latest-backup> --dr
 ----
 +
+Adding the backup tag to `gadmin backup restore <backup tag> --dr` will enable CRR in a regular restore.
 For a new cluster, the latest backup parameter is not necessary.
 +
 .Instead, simply run:
@@ -103,6 +103,9 @@ For a new cluster, the latest backup parameter is not necessary.
 ----
 gadmin backup restore --dr
 ----
++
+Excluding the tag  `gadmin backup restore --dr` will only enable CRR.
+
 
 [NOTE]
 ====
@@ -145,7 +148,11 @@ When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE
 
 To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the setup steps detailed on this page again.
 
-However, you can skip <<_enable_crr_on_the_dr_cluster, Step 3: Enable CRR on the DR cluster>> except running `gadmin crr start`, because CRR will have already been enabled and no need to restart services to make it effective.
+The simply run:
+[source.wrap]
+----
+gadmin backup restore <latest-backup> --dr
+----
 
 == Advanced settings for CRR
 
@@ -156,7 +163,7 @@ Run the `gadmin crr config` to view the current configuration of CRR. You can sa
 === Setting up and updating the configuration
 
 Any configuration parameters supported by Mirror-Source-Connector can be set in the configuration file, by running `gadmin crr update -c <your_crr.cfg>` to update the settings.
-[source.wrap]
+[source]
 ----
 heartbeats.topic.replication.factor=1
 replication.factor=1
@@ -187,7 +194,7 @@ tasks.max=4
 
 [WARNING]
 ====
-Do not change the values of `name`, `topics`, as this will cause the CRR to work abnormally!
+Do not change the values of `name`, `topics`, as this will cause the CRR to work abnormally.
 ====
 
 == Updating a CRR system
