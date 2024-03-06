@@ -1,7 +1,8 @@
 = Kafka SSL Security Guide
 
 == Introduction
-Connections to Kafka brokers can be secured by SSL - all the connections from Kafka clients to Kafka brokers can be secured, including these scenarios:
+Connections to Kafka brokers can be secured by SSL.
+All the connections from Kafka clients to Kafka brokers can be secured, including these scenarios:
 
 * Loading data via `fileLoader` to Kafka before it is loaded into TigerGraph.
 * Loading data via KafkaLoader including streaming job to Kafka.
@@ -11,14 +12,21 @@ Connections to Kafka brokers can be secured by SSL - all the connections from Ka
 
 == How to Enable SSL for Kafka
 
-Firstly users need to request or generate certificates before enabling SSL for Kafka.
+Firstly, users need to request or generate certificates before enabling SSL for Kafka.
 Refer to xref:tigergraph-server:security:encrypting-connections.adoc#_option_2_create_a_self_signed_certificate[self-signed certificates] for instructions on how to generate self-signed certificate.
 
-=== Only PKCS_12 Store Type is Supported
+=== X509 Certificate Formats Supported
+
+The only format of certificate supported is `PEM`.
+Other formats like `DER` should be firstly converted to `PEM` to enable Kafka SSL.
+
+See xref:tigergraph-server:security:index.adoc[] for more information on Security in TigerGraph.
+
+=== Only `PKCS_12 Store` Type is Supported
 
 X509 certificates are stored in key/trust stores.
 
-.Only store type `PKCS_12(P12)` is supported:
+.Only store type `PKCS_12(P12)`:
 [console]
 ----
 Path to key store: <DataRoot>/configs/kafka/conf/credential/key_store.p12
@@ -30,13 +38,6 @@ Path to key store: <DataRoot>/configs/kafka/conf/credentials/trust_store.p12
 JKS is current NOT yet supported.
 ====
 
-=== X509 Certificate Formats Supported
-
-The only format of certificate supported is `PEM`.
-Other formats like `DER` should be firstly converted to `PEM` to enable Kafka SSL.
-
-See xref:tigergraph-server:security:index.adoc[] for more information on Security in TigerGraph.
-
 == Kafka SSL Settings
 
 A few configuration settings are introduced to enable and manager Kafka security (SSL):
@@ -47,6 +48,7 @@ A few configuration settings are introduced to enable and manager Kafka security
 
 ¦ Kafka.Security.ClientConf.ProtocolForAllClients
 a¦ If specified, all clients must use the specified protocol.
+
 Legal values include:
 
 * empty-string (not specified)
@@ -58,6 +60,7 @@ If it's not specified, clients can choose a preferred protocol.
 
 ¦ Kafka.Security.ClientConf.InterBrokerProtocol
 a¦ It is the protocol for inter-broker communication.
+
 The value can be:
 
 * <empty>
@@ -69,6 +72,7 @@ It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
 
 ¦ Kafka.Security.ClientConf.InfraProtocol
 a¦ It is the protocol for infra-kafka communication.
+
 The value can be:
 
 * <Empty>
@@ -80,6 +84,7 @@ It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
 
 ¦ Kafka.Security.ClientConf.EngineProtocol
 a¦ It is the protocol for engine-kafka communication.
+
 The value can be:
 
 * <Empty>
@@ -214,7 +219,7 @@ name=connector_name_with_schema_registry
 tasks.max=10
 ----
 
-=== Instructions on Enabling SSL for CrossRegionReplication
+=== Instructions on Enabling SSL for Cross-Region Replication
 
 [console]
 ----
