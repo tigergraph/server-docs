@@ -26,8 +26,6 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * [Add link] Externalizing KafkaConnect Config using Config Provider - TigerGraph’s Kafka connector config will use a reference to retrieve the config value from an external source.
 
-* [Add link] GSQL Data Streaming Improvements - Improvements to GSQL data streaming that reduce the CPU usage, improve performance, optimizes Disk usage, and increases stability and cohesion.
-
 * [Add link] Refined Upgrading Process - Changes to the upgrading process to allow a TigerGraph upgrade without having to upgrade the K8's operator.
 
 * [Add link] Support Non-Interactive Upgrade - The user can use this option to avoid input ( y/n ) to switch to the new version. When it is given, the upgrade flow will switch to the new version automatically without input from the user.
@@ -53,6 +51,9 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 * xref:gsql-ref:querying:func/context-functions.adoc[] - Context functions are a set of new built-in functions that provide insights into the user's information and work inside `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
 
 * xref:tigergraph-server:system-management:management-commands.adoc[Command Updates] - Added new flag `--local` to commands xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_start[gadmin start] and xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_stop [gadmin stop] reducing the time required to start/stop local services.
+
+* GSQL Data Streaming Improvements - Improvements to GSQL data streaming that reduce the CPU usage, improve performance, optimizes Disk usage, and increases stability and cohesion.
+See xref:_improvements[].
 
 
 ==== Loading
@@ -106,9 +107,18 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258)
 * Fixed issue where some `GPR` and `Interpret` queries that specified the built-in `filter()` function would fail installation because of a row policy or tag filter (GLE-6448).
 
+
 ==== Crashes and Deadlocks
 
 ==== Improvements
+
+* Improved by significantly reducing the CPU usage when a large number of loading jobs are started at the same time (TP-4159).
+* Improved the write speed of loading jobs (TP-4159).
+* Improved disk usage optimization by restricting a loading job in waiting status to only consumes disk resources when it actually writes data (TP-4474).
+* Improved stability and cohesion of the connector and loader, which helps create better synchronization and reduces inconsistencies in the statuses (TP-4158).
+* Improved significantly the pause time during backups from a few minutes to a couple of seconds, regardless of the data size. (CORE-3000).
+* Improved data consistency during the backup and restore process (Core-3000).
+
 
 ==== Security
 
