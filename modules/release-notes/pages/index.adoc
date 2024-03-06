@@ -63,6 +63,7 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 ==== Querying and Query Management
 
 * xref:gsql-ref:querying:accumulators.adoc#_edge_accumulators[Support Edge Accumulators] - Support for edge accumulators for a single-hop distributed query.
+* xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_global_schema_change_job[Option -N to schema change job] - Added an option to `RUN SCHEMA_CHANGE JOB` that skips recompile and reinstall queries.
 
 === Kubernetes Operator
 
@@ -104,7 +105,7 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 ==== Functionality
 * Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258)
 * Fixed issue where some `GPR` and `Interpret` queries that specified the built-in `filter()` function would fail installation because of a row policy or tag filter (GLE-6448).
-
+* Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498)
 
 ==== Crashes and Deadlocks
 
@@ -116,6 +117,7 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Improved stability and cohesion of the connector and loader, which helps create better synchronization and reduces inconsistencies in the statuses (TP-4158).
 * Improved significantly the pause time during backups from a few minutes to a couple of seconds, regardless of the data size. (CORE-3000).
 * Improved data consistency during the backup and restore process (Core-3000).
+* Improved availability when one KSL server in error state (TP-4378 & TP-4593).
 
 
 ==== Security
