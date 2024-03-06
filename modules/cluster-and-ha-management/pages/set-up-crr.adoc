@@ -34,17 +34,11 @@ The following setup is needed in order to enable Cross Region Replication.
 
 === Backup primary data
 
-Use `gadmin backup` to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[]. If you are restoring a backup from another cluster refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
+Use `gadmin backup` to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[].
+
+For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
 
 If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
-
-[IMPORTANT]
-====
-Since 3.10.0 the command `gbar` is removed and is no longer available.
-However, if you are using a version of TigerGraph before 3.10.0 you can still use `gbar` to xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.
-
-See also xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to create a backup.
-====
 
 === Enable CRR on the DR cluster
 
