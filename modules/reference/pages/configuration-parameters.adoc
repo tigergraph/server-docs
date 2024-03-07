@@ -576,6 +576,10 @@ and AdminPortal before inactivity logout |`604800`
 |GUI.Cookie.SameSite |Default mode: 1; Lax mode: 2; Strict mode: 3; None
 mode: 4 |`3`
 
+|GUI.EnableConcurrentSession |Enable or disable concurrent sessions for GUI. Setting to `false` will disable concurrent sessions.The default value is `true`.
+
+|`true`
+
 |GUI.DataDirRelativePath |The relative path of gui data folder (to the
 System.DataRoot) |`gui`
 
@@ -1080,7 +1084,6 @@ Required for OIDC code flow, not needed for implicit flow.
 
 Type: `STRING`
 | `https://op.example.com/oauth/token`
-
 
 |Security.SSO.OIDC.BuiltinUser |The builtin user for OIDC, default:
 __GSQL__oidc |`__GSQL__oidc`

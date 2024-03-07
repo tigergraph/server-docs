@@ -5,7 +5,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server 3.10.0 LTS was released on Febuary 28th, 2024.
+TigerGraph Server 3.10.0 LTS was released on March 14th, 2024.
 
 LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
 
@@ -63,6 +63,7 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 ==== Querying and Query Management
 
 * xref:gsql-ref:querying:accumulators.adoc#_edge_accumulators[Support Edge Accumulators] - Support for edge accumulators for a single-hop distributed query.
+
 * xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_global_schema_change_job[Option -N to schema change job] - Added an option to `RUN SCHEMA_CHANGE JOB` that skips recompile and reinstall queries.
 
 === Kubernetes Operator
@@ -84,6 +85,7 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 === Admin Portal
 
 * xref:gui:admin-portal:components/cdc.adoc[Change Data Capture (CDC)] can be enabled in xref:gui:admin-portal:overview.adoc[Admin Portal].
+
 * xref:gui:admin-portal:security/sso-oidc-okta.adoc[SSO.OIDC via Okta] - Support for Standard OIDC Authorization Code Flow for general purpose adds more security for logins to Admin Portal Users.
 
 
@@ -91,6 +93,7 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 
 * xref:gui:graphstudio:export-and-import-solution.adoc[Single Graph Import and Export Support]  - Allow users to choose a single graph and the data when they export or import data in GraphStudio.
 
+* xref:tigergraph-server:reference:configuration-parameters.adoc#_gui[New GUI command to disable concurrent sessions ] - `GUI.EnableConcurrentSession` allows users to disable concurrent sessions so that multiple browsers cannot log in with the same username at the same time, revoking the previous session and warning the user to re-login.
 
 === TigerGraph Insights
 
