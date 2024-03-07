@@ -22,14 +22,9 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * xref:tigergraph-server:backup-and-restore:differential-backups.adoc[] - Ensure data files that have changed since the most recently completed full backup are backed up without any data lost.
 
-* [Add link] New non-interactive mode GSQL operations - Added four new non-interactive mode operations.
-
-* [Add link] Externalizing KafkaConnect Config using Config Provider - TigerGraph’s Kafka connector config will use a reference to retrieve the config value from an external source.
-
 * xref:tigergraph-server:installation:upgrade.adoc#_upgrading_from_3_x[Refined Upgrading process] - Changes to the upgrading process to allow a TigerGraph upgrade without having to upgrade the K8's operator.
 
-* [Add link] Support Non-Interactive Upgrade - The user can use this option to avoid input ( y/n ) to switch to the new version. When it is given, the upgrade flow will switch to the new version automatically without input from the user.
-
+* xref:tigergraph-server:installation:upgrade.adoc#_option_n[Support Non-Interactive Upgrade] - The user can use option `-n` to avoid input ( `y/n` ) to switch to the new version.
 
 * xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global Schema Restrict to Global Scope] - Users must have the global scope to interact with global schema change jobs (create, delete, run).
 
@@ -42,6 +37,9 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * xref:tigergraph-server:cluster-and-ha-management:set-up-crr.adoc[Updates to the Set Up CRR] - Updates to the Cross-Region Replication (CRR) setup enable this feature to flow into the `gadmin backup restore` process preventing a writable gap.
 
+* [Add link] New non-interactive mode GSQL operations - Added four new non-interactive mode operations.
+
+* [Add link] Externalizing KafkaConnect Config using Config Provider - TigerGraph’s Kafka connector config will use a reference to retrieve the config value from an external source.
 
 === GSQL Command and Querying Language
 
@@ -68,6 +66,8 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 * xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_global_schema_change_job[Option -N to schema change job] - Added an option to `RUN SCHEMA_CHANGE JOB` that skips recompile and reinstall queries.
 
 === Kubernetes Operator
+
+
 
 === Security
 * xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy] - is used to control access to specific rows of data in TigerGraph.

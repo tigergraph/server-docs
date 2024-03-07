@@ -9,6 +9,9 @@ All the connections from Kafka clients to Kafka brokers can be secured, includin
 * MirrorMaker2 (MM2) to load data from external Kafka to (internal) Kafka Brokers.
 * Cross-Region Replication (CRR), which is a special case of MM2.
 * KafkaStrm-LL connect to Kafka Brokers.
+* Connection from TigerGraph engine to Kafka broker is also secured.
+
+
 
 == How to Enable SSL for Kafka
 
@@ -51,53 +54,54 @@ a¦ If specified, all clients must use the specified protocol.
 
 Legal values include:
 
-* empty-string (not specified)
+* <empty-string>
 * ssl
 * plaintext
 
 If it's not specified, clients can choose a preferred protocol.
-¦ `<Empty>`
+¦ `<empty-string>`
 
 ¦ Kafka.Security.ClientConf.InterBrokerProtocol
 a¦ It is the protocol for inter-broker communication.
 
 The value can be:
 
-* <empty>
+* <empty-string>
 * ssl
 * plaintext
 
 It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
-¦ `<Empty>`
+¦ `<empty-string>`
 
 ¦ Kafka.Security.ClientConf.InfraProtocol
 a¦ It is the protocol for infra-kafka communication.
 
 The value can be:
 
-* <Empty>
+* <empty-string>
 * plaintext
 * ssl
 
 It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
-¦ `<Empty>`
+¦ `<empty-string>`
 
 ¦ Kafka.Security.ClientConf.EngineProtocol
 a¦ It is the protocol for engine-kafka communication.
 
 The value can be:
 
-* <Empty>
+* <empty-string>
 * plaintext
 * ssl
-* empty-string
 
 It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
-¦ `<Empty>`
+¦ `<empty-string>`
 
 ¦ Kafka.Security.SSL.Enable
 ¦ Enable Kafka TLS encryption.
-¦ `false`
+
+Can either be `true` or `false`
+¦ `false `
 
 ¦ Kafka.Security.SSL.Port
 ¦ Kafka SSL listening port.
@@ -106,17 +110,20 @@ It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
 ¦ Kafka.Security.SSL.Certificate
 ¦ Kafka broker certificate in PEM format.
 
-Usage: `@file_path_to_certificate`
-¦ `<Empty>`
+Usage: `@file/path/to/certificate`
+¦ `"@/home/graphsql/tmp/certificates/xyz.pem"`
+
 
 ¦ Kafka.Security.SSL.PrivateKey
 ¦ Kafka broker private key in PEM format.
-¦ `<Empty>`
+
+Usage: "@file/path/to/certificate"
+¦ `"@/home/graphsql/tmp/certificates/xyz.pem"`
 
 ¦ Kafka.Security.SSL.Passphrase
 ¦ Passphrase for SSL private key, trust store and key store.
 Should not be empty when SSL is enabled for Kafka
-¦ `<Empty>`
+¦ `<empty-string>`
 |===
 
 === Client Settings Precedence
@@ -135,8 +142,8 @@ Basically two certificates (or a certificate chain) need to be generated:
 * Public certificate(chain), which includes:
 ** `Root-CA-Cert`
 ** (Optional) `intermediate-CA-Cert`
-** `Leaf-Cert` (Machine cert)
-* Private Key of machine (left).
+** `Leaf-Cert` (Machine Public Certificate)
+* Private Key of machine (leaf private key).
 
 === Basic Instructions on Enabling SSL for Kafka
 
@@ -148,7 +155,7 @@ gadmin config set Kafka.Security.SSL.Passphrase <passphrase for key/trust store/
 
 gadmin config set Kafka.Security.SSL.Enable true
 
-#NOTE: this chain includes: left cert ← (optional) intermediate-CA-cert ← CA-Root cert
+#NOTE: this chain includes: leaf public cert ← (optional) intermediate-CA-cert ← CA-Root cert
 gadmin config set Kafka.Security.SSL.Certificate <@path_to_public_certificate_chain>
 
 gadmin config set Kafka.Security.SSL.PrivateKey <@path_to_private_key>
@@ -159,6 +166,11 @@ gadmin restart all -y
 
 === Instructions on Enabling SSL for MirrorMaker2
 Settings below need be added to connector configuration:
+
+[NOTE]
+====
+See xref:tigergraph-server:data-loading:data-streaming-connector/kafka.adoc#_basic_configurations[Basic Configurations] for more infomration on connection configurations.
+====
 
 * `source.cluster.bootstrap.servers=<Source_Kafka_SSL_Broker_List>`
 * `target.cluster.bootstrap.servers=<Target_Kafka_SSL_Broker_List>`
@@ -253,10 +265,9 @@ They are not going to be expired in a few years or even 10+ years, but users can
 
 Here is the instructions users can follow to renew certificates:
 
-. (Optional) Insert a new `CA Root` cert using KeyTool to the truststore under the path mentioned above.
+. (Optional) Insert a new `CA Root public cert` using KeyTool to the truststore under the path mentioned above.
 This needs to be done on all the nodes before next steps;
-
-.. Insert a new private/public key pair of `leaf cert` into the `keystore.p12`.
+.. Insert a new private/public key pair of leaf (machine) certificates into the `keystore.p12`.
 .. (Optional) Users can still delete the old certificate from the `keystore.p12`.
 .. Restart services including:
 ... Kafka

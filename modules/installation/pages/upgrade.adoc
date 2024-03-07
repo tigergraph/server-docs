@@ -82,8 +82,6 @@ $ gadmin restart all -y
 
 3. Enable CRR on the DR cluster.
 
-
-
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
 
@@ -151,7 +149,33 @@ A new message will prompt to user, saying TigerGraph has been upgraded.
 If there’s any error, the upgrade process will be terminated immediately.
 Following the instructions in the prompts from the console, the user can tell the progress of the upgrade and manually re-run the failed and the leftover steps to complete the upgrading process.
 
+=== Option `-n`
 
+Users can use option `-n` to avoid input `y/n` to switch to the new version. When it is given, the upgrade flow will switch to the new version automatically without input from the user.
+
+[source, gsql]
+----
+$ ./install.sh -U -n
+----
+
+.Example:
+[source, gsql]
+----
+./install.sh -U -n
+
+   _______                 ______                 __
+  /_  __(_)___ ____  _____/ ____/________ _____  / /_
+   / / / / __ `/ _ \/ ___/ / __/ ___/ __ `/ __ \/ __ \
+  / / / / /_/ /  __/ /  / /_/ / /  / /_/ / /_/ / / / /
+ /_/ /_/\__, /\___/_/   \____/_/   \__,_/ .___/_/ /_/
+       /____/                          /_/
+
+
+Welcome to the TigerGraph platform installer!
+
+[PROGRESS]: 20:02:38 Upgrade TigerGraph platform from existing one ...
+[NOTE    ]: Obtained version of exist platform: 3.10.0 [OK]
+----
 
 [[upgrading-from-v2x]]
 == Upgrading from v2.x
