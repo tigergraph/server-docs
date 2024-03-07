@@ -34,45 +34,89 @@ The following setup is needed in order to enable Cross Region Replication.
 
 === Backup primary data
 
-Use GBAR to xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.
-See xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to create a backup.
+Use `gadmin backup` to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[].
+
+For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
 
 If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
 
-=== Restore on the DR cluster
-
-Copy the backup files from every node to every node on the new cluster.
-xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc#_restore_from_a_backup_archive[Restore from a backup archive] of the primary cluster on the DR cluster.
-
-See xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to restore a backup.
-
 === Enable CRR on the DR cluster
+
+The command `gadmin backup restore --dr` does two things:
+
+* Enables CRR.
+* Restores the backup from the primary cluster.
 
 Run the following commands on the DR cluster to enable CRR on the DR cluster.
 
+. Set Kafka Primary IP(s), Primary Port, and TopicPrefix.
++
+.Set Kafka MirrorMaker primary cluster's IPs, with the separator of ( `,` ):
 [source.wrap,console]
 ----
-# Enable cross-region replication
-$ gadmin config set System.CrossRegionReplication.Enabled true
-
-# Kafka mirrormaker primary cluster's IPs, separator by ','
 $ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs <PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3>
-
-# Kafka mirrormaker primary cluster's KafkaPort
+----
++
+.Set Kafka MirrorMaker primary cluster's KafkaPort:
+[source.wrap,console]
+----
 $ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
-
-# The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+----
++
+.The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+[source.wrap,console]
+----
 $ gadmin config set System.CrossRegionReplication.TopicPrefix Primary
-
-# Apply the config changes and restart GSE, GPE, GSQL
+----
++
+.Apply the changes.
++
+[source.wrap,console]
+----
 $ gadmin config apply -y
-$ gadmin restart GSE GPE GSQL -y
+----
++
+[NOTE]
+====
+These steps above can be skipped if these settings are already configured properly.
+====
 
-# Start mirrormaker and begin cross-region replication
-$ gadmin crr start
+. Enable the CRR setup.
++
+.Run with the latest backup from its primary cluster.
+[source.wrap,console]
+----
+gadmin backup restore <latest-backup> --dr
+----
++
+Adding the backup tag to `gadmin backup restore <backup tag> --dr` will enable CRR in a regular restore.
+For a new cluster, the latest backup parameter is not necessary.
++
+.Instead, simply run:
+[source.wrap,console]
+----
+gadmin backup restore --dr
+----
++
+Excluding the tag  `gadmin backup restore --dr` will only enable CRR.
+
+
+[NOTE]
+====
+In previous versions users had to set `System.CrossRegionReplication.Enabled` to `true`, but this is no longer permitted.
+
+.However, setting it to `false` is still permissible.
+[source,console]
+----
+$ gadmin config set System.CrossRegionReplication.Enabled true
+[  Error] ParameterErr (to enable 'System.CrossRegionReplication.Enabled', please use `gadmin restore --dr xxx` to do it instead)
+
+$ gadmin config set System.CrossRegionReplication.Enabled false
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
 ----
 
-
+The default value of `System.CrossRegionReplication.Enabled` is `false`.  User can set it back with `gadmin backup restore <latest-backup> --dr`.
+====
 
 === Force install queries on primary
 
@@ -98,7 +142,11 @@ When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE
 
 To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the setup steps detailed on this page again.
 
-However, you can skip <<_enable_crr_on_the_dr_cluster, Step 3: Enable CRR on the DR cluster>> except running `gadmin crr start`, because CRR will have already been enabled and no need to restart services to make it effective.
+The simply run:
+[source.wrap]
+----
+gadmin backup restore <latest-backup> --dr
+----
 
 == Advanced settings for CRR
 
@@ -109,7 +157,7 @@ Run the `gadmin crr config` to view the current configuration of CRR. You can sa
 === Setting up and updating the configuration
 
 Any configuration parameters supported by Mirror-Source-Connector can be set in the configuration file, by running `gadmin crr update -c <your_crr.cfg>` to update the settings.
-[source.wrap]
+[source]
 ----
 heartbeats.topic.replication.factor=1
 replication.factor=1
@@ -140,7 +188,7 @@ tasks.max=4
 
 [WARNING]
 ====
-Do not change the values of `name`, `topics`, as this will cause the CRR to work abnormally!
+Do not change the values of `name`, `topics`, as this will cause the CRR to work abnormally.
 ====
 
 == Updating a CRR system

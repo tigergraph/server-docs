@@ -5,24 +5,43 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server 3.10.0 LTS was released on Febuary 28th, 2024.
+TigerGraph Server 3.10.0 LTS was released on March 14th, 2024.
 
 LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
 
 == Key New Features
 === 3.10.0
 * xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc[Change Data Capture (CDC)] - This equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems maintained by the user.
+Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] in xref:gui:admin-portal:overview.adoc[Admin Portal].
 
 * xref:tigergraph-server:system-management:workload-management.adoc#_workload_queue[Workload Queue] - Configure workload queues so that queries are routed to the appropriate queues during runtime.
 
 * xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc[Spark Connector] - A new dedicated connector used with Apache Spark to read data from a Spark DataFrame and write to TigerGraph.
+
+* xref:tigergraph-server:backup-and-restore:online-backup.adoc[] - Minimizes blocking time during backups, allowing successful execution of post requests for TigerGraph users.
+
+* xref:tigergraph-server:backup-and-restore:differential-backups.adoc[] - Ensure data files that have changed since the most recently completed full backup are backed up without any data lost.
+
+* [Add link] New non-interactive mode GSQL operations - Added four new non-interactive mode operations.
+
+* [Add link] Externalizing KafkaConnect Config using Config Provider - TigerGraph’s Kafka connector config will use a reference to retrieve the config value from an external source.
+
+* xref:tigergraph-server:installation:upgrade.adoc#_upgrading_from_3_x[Refined Upgrading process] - Changes to the upgrading process to allow a TigerGraph upgrade without having to upgrade the K8's operator.
+
+* [Add link] Support Non-Interactive Upgrade - The user can use this option to avoid input ( y/n ) to switch to the new version. When it is given, the upgrade flow will switch to the new version automatically without input from the user.
+
+
+* xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global Schema Restrict to Global Scope] - Users must have the global scope to interact with global schema change jobs (create, delete, run).
 
 == Detailed List of New and Modified Features
 
 === TigerGraph Server
 * xref:tigergraph-server:troubleshooting:audit-log.adoc[] - Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
-* xref:tigergraph-server:installation:upgrade.adoc#_upgrading_from_3_x[Refined Upgrading process] - Changes to the upgrading process to allow a TigerGraph upgrade without having to upgrade the K8's operator.
+* xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[] - Users can now import or export individually selected graphs.
+
+* xref:tigergraph-server:cluster-and-ha-management:set-up-crr.adoc[Updates to the Set Up CRR] - Updates to the Cross-Region Replication (CRR) setup enable this feature to flow into the `gadmin backup restore` process preventing a writable gap.
+
 
 === GSQL Command and Querying Language
 
@@ -30,14 +49,23 @@ LTS versions are supported for 24 months from their initial release (X.X.0) and 
 
 * xref:tigergraph-server:system-management:management-commands.adoc[Command Updates] - Added new flag `--local` to commands xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_start[gadmin start] and xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_stop [gadmin stop] reducing the time required to start/stop local services.
 
+* GSQL Data Streaming xref:_improvements[] - Improvements to GSQL data streaming that reduce the CPU usage, improve performance, optimizes Disk usage, and increases stability and cohesion.
 
 ==== Loading
 
 * xref:tigergraph-server:data-loading:load-from-warehouse.adoc[Support for Snowflake Data Warehouse] - Added support for loading data from Snowflake, another popular data warehouse.
 
+* xref:tigergraph-server:data-loading:load-from-warehouse.adoc[Support for PostgreSql Data Warehouse] - Added support for loading data from PostgreSql, another popular data warehouse.
+
+* xref:tigergraph-server:data-loading:avro-validation-with-kafka.adoc[] - The KafkaConnect feature flag `ErrorTolerance` enables data loading services to handle malformed data and report errors effectively
+
 ==== Schema
 
 ==== Querying and Query Management
+
+* xref:gsql-ref:querying:accumulators.adoc#_edge_accumulators[Support Edge Accumulators] - Support for edge accumulators for a single-hop distributed query.
+
+* xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_global_schema_change_job[Option -N to schema change job] - Added an option to `RUN SCHEMA_CHANGE JOB` that skips recompile and reinstall queries.
 
 === Kubernetes Operator
 
@@ -52,15 +80,27 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 
 * xref:tigergraph-server:security:gsql-file-input-policy.adoc[] - `GSQL.fileInputPolicy` allows users to apply restrictions on the location of local files used to load data to TigerGraph.
 
+* xref:tigergraph-server:data-loading:kafka-ssl-security-guide.adoc[Kafka Security via SSL] - Kafka brokers can be secured by SSL including the connections from Kafka clients to Kafka brokers.
 
 == TigerGraph Suite Updates
 === Admin Portal
 
+* xref:gui:admin-portal:components/cdc.adoc[Change Data Capture (CDC)] can be enabled in xref:gui:admin-portal:overview.adoc[Admin Portal].
+
+* xref:gui:admin-portal:security/sso-oidc-okta.adoc[SSO.OIDC via Okta] - Support for Standard OIDC Authorization Code Flow for general purpose adds more security for logins to Admin Portal Users.
+
+
 === GraphStudio
 
-=== GDS Library and ML Workbench
+* xref:gui:graphstudio:export-and-import-solution.adoc[Single Graph Import and Export Support]  - Allow users to choose a single graph and the data when they export or import data in GraphStudio.
+
+* xref:tigergraph-server:reference:configuration-parameters.adoc#_gui[New GUI command to disable concurrent sessions ] - `GUI.EnableConcurrentSession` allows users to disable concurrent sessions so that multiple browsers cannot log in with the same username at the same time, revoking the previous session and warning the user to re-login.
 
 === TigerGraph Insights
+
+* xref:insights:widgets:single-value.adoc[Changing Single Value Widget to Value Widget]  - Modified the value element of insights to support the mapping of multiple values.
+* xref:insights:widgets:markdown-widget.adoc[Added Markdown Widget] - This addition allows users to add formatted text, links, images, and other rich content to the dashboards.
+* [Add link] Added Scatter Chart Widget - The scatter chart will provide a visual representation of the relationship between two numerical variables, allowing users to identify patterns or correlations in the data.
 
 == Fixed issues
 === Fixed and Improved in 3.10.0
@@ -69,10 +109,20 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 ==== Functionality
 * Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258)
 * Fixed issue where some `GPR` and `Interpret` queries that specified the built-in `filter()` function would fail installation because of a row policy or tag filter (GLE-6448).
+* Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498)
 
 ==== Crashes and Deadlocks
 
 ==== Improvements
+
+* Improved by significantly reducing the CPU usage when a large number of loading jobs are started at the same time (TP-4159).
+* Improved the write speed of loading jobs (TP-4159).
+* Improved disk usage optimization by restricting a loading job in waiting status to only consumes disk resources when it actually writes data (TP-4474).
+* Improved stability and cohesion of the connector and loader, which helps create better synchronization and reduces inconsistencies in the statuses (TP-4158).
+* Improved significantly the pause time during backups from a few minutes to a couple of seconds, regardless of the data size. (CORE-3000).
+* Improved data consistency during the backup and restore process (Core-3000).
+* Improved availability when one KSL server in error state (TP-4378 & TP-4593).
+
 
 ==== Security
 
@@ -263,6 +313,17 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:sec
 [cols="3", separator=¦ ]
 |===
 ¦ Description ¦ Deprecated ¦ Removed
+
+¦ The command `gbar` is removed and is no longer available.
+However, if you are using a version of TigerGraph before 3.10.0 you can still use `gbar` to xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.
+See also xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to create a backup.
+
+¦ 3.7
+¦ 3.10.0
+
+¦ xref:tigergraph-server:user-access:vlac.adoc[Vertex-level Access Control (VLAC)] and xref:gsql-ref:querying:func/vertex-methods.adoc#_vlac_vertex_alias_methods_deprecated[VLAC Methods] are now deprecated and will no longer be supported.
+¦ 3.10.0
+¦ 4.0
 
 ¦ xref:tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection via JDBC Driver] is now deprecated and will no longer be supported.
 ¦ 3.10.0 

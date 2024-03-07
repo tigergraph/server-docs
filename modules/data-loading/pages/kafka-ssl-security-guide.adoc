@@ -1,0 +1,266 @@
+= Kafka SSL Security Guide
+
+== Introduction
+Connections to Kafka brokers can be secured by SSL.
+All the connections from Kafka clients to Kafka brokers can be secured, including these scenarios:
+
+* Loading data via `fileLoader` to Kafka before it is loaded into TigerGraph.
+* Loading data via KafkaLoader including streaming job to Kafka.
+* MirrorMaker2 (MM2) to load data from external Kafka to (internal) Kafka Brokers.
+* Cross-Region Replication (CRR), which is a special case of MM2.
+* KafkaStrm-LL connect to Kafka Brokers.
+
+== How to Enable SSL for Kafka
+
+Firstly, users need to request or generate certificates before enabling SSL for Kafka.
+Refer to xref:tigergraph-server:security:encrypting-connections.adoc#_option_2_create_a_self_signed_certificate[self-signed certificates] for instructions on how to generate self-signed certificate.
+
+=== X509 Certificate Formats Supported
+
+The only format of certificate supported is `PEM`.
+Other formats like `DER` should be firstly converted to `PEM` to enable Kafka SSL.
+
+See xref:tigergraph-server:security:index.adoc[] for more information on Security in TigerGraph.
+
+=== Only `PKCS_12 Store` Type is Supported
+
+X509 certificates are stored in key/trust stores.
+
+.Only store type `PKCS_12(P12)`:
+[console]
+----
+Path to key store: <DataRoot>/configs/kafka/conf/credential/key_store.p12
+Path to key store: <DataRoot>/configs/kafka/conf/credentials/trust_store.p12
+----
+
+[NOTE]
+====
+JKS is current NOT yet supported.
+====
+
+== Kafka SSL Settings
+
+A few configuration settings are introduced to enable and manager Kafka security (SSL):
+
+[cols="3", separator=¦ ]
+|===
+¦ Setting ¦ Description ¦ Default Value
+
+¦ Kafka.Security.ClientConf.ProtocolForAllClients
+a¦ If specified, all clients must use the specified protocol.
+
+Legal values include:
+
+* empty-string (not specified)
+* ssl
+* plaintext
+
+If it's not specified, clients can choose a preferred protocol.
+¦ `<Empty>`
+
+¦ Kafka.Security.ClientConf.InterBrokerProtocol
+a¦ It is the protocol for inter-broker communication.
+
+The value can be:
+
+* <empty>
+* ssl
+* plaintext
+
+It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
+¦ `<Empty>`
+
+¦ Kafka.Security.ClientConf.InfraProtocol
+a¦ It is the protocol for infra-kafka communication.
+
+The value can be:
+
+* <Empty>
+* plaintext
+* ssl
+
+It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
+¦ `<Empty>`
+
+¦ Kafka.Security.ClientConf.EngineProtocol
+a¦ It is the protocol for engine-kafka communication.
+
+The value can be:
+
+* <Empty>
+* plaintext
+* ssl
+* empty-string
+
+It can be overridden by `Kafka.Security.ClientConf.ProtocolForAllClients`.
+¦ `<Empty>`
+
+¦ Kafka.Security.SSL.Enable
+¦ Enable Kafka TLS encryption.
+¦ `false`
+
+¦ Kafka.Security.SSL.Port
+¦ Kafka SSL listening port.
+¦ `30001`
+
+¦ Kafka.Security.SSL.Certificate
+¦ Kafka broker certificate in PEM format.
+
+Usage: `@file_path_to_certificate`
+¦ `<Empty>`
+
+¦ Kafka.Security.SSL.PrivateKey
+¦ Kafka broker private key in PEM format.
+¦ `<Empty>`
+
+¦ Kafka.Security.SSL.Passphrase
+¦ Passphrase for SSL private key, trust store and key store.
+Should not be empty when SSL is enabled for Kafka
+¦ `<Empty>`
+|===
+
+=== Client Settings Precedence
+
+* SSL.Enable < ClientConf.InterBrokerProtocol < ClientConf.ProtocolForAllClients
+* SSL.Enable < ClientConf.InfraProtocol < ClientConf.ProtocolForAllClients
+* SSL.Enable < ClientConf.EngineProtocol < ClientConf.ProtocolForAllClients
+
+== Instructions
+
+=== Prerequisites
+As mentioned above, users need to generate certificates in PEM format.
+
+Basically two certificates (or a certificate chain) need to be generated:
+
+* Public certificate(chain), which includes:
+** `Root-CA-Cert`
+** (Optional) `intermediate-CA-Cert`
+** `Leaf-Cert` (Machine cert)
+* Private Key of machine (left).
+
+=== Basic Instructions on Enabling SSL for Kafka
+
+Please run the `gadmin` commands below to enable SSL for Kafka:
+
+[console]
+----
+gadmin config set Kafka.Security.SSL.Passphrase <passphrase for key/trust store/private key>
+
+gadmin config set Kafka.Security.SSL.Enable true
+
+#NOTE: this chain includes: left cert ← (optional) intermediate-CA-cert ← CA-Root cert
+gadmin config set Kafka.Security.SSL.Certificate <@path_to_public_certificate_chain>
+
+gadmin config set Kafka.Security.SSL.PrivateKey <@path_to_private_key>
+
+gadmin config apply -y
+gadmin restart all -y
+----
+
+=== Instructions on Enabling SSL for MirrorMaker2
+Settings below need be added to connector configuration:
+
+* `source.cluster.bootstrap.servers=<Source_Kafka_SSL_Broker_List>`
+* `target.cluster.bootstrap.servers=<Target_Kafka_SSL_Broker_List>`
+* `source.cluster.security.protocol=SSL`
+* `target.cluster.security.protocol=SSL`
+
+.A full connector configuration example, with schema registry:
+[console]
+----
+connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector
+
+source.cluster.alias=Primary
+
+target.cluster.alias=Secondary
+
+source.cluster.bootstrap.servers=195.0.0.1:30001
+
+target.cluster.bootstrap.servers=127.0.0.1:30001
+
+source.cluster.security.protocol=SSL
+
+source->target.enabled=true
+
+topics=${topic_avro_with_registry}
+
+replication.factor=1
+
+sync.topic.acls.enabled=false
+
+checkpoints.topic.replication.factor=1
+
+heartbeats.topic.replication.factor=1
+
+offset-syncs.topic.replication.factor=1
+
+offset.storage.replication.factor=1
+
+status.storage.replication.factor=1
+
+config.storage.replication.factor=1
+
+emit.heartbeats.interval.seconds=5
+
+secondary.scheduled.rebalance.max.delay.ms=35000
+
+key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+
+header.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+
+value.converter=com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter
+
+value.converter.schema.registry.url=http://127.0.0.1:8081
+
+[connector_mm]
+
+name=connector_name_with_schema_registry
+
+tasks.max=10
+----
+
+=== Instructions on Enabling SSL for Cross-Region Replication
+
+[console]
+----
+gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs <Primary_Kafka_Broker_Comma_Separated_IPs>
+
+#Default port number is: 30001
+gadmin config set System.CrossRegionReplication.PrimaryKafkaPort <Primary_Kafka_Broker_SSL_Port>
+
+gadmin init kafka -y
+
+gadmin backup restore --dr -y
+----
+
+==== Optional Instructions
+Users can use still enable/disable some or all the clients connected to Kafka brokers using these configuration settings:
+
+[console]
+----
+Kafka.Security.ClientConf.InterBrokerProtocol
+Kafka.Security.ClientConf.InfraProtocol
+Kafka.Security.ClientConf.EngineProtocol
+----
+
+Precedence of these settings are described in the xref:_client_settings_precedence[] section.
+
+== How to Renew Certificates
+Open sourced public tool KeyTool can be used to manage the key/trust store with store type `PCKS_12(P12)`.
+
+Usually, `CA Root` certs have much longer expiry than `leaf certs`.
+They are not going to be expired in a few years or even 10+ years, but users can still renew it if they want to.
+
+Here is the instructions users can follow to renew certificates:
+
+. (Optional) Insert a new `CA Root` cert using KeyTool to the truststore under the path mentioned above.
+This needs to be done on all the nodes before next steps;
+
+.. Insert a new private/public key pair of `leaf cert` into the `keystore.p12`.
+.. (Optional) Users can still delete the old certificate from the `keystore.p12`.
+.. Restart services including:
+... Kafka
+... KafkaStrm-LL
+... KafkaConnect
+... GPE
+... GSE

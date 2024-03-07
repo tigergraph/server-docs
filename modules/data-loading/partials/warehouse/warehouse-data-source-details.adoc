@@ -1,5 +1,5 @@
 [NOTE]
-We currently support xref:#BigQuery[BigQuery] and xref:Snowflake[Snowflake] data warehouses.
+We currently support xref:#BigQuery[BigQuery], xref:Snowflake[Snowflake], and xref:_postgresql[] data warehouses.
 More data warehouses will be supported in future releases.
 
 === BigQuery
@@ -40,6 +40,22 @@ https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC
 
 === Snowflake
 
+[source,php,linenums]
+.Data source configuration for Snowflake:
+----
+{
+    "type":"snowflake",
+    "connection.url":"jdbc:snowflake://https://<account_id>.snowflakecomputing.com/?db=<db>&schema=<schema>&role=<role>",
+    "connection.user": "<username>",
+    "connection.password": "<password>"
+}
+----
+
+[WARNING]
+====
+For Snowflake loading jobs only the default setting for `batch.max.rows` is set to `100000` for better performance.
+====
+
 Use the required fields below for a Snowflake data `DATA_SOURCE`:
 
 .Required fields for Snowflake `DATA_SOURCE`
@@ -56,18 +72,56 @@ Use the required fields below for a Snowflake data `DATA_SOURCE`:
 ¦ type ¦ "snowflake" ¦ This must be `snowflake`.
 |===
 
+=== PostgreSql
+
+.Data source configuration for PostgreSql:
 [source,php,linenums]
-.Data source configuration for Snowflake:
 ----
 {
-    "type":"snowflake",
-    "connection.url":"jdbc:snowflake://https://<account_id>.snowflakecomputing.com/?db=<db>&schema=<schema>&role=<role>",
-    "connection.user": "<username>",
-    "connection.password": "<password>"
+    "type":"postgresql",
+    "host":"pg_address",
+    "port": 5432,
+    "connection.user":"postgres",
+    "connection.password":"postgres",
+    "db.name":"postgres"
 }
 ----
 
-[WARNING]
-====
-For Snowflake loading jobs only the default setting for `batch.max.rows` is set to `100000` for better performance.
-====
+These are some required and optional configuration parameters for connection and authentication with a PostgreSql data `DATA_SOURCE`.
+
+.Fields for PostgreSql `DATA_SOURCE`
+[col="3"separator=¦ ]
+|===
+¦ Field ¦ Example ¦ Notes
+
+¦ `host`
+¦ `"host":"pg_address"`
+¦ The PostgreSql server’s address.
+
+This is *required*.
+
+¦ `port`
+¦ `"port": 5432`
+¦ The port used by the PostgreSql server.
+
+The default is set to `5432`.
+
+¦ `connection.user`
+¦ `"connection.user":"postgres"`
+¦ The user of the PostgreSql server.
+
+This is *required*
+
+¦ `connection.password`
+¦ `"connection.password":"postgres"`
+¦ The password of the user.
+
+This is *required*
+
+¦ `db.name`
+¦ `"db.name":"postgres"`
+¦ The database name.
+
+This is *required*
+|===
+

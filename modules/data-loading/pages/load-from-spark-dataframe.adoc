@@ -9,7 +9,8 @@ Users can leverage it to connect TigerGraph to the Spark ecosystem and load data
 * Streaming source: Kafka
 * Data warehouse:
 xref:tigergraph-server:data-loading:load-from-warehouse.adoc#_bigquery[BigQuery],
-xref:tigergraph-server:data-loading:load-from-warehouse.adoc#_snowflake[Snowflake]
+xref:tigergraph-server:data-loading:load-from-warehouse.adoc#_snowflake[Snowflake],
+xref:tigergraph-server:data-loading:load-from-warehouse.adoc#_postgresql[PostgreSql],
 and Redshift
 * Open table format:
 xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_delta_lake[Delta Lake],
@@ -128,7 +129,7 @@ To let TigerGraph parse the data chunk correctly, please make sure you are setti
 [source, scala]
 ----
 val GRAPH = "demo_graph"
-val URL = "http(s)://hostname:port[,http(s)://hostname:port]"
+val URL = "http(s)://hostname:port[,http(s)://hostname:port]"*
 val USERNAME = "tigergraph"
 val PASSWORD = "tigergraph"
 val LOADING_JOB = "load_Comment"
