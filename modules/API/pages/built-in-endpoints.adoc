@@ -917,7 +917,7 @@ Response::
 `GET /rebuildnow/\{graph_name}` +
 `POST /rebuildnow/\{graph_name}`
 
-xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Global-level UPDATE_DATA
+xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level READ DATA
 
 When new data is being loaded into the graph (such as new vertices or edges), data is first stored in memory before it is saved to disk permanently.
 TigerGraph runs a rebuild of the Graph Processing Engine (GPE) to commit the data in memory to disk every 30 seconds, but you can also call this endpoint to trigger a rebuild immediately.
@@ -978,7 +978,7 @@ cat finished.summary.txt
 
 `GET /deleted_vertex_check`
 
-xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Global-level DELETE_DATA
+xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level READ DATA
 
 In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Storage Engine (GSE) might be out of sync on vertex deletion information. When this happens, some vertices might exist on one of the components, but not the other. Even though these errors are exceedingly rare, TigerGraph provides an endpoint that allows you to check the deleted vertices on GSE and GPE to see if they are out of sync.
 
