@@ -1,135 +1,10 @@
 = Externalizing Kafka Configurations
 
-This document provides detailed guidance on https://cwiki.apache.org/confluence/display/KAFKA/KIP-297%3A+Externalizing+Secrets+for+Connect+Configurations[externalizing configurations] for Kafka connectors in TigerGraph.
-Users can utilize external sources, including files, vault, and environment variables, to provide configurations for Kafka connectors.
+Users can utilize external sources, including files, vault, and environment variables, to provide configurations for Kafka connectors when xref:tigergraph-server:data-loading:load-from-kafka.adoc[Loading data from Kafka].
 
-Sensitive information such as credentials and security setups are kept secure, addressing potential security risks associated with exposing Kafka connector configurations through Kafka Connect APIs.
+Sensitive information such as credentials and security setups are kept secure.
 For more information on Kafka security see https://docs.confluent.io/platform/current/connect/security.html#externalize-secrets[Kafka Connect Security Basics].
 
-
-== Setup External Configurations
-
-When users create external Kafka connectors when xref:tigergraph-server:data-loading:load-from-kafka.adoc[Loading data from Kafka], they provide a config file with information including credentials, security setups, private keys, etc.
-To ensure these configs are safe, TigerGraph has removed them from APIs and logs.
-However, users can still retrieve them from kafka connect APIs.
-
-Kafka provide a way to externalize connector configs with the *Config Provider*.
-Which users can use to replace values passed in config files.
-Using file config provider as an example, users use `${file:/tmp/cm.properties:broker}` to replace the actual broker value.
-The config provider will look for the file in `/tmp/cm.properties` and look for the entry broker.
-This broker information is only kept for a short time in memory and never saved anywhere else.
-
-Additionally, TigerGraph currently supports 3 types of config providers. See xref:_config_providers[] for more information.
-
-=== Setup Steps
-
-. Create a key value entry xref:_file_config_provider[file], xref:_environment_variable_config_provider[environment variables], or xref:_vault_config_provider[vault] as external configuration source for each node in the cluster with the same path.
-
-. Create a Kafka connector config file with values in the format of `${file:path:key}` to reference the local file.
-+
-[NOTE]
-====
-To see more reference on the basic configurations refer to xref:load-from-kafka.adoc#_configure_the_kafka_source[Configure the Kafka Source] or xref:data-streaming-connector/kafka.adoc#_basic_configurations[Basic Configurations].
-====
-+
-.Example external connector config file with lines masked:
-[source, gsql]
-----
-producer.ssl.keystore.password=${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
-producer.ssl.key.password=${file:/home/usr/configs/secrets:ssl-key-passowrd}
-producer.ssl.truststore.password=${file:/home/usr/configs/secrets:ssl-truststore-passowrd}
-----
-+
-.Example full external connector config file:
-[source, gsql]
-----
-connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector
-source.cluster.alias=hello
-target.cluster.alias=world
-source.cluster.bootstrap.servers=source.kafka.server:9092
-target.cluster.bootstrap.servers=localhost:30002
-source->target.enabled=true
-topics=avro-without-registry-topic
-replication.factor=1
-sync.topic.acls.enabled=false
-sync.topic.configs.enabled=false
-checkpoints.topic.replication.factor=1
-heartbeats.topic.replication.factor=1
-offset-syncs.topic.replication.factor=1
-offset.storage.replication.factor=1
-status.storage.replication.factor=1
-config.storage.replication.factor=1
-emit.heartbeats.interval.seconds=5
-world.scheduled.rebalance.max.delay.ms=35000
-key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
-header.converter=org.apache.kafka.connect.converters.ByteArrayConverter
-value.converter=com.tigergraph.kafka.connect.converters.TigerGraphAvroConverterWithoutSchemaRegistry
-
-producer.security.protocol=SASL_SSL
-producer.sasl.mechanism=GSSAPI
-producer.sasl.kerberos.service.name=kafka
-producer.sasl.jaas.config=com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab=\"/path/to/kafka-producer.keytab\" principal=\"kafka-producer@TIGERGRAPH.COM\";
-producer.ssl.endpoint.identification.algorithm=
-producer.ssl.keystore.location=/path/to/client.keystore.jks
-producer.ssl.keystore.password=${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
-producer.ssl.key.password=${file:/home/usr/configs/secrets:ssl-key-passowrd}
-producer.ssl.truststore.location=/path/to/client.truststore.jks
-producer.ssl.truststore.password=${file:/home/usr/configs/secrets:ssl-truststore-passowrd}
-
-consumer.security.protocol=SASL_SSL
-consumer.sasl.mechanism=GSSAPI
-consumer.sasl.kerberos.service.name=kafka
-consumer.sasl.jaas.config=com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab=\"/path/to/kafka-consumer.keytab\" principal=\"kafka-consumer@TIGERGRAPH.COM\";
-consumer.ssl.endpoint.identification.algorithm=
-consumer.ssl.keystore.location=/path/to/client.keystore.jks
-consumer.ssl.keystore.password=${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
-consumer.ssl.key.password=${file:/home/usr/configs/secrets:ssl-key-passowrd}
-consumer.ssl.truststore.location=/path/to/client.truststore.jks
-consumer.ssl.truststore.password=${file:/home/usr/configs/secrets:ssl-truststore-passowrd}
-
-source.admin.security.protocol=SASL_SSL
-source.admin.sasl.mechanism=GSSAPI
-source.admin.sasl.kerberos.service.name=kafka
-source.admin.sasl.jaas.config=com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab=\"/path/to/kafka-admin.keytab\" principal=\"kafka-admin@TIGERGRAPH.COM\";
-source.admin.ssl.endpoint.identification.algorithm=
-source.admin.ssl.keystore.location=/path/to/client.keystore.jks
-source.admin.ssl.keystore.password=${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
-source.admin.ssl.key.password=${file:/home/usr/configs/secrets:ssl-key-passowrd}
-source.admin.ssl.truststore.location=/path/to/client.truststore.jks
-source.admin.ssl.truststore.password=${file:/home/usr/configs/secrets:ssl-truststore-passowrd}
-
-[connector_1]
-name=avro-test-without-registry
-tasks.max=10
-----
-+
-.Example secret file `/home/usr/configs/secrets`
-[source,gsql]
-----
-ssl-keystore-passowrd=keystorepassword
-ssl-key-passowrd=keypassword
-ssl-truststore-passowrd=trustpassword
-----
-
-. Users can now create a connector/stream loading job using the given config.
-The Controller checks the given config. See xref:tigergraph-server:data-loading:load-from-kafka.adoc#_create_a_loading_job[Create a Loading Job].
-
-
-. Use `curl kafkaconn` with command:
-+
-[source, gsql]
-----
-curl $(gmyip):30003/connectors/$connector | jq
-----
-+
-The masked lines will show as:
-+
-[source, gsql]
-----
-producer.ssl.keystore.password: ${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
-----
-. Send the configs to KafkaConn.
-. KafkaConn will start the connector with the configs also referencing the external source.
 
 == Disallowed Configurations
 
@@ -186,7 +61,12 @@ The config provider will automatically look up the referred source and find the 
 
 === File Config Provider
 
-Allows users to put secrets and other config items in a separate file. The file must exist in the same path on all nodes of the cluster.
+Allows users to put secrets and other config items in a separate file.
+
+[IMPORTANT]
+====
+The file must exist in the same path on all nodes of the cluster.
+====
 
 ==== Example usage
 
