@@ -8,9 +8,11 @@ TigerGraph to TigerGraph {page-component-version}.
 ===  Check release notes for changes in functionality
 
 [IMPORTANT]
+====
 Always check the xref:release-notes:index.adoc[] for all the versions between your current version and your target version, for deprecated features, known issues, or other behavioral changes.
 You may need to make migration changes to your TigerGraph application either before or after the upgrade.
 If you have any questions or uncertainty, please contact TigerGraph Support.
+====
 
 ==== User-defined function (UDF) compatibility
 
@@ -84,6 +86,12 @@ $ gadmin restart all -y
 
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
+
+[IMPORTANT]
+====
+When switching to a new version of TigerGraph it will stop the current services which will make the cluster temporarily unavailable.
+====
+
 
 Any 3.x version of TigerGraph can be upgraded to another v3.x version by
 running the installation script with the upgrade(`+-U+`) flag.

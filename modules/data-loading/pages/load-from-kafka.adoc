@@ -9,7 +9,6 @@ This method is for only for v3.9.3 and higher versions.
 For earlier versions, please refer to xref:data-streaming-connector/kafka.adoc[].
 ====
 
-
 include::partial$load-part1-intro-and-schema.adoc[]
 
 include::partial$load-part2-create-data-source.adoc[]
@@ -31,6 +30,11 @@ include::partial$load-part3B-specify-mapping.adoc[]
 
 // Custom data mapping notes for <source type>
 include::partial$kafka/kafka-specify-mapping-details.adoc[]
+
+=== Avro Data Validation
+
+In certain scenarios, users could load data in Avro format to TigerGraph DB, via an external Kafka connector, such as MirrorMakerConnector and experience malformed data errors during this process.
+See our documentation on xref:tigergraph-server:data-loading:avro-validation-with-kafka.adoc[] for help.
 
 include::partial$load-part4-run-job.adoc[]
 

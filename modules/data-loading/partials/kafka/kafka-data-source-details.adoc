@@ -2,6 +2,11 @@
 
 The TigerGraph connector to external Kafka sources makes use of https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330[Apache Kafka Mirrormaker].
 
+[NOTE]
+====
+Users can additionally utilize external sources, including files, Vault, and environment variables, to provide configurations for Kafka connectors. See xref:tigergraph-server:data-loading:externalizing-kafka-configs.adoc[].
+====
+
 To configure the data source object, the minimum requirement is the address of the external source Kafka cluster:
 
 [source,json,linenum]
@@ -16,8 +21,7 @@ To configure the data source object, the minimum requirement is the address of t
 If the source cluster is configured for SSL or SASL protocols, you need to provide the following SSL/SASL credentials in order to communicate with the source cluster.
 
 * If the source cluster uses SASL, you need to upload the keytab of each Kerberos principal to every node of your TigerGraph cluster at the same absolute path.
-* If the source cluster uses SSL, you need to upload the trust store and key store to every node of your TigerGraph cluster.
-Each file must be at the same absolute path on all nodes.
+* If the source cluster uses SSL, see our documentation xref:tigergraph-server:data-loading:kafka-ssl-security-guide.adoc[]
 * If the source cluster uses SASL *and* SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster.
 Each file must be at the same absolute path on all nodes.
 

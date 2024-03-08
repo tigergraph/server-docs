@@ -1,0 +1,326 @@
+= Externalizing Kafka Configurations
+
+This document provides detailed guidance on https://cwiki.apache.org/confluence/display/KAFKA/KIP-297%3A+Externalizing+Secrets+for+Connect+Configurations[externalizing configurations] for Kafka connectors in TigerGraph.
+Users can utilize external sources, including files, vault, and environment variables, to provide configurations for Kafka connectors.
+
+Sensitive information such as credentials and security setups are kept secure, addressing potential security risks associated with exposing Kafka connector configurations through Kafka Connect APIs.
+For more information on Kafka security see https://docs.confluent.io/platform/current/connect/security.html#externalize-secrets[Kafka Connect Security Basics].
+
+
+== Setup External Configurations
+
+When users create external Kafka connectors when xref:tigergraph-server:data-loading:load-from-kafka.adoc[Loading data from Kafka], they provide a config file with information including credentials, security setups, private keys, etc.
+To ensure these configs are safe, TigerGraph has removed them from APIs and logs.
+However, users can still retrieve them from kafka connect APIs.
+
+Kafka provide a way to externalize connector configs with the *Config Provider*.
+Which users can use to replace values passed in config files.
+Using file config provider as an example, users use `${file:/tmp/cm.properties:broker}` to replace the actual broker value.
+The config provider will look for the file in `/tmp/cm.properties` and look for the entry broker.
+This broker information is only kept for a short time in memory and never saved anywhere else.
+
+Additionally, TigerGraph currently supports 3 types of config providers. See xref:_config_providers[] for more information.
+
+=== Setup Steps
+
+. Create a key value entry xref:_file_config_provider[file], xref:_environment_variable_config_provider[environment variables], or xref:_vault_config_provider[vault] as external configuration source for each node in the cluster with the same path.
+
+. Create a Kafka connector config file with values in the format of `${file:path:key}` to reference the local file.
++
+[NOTE]
+====
+To see more reference on the basic configurations refer to xref:load-from-kafka.adoc#_configure_the_kafka_source[Configure the Kafka Source] or xref:data-streaming-connector/kafka.adoc#_basic_configurations[Basic Configurations].
+====
++
+.Example external connector config file with lines masked:
+[source, gsql]
+----
+producer.ssl.keystore.password=${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
+producer.ssl.key.password=${file:/home/usr/configs/secrets:ssl-key-passowrd}
+producer.ssl.truststore.password=${file:/home/usr/configs/secrets:ssl-truststore-passowrd}
+----
++
+.Example full external connector config file:
+[source, gsql]
+----
+connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector
+source.cluster.alias=hello
+target.cluster.alias=world
+source.cluster.bootstrap.servers=source.kafka.server:9092
+target.cluster.bootstrap.servers=localhost:30002
+source->target.enabled=true
+topics=avro-without-registry-topic
+replication.factor=1
+sync.topic.acls.enabled=false
+sync.topic.configs.enabled=false
+checkpoints.topic.replication.factor=1
+heartbeats.topic.replication.factor=1
+offset-syncs.topic.replication.factor=1
+offset.storage.replication.factor=1
+status.storage.replication.factor=1
+config.storage.replication.factor=1
+emit.heartbeats.interval.seconds=5
+world.scheduled.rebalance.max.delay.ms=35000
+key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+header.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+value.converter=com.tigergraph.kafka.connect.converters.TigerGraphAvroConverterWithoutSchemaRegistry
+
+producer.security.protocol=SASL_SSL
+producer.sasl.mechanism=GSSAPI
+producer.sasl.kerberos.service.name=kafka
+producer.sasl.jaas.config=com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab=\"/path/to/kafka-producer.keytab\" principal=\"kafka-producer@TIGERGRAPH.COM\";
+producer.ssl.endpoint.identification.algorithm=
+producer.ssl.keystore.location=/path/to/client.keystore.jks
+producer.ssl.keystore.password=${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
+producer.ssl.key.password=${file:/home/usr/configs/secrets:ssl-key-passowrd}
+producer.ssl.truststore.location=/path/to/client.truststore.jks
+producer.ssl.truststore.password=${file:/home/usr/configs/secrets:ssl-truststore-passowrd}
+
+consumer.security.protocol=SASL_SSL
+consumer.sasl.mechanism=GSSAPI
+consumer.sasl.kerberos.service.name=kafka
+consumer.sasl.jaas.config=com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab=\"/path/to/kafka-consumer.keytab\" principal=\"kafka-consumer@TIGERGRAPH.COM\";
+consumer.ssl.endpoint.identification.algorithm=
+consumer.ssl.keystore.location=/path/to/client.keystore.jks
+consumer.ssl.keystore.password=${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
+consumer.ssl.key.password=${file:/home/usr/configs/secrets:ssl-key-passowrd}
+consumer.ssl.truststore.location=/path/to/client.truststore.jks
+consumer.ssl.truststore.password=${file:/home/usr/configs/secrets:ssl-truststore-passowrd}
+
+source.admin.security.protocol=SASL_SSL
+source.admin.sasl.mechanism=GSSAPI
+source.admin.sasl.kerberos.service.name=kafka
+source.admin.sasl.jaas.config=com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab=\"/path/to/kafka-admin.keytab\" principal=\"kafka-admin@TIGERGRAPH.COM\";
+source.admin.ssl.endpoint.identification.algorithm=
+source.admin.ssl.keystore.location=/path/to/client.keystore.jks
+source.admin.ssl.keystore.password=${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
+source.admin.ssl.key.password=${file:/home/usr/configs/secrets:ssl-key-passowrd}
+source.admin.ssl.truststore.location=/path/to/client.truststore.jks
+source.admin.ssl.truststore.password=${file:/home/usr/configs/secrets:ssl-truststore-passowrd}
+
+[connector_1]
+name=avro-test-without-registry
+tasks.max=10
+----
++
+.Example secret file `/home/usr/configs/secrets`
+[source,gsql]
+----
+ssl-keystore-passowrd=keystorepassword
+ssl-key-passowrd=keypassword
+ssl-truststore-passowrd=trustpassword
+----
+
+. Users can now create a connector/stream loading job using the given config.
+The Controller checks the given config. See xref:tigergraph-server:data-loading:load-from-kafka.adoc#_create_a_loading_job[Create a Loading Job].
+
+
+. Use `curl kafkaconn` with command:
++
+[source, gsql]
+----
+curl $(gmyip):30003/connectors/$connector | jq
+----
++
+The masked lines will show as:
++
+[source, gsql]
+----
+producer.ssl.keystore.password: ${file:/home/usr/configs/secrets:ssl-keystore-passowrd}
+----
+. Send the configs to KafkaConn.
+. KafkaConn will start the connector with the configs also referencing the external source.
+
+== Disallowed Configurations
+
+=== Disallowed
+
+Some configs are not allowed to be externalized because there is a dependency in TigerGraph:
+
+* `task.max`
+* `topic`
+* `connector.class`
+* `mode`
+* `name (connector name)`
+* `source.cluster.alias`
+* `topics (in MirrorMaker connector)`
+* `num.partitions`
+
+== Config Providers
+
+Users can specify config provider type and class from the https://archive.apache.org/dist/kafka/2.5.1/javadoc/org/apache/kafka/common/config/provider/ConfigProvider.html[Kafka ConfigProvider API]
+along with the parameters config providers need.
+
+The format `${<config-provider-type>:<path>:<key>}` is used to replace a config value in the config file.
+The config provider will automatically look up the referred source and find the value corresponding to the `<path>` and `<key>`.
+
+
+[cols="4", separator=¦ ]
+|===
+¦ Config Provider
+
+¦ Config Provider Type
+`config.providers`
+
+¦ Config Provider class
+`config.providers.<type>.class`
+
+¦ Config Provider Reference
+`${<config-provider-type>:<path>:<key>}`
+
+¦ xref:_file_config_provider[File Config Provider]
+¦ file
+¦ org.apache.kafka.common.config.provider.FileConfigProvider
+¦ `${file:<path-to-file>:<key>}`
+
+¦ xref:_environment_variable_config_provider[Environment Variable Config Provider]
+¦ env
+¦ org.apache.kafka.common.config.provider.EnvVarConfigProvider
+¦ `${env:<key>} (no path needed)`
+
+¦ xref:_vault_config_provider[Vault Config Provider]
+¦ vault
+¦ org.apache.kafka.common.config.provider.EnvVarConfigProvider
+¦ `${vault:<vault-path>:<key>}`
+|===
+
+=== File Config Provider
+
+Allows users to put secrets and other config items in a separate file. The file must exist in the same path on all nodes of the cluster.
+
+==== Example usage
+
+.Example secret file `secret.properties`:
+[source,gsql]
+----
+S3_ACCESS_KEY=thisisakey
+S3_SECRET_KEY=anotherkey
+----
+
+.Example stream loading job config file:
+[source,gsql]
+----
+{
+"type": "s3",
+"access.key":"${file:/tmp/secret.properties:S3_ACCESS_KEY}",
+"secret.key":"${file:/tmp/secret.properties:S3_SECRET_KEY}",
+config.providers=file,
+config.providers.file.class=org.apache.kafka.common.config.provider.FileConfigProvider
+}
+----
+
+=== Environment Variable Config Provider
+Allows users to use an environment variable as values in configuration.
+
+The environment variable should be added to KafkaConnect using `gadmin config set KafkaConnect.BasicConfig.Env`.
+
+==== Example Usage
+
+.Set environment variable (bash)
+[source,bash]
+----
+# Format details:
+# The secrets should be ';' separated and in format "key=value".
+# The values will be read as is and no escaping (\n for example) or quotes (' or ") are needed.
+# Key names should follow bash variable name standards, ie, no special characters other than '_'.
+
+secrets="S3_ACCESS_KEY=password; S3_SECRET_KEY=password;"
+gadmin config set KafkaConnect.BasicConfig.Env "$(gadmin config get KafkaConnect.BasicConfig.Env); $secrets"
+gadmin config apply -y
+gadmin restart kafkaconn -y
+----
+
+.Stream loading job config
+[source,gsql]
+----
+{
+"type": "s3",
+"access.key":"${env:S3_ACCESS_KEY}",
+"secret.key":"${env:S3_SECRET_KEY}",
+"config.providers":"env",
+"config.providers.env.class":"org.apache.kafka.common.config.provider.EnvVarConfigProvider"
+}
+----
+
+=== Vault Config Provider
+Allows users to use vault as a source for config values. Please follow vault setup guide on their the
+https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-deploy[Official Documentations].
+
+There are additional config parameters for vault config provider.
+
+.Additional Vault Configurations:
+[cols="3", separator=¦ ]
+|===
+¦ Configuration Key ¦ Default Value ¦ Description
+
+¦ vault.max.retries
+¦ 5
+¦ The number of times that API operations will be retried when a failure occurs.
+
+¦ vault.retry.interval.ms
+¦ 2000
+¦ The number of milliseconds that the driver will wait in between retries.
+
+¦ vault.address
+¦
+¦ Sets the address (URL) of the Vault server instance to which API calls should be sent. If not explicitly set, it will look to the VAULT_ADDR environment variable. If not found, initialization may fail.
+
+¦ vault.prefix
+¦
+¦ Sets a prefix that will be added to all paths, allowing the same configuration settings to be used across multiple environments.
+
+¦ vault.namespace
+¦
+¦ Sets a global namespace to the Vault server instance, if desired.
+
+¦ vault.token
+¦
+¦ Sets the token used to access Vault. If not explicitly set, the VAULT_TOKEN environment variable will be used.
+
+¦ vault.login.by
+¦ Token
+¦ The login method to use. Currently, only supports Token.
+
+¦ vault.ssl.verify.enabled
+¦ true
+¦ Flag to determine if the configuration provider should verify the SSL Certificate of the Vault server. Outside of development, this should never be disabled.
+
+¦ vault.ssl.cert
+¦
+¦ The path of a classpath resource containing an X.509 certificate, in unencrypted PEM format with UTF-8 encoding. Must be available on all nodes in the cluster.
+|===
+
+==== Example Usage
+
+.Example vault server config with HTTPS enabled:
+[source, gsql]
+----
+storage "file" {
+    path    = "<vault_data_root>"
+}
+
+listener "tcp" {
+    address     = "<ip>:<vault_port>"
+    tls_disable = "false"
+    tls_cert_file = "<cert>"
+    tls_key_file = "<key>"
+}
+
+api_addr = "<VAULT_ADDR>"
+cluster_addr = "https://<ip>:<vault_cluster_port>"
+ui = true
+disable_mlock = true
+----
+
+.Example stream loading job config file
+[source, gsql]
+----
+{
+    "type" : "abs",
+    "account.key" : "${vault:tg/vault-test:accountKey}",
+    "config.providers":"vault",
+    "config.providers.vault.class":"com.tigergraph.kafka.connect.config.providers.VaultConfigProvider",
+    "config.providers.vault.param.vault.token":"<root_token>",
+    "config.providers.vault.param.vault.address":"http://<ip>:8200"
+}
+----
