@@ -29,7 +29,7 @@ See the pages for the specific method that fits your data source.
 * *Spark*: The TigerGraph xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc[Spark Connector] is used with Apache Spark to read data from a Spark DataFrame (or Data Lake) and write to TigerGraph.
 Users can leverage it to connect TigerGraph to the Spark ecosystem and load data from any Spark data sources
 
-* *Spark/JDBC (Deprecated)*: To load data from other big data platforms, such as Hadoop, the typical method is to use Spark's built-in feature to write a DataFrame to a JDBC target, together with TigerGraph's `POST /ddl` REST endpoint.
+** *Spark/JDBC (Deprecated)*: To load data from other big data platforms, such as Hadoop, the typical method is to use Spark's built-in feature to write a DataFrame to a JDBC target, together with TigerGraph's `POST /ddl` REST endpoint.
 
 == Loading Workflow
 
@@ -44,8 +44,11 @@ USE GRAPH ldbc_snb
 . If you are using Kafka Connect, *define a `DATA_SOURCE` object*.
 See the details on the pages for
 xref:load-from-cloud.adoc[cloud storage],
-xref:load-from-warehouse.adoc[BigQuery],
-or an xref:data-streaming-connector/kafka.adoc[external Kafka cluster].
+xref:load-from-warehouse.adoc#_bigquery[BigQuery],
+xref:load-from-warehouse.adoc#_snowflake[Snowflake],
+xref:load-from-warehouse.adoc#_postgresql[PostgreSQL],
+xref:tigergraph-server:data-loading:load-from-kafka.adoc#_configure_the_kafka_source[Kafka]
+or xref:data-streaming-connector/kafka.adoc[].
 
 . *Create a xref:#_loading_jobs[loading job]*.
 
