@@ -39,7 +39,9 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * [Add link] New non-interactive mode GSQL operations - Added four new non-interactive mode operations.
 
-* [Add link] Externalizing KafkaConnect Config using Config Provider - TigerGraph’s Kafka connector config will use a reference to retrieve the config value from an external source.
+* xref:tigergraph-server:data-loading:externalizing-kafka-configs.adoc[Externalizing Kafka Configs using Config Provider] - TigerGraph’s Kafka connector config will use a reference to retrieve the config value from an external source.
+
+* xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_backup_create[Two new flags for gadmin backup create] - added two parameters to enable data consistency checks during the backup.
 
 === GSQL Command and Querying Language
 
@@ -124,6 +126,8 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Improved availability when one KSL server in error state (TP-4378 & TP-4593).
 * Improved the required privilege for `/rebuildnow` and `/deleted_vertex_check` making both now `Graph-level “READ DATA”` privilege and now able to run on DR cluster in CRR feature.(CORE-3291).
 * Improved by adding a xref:gsql-ref:querying:exception-statements.adoc#_exception_format_not_defined_in_query[default exception format] available in cases where the exception is not defined in the query (GLE-5854)
+* Improved RESTPP worker that will use less memory when users make long-running RESTPP requests (CORE-3027).
+
 
 ==== Security
 

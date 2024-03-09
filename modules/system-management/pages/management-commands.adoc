@@ -108,6 +108,35 @@ etcd          gui           kafkastrm-ll  zk
 `gadmin backup` commands are used to create and get information about TigerGraph backups.
 See xref:backup-and-restore:index.adoc[] for more information about how to perform backups.
 
+[#_gadmin_backup_create]
+=== gadmin backup create
+
+[source, console]
+----
+$ gadmin backup create -h
+Create a cluster backup
+
+Usage:
+  gadmin backup create [tag] [flags]
+
+Description:
+
+  Creates a cluster backups with a custom tag for the backup.
+  Example:
+  gadmin backup create weekly
+
+Flags:
+    -h, --help                                   help for restore
+        --data-consistency-check                 Enable the data consistency check during the backup.
+        --data-consistency-check-timeout int32   timeout(sec) for data consistency check (default 600)
+
+----
+
+[NOTE]
+====
+See xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[] for more examples.
+====
+
 === gadmin backup list
 
 [source, console]
@@ -174,6 +203,30 @@ Flags:
 Global Flags:
       --debug   enable debug log output to stdout
 ----
+
+[#_gadmin_backup_restore]
+=== gadmin backup restore
+
+[source console]
+----
+gadmin backup restore -h
+Restore a cluster from backup
+
+Usage:
+  gadmin backup restore [tag] [flags]
+
+Description:
+
+  Restores a backup with the custom tag for the backup.
+  Example:
+  gadmin backup restore weekly-<timestamp>
+
+Flags:
+  -h, --help    help for restore
+      --dr      show the restore is on a DR cluster or the one to be a DR cluster.
+  -y, --y       yes to all questions
+----
+
 
 [#_gadmin_config]
 === gadmin config
