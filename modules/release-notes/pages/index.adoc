@@ -59,6 +59,8 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * xref:tigergraph-server:data-loading:avro-validation-with-kafka.adoc[] - The KafkaConnect feature flag `ErrorTolerance` enables data loading services to handle malformed data and report errors effectively
 
+* xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc#_file_and_kafka_loaders_ha_with_auto_restart[Local file and Kafka loader Auto-Restart] - Local file and Kafka loader will now auto restart if it unexpectedly quits.
+
 ==== Schema
 
 ==== Querying and Query Management
@@ -112,6 +114,9 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258)
 * Fixed issue where some `GPR` and `Interpret` queries that specified the built-in `filter()` function would fail installation because of a row policy or tag filter (GLE-6448).
 * Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498)
+* Fixed Issue in 3.9.3 and 3.10.0 versions could not run a GSQL query when a single node is down in a High Availability cluster. See xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc#_3_9_2_and_below[3.9.2 and below] versions workaround for more details.
+
+
 
 ==== Crashes and Deadlocks
 

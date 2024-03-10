@@ -10,7 +10,6 @@ You should only consider removing a node when the node has failed.
 Removing a node from a cluster does not redistribute the data in the cluster.
 If all nodes are working in a cluster, and you want to reduce the size of the cluster, xref:shrink-a-cluster.adoc[shrink the cluster] instead.
 
-
 == Remove a single node
 If only a single node fails in a HA cluster, you can always remove the node without incurring any data loss.
 
@@ -21,7 +20,6 @@ You can check service status by running xref:system-management:management-with-g
 ** If any service is down, try running `gadmin start all --ignore-error` to start them.
 If you cannot start them, please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
 
-
 === Procedure
 To remove a failed node from a cluster, run the following command and replace `<node_name>` with the name of the node and `node_ip_address` with the internal IP address of the node:
 
@@ -29,7 +27,6 @@ To remove a failed node from a cluster, run the following command and replace `<
 ----
 $ gadmin cluster remove <node_name>:<node_ip_address>
 ----
-
 
 == Remove multiple nodes
 If there are multiple node failures in a cluster, recovering all data might not be possible.
