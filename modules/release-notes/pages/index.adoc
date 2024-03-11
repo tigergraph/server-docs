@@ -75,6 +75,7 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * https://github.com/tigergraph/ecosys/blob/k8s-operator/0.1.0/k8s/docs/07-reference/configure-tigergraph-cluster-cr-with-yaml-manifests.md[Updates to cluster creation using YAML] - Improvements to the configurations to align with the database.
 
+* https://github.com/tigergraph/ecosys/blob/k8s-operator/0.1.0/k8s/docs/03-deploy/multiple-persistent-volumes-mounting.md[]
 
 === Security
 * xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy] - is used to control access to specific rows of data in TigerGraph.
@@ -145,6 +146,18 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦ It has been observed that an issue happens when RESTPP will send a request to all gpes, and if one is down, the request sent to it will `timeout`.
+Including the `consistency_check` request will also mark as `timeout`.
+¦ 3.10.0
+a¦
+. run `/rebuildnow` to rebuild all the segments.
+. run `/data_consistency_check?realtime=false` to check the consistency.
+¦ TBD
+
+¦ While running `export graph` if the disk space is not enough, or the data has not been detected, the export data will get stuck loading.
+¦ 3.10.0
+¦ Restart all services in Admin Portal or backend.
+¦ TBD
 
 ¦ `[tg_]ExprFunction.hpp` will be automatically merged while importing single graphs. In some cases, query compilation may fail.
 ¦ 3.10.0
