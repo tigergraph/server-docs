@@ -93,6 +93,21 @@ Re-enter Password : ************
 The user ":"/.,@#$%^*()_+=-" is created.
 ----
 
+==== Non-Interactive Mode
+
+Run the command like this to run `create user` in non-interactive mode.
+
+.Example:
+[source, console]
+----
+GSQL > create user -u user1 -p pass1
+----
+
+[NOTE]
+====
+for special case use “`“ username“`“ to include the username
+====
+
 == View roles assignments and login attempts
 The `SHOW USER` command displays the role assignments, as well as the login attempts,  of the current user.
 If the current user hsa the `READ_USER` privilege
@@ -281,6 +296,16 @@ GSQL > ALTER PASSWORD username
 . Enter the new password in the prompt that follows.
 
 NOTE: To see how to change a user's xref:access-control-model.adoc#_acl_password[ACL password], see xref:acl-management.adoc#_change_acl_password[Change ACL password]
+
+==== Non-Interactive Mode
+
+Run the command like this to run `alter password` in non-Interactive Mode.
+
+.Example:
+[source, console]
+----
+GSQL > alter password -u user1 -p pass2
+----
 
 == Drop a user
 

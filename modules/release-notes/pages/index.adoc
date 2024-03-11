@@ -37,8 +37,6 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * xref:tigergraph-server:cluster-and-ha-management:set-up-crr.adoc[Updates to the Set Up CRR] - Updates to the Cross-Region Replication (CRR) setup enable this feature to flow into the `gadmin backup restore` process preventing a writable gap.
 
-* [Add link] New non-interactive mode GSQL operations - Added four new non-interactive mode operations.
-
 * xref:tigergraph-server:data-loading:externalizing-kafka-configs.adoc[Externalizing Kafka Configs using Config Provider] - TigerGraph’s Kafka connector config will use a reference to retrieve the config value from an external source.
 
 * xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_backup_create[Two new flags for gadmin backup create] - added two parameters to enable data consistency checks during the backup.
@@ -49,7 +47,7 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * xref:tigergraph-server:system-management:management-commands.adoc[Command Updates] - Added new flag `--local` to commands xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_start[gadmin start] and xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_stop [gadmin stop] reducing the time required to start/stop local services.
 
-* GSQL Data Streaming xref:_improvements[] - Improvements to GSQL data streaming that reduce the CPU usage, improve performance, optimizes Disk usage, and increases stability and cohesion.
+* xref:_improvements[GSQL Data Streaming Improvements] - Improvements to GSQL data streaming that reduce the CPU usage, improve performance, optimizes Disk usage, and increases stability and cohesion.
 
 ==== Loading
 
@@ -63,6 +61,8 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 ==== Schema
 
+* New non-interactive mode GSQL operations - Added four new non-interactive mode for operations xref:tigergraph-server:user-access:user-management.adoc#_non_interactive_mode[create user], xref:tigergraph-server:user-access:user-management.adoc#_non_interactive_mode[alter password], xref:tigergraph-server:backup-and-restore:database-import-export.adoc#_non_interactive_mode_export_graph_all[export graph all], and xref:tigergraph-server:backup-and-restore:database-import-export.adoc#_non_interactive_mode_import_graph_all[import graph all].
+
 ==== Querying and Query Management
 
 * xref:gsql-ref:querying:accumulators.adoc#_edge_accumulators[Support Edge Accumulators] - Support for edge accumulators for a single-hop distributed query.
@@ -71,6 +71,9 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 === Kubernetes Operator
 
+* https://github.com/tigergraph/ecosys/blob/master/k8s/docs/07-reference/configure-tigergraph-cluster-cr-with-yaml-manifests.md[Added new fields] - `.spec.tigergraphConfig` in TigerGraph CR and a new option `--tigergraph-config` in kubectl-tg plugin.
+
+* https://github.com/tigergraph/ecosys/blob/k8s-operator/0.1.0/k8s/docs/07-reference/configure-tigergraph-cluster-cr-with-yaml-manifests.md[Updates to cluster creation using YAML] - Improvements to the configurations to align with the database.
 
 
 === Security
@@ -132,7 +135,7 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Improved the required privilege for `/rebuildnow` and `/deleted_vertex_check` making both now `Graph-level “READ DATA”` privilege and now able to run on DR cluster in CRR feature.(CORE-3291).
 * Improved by adding a xref:gsql-ref:querying:exception-statements.adoc#_exception_format_not_defined_in_query[default exception format] available in cases where the exception is not defined in the query (GLE-5854)
 * Improved RESTPP worker that will use less memory when users make long-running RESTPP requests (CORE-3027).
-
+* Improved log files names from `log.AUDIT` to `log.AUDIT-GSQL`.
 
 ==== Security
 
@@ -143,6 +146,12 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 [cols="4", separator=¦ ]
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
+
+
+¦ `[tg_]ExprFunction.hpp` will be automatically merged while importing single graphs. In some cases, query compilation may fail.
+¦ 3.10.0
+¦ See xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc#_known_issues_and_workarounds[Known Issues and Workarounds]
+¦ TBD
 
 ¦ Upgrading from a previous version of TigerGraph has known issues.
 ¦ 3.10.0
@@ -323,6 +332,12 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:sec
 [cols="3", separator=¦ ]
 |===
 ¦ Description ¦ Deprecated ¦ Removed
+
+¦ The use of plaintext tokens in and xref:tigergraph-server:API:authentication.adoc[] and xref:tigergraph-server:API:built-in-endpoints.adoc#_authentication[Authentication built-in-endpoints] is deprecated.
+Use xref:tigergraph-server:user-access:jwt-token.adoc[] instead.
+¦ 3.10.0
+¦ TBD
+
 
 ¦ The command `gbar` is removed and is no longer available.
 However, if you are using a version of TigerGraph before 3.10.0 you can still use `gbar` to xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.

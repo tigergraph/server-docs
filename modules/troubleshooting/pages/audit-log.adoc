@@ -11,7 +11,7 @@ Additionally, Administrators use audit logs to track user activity, and security
 
 * This format facilitates easy integration with third-party tools.
 
-* It eliminates the need for customers to navigate through numerous log files.
+* It eliminates the need for users to navigate through numerous log files.
 
 == Considerations
 
@@ -144,6 +144,11 @@ $ gadmin config set System.Audit.DataBaseName <database-name>
 === Log Format
 
 All audit log files are stored in JSON format, even when users are actively interacting with TigerGraph, so audit logs can be consumed at run time.
+
+[NOTE]
+====
+The log files are under the name `log.AUDIT-GSQL`.
+====
 
 .Here is an example of a whole audit log file:
 [console]

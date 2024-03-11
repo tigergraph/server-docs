@@ -309,3 +309,35 @@ The directory `/SchemaChangeJobs` contains these files:
 
 * `Global_Schema_Change_Jobs.gsql` contains all global schema change jobs
 * `<Graph_Name>_Schema_Change_Jobs.gsql` contains schema change jobs for each graph `<Graph_Name>`.
+
+== Known Issues and Workarounds
+
+=== `[tg_]ExprFunction.hpp`
+
+`[tg_]ExprFunction.hpp` will be automatically merged while importing single graphs. In some cases below, query compilation may fail if one of the below issues are not solved.
+There are several known issues:
+
+. If the `[tg_]ExprUtil.hpp` or `TokenBank.cpp` are different from the existing ones, users will get a warning message and a workaround will be shown as below:
++
+[source, console]
+----
+Importing UDF Functions
+Failed to merge ExprFunctions automatically.
+Warning: The import file /TIGERGRAPH/tmp/import_UDF_automatically_merge/exported/ExprFunctions.hpp is inconsistent with the existing file ExprFunctions.hpp.
+Manually fix should be done by following commands:
+1. Run commands: GSQL 'GET ExprFunctions TO "/path/to/store/file"'
+2. Cherry-pick the changes from /TIGERGRAPH/tmp/import_UDF_automatically_merge/exported/ExprFunctions.hpp to "/path/to/store/file"
+3. Run commands: GSQL 'PUT ExprFunctions FROM "/path/to/store/file"'
+PUT ExprFunctions skipped.
+----
+
+. Inline variables, including `headers`,  `namespace`, `macro` should be handled manually. For example, the below statements will not be auto-merged and moving the below component to an existing UDF as in the steps above, is the workaround.
++
+[source, console]
+----
+#include <stdio.h>
+#define MACRO 1
+using namespace std;
+int a = 1;
+typedef std::string string;
+----

@@ -1,6 +1,7 @@
 = Built-in Endpoints
 :pp: {plus}{plus}
 :description: All built-in REST API endpoints in TigerGraph server.
+:toc:
 
 This page describes the REST API endpoints accessible on a TigerGraph server.
 
@@ -1109,6 +1110,12 @@ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0&v
 ----
 
 == Authentication
+
+[IMPORTANT]
+====
+As of 3.10.0, the use of plaintext tokens in authentication is deprecated.
+Use xref:tigergraph-server:user-access:jwt-token.adoc[] instead.
+====
 
 The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server.
 *These endpoints only exist when* xref:user-access:enabling-user-authentication.adoc[*user authentication is enabled*] *on RESTPP endpoints.*
