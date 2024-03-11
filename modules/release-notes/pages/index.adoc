@@ -119,8 +119,6 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498)
 * Fixed Issue in 3.9.3 and 3.10.0 versions could not run a GSQL query when a single node is down in a High Availability cluster. See xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc#_3_9_2_and_below[3.9.2 and below] versions workaround for more details.
 
-
-
 ==== Crashes and Deadlocks
 
 ==== Improvements
@@ -134,8 +132,8 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Improved availability when one KSL server in error state (TP-4378 & TP-4593).
 * Improved the required privilege for `/rebuildnow` and `/deleted_vertex_check` making both now `Graph-level “READ DATA”` privilege and now able to run on DR cluster in CRR feature.(CORE-3291).
 * Improved by adding a xref:gsql-ref:querying:exception-statements.adoc#_exception_format_not_defined_in_query[default exception format] available in cases where the exception is not defined in the query (GLE-5854)
-* Improved RESTPP worker that will use less memory when users make long-running RESTPP requests (CORE-3027).
-* Improved log files names from `log.AUDIT` to `log.AUDIT-GSQL`.
+* Improved long-running RESTPP requests and will now use less memory (CORE-3027).
+* Improved log files names from `log.AUDIT` to `log.AUDIT-GSQL` (GLE-6496).
 
 ==== Security
 
