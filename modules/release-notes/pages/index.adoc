@@ -83,7 +83,6 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 Added a new field `.spec.pause` in TigerGraph CR and a new subcommand `kubectl tg pause` in `kubectl-tg plugin`.
 Users scan set `.spec.pause=true` to pause a running cluster and resume it by setting `.spec.pause=false`.
 
-
 === Security
 * xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy] - is used to control access to specific rows of data in TigerGraph.
 See also xref:tigergraph-server:user-access:rbac-row-policy/row-policy-ebnf.adoc[] for examples.
@@ -150,12 +149,15 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Improved log files names from `log.AUDIT` to `log.AUDIT-GSQL` (GLE-6496).
 * Improved audit log `timestamp` format by extending format from `2023-12-20 14:42:50.25` to this `2023-12-20T14:42:50.243-07:00` (GLE-6395).
 * Improved `userAgent` field clarity in audit logs when authenticating failed. Audit log will now record the correct user agent (GLE-6404).
+* Improved audit logs by adding operating system's username to the audit log record (GLE-6394).
 * Improved SearchFile experience by increasing the `GRPC_CLIENT_TIMEOUT` (APPS-2711).
 * Improved functionality of the `ExprFunction` file to automatically remove the leftover “to_string” function in ExprFunction file (GLE-5834).
 * Improved retention strategy for `EventQueue` that improved timely monitoring of the utilization of disk space (TP-4920).
+* Improved service logs accuracy to show SSO users username in log (APPS-2496).
 
+
+(TP-4472)
 //==== Security
-//
 //==== Performance
 
 == Known Issues and Limitations
@@ -164,17 +166,17 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-¦ It has been observed that an issue happens when RESTPP will send a request to all gpes, and if one is down, the request sent to it will `timeout`.
-Including the `consistency_check` request will also mark as `timeout`.
-¦ 3.10.0
-a¦
-. run `/rebuildnow` to rebuild all the segments.
-. run `/data_consistency_check?realtime=false` to check the consistency.
-¦ TBD
+//¦ It has been observed that an issue happens when RESTPP will send a request to all gpes, and if one is down, the request sent to it will `timeout`.
+//Including the `consistency_check` request will also mark as `timeout`.
+//¦ 3.10.0
+//a¦
+//. run `/rebuildnow` to rebuild all the segments.
+//. run `/data_consistency_check?realtime=false` to check the consistency.
+//¦ TBD
 
 ¦ While running `export graph` if the disk space is not enough, or the data has not been detected, the export data will get stuck loading.
 ¦ 3.10.0
-¦ Restart all services in Admin Portal or backend.
+¦ Restart all services in Admin Portal or the backend.
 ¦ TBD
 
 ¦ `[tg_]ExprFunction.hpp` will be automatically merged while importing single graphs. In some cases, query compilation may fail.
