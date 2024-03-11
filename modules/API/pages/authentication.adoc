@@ -5,11 +5,13 @@
 TigerGraph's RESTful APIs communicate with either the REST{pp} server on port 9000 or the GSQL server on port 14240.
 Each server uses different methods of authentication.
 
+////
 [IMPORTANT]
 ====
-As of 3.10.0, the use of plaintext tokens in authentication is deprecated.
+As of x.x.x, the use of plaintext tokens in authentication is deprecated.
 Use xref:tigergraph-server:user-access:jwt-token.adoc[] instead.
 ====
+////
 
 == REST{pp} Server Requests
 
@@ -33,14 +35,16 @@ Once REST{pp} authentication is enabled, a valid token should always be included
 curl -X GET -H "Authorization: Bearer <token>" '<request_URL>'
 ----
 
-
-
 Here is a sample request:
 
 [source,console]
 ----
 curl -X GET -H "Authorization: Bearer 01234567abcdefgh01234567abcdefgh" "http://localhost:9000/graph/socialNet/vertices/User?limit=3"
 ----
+
+=== 3rd party JWT token
+
+Since 3.10.0, TigerGraph now supports the use of 3rd party JWT token. See xref:tigergraph-server:user-access:jwt-token.adoc[] for more details.
 
 == GSQL Server Requests
 

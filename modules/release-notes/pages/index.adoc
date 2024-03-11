@@ -149,9 +149,10 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Improved long-running RESTPP requests and will now use less memory (CORE-3027).
 * Improved log files names from `log.AUDIT` to `log.AUDIT-GSQL` (GLE-6496).
 * Improved audit log `timestamp` format by extending format from `2023-12-20 14:42:50.25` to this `2023-12-20T14:42:50.243-07:00` (GLE-6395).
+* Improved `userAgent` field clarity in audit logs when authenticating failed. Audit log will now record the correct user agent (GLE-6404).
 * Improved SearchFile experience by increasing the `GRPC_CLIENT_TIMEOUT` (APPS-2711).
 * Improved functionality of the `ExprFunction` file to automatically remove the leftover “to_string” function in ExprFunction file (GLE-5834).
-
+* Improved retention strategy for `EventQueue` that improved timely monitoring of the utilization of disk space (TP-4920).
 
 //==== Security
 //
