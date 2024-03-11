@@ -75,7 +75,14 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 * https://github.com/tigergraph/ecosys/blob/k8s-operator/0.1.0/k8s/docs/07-reference/configure-tigergraph-cluster-cr-with-yaml-manifests.md[Updates to cluster creation using YAML] - Improvements to the configurations to align with the database.
 
-* https://github.com/tigergraph/ecosys/blob/k8s-operator/0.1.0/k8s/docs/03-deploy/multiple-persistent-volumes-mounting.md[]
+* https://github.com/tigergraph/ecosys/blob/k8s-operator/0.1.0/k8s/docs/03-deploy/multiple-persistent-volumes-mounting.md[Support for mounting multiple PVC and PV for pods] - Added two optional fields `additionalStorages` and `spec.storage` to customize the PV for TigerGraph pods.
+
+* https://github.com/tigergraph/ecosys/blob/k8s-operator/0.1.0/k8s/docs/03-deploy/customize-tigergraph-pod.md[Support for customizing of pods] -  Customize the pods or containers, for example, users can add more customized labels and annotations or change the security context of the containers.
+
+* https://github.com/tigergraph/ecosys/blob/k8s-operator/0.1.0/k8s/docs/07-reference/configure-tigergraph-cluster-cr-with-yaml-manifests.md[Pause a running cluster] -
+Added a new field `.spec.pause` in TigerGraph CR and a new subcommand `kubectl tg pause` in `kubectl-tg plugin`.
+Users scan set `.spec.pause=true` to pause a running cluster and resume it by setting `.spec.pause=false`.
+
 
 === Security
 * xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy] - is used to control access to specific rows of data in TigerGraph.
@@ -96,7 +103,6 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * xref:gui:admin-portal:components/cdc.adoc[Change Data Capture (CDC)] can be enabled in xref:gui:admin-portal:overview.adoc[Admin Portal].
 
 * xref:gui:admin-portal:security/sso-oidc-okta.adoc[SSO.OIDC via Okta] - Support for Standard OIDC Authorization Code Flow for general purpose adds more security for logins to Admin Portal Users.
-
 
 === GraphStudio
 
@@ -119,8 +125,15 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Fixed issue where some `GPR` and `Interpret` queries that specified the built-in `filter()` function would fail installation because of a row policy or tag filter (GLE-6448).
 * Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498)
 * Fixed Issue in 3.9.3 and 3.10.0 versions could not run a GSQL query when a single node is down in a High Availability cluster. See xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc#_3_9_2_and_below[3.9.2 and below] versions workaround for more details.
+* Fixed issue when changes would not save when switching to fullscreen and back in Insights (APPS-2197).
+* Fixed issues where a vertex would not move after expanding in `Explore Graph` (APPS-2540).
+* Fixed issue in Exception statements where if it was placed before any query-body statements, it would cause both branches of an `IF-ELSE` statement to be executed (GLE-3998).
+* Fixed issue where an error in how the `ACCUM` clause is transformed, results in a transformed query with a semantic error. See xref:gsql-ref:querying:accumulators.adoc#_accumulator_types[accumulator types] for more details on valid types (GLE-5695).
+* Fixed issue when parsing a negative float parameter to GSQL CLI in `{key:value}` format would create an argument error (GLE-5875).
 
 ==== Crashes and Deadlocks
+
+* Fixed GPE crash during query execution when accumulators values are not vaild. See xref:gsql-ref:querying:accumulators.adoc#_accumulator_types[accumulator types] for more details (GLE-4411).
 
 ==== Improvements
 
@@ -135,10 +148,14 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Improved by adding a xref:gsql-ref:querying:exception-statements.adoc#_exception_format_not_defined_in_query[default exception format] available in cases where the exception is not defined in the query (GLE-5854)
 * Improved long-running RESTPP requests and will now use less memory (CORE-3027).
 * Improved log files names from `log.AUDIT` to `log.AUDIT-GSQL` (GLE-6496).
+* Improved audit log `timestamp` format by extending format from `2023-12-20 14:42:50.25` to this `2023-12-20T14:42:50.243-07:00` (GLE-6395).
+* Improved SearchFile experience by increasing the `GRPC_CLIENT_TIMEOUT` (APPS-2711).
+* Improved functionality of the `ExprFunction` file to automatically remove the leftover “to_string” function in ExprFunction file (GLE-5834).
 
-==== Security
 
-==== Performance
+//==== Security
+//
+//==== Performance
 
 == Known Issues and Limitations
 
