@@ -39,6 +39,23 @@ NOTE: However, new interpreted and any existing queries can still be executed.
 NOTE: As a workaround, if the failed node cannot be recovered (e.g. hardware issue), full operation can be restored temporarily by the xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removal of the failing nodes].
 For example, a 5 x 2 cluster with one node removed would become a 4x2 + 1, where 1 is the data partition that is not being replicated.
 
+=== 3.9.2 and Below
+
+In addition to the considerations above, in versions 3.9.2 and below,
+users will not be able to run a GSQL query when a single node is down in a High Availability cluster.
+
+In this case, as with the other consideration cases above, the failed node needs to be xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removed] from the cluster via:
+
+[source, console]
+----
+gadmin cluster remove <node_name>:<node_ip_address>
+----
+
+[NOTE]
+====
+This issue is no longer present in versions 3.9.3 and above.
+====
+
 == xref:tigergraph-server:cluster-and-ha-management:ha-cluster.adoc[High Availability Cluster Configuration]
 
 Here you will find detailed information about terminology, system requirements, and how to configure an HA cluster.
