@@ -166,6 +166,13 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦ In file INPUT and OUTPUT policy, if there exists 2 path (`path1` and `path2`) in the configured policy list and `path1` is parent path of `path2`, then `path1` may not be effective.
+¦ 3.2 and 3.10.0
+¦ Users should avoid using paths if they are nested.
+
+For example, avoid this scenario, path2 = `"/tmp/more"` and path1= `"/tmp"`.
+¦ TBD
+
 ¦ It has been observed that an issue happens when RESTPP will send a request to all gpes, and if one is down, the request sent to it will `timeout`.
 Including the `consistency_check` request will also mark as `timeout`.
 ¦ 3.10.0
