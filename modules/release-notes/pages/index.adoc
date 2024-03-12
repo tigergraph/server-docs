@@ -5,7 +5,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server 3.10.0 LTS was released on March 14th, 2024.
+TigerGraph Server 3.10.0 LTS was released on March 13th, 2024.
 
 LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
 
@@ -363,6 +363,12 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:sec
 [cols="3", separator=¦ ]
 |===
 ¦ Description ¦ Deprecated ¦ Removed
+
+¦ The use of plaintext tokens in xref:tigergraph-server:API:authentication.adoc[authentication] is deprecated.
+Use xref:tigergraph-server:user-access:jwt-token.adoc[] instead.
+¦ 3.10.0
+¦ TBD
+
 
 ¦ The command `gbar` is removed and is no longer available.
 However, if you are using a version of TigerGraph before 3.10.0 you can still use `gbar` to xref:tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.
