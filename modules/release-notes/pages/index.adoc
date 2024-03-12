@@ -166,13 +166,13 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-//¦ It has been observed that an issue happens when RESTPP will send a request to all gpes, and if one is down, the request sent to it will `timeout`.
-//Including the `consistency_check` request will also mark as `timeout`.
-//¦ 3.10.0
-//a¦
-//. run `/rebuildnow` to rebuild all the segments.
-//. run `/data_consistency_check?realtime=false` to check the consistency.
-//¦ TBD
+¦ It has been observed that an issue happens when RESTPP will send a request to all gpes, and if one is down, the request sent to it will `timeout`.
+Including the `consistency_check` request will also mark as `timeout`.
+¦ 3.10.0
+a¦
+. run `/rebuildnow` to rebuild all the segments.
+. run `/data_consistency_check?realtime=false` to check the consistency.
+¦ TBD
 
 ¦ While running `export graph` if the disk space is not enough, or the data has not been detected, the export data will get stuck loading.
 ¦ 3.10.0
