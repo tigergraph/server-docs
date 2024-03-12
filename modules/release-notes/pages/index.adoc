@@ -144,7 +144,7 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * Improved data consistency during the backup and restore process (Core-3000).
 * Improved availability when one KSL server in error state (TP-4378 & TP-4593).
 * Improved the required privilege for `/rebuildnow` and `/deleted_vertex_check` making both now `Graph-level “READ DATA”` privilege and now able to run on DR cluster in CRR feature.(CORE-3291).
-* Improved by adding a xref:gsql-ref:querying:exception-statements.adoc#_exception_format_not_defined_in_query[default exception format] available in cases where the exception is not defined in the query (GLE-5854)
+* Improved exception statements by adding a xref:gsql-ref:querying:exception-statements.adoc#_exception_format_not_defined_in_query[default exception format] available in cases where the exception is not defined in the query (GLE-5854)
 * Improved long-running RESTPP requests and will now use less memory (CORE-3027).
 * Improved log files names from `log.AUDIT` to `log.AUDIT-GSQL` (GLE-6496).
 * Improved audit log `timestamp` format by extending format from `2023-12-20 14:42:50.25` to this `2023-12-20T14:42:50.243-07:00` (GLE-6395).
@@ -170,8 +170,13 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 Including the `consistency_check` request will also mark as `timeout`.
 ¦ 3.10.0
 a¦
-. run `/rebuildnow` to rebuild all the segments.
-. run `/data_consistency_check?realtime=false` to check the consistency.
+. Run `/rebuildnow` to rebuild all the segments.
++
+[NOTE]
+====
+Running `/rebuildnow` when one gpe is down will result in the request timeout. This does not mean the request failed, instead only the currently running GPE will do the rebuild, and any rebuild requests sent to the down GPEs will result in a timeout.
+====
+. Run `/data_consistency_check?realtime=false` to check the consistency.
 ¦ TBD
 
 ¦ While running `export graph` if the disk space is not enough, or the data has not been detected, the export data will get stuck loading.
