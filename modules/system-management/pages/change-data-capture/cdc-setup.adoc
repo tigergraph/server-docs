@@ -110,7 +110,7 @@ mkdir -p /home/tigergraph/test_cdc/download_kafka
 .And run this command to download Kafka to the folder that was just created:
 [console]
 ----
-curl https://archive.apache.org/dist/kafka/3.3.1/kafka_2.13-3.3.1.tgz \ | tar -xzf - -C "/home/tigergraph/test_cdc/download_kafka"
+curl https://archive.apache.org/dist/kafka/3.3.1/kafka_2.13-3.3.1.tgz | tar -xzf - -C "/home/tigergraph/test_cdc/download_kafka"
 ----
 +
 .Check if it's successfully downloaded and extracted with this command:
@@ -152,7 +152,7 @@ For the value of `<my ip>`,  use the command `ifconfig` or `ip addr show`, and f
 ----
 KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1 MYIP=127.0.0.1
 
-$KAFKA_ROOT/bin/kafka-topics.sh --bootstrap-server $MYIP:9092 --delete \ --topic cdc_topic
+$KAFKA_ROOT/bin/kafka-topics.sh --bootstrap-server $MYIP:9092 --delete --topic cdc_topic
 ----
 
 . Setup TigerGraph CDC service

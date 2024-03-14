@@ -24,7 +24,14 @@ Similar to the xref:tigergraph-server:security:file-output-policy.adoc[] the val
 
 The format of an entry in the `blocklist` or `allowlist` follow the rules below:
 
-* Paths can use data root: `__TG_DATA_ROOT__`, which will be translated to actual data root when it’s used.
+* Paths can use data root:
++
+[source, gsql]
+----
+__TG_DATA_ROOT__
+----
++
+Which will be translated to the actual data root when it’s used.
 +
 [NOTE]
 This is the same as `gadmin config get System.DataRoot`.
