@@ -6,13 +6,14 @@ HA (High Availability) is a generic term used to describe a computer system whic
 
 With Continuous Availability, TigerGraph goes beyond the standard scope and definition of High Availability by providing the following functionality:
 
-* Fault tolerance against loss of database server(s)
- ** Automated recovery of services in case of intra-cluster failure
-* Full native HA support for user-facing applications - Seamless automatic client reconnection to standby GSQL server and GraphStudio servers
-* Failover to remote cluster during disaster recovery
+* Fault tolerance against loss of database server(s):
+ ** Automated recovery of most services in case of intra-cluster failure.
+* Full native HA support for user-facing applications:
+** Seamless automatic client reconnection to standby GSQL server and GraphStudio servers.
+* Failover to the replica node if the primary node is unavailable.
 * Improve RoI with additional replicas
- ** Enhanced query throughput performance
- ** Increased concurrency for operational workloads
+** Enhanced query throughput performance.
+** Increased concurrency for operational workloads.
 
 In short, TigerGraph Continuous Availability not only provides the ability to keep a business application running without any noticeable downtime, but also delivers a higher return on investment.
 
@@ -22,14 +23,15 @@ TigerGraph's architecture design relies on active-active replication to keep mul
 This is transparent to the user.
 The underlying principles of uniform distribution of data are automatically applied no matter how many replicas are stored.
 Additionally, the placement of replicas is infrastructure-aware to tolerate hardware failures.
-Continuous availability is a production configuration that customers can pick at cluster installation time.
-Customers have flexibility to place replicas in specific availability zones or data centers based on their infrastructure requirements.
 
-TigerGraph Continuous Availability design provides the following
+*Continuous Availability* is a production configuration that users can pick at cluster installation time.
+Users have flexibility to place replicas in specific availability zones or data centers based on their infrastructure requirements.
 
-* Throughput: Each replica is always up-to-date and handles its share of read requests. This provides higher query concurrency and throughput.
-* If a server goes offline for planned or unplanned reasons, TigerGraph's HA design with Automatic Failover will reroute work to the replica nodes of that server, maintaining continuous operation.
-* Higher levels of replication provide more throughput and resilience.
+TigerGraph Continuous Availability design provides the following:
+
+* *Throughput* - Each replica is always up-to-date and handles its share of read requests. This provides higher query concurrency and throughput.
+* *Automatic Failover* - If a server goes offline for planned or unplanned reasons, TigerGraph's HA design with Automatic Failover will reroute work to the replica nodes of that server, maintaining continuous operation.
+* *System Resilience* - Higher levels of replication provide more throughput and resilience.
 
 [#_continuous_availability__definitions]
 === Continuous Availability - Definitions
@@ -80,7 +82,8 @@ For example, {1A, 2B, 3B, 4A, 5B}.
 
 === Continuous Availability - Cluster failover operations
 
-TigerGraph design ensures Automatic Failover for Continuous Availability. If a server goes down (hardware or software, planned or unplanned), incoming DB operations can continue.
+TigerGraph design ensures automatic failover for Continuous Availability.
+If a server goes down (hardware or software, planned or unplanned), incoming DB operations can continue.
 The requests are automatically routed around the unavailable server.
 The TigerGraph Database scheduler tracks in real time the availability of servers and routes the request to the right servers.
 
@@ -91,6 +94,6 @@ image::ha-failover.png["Diagram showing a cluster with 10 partitions. The top gr
 In the event of server failure:
 
 * If any single server is unavailable (expected or unexpected):
- ** When it fails to respond after a certain number of tries, requests will automatically divert to another replica (e.g. 3B is unavailable, so use 3A)
+ ** When it fails to respond after a certain number of tries, requests will automatically divert to another replica (e.g. 3B is unavailable, so use 3A).
  ** If it fails in the middle of a transaction, that transaction might be aborted.
 * System continues to operate, with reduced throughput, until the server is restored.
