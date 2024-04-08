@@ -86,7 +86,7 @@ Added a new field `.spec.pause` in TigerGraph CR and a new subcommand `kubectl t
 Users scan set `.spec.pause=true` to pause a running cluster and resume it by setting `.spec.pause=false`.
 
 === Security
-* xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy] - is used to control access to specific rows of data in TigerGraph.
+* xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy (Preview Feature)] - is used to control access to specific rows of data in TigerGraph.
 See also xref:tigergraph-server:user-access:rbac-row-policy/row-policy-ebnf.adoc[] for examples.
 
 * xref:tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_object_based_privileges[Object-Based Privileges] - This mechanism allows users to grant or revoke privileges based on specific objects.
@@ -175,6 +175,18 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 [cols="4", separator=¦ ]
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
+
+a¦ xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[Row Policy (Preview Feature)] does not yet filter or check vertex attribute data in upsert operations.
+
+Such as,
+
+* A query with insert statements.
+* A file or Kafka loading job.
+* A DDL loading request.
+* Or a standard upsert request.
+¦ 3.10.0
+¦ Users should restrict the access of creating/running queries and loading jobs for roles related to row policy.
+¦ TBD
 
 ¦ In file INPUT and OUTPUT policy, if there exists 2 path (`path1` and `path2`) in the configured policy list and `path1` is parent path of `path2`, then `path1` may not be effective.
 ¦ 3.2 and 3.10.0
