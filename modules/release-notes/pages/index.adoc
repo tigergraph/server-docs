@@ -2,6 +2,7 @@
 :description: Release notes for TigerGraph {page-component-version} LTS.
 //:page-aliases: change-log.adoc, release-notes.adoc
 :fn-preview: footnote:preview[Features in the preview stage should not be used for production purposes. General Availability (GA) versions of the feature will be available in a later release.]
+:pp: {plus}{plus}
 :toc:
 :toclevels:2
 
@@ -33,6 +34,15 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 == Detailed List of New and Modified Features
 
 === TigerGraph Server
+
+* [3.10.1] xref:tigergraph-server:troubleshooting:audit-log.adoc#_rest_api_call_audit_logs[Audit log support for direct RESTPP API calls] - Audit logs now record direct REST++ API Calls.
+
+* [3.10.1] Added new xref:tigergraph-server:reference:return-codes.adoc[Return Codes]:
+** `REST-4000` - Response time exceeds the timeout limit.
+** `REST-10020` - License has expired.
+** `REST-10021` - Access to the file has failed.
+** `REST-30001` - The parameter is invalid (general error).
+
 * xref:tigergraph-server:troubleshooting:audit-log.adoc[] - Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
 * xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[] - Users can now import or export individually selected graphs.
@@ -73,7 +83,7 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 === Kubernetes Operator
 
-* [3.10.1] xref:tigergraph-server:kubernetes:k8s-operator/index.adoc[Kubernetes Operator is in version 1.0.0]  - The operator is no longer in preview release.
+* [3.10.1] xref:tigergraph-server:kubernetes:k8s-operator/index.adoc[Kubernetes Operator is in version 1.0.0]  - The operator is no longer in preview.
 
 * https://github.com/tigergraph/ecosys/blob/master/k8s/docs/07-reference/configure-tigergraph-cluster-cr-with-yaml-manifests.md[Added new fields] - `.spec.tigergraphConfig` in TigerGraph CR and a new option `--tigergraph-config` in kubectl-tg plugin.
 
