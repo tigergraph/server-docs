@@ -57,6 +57,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4
 # payload data
 {
 "iss": "TigerGraph Inc",
+"aud": ""
 "exp": 1647334196,
 "sub": "kevin",
 "iat": 1516239022,
@@ -125,8 +126,8 @@ Currently supported claims are as follows:
 ¦ [optional] Issuer of the JWT Token.
 
 ¦ `aud`
-¦ string
-¦ [optional] Audience name of the JWT Token.
+¦ string or array of strings
+¦ [optional] Recipient for which the JWT is intended.
 
 ¦ `exp`
 ¦ int
@@ -305,6 +306,8 @@ This next configurations are optional.
 
 Users may also specify the JWT issuer and audience. The default of these claims are empty:
 
+==== Security.JWT.Issuer
+
 .Ex: Security.JWT.Issuer
 [console]
 ----
@@ -313,14 +316,27 @@ $ gadmin config set Security.JWT.Issuer "<issuer-name>"
 
 If Security.JWT.Issuer is configured, the `iss` claim will be verified against this configured value. Otherwise, the issuer will not be verified.
 
+==== Security.JWT.Audience
+
+If the user configures this claim and the issuer does not match with a value in the
+`aud` string or array or strings, when this claim is present, then the JWT will be
+fail.
+
 .Ex: Security.JWT.Audience
 [console]
 ----
-$ gadmin config set Security.JWT.Audience "<audience-name>"
+$ gadmin config set Security.JWT.Audience "[<audience-name1, audience-name2>]"
 ----
 
-Users can set this JWT Token authentication to verify if the `aud` defined in the JWT Token matches the configured one or not.
-It will fail the verification process if they don’t match.
+Users can set this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not.
+
+In the general case, the "aud" value is an array of case-
+sensitive strings, each containing a `StringOrURI` value.
+
+In the special case when the JWT has one audience, the `aud` value may be a
+single case-sensitive `STRING` containing a `StringOrURI` value.
+
+The interpretation of audience values is generally application specific.
 
 === Interactive
 Additionally, users can set up JWT, interactively, by running this command to begin security configuration:
@@ -354,6 +370,7 @@ For testing purposes, we recommend using a tool such as https://dinochiesa.githu
 "iat": 1699205547,
 "exp": 1703865599,
 "iss": "TigerGraph",
+"aud": ""
 "sub": "tigergraph",
 "graph": "graph"
 }
@@ -383,7 +400,9 @@ When using a JWT token for authentication, please consider these scenarios and h
 
 ¦ Graph Scope ¦ If the graph specified in the token is not accessible to the user due to insufficient permissions, an error is thrown to indicate permission denied.
 
-¦ Issuer Match ¦ If the issuer in the token does not match the configured issuer value set by gadmin, an error throws to indicate an invalid issuer.
+¦ Issuer Match ¦ If the issuer in the token does not match the configured issuer value set by `gadmin`, an error throws to indicate an invalid issuer.
+
+¦ Audience Match ¦ If the audience configured in the token does not match, an error throws indicating it is invalid.
 
 ¦ Format ¦ If the token is in an incorrect format, contains invalid JSON or fails in base64 decoding, an error throws to indicate format or decoding failure.
 
