@@ -1030,6 +1030,10 @@ concurrent queries in the delay queue |`20`
 | Configure the `iss` claim that will be verified against this configured value for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.Issuer "<issuer-name>"`
 
+| Security.JWT.Audience
+| Configure this JWT Token authentication to verify if the "audience" defined in the JWT Token matches the configured one or not for xref:tigergraph-server:user-access:jwt-token.adoc[].
+| `gadmin config set Security.JWT.Audience "<audience-name>"`
+
 |Security.LDAP.AdminDN |Configure the DN of LDAP user who has read
 access to the base DN specified above. Empty if everyone has read access
 to LDAP data: default empty |`nan`

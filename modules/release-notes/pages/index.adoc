@@ -98,6 +98,10 @@ Added a new field `.spec.pause` in TigerGraph CR and a new subcommand `kubectl t
 Users scan set `.spec.pause=true` to pause a running cluster and resume it by setting `.spec.pause=false`.
 
 === Security
+
+* [3.10.1] xref:tigergraph-server:user-access:jwt-token.adoc#_optional_configurations[Added a JWT Token config] - `Security.JWT.Audience` added to allow users
+to set a JWT Token authentication that verifies if the "audience" defined in JWT Token matches the configured one or not.
+
 * xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy (Preview Feature)] - is used to control access to specific rows of data in TigerGraph.
 See also xref:tigergraph-server:user-access:rbac-row-policy/row-policy-ebnf.adoc[] for examples.
 

@@ -106,10 +106,12 @@ The payload contains statements about the entity (typically, the user) and any a
 # payload data
 {
 "iss": "TigerGraph Inc",
+"aud": ""
 "exp": 1647334196,
 "sub": "kevin",
 "iat": 1516239022,
 "graph": "test_graph"
+
 }
 ----
 
@@ -118,15 +120,28 @@ Currently supported claims are as follows:
 |===
 ¦ Claim / Payload Field ¦ Type ¦ Description
 
-¦ `iss` ¦ string ¦ [optional] Issuer of the JWT Token.
+¦ `iss`
+¦ string
+¦ [optional] Issuer of the JWT Token.
 
-¦ `exp` ¦ int ¦ Time after which the JWT expires.
+¦ `aud`
+¦ string
+¦ [optional] Audience name of the JWT Token.
 
-¦ `sub` ¦ string ¦ Subject of the JWT, this is the TigerGraph Username
+¦ `exp`
+¦ int
+¦ Time after which the JWT expires.
 
-¦ `iat` ¦ int ¦ Time at which the JWT was issued; can be used to determine age of the JWT
+¦ `sub`
+¦ string
+¦ Subject of the JWT, this is the TigerGraph Username
 
-¦ `graph` ¦ string
+¦ `iat`
+¦ int
+¦ Time at which the JWT was issued; can be used to determine age of the JWT
+
+¦ `graph`
+¦ string
 ¦ [optional] Graph reference in the token.
 
 Defines the scope of the privileges for the user.
@@ -284,13 +299,28 @@ $ gadmin config set Security.JWT.HMAC.Secret @test.pem
 [   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
 ----
 
-This next configuration is optional, but you may also specify the JWT issuer as well, the default of this claim is left empty:
+=== Optional Configurations
+
+This next configurations are optional.
+
+Users may also specify the JWT issuer and audience. The default of these claims are empty:
+
+.Ex: Security.JWT.Issuer
 [console]
 ----
 $ gadmin config set Security.JWT.Issuer "<issuer-name>"
 ----
 
 If Security.JWT.Issuer is configured, the `iss` claim will be verified against this configured value. Otherwise, the issuer will not be verified.
+
+.Ex: Security.JWT.Audience
+[console]
+----
+$ gadmin config set Security.JWT.Audience "<audience-name>"
+----
+
+Users can set this JWT Token authentication to verify if the `aud` defined in the JWT Token matches the configured one or not.
+It will fail the verification process if they don’t match.
 
 === Interactive
 Additionally, users can set up JWT, interactively, by running this command to begin security configuration:
