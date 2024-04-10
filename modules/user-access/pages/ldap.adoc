@@ -205,11 +205,12 @@ The attribute which indicates that the current DN is a child of another DN is `m
 
 An example of a Distinguished Name (DN) is `CN=group1,OU=AADDC Users,DC=tigergraph,DC=com`.
 
+////
 [NOTE]
 .Known issue: memberOf is case sensitive
 The attribute name `memberOf` is case-sensitive, e.g., `memberof` will not work.
 We expect to change this to case-insensitive in a future update.
-
+////
 
 For example, assume `UserA` belongs to `Subgroup1`, and `Subgroup1` is a child of `Group1` on the LDAP server for TigerGraph.
 If there is a proxy group `ProxyGroup1` whose rule is `memberOf=CN=Group1,OU=AADDC Users,DC=tigergraph,DC=com`, `UserA` can be authorized as a member of `ProxyGroup1`.

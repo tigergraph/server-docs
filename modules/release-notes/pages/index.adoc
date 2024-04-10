@@ -142,6 +142,9 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 === Fixed and Improved in 3.10.1
 
 ==== Functionality
+
+* Fixed known issue where the attribute name `memberOf` was case-sensitive. It is now case-insensitive.
+
 ==== Crashes and Deadlocks
 ==== Improvements
 ==== Security
@@ -370,9 +373,9 @@ Then the global loading process will exit and fail the local job after timeout w
 ¦ 3.9.1
 
 ¦ The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
-¦ TBD
-¦ TBD
-¦ TBD
+¦ 3.9
+¦ Check the case of the keywords for `memberOf`. This has been fixed in versions 3.10.1 and above.
+¦ 3.10.1
 
 |===
 
