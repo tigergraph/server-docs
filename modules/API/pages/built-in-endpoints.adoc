@@ -425,6 +425,13 @@ This interval can be adjusted with the xref:reference:configuration-parameters.a
 
 This endpoint does not require any privileges.
 
+[NOTE]
+====
+As of 3.10.1, the config `System.Metrics.IncludeHostName`, if set to true, the hostname/ip will be included in all metrics output, in OpenMetrics format, as part of the variable labels.
+
+Otherwise, the default is `false` and the response will not include hostname/ip as part of the variable labels.
+====
+
 ==== Parameters:
 None
 
