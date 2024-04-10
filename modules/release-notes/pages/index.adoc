@@ -55,6 +55,8 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 === GSQL Command and Querying Language
 
+* [3.10.1] xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_impact_warning[New impact warnings when running Schema-Change-Job] - Added a warning message when running the global or local schema change job so, users can understand the impact of running a global or local schema change on a query.
+
 * xref:gsql-ref:querying:func/context-functions.adoc[] - Context functions are a set of new built-in functions that provide insights into the user's information and work inside `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
 
 * xref:tigergraph-server:system-management:management-commands.adoc[Command Updates] - Added new flag `--local` to commands xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_start[gadmin start] and xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_stop [gadmin stop] reducing the time required to start/stop local services.
@@ -98,6 +100,8 @@ Added a new field `.spec.pause` in TigerGraph CR and a new subcommand `kubectl t
 Users scan set `.spec.pause=true` to pause a running cluster and resume it by setting `.spec.pause=false`.
 
 === Security
+
+* [3.10.1] xref:tigergraph-server:user-access:sso.adoc#_match_strategy_extensions[SSO Match Strategy Extension] - SSO match strategy has been extended to allow matches via regular expression.
 
 * [3.10.1] xref:tigergraph-server:user-access:jwt-token.adoc#_optional_configurations[Added a JWT Token config] - `Security.JWT.Audience` added to allow users
 to set a JWT Token authentication that verifies if the `aud` (recipient for which the JWT is intended) defined in JWT Token matches the configured one or not.
