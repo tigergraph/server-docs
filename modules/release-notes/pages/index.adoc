@@ -48,6 +48,10 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 * [3.10.1] xref:tigergraph-server:installation:bare-metal-install.adoc[Nodes can now be paired with hostnames in installation] - Users now can set the node by ip or hostname during installation.
 This is supproted in both interactive and non-interactive installation.
 
+* [3.10.1] xref:master@cloud:solutions:access-solution/rest-requests.adoc#_secret_request[Make request with GSQL-Secret] -
+users can now use the authorization secret in a request header as a GSQL-Secret.
+
+
 * xref:tigergraph-server:troubleshooting:audit-log.adoc[] - Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
 * xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[] - Users can now import or export individually selected graphs.
@@ -207,6 +211,16 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 [cols="4", separator=¦ ]
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
+
+a¦ If importing a role, policy or function that has a different signature or content from the existing one, the one being imported will be skipped and not aborted.
+
+.For example:
+* If the original function is: `create function lib1.func2(int param1, float param2, string param3) returns (bool) {}`.
+* And the user inputs the new function: `create function lib1.func2(int param1) returns (bool) {}`. This second one will be skipped.
+¦ 3.10.0
+¦
+
+¦
 
 a¦ xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[Row Policy (Preview Feature)] does not yet filter or check vertex attribute data in upsert operations.
 
