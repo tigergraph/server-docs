@@ -51,7 +51,6 @@ This is supproted in both interactive and non-interactive installation.
 * [3.10.1] xref:master@cloud:solutions:access-solution/rest-requests.adoc#_secret_request[Make request with GSQL-Secret] -
 users can now use the authorization secret in a request header as a GSQL-Secret.
 
-
 * xref:tigergraph-server:troubleshooting:audit-log.adoc[] - Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
 * xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[] - Users can now import or export individually selected graphs.
@@ -212,15 +211,22 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-a¦ If importing a role, policy or function that has a different signature or content from the existing one, the one being imported will be skipped and not aborted.
+¦When using xref:tigergraph-server:backup-and-restore:database-import-export.adoc[Import All] if a users `.zip` file  is exceedingly large, the import may fail with an error messages like this:
+
+`Large catalog file key: /1/ReplicaList.json`
+
+¦ 3.2
+¦ 3.10.0 and above users should xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[import single or smaller batches of multiple graphs].
+¦ TBD
+
+a¦ If importing a role, policy, or function that has a different signature or content from the existing one, the one being imported will be skipped and not aborted.
 
 .For example:
 * If the original function is: `create function lib1.func2(int param1, float param2, string param3) returns (bool) {}`.
-* And the user inputs the new function: `create function lib1.func2(int param1) returns (bool) {}`. This second one will be skipped.
+* And the user imports the new function: `create function lib1.func2(int param1) returns (bool) {}`. This second one will be skipped.
 ¦ 3.10.0
-¦
-
-¦
+¦ Users need to re-create (delete and create) the imported role, policy, or function manually, and make sure that the importing one meets the requirements set by the existing one.
+¦ TBD
 
 a¦ xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[Row Policy (Preview Feature)] does not yet filter or check vertex attribute data in upsert operations.
 
@@ -239,7 +245,7 @@ Such as,
 ¦ Users should avoid using paths if they are nested.
 
 For example, avoid this scenario, path2 = `"/tmp/more"` and path1= `"/tmp"`.
-¦ TBD
+¦ 3.10.1
 
 ¦ It has been observed that an issue happens when RESTPP will send a request to all gpes, and if one is down, the request sent to it will `timeout`.
 Including the `consistency_check` request will also mark as `timeout`.
