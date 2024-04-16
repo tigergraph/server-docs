@@ -155,19 +155,19 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 
 ==== Functionality
 
-* Fixed known issue where the attribute name `memberOf` was case-sensitive. It is now case-insensitive.
+* Fixed known issue where the attribute name `memberOf` was case-sensitive. It is now case-insensitive (GLE-6660).
 
-==== Crashes and Deadlocks
-==== Improvements
-==== Security
-==== Performance
+//==== Crashes and Deadlocks
+//==== Improvements
+//==== Security
+//==== Performance
 
 === Fixed and Improved in 3.10.0
 
 ==== Functionality
-* Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258)
+* Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258).
 * Fixed issue where some `GPR` and `Interpret` queries that specified the built-in `filter()` function would fail installation because of a row policy or tag filter (GLE-6448).
-* Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498)
+* Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498).
 * Fixed Issue in 3.9.3 and 3.10.0 versions could not run a GSQL query when a single node is down in a High Availability cluster. See xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc#_3_9_2_and_below[3.9.2 and below] versions workaround for more details.
 * Fixed issue when changes would not save when switching to fullscreen and back in Insights (APPS-2197).
 * Fixed issues where a vertex would not move after expanding in `Explore Graph` (APPS-2540).
@@ -211,12 +211,14 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-¦When using xref:tigergraph-server:backup-and-restore:database-import-export.adoc[Import All] if a users `.zip` file  is exceedingly large, the import may fail with an error messages like this:
+¦When using xref:tigergraph-server:backup-and-restore:database-import-export.adoc[Import All] if a users schema size in the `.zip` file is exceedingly large, the import may fail with an error messages like this:
 
 `Large catalog file key: /1/ReplicaList.json`
 
 ¦ 3.2
-¦ 3.10.0 and above users should xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[import single or smaller batches of multiple graphs].
+¦ 3.9 and below users need to run the import process manually by executing the GSQL scripts in the `.zip`, manually
+
+3.10.0 and above users should xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[import single or smaller batches of multiple graphs].
 ¦ TBD
 
 a¦ If importing a role, policy, or function that has a different signature or content from the existing one, the one being imported will be skipped and not aborted.
