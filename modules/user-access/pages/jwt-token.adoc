@@ -317,7 +317,7 @@ If Security.JWT.Issuer is configured, the `iss` claim will be verified against t
 
 ==== Security.JWT.Audience
 
-Users can have multiple `audience` claims  included in a JWT token, but when configuring there is only `<audience-name>` allowed at a time.
+//Users can have multiple `audience` claims  included in a JWT token, but when configuring there is only `<audience-name>` allowed at a time.
 
 .Ex: Security.JWT.Audience
 [source, console]
@@ -325,6 +325,15 @@ Users can have multiple `audience` claims  included in a JWT token, but when con
 $ gadmin config set Security.JWT.Audience "<audience-name1>"
 $ gadmin config set Security.JWT.Audience "<audience-name2>"
 ----
+
+////
+.Ex: Security.JWT.Audience
+[source, console]
+----
+$ gadmin config set Security.JWT.Audience "<audience-name1>"
+$ gadmin config set Security.JWT.Audience "<audience-name2>"
+----
+////
 Users can set this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not.
 
 If the user configures this claim and the token does not match with a value in the

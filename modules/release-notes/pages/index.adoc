@@ -6,7 +6,7 @@
 :toc:
 :toclevels:2
 
-TigerGraph Server 3.10.1 LTS was released on [], 2024.
+TigerGraph Server 3.10.1 LTS was released on April, 23nd, 2024.
 
 TigerGraph Server 3.10.0 LTS was released on March 13th, 2024.
 
@@ -63,9 +63,9 @@ users can now use the authorization secret in a request header as a GSQL-Secret.
 
 === GSQL Command and Querying Language
 
-* [3.10.1] xref:gsql-ref:querying:func/aggregation-functions.adoc#_percentilecont[New Aggregation funtion percentileCont()] - `percentileCont()` Aggregating Returns the percentile of the given value over a group using linear interpolation.
+//* [3.10.1] xref:gsql-ref:querying:func/aggregation-functions.adoc#_percentilecont[New Aggregation funtion percentileCont()] - `percentileCont()` Aggregating Returns the percentile of the given value over a group using linear interpolation.
 
-* [3.10.1] xref:gsql-ref:querying:accumulators.adoc#_percentilecontaccum[A new accumulator PercentileContAccum()] - `PercentileContAccum()` that returns the percentile of the given value over a group using linear interpolation.
+//* [3.10.1] xref:gsql-ref:querying:accumulators.adoc#_percentilecontaccum[A new accumulator PercentileContAccum()] - `PercentileContAccum()` that returns the percentile of the given value over a group using linear interpolation.
 
 * xref:gsql-ref:querying:func/context-functions.adoc[] - Context functions are a set of new built-in functions that provide insights into the user's information and work inside `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
 
@@ -157,23 +157,12 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 
 * Fixed known issue where the attribute name `memberOf` was case-sensitive. It is now case-insensitive (GLE-6660).
 * Fixed issue of clarity for error message/log when global `schema_change` failed for adding edge but it's relied on vertex does not exist (GLE-6751).
+* Fixed issue where installation was halted due to TigerGraph disks mounted with `noexec` on AppRoot or DataRoot, preventing execution (TP-4929).
+* Fixed issue where there was a delay in loading response times due to syntax detection process in GSQL (GLE-6822).
+* Fixed issue were there was a GPE failure reported during query execution prompting relocation from `/tmp` to `System.TempRoot` (GLE-5536).
+* Fixed issue where incorrect error response occurred when specified graph does not exist (APS-2824).
+* Fixed issue where users encountered error `Vertex expansion failed: c.default.post is not a function` during Explore Neighbors operation in Insight (APS-2840).
 
-Halt TG installation if the disks are mounted with noexec option on AppRoot or DataRoot (TP-4929).
-
-The customer claims that it takes a long time to load the query write page. As checked the logs, we found that it needs 60s to respond the request
-
-
-_GSQL_CMD_REST: GET|/gsql/queries?graph=LOGISTIC_OPTIMIZATION|application/json; charset=UTF-8|60410ms
-With further investigation, it's identified that the GSQL will do a 'syntax detection', which is time-consuming, as the stack trace below.Long time-consuming in GSQL syntax-detection check (GLE-6822).
-
-GPE crash when executing the query
-
-Move temporary storage such as query compilation and other tasks from /tmp to System.TempRoot on their /tmp directory several times and the upgrade process did not indicate clearly what the issue is. While the logs can be reviewed to finally find the problem,(GLE-5536)
-
-
-Should return correct error if the graph is not existed(Aps2824)
-
-Error 'Vertex expansion failed: c.default.post is not a function' when Explore Neighbours on Insight(Aps2840)
 //==== Crashes and Deadlocks
 //==== Improvements
 //==== Security
