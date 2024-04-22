@@ -156,7 +156,24 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 ==== Functionality
 
 * Fixed known issue where the attribute name `memberOf` was case-sensitive. It is now case-insensitive (GLE-6660).
+* Fixed issue of clarity for error message/log when global `schema_change` failed for adding edge but it's relied on vertex does not exist (GLE-6751).
 
+Halt TG installation if the disks are mounted with noexec option on AppRoot or DataRoot (TP-4929).
+
+The customer claims that it takes a long time to load the query write page. As checked the logs, we found that it needs 60s to respond the request
+
+
+_GSQL_CMD_REST: GET|/gsql/queries?graph=LOGISTIC_OPTIMIZATION|application/json; charset=UTF-8|60410ms
+With further investigation, it's identified that the GSQL will do a 'syntax detection', which is time-consuming, as the stack trace below.Long time-consuming in GSQL syntax-detection check (GLE-6822).
+
+GPE crash when executing the query
+
+Move temporary storage such as query compilation and other tasks from /tmp to System.TempRoot on their /tmp directory several times and the upgrade process did not indicate clearly what the issue is. While the logs can be reviewed to finally find the problem,(GLE-5536)
+
+
+Should return correct error if the graph is not existed(Aps2824)
+
+Error 'Vertex expansion failed: c.default.post is not a function' when Explore Neighbours on Insight(Aps2840)
 //==== Crashes and Deadlocks
 //==== Improvements
 //==== Security
