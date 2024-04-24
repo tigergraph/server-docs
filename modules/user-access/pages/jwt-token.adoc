@@ -125,7 +125,7 @@ Currently supported claims are as follows:
 ¦ [optional] Issuer of the JWT Token.
 
 ¦ `aud`
-¦ string or array of strings
+¦ string
 ¦ [optional] Recipient for which the JWT is intended.
 
 ¦ `exp`
@@ -322,8 +322,7 @@ If Security.JWT.Issuer is configured, the `iss` claim will be verified against t
 .Ex: Security.JWT.Audience
 [source, console]
 ----
-$ gadmin config set Security.JWT.Audience "<audience-name1>"
-$ gadmin config set Security.JWT.Audience "<audience-name2>"
+$ gadmin config set Security.JWT.Audience "<audience-name>"
 ----
 
 ////
@@ -337,7 +336,7 @@ $ gadmin config set Security.JWT.Audience "<audience-name2>"
 Users can set this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not.
 
 If the user configures this claim and the token does not match with a value in the
-`aud` string or array or strings, then the JWT will fail.
+`aud` string, then the JWT will fail.
 
 .Example of failed response
 [source, console]
