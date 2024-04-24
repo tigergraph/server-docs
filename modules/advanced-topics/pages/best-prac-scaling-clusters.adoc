@@ -1,0 +1,90 @@
+= Best Practice Guide: Scaling Out vs Scaling Up
+
+Scaling a TigerGraph system is critical not only to meet absolute storage requirements but also for maintaining performance, managing costs, and ensuring the effective use of resources as the system grows.
+Unlike many other graph databases that can only scale up, TigerGraph can be both scaled up and scaled out.
+
+[TIP]
+====
+Scaling up offers performance gains up to 64 cores, and when additional computing power is required, scaling out allows users to leverage the distributed processing capabilities of TigerGraph to maintain high performance.
+====
+
+This guide explains the meaning of these two ways of scaling, compares their effects on system operation, and provides guidance on selecting the approach that best meets your needs.
+
+== Scaling Out vs. Scaling Up
+
+=== Scaling Out
+
+image:Screenshot 2024-04-24 at 10.31.23 AM.png[]
+
+* *Scaling Out (Horizontal)* - Adding more nodes to a system to distribute workload and increase total capacity without changing the configuration of existing hardware.
++
+====
+For example,  if the graph has 1000M vertices, expanding from a 2-node to a 4-node cluster reduces the total number of vertices per node from about 500M to 250M.
+====
++
+If there is a query that must traverse every vertex, scaling out reduces how many vertices need to be processed per node.
+For a conventional on-premises implementation, you retain your original hardware and simply add more nodes of the same type.
+
+=== Scaling Up
+
+image:Screenshot 2024-04-24 at 10.30.41 AM.png[]
+
+* *Scaling Up (Vertical)* - Increasing the capacities of existing nodes, such as CPU core count, memory size, and storage size.
++
+For a traditional on-premises deployment, this usually means replacing the existing servers with new servers, though in some cases it can be accomplished by swapping circuit boards.
+
+== Pros and Cons
+
+Within a system, there is an intricate balance between an inherent loss due to increased cross-node communications against the tangible benefits of expanding storage and compute capabilities across a distributed architecture.
+Hardware constraints create a clear boundary for scaling up strategies.
+Conversely, scaling out presents an opportunity to bypass limitations in hardware, albeit with considerations regarding the efficiency of resource utilization, particularly in Kubernetes (k8s) orchestrated environments.
+
+[TIP]
+====
+Understanding the pros and cons of scaling out versus scaling up in systems is crucial for understanding the impacts on performance and can provide decision-makers a compass to help chart a return-on-investment (ROI) of scaling or expanding a TigerGraph System.
+====
+
+=== Scaling Out Pros and Cons
+
+[cols="2", separator=¦ ]
+|===
+¦ Pros ¦ Cons
+
+a¦
+* *Improved Compute Power*: Scaling out can add more compute power, though each new node would also have a hardware limit.
+* *Enhanced Storage and Compute Partitions*: Expanding horizontally allows for greater distribution of storage and compute tasks, potentially improving performance for distributed applications.
+* *Kubernetes Efficiency*: Kubernetes can improve resource utilization by distributing workloads across multiple pods and nodes, potentially bypassing single-node limitations.
+
+a¦
+* *Cross-Node Communication Overhead*: As the number of nodes increases, the overhead from cross-node communication can offset performance gains.
+* *Complexity and Management Overhead*: Scaling out introduces complexity in managing multiple nodes and the network communications between them.
+|===
+
+=== Scaling Up Pros and Cons
+
+[cols="2", separator=¦ ]
+|===
+¦ Pros ¦ Cons
+
+a¦
+* *Simplicity*: Adding resources to existing nodes is straightforward, requiring less management overhead compared to scaling out.
+* *Reduced Latency*:  Intra-node communication is faster than inter-node, potentially offering better performance for certain workloads.
+* *Scale Memory and Compute Independently*: This independence can give you finer control over average system performance.
+
+a¦
+* *Physical Limitations*: There's a physical hardware limit (64-cores) to how much a single node can be scaled up.
+* *Cost Inefficiency*: Beyond certain thresholds, scaling up requires using high-end hardware, which can be more expensive than scaling out, with diminishing returns on investment.
+|===
+
+== Recommendation
+
+For decision-makers considering the expansion of a TigerGraph system, our analysis strongly suggests a balanced approach towards scaling strategies.
+
+* Scaling up offers a straightforward path to enhancing system capabilities up to this point, ideal for workloads benefiting from low-latency, intra-node communications.
+
+* However, thinking beyond hardware limitations, scaling out becomes a more viable option.
+Allowing for additional compute power and improved distribution of storage and compute tasks.
+Despite the increased complexity and potential for cross-node communication overhead.
+Leveraging xref:tigergraph-server:kubernetes:index.adoc[] in a scaled out environment can mitigate some of these challenges by efficiently distributing workloads across multiple pods and nodes.
+
+Both options provide decision-makers the opportunity to consider both the immediate and long-term ROI to determine the optimal scaling strategy for their TigerGraph systems.
