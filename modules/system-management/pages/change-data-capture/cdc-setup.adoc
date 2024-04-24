@@ -21,7 +21,7 @@ If you use `gadmin config` to change any of these parameters, you need to run `g
 You can change multiple parameters and then run `gadmin config apply` for all of them together
 
 .After modifying, run the following command to apply the changes:
-[console]
+[source, console]
 ----
 gadmin config apply
 gadmin restart gpe restpp
@@ -32,14 +32,14 @@ gadmin restart gpe restpp
 === System.CDC.Enable
 
 .This is the CDC enable config entry:
-[console]
+[source, console]
 ----
 gadmin config entry
 ----
 
 === System.CDC.Enable
 .Set it to true or false, to enable CDC or not as in these examples:
-[console]
+[source, console]
 ----
 gadmin config set System.CDC.Enable true
 gadmin config set System.CDC.Enable false
@@ -232,6 +232,17 @@ When set to -1, there is an infinite timeout, which may slow the GPE shutdown.
 ¦ ¦ `DIMPurgeIntervalInMin`
 ¦ Interval for purging outdated entries in deleted id map.
 ¦ minutes: 30.
+
+¦ ¦ `SegmentMetaFlushAlways`
+¦ If this entry is added with value `true`, TigerGraph will refresh on-disk segment meta for all segments without data updates during re-builder scheduling.
+¦ Default is set to `false`.
+
+¦ ¦ `SegmentMetaForceFlushIntervalSec`
+¦ This entry is only effective when `SegmentMetaFlushAlways=false`.
+
+If a segment has no data update, TigerGraph will still need to refresh the on-disk segment meta files after an interval.
+¦ Default to 600 sec (10 minutes).
+
 |===
 
 

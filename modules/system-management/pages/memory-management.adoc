@@ -139,7 +139,7 @@ The following is a list of Linux commands to measure system memory and check for
 ----
 <1> If you see a line that says something invoked oom-killer, it means the node ran out of memory.
 
-== Memory state thresholds
+== Memory State Thresholds
 GPE has memory protection to prevent out-of-memory issues.
 There are three memory states:
 
@@ -161,7 +161,7 @@ Default value is 30%.
 The free memory threshold that causes TigerGraph to enter the Critical state.
 Default value is 10%.
 
-=== Configure memory state thresholds
+=== Configure Memory State Thresholds
 
 To configure these environment variables, run `gadmin config entry GPE.BasicConfig.Env`.
 This shows the current values of the environment variables and allows you to add new entries:
@@ -196,7 +196,33 @@ The runtime environment variables, separated by ';'
 <1> In this example, the user has set `SysMinFreePct` to `20`, meaning that queries will start aborting automatically for stability when 20% of system memory is free (80% utilization).
 The user has also set `SysAlertFreePct` to `30`, so queries will start being throttled at 30% free memory (70% utilization).
 
+==== SegmentMetaFlushAlways=true.
+If this entry is added with value `true`, TigerGraph will refresh on-disk segment meta for all segments without data updates during re-builder scheduling.
+Default is set to `false`.
 
+[TIP]
+====
+Setting this flag can ensure the most aggressive refresh logic, which can benefit Kafka retention and lower the disk usage most promptly.
+But it can cause slow scheduling in lower `WRITE IO` environment like `EFS`, `S3`, and not release the memory efficiently.
+====
+
+
+==== SegmentMetaForceFlushIntervalSec=600.
+[NOTE]
+====
+This entry is only effective when `SegmentMetaFlushAlways=false`.
+====
+
+If a segment has no data update, TigerGraph will still need to refresh the on-disk segment meta files after an interval.
+Default to 600 sec (10 minutes).
+
+[TIP]
+====
+Lowering the interval value means a more aggressive refresh logic, which can benefit Kafka retention and lower the disk usage more promptly.
+But can cause slow scheduling in lower WRITE IO environment like EFS, S3, and memory not released efficiently.
+====
+
+==== Apply and Restart
 After making a change, run `gadmin config apply` to apply the changes and `gadmin restart gpe` to restart the GPE service.
 Changes will take effect after the restart.
 

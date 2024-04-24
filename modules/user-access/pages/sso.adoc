@@ -403,8 +403,8 @@ As of 3.10.1, the match strategy has been extended to allow matches via regular 
 The original match strategy has not changed.
 ====
 
-For a regular expression match users need to add a prefix `regex:` before creating the match rule.
-A space after the `:` is allowed. (Ex. `regex: nameid=abc, regex:   nameid=abc`
+For a regular expression match users need to add a prefix `regex:`
+a space after the `:` is allowed. (Ex. `regex:nameid=abc, regex:   nameid=abc`)
 
 [NOTE]
 ====
@@ -418,7 +418,7 @@ Below are some examples of regular expression match strategies:
 ----
 GSQL > CREATE GROUP g1 PROXY "regex: nameid=abc"
 ----
-* *Match:* abc, aabc,
+* *Match:* abc, aabc
 * *Mismatch:* abdc, abbc
 
 .Ex: If a users `nameid` contains `abc` they will also match this group.
@@ -453,7 +453,7 @@ GSQL > CREATE GROUP g4 PROXY "regex: nameid=^ab.*c$"
 * *Match:* abc, abdddc
 * *Mismatch:* abcd, abdcd
 
-.Ex: `\b` is the word boundary used in regular expressions. So, if a user `nameid` contains `abc` they will match this group.
+.Ex: `\b` is the word boundary used in regular expressions. So, if a user's `nameid` contains `abc` they will match this group.
 [source, console]
 ----
 GSQL > CREATE GROUP g5 PROXY "regex: group=\babc\b"
