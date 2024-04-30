@@ -1455,6 +1455,8 @@ as needed, if the amount of data managed by ZooKeeper is large |`30`
 //[width="100%",cols="34%,33%,33%",options="header",]
 An environment variable is set using its `xxx.Basic.ConfigEnv` configuration parameter, where `xxx` is the name of its associated component.
 
+If you use `gadmin config set GPE.BasicConfig.Env` or `gadmin config entry GPE.BasicConfig.Env`, users will be able to add entries for GPE runtime environment variables.
+
 [cols=",,",options="header",]
 |===
 |Name |Description |Example
@@ -1466,5 +1468,64 @@ An environment variable is set using its `xxx.Basic.ConfigEnv` configuration par
 | `SSL_CA_CERT`, RESETPP.BasicConfig.Env
 | Set the CA certificate `SSL_CA_CERT` to establish the connection with the URL being set with xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `SSL_CA_CERT=/home/tigergraph/cacertificate/example/;`
+
+| `SegmentMetaFlushAlways`,
+GPE.BasicConfig.Env
+a|
+* If this entry is added with value `true`, TigerGraph will refresh on-disk segment meta for all segments without data updates during re-builder scheduling.
+Default is set to `false`.
+
+* Setting this flag can ensure the most aggressive refresh logic, which can benefit Kafka retention and lower the disk usage most promptly.
+But it can cause slow scheduling in lower `WRITE IO` environment like `EFS`, `S3`, and not release the memory efficiently.
+| `SegmentMetaFlushAlways=true`
+
+
+| `SegmentMetaForceFlushIntervalSec`, GPE.BasicConfig.Env
+
+a|
+* This entry is only effective when `SegmentMetaFlushAlways=false`.
+
+* If a segment has no data update, TigerGraph will still need to refresh the on-disk segment meta files after an interval.
+Default to 600 sec (10 minutes).
+
+* Lowering the interval value means a more aggressive refresh logic, which can benefit Kafka retention and lower the disk usage more promptly.
+But can cause slow scheduling in lower WRITE IO environment like EFS, S3, and memory not released efficiently.
+| `SegmentMetaForceFlushIntervalSec=600`
+
+| `CDCKafkaFlushTimeoutMs`, GPE.BasicConfig.Env
+a|
+* When a GPE service shuts down, CDC will try to flush all generated cdc messages to external kafka.
+
+* When set to -1, there is an infinite timeout, which may slow the GPE shutdown.
+
+| `CDCKafkaFlushTimeoutMs=-1`
+
+
+| `CDCDeltaBufferCapInMB`, GPE.BasicConfig.Env
+| In-memory buffer limit for delta message in CDC service.
+| `CDCDeltaBufferCapInMB=10`
+
+| `DIMDeltaBufferCapInMB`, GPE.BasicConfig.Env
+| In-memory buffer limit for “vertex-deletion“ delta message in deleted id map service.
+| `DIMDeltaBufferCapInMB=100`
+
+| `DIMCacheLimitInMB`, GPE.BasicConfig.Env
+| In-memory cache limit for deleted id map.
+| `DIMCacheLimitInMB=1024`
+
+| `DIMPurgeIntervalInMin`, GPE.BasicConfig.Env
+| Interval for purging outdated entries in deleted id map.
+| `DIMPurgeIntervalInMin=30`
+
+| `TransactionStoreMemLimit`, GPE.BasicConfig.Env
+| The value must be uint64_t type and in unit: Byte. The default value is 4194304, which means 4 MB.
+| `TransactionStoreMemLimit=4194304`
+
+| `TransactionSizeLimit`, GPE.BasicConfig.Env
+a|
+* The value 1073741824 stands for 1GB threshold. The value must be uint64_t type and in uint: Byte.
+
+* The default value is 0. When the value is 0, the threshold is dynamically decided by TigerGraph, based on current memory usage statistics.
+| `TransactionSizeLimit=1073741824`
 
 |===
