@@ -71,7 +71,6 @@ spark-shell --jars tigergraph-spark-connector-<version>-jar-with-dependencies.ja
 If you want to include TigerGraph Spark Connector in your Spark installation, add the `JAR` with dependencies to Spark's `jars` folder.
 ====
 
-
 === Configure Logging
 
 It’s highly recommended to set log level to info to monitor the loading status.
@@ -83,7 +82,7 @@ logger.tg.name = com.tigergraph
 logger.tg.level = info
 ----
 
-== Overview
+=== Overview
 TigerGraph Spark loading is leveraging `/ddl` endpoint.
 It requires a pre-defined loading job, then the dataframe will be processed as follows:
 
@@ -163,7 +162,7 @@ df.write
     .save()
 ----
 
-== Write Spark Structured Streaming API
+=== Write with Spark Structured Streaming API
 
 .Create the variables:
 [source, scala]
@@ -373,6 +372,7 @@ Add `--files /path/to/trust.jks` when submitting the Spark job.
 == Use Cases
 
 === Load Data from Delta Lake
+==== Batch Write
 
 .Load delta table to Spark dataframe:
 [source, scala]
@@ -389,15 +389,23 @@ val df = spark.read.format("delta")
     )
 ----
 
-==== Batch Write
-
 .Batch write the data into TigerGraph:
 [source, scala]
 ----
 df.write
     .format("tigergraph")
     .mode("append")
-    .options(opts)
+    .options(
+        Map(
+            "graph" -> GRAPH,
+            "url" -> URL,
+            "username" -> USERNAME,
+            "password" -> PASSWORD,
+            "loading.job" -> LOADING_JOB,
+            "loading.filename" -> FILENAME,
+            "loading.separator" -> SEPARATOR
+        )
+    )
     .save()
 ----
 
@@ -430,7 +438,17 @@ df.writeStream
     .outputMode("append")
     .format("tigergraph")
     .option("checkpointLocation", "/path/to/checkpoint")
-    .options(opts)
+    .options(
+        Map(
+            "graph" -> GRAPH,
+            "url" -> URL,
+            "username" -> USERNAME,
+            "password" -> PASSWORD,
+            "loading.job" -> LOADING_JOB,
+            "loading.filename" -> FILENAME,
+            "loading.separator" -> SEPARATOR
+        )
+    )
     .start()
     .awaitTermination()
 ----
@@ -438,6 +456,7 @@ df.writeStream
 For more details on Delta Lake see https://docs.delta.io/latest/index.html[Welcome to the Delta Lake documentation — Delta Lake Documentation].
 
 === Load Data from Iceberg
+==== Batch Write
 
 .Load Iceberg table to Spark dataframe:
 [source, scala]
@@ -453,15 +472,23 @@ val df = spark.table("catalog.db.table")
     )
 ----
 
-==== Batch Write
-
 .Batch write the data into TigerGraph:
 [source, scala]
 ----
 df.write
     .format("tigergraph")
     .mode("append")
-    .options(opts)
+    .options(
+        Map(
+            "graph" -> GRAPH,
+            "url" -> URL,
+            "username" -> USERNAME,
+            "password" -> PASSWORD,
+            "loading.job" -> LOADING_JOB,
+            "loading.filename" -> FILENAME,
+            "loading.separator" -> SEPARATOR
+        )
+    )
     .save()
 ----
 
@@ -491,7 +518,17 @@ df.writeStream
     .outputMode("append")
     .format("tigergraph")
     .option("checkpointLocation", "/path/to/checkpoint")
-    .options(opts)
+    .options(
+        Map(
+            "graph" -> GRAPH,
+            "url" -> URL,
+            "username" -> USERNAME,
+            "password" -> PASSWORD,
+            "loading.job" -> LOADING_JOB,
+            "loading.filename" -> FILENAME,
+            "loading.separator" -> SEPARATOR
+        )
+    )
     .start()
     .awaitTermination()
 ----
@@ -499,6 +536,7 @@ df.writeStream
 For more details on Iceberg see https://iceberg.apache.org/docs/1.3.1/getting-started/[Iceberg Apache: Getting Started]
 
 === Load Data from Hudi
+==== Batch Write
 
 .Load Hudi table to Spark dataframe:
 [source, scala]
@@ -516,15 +554,23 @@ val df = spark.read
     )
 ----
 
-==== Batch Write
-
 .Batch write the data into TigerGraph
 [source, scala]
 ----
 df.write
     .format("tigergraph")
     .mode("append")
-    .options(opts)
+    .options(
+        Map(
+            "graph" -> GRAPH,
+            "url" -> URL,
+            "username" -> USERNAME,
+            "password" -> PASSWORD,
+            "loading.job" -> LOADING_JOB,
+            "loading.filename" -> FILENAME,
+            "loading.separator" -> SEPARATOR
+        )
+    )
     .save()
 ----
 
@@ -553,7 +599,17 @@ df.writeStream
     .outputMode("append")
     .format("tigergraph")
     .option("checkpointLocation", "/path/to/checkpoint")
-    .options(opts)
+    .options(
+        Map(
+            "graph" -> GRAPH,
+            "url" -> URL,
+            "username" -> USERNAME,
+            "password" -> PASSWORD,
+            "loading.job" -> LOADING_JOB,
+            "loading.filename" -> FILENAME,
+            "loading.separator" -> SEPARATOR
+        )
+    )
     .start()
     .awaitTermination()
 ----

@@ -1,4 +1,5 @@
 = Audit Logs
+:pp: {plus}{plus}
 
 Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
@@ -112,7 +113,7 @@ The value of this field is `100MB` by default.
 $ gadmin config set System.Audit.LogConfig.LogFileMaxSizeMB <file-size>
 ----
 
-* The latest audit log file modification date exceeds the `System.Audit.LogConfig.LogFileMaxDurationDay` value.
+* Log files will be removed if its lifetime exceeds `System.Audit.LogConfig.LogFileMaxDurationDay`.
 The value of this field is `90` days by default.
 +
 .You can modify this value by running the following command:
@@ -147,7 +148,11 @@ All audit log files are stored in JSON format, even when users are actively inte
 
 [NOTE]
 ====
-The log files are under the name `log.AUDIT-GSQL`.
+Audit log files are separated by GSQL service and REST++ API calls. Both having separate file names:
+
+* `log.AUDIT-GSQL` for the GSQL service.
+* `log.Audit-RESTPP` for direct REST++ API calls.
+
 ====
 
 .Here is an example of a whole audit log file:
@@ -161,8 +166,11 @@ The log files are under the name `log.AUDIT-GSQL`.
 ]
 ----
 
-Each audit log file is a JSON array of JSON objects, one object per log entry.
-Each object is formatted as a single line for better readability of high volume data.
+* Each audit log file is a JSON array of JSON objects, one object per log entry.
+
+* Each object is formatted as a single line for better readability of high volume data.
+
+=== GSQL Service Audit Logs
 
 .The first JSON object is the header of this file, which consists of the following fields:
 [console]
@@ -183,9 +191,11 @@ The audit log will record any user-triggered activity, such as:
 * create a query,
 * etc...
 
+[NOTE]
+====
 Each activity will have its own audit log entry and fields.
-
-.Ex. The `createQuery` activity will produce an audit log entry with the following fields:
+====
+.The `createQuery` activity will produce an audit log entry with the following fields:
 [console]
 ----
 {
@@ -223,12 +233,45 @@ This field indicates how many times this user failed to provide the correct cred
 }
 ----
 
+=== REST++ API Call Audit Logs
+
+Audit logs for REST++ calls are found in the `log.Audit-RESTPP` file.
+They are similar to GSQL service audit logs, such as, the status for API calls will be either `SUCCESS` or `FAILURE`, but they are different in these ways:
+
+* The duration is the runtime cost with seconds.
+* The code will be the return codes from the REST++ server, see xref:tigergraph-server:reference:return-codes.adoc#_rest[Return Codes].
+* A new field `requestId` is also added.
+
+Values in `requestParams` and `requestBody` will be masked if they contain PII data.
+
+.Here is an example of the REST++ call event:
+[source, console]
+----
+{
+  "timestamp": "2023-10-02T15:06:18.365Z",
+  "userName": "tigergraph",
+  "authType": "token",
+  "clientHost": "<IP or FQDN>:<Port>",
+  "userAgent": "curl",
+  "endpoint": "/restpp/query/{graph_name}/{query_name}",
+  "actionName": "runQuery",
+  "status": "SUCCESS",
+  "duration": 3.24,
+  "requestId": "16842763.RESTPP_1_1.1561401340785.N",
+  "requestParams": "",
+  "requestBody": "",
+  "code": "REST-0000",
+  "message": "<success/error message>"
+}
+----
+
 == Known Issues
 
 * The real client IP address could be removed or masked by a firewall or another intermediate redirect layer before arriving at the TigerGraph service.
-Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.
+** Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.
 
-* Direct RESTPP API calls are not recorded in this version of the audit log feature. (e.g. all built-in RESTPP endpoints access).
+* Even when REST++ authentication is enabled and when a request that failed due to an invalid request parameter, the username in the corresponding audit log will be marked as `unknown` instead of the actual username.
+** This is because request parameter validation happens before token validation. Thus, REST++ calls do not know the username before it gets printed in the audit log.
 
 * If the user logs into TG Cloud using SSO, they will not be required to provide credentials again when opening GraphStudio.
-Therefore, the login event would not be reflected in the audit log, but the user’s subsequent operations (`create query`, `install query`, etc.) will be recorded in the audit log as normal.
+** Therefore, the login event would not be reflected in the audit log, but the user’s subsequent operations (`create query`, `install query`, etc.) will be recorded in the audit log as normal.

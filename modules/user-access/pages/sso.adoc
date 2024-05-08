@@ -13,7 +13,6 @@ We have verified the following IDPs that support SAML 2.0 protocol:
 * https://docs.pingidentity.com/bundle/pingfederate-110/page/ikr1564002999528.html[PingFederate]
 * https://learn.microsoft.com/en-us/windows-server/identity/active-directory-federation-services[Active Directory Federation Services (AD FS)]
 
-
 For supporting additional IDPs, please contact sales@tigergraph.com and submit a feature request.
 
 To set up single sign-on, you need to perform three steps :
@@ -395,6 +394,79 @@ GSQL > GRANT ROLE queryreader ON GRAPH HrGraph TO HrDepartment
 Role "queryreader" is successfully granted to user(s): HrDepartment
 ----
 
+=== Match Strategy Extensions
+
+As of 3.10.1, the match strategy has been extended to allow matches via regular expression.
+
+[NOTE]
+====
+The original match strategy has not changed.
+====
+
+For a regular expression match users need to add a prefix `regex:`
+a space after the `:` is allowed. (Ex. `regex:nameid=abc, regex:   nameid=abc`)
+
+[NOTE]
+====
+The prefix is case-sensitive.
+====
+
+Below are some examples of regular expression match strategies:
+
+.Ex: If a users `nameid` contains `abc` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g1 PROXY "regex: nameid=abc"
+----
+* *Match:* abc, aabc
+* *Mismatch:* abdc, abbc
+
+.Ex: If a users `nameid` contains `abc` they will also match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g1 PROXY "regex: nameid=^abc$"
+----
+* *Match:* abc
+* *Mismatch:* abcc, abdc, aabc
+
+.Ex: If a users `nameid` contains `ab` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g2 PROXY "regex: nameid=ab.*"
+----
+* *Match:* abc,  aabc, ccab
+* *Mismatch:* acb, cab
+
+.Ex: If a users `nameid`  starts with `ab` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g3 PROXY "regex:nameid=^ab.*"
+----
+* *Match:* abc, abc123, abddd
+* *Mismatch:*  acc, bca, aab
+
+.Ex: If a users `nameid` starts with `ab` and ends with `c` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g4 PROXY "regex: nameid=^ab.*c$"
+----
+* *Match:* abc, abdddc
+* *Mismatch:* abcd, abdcd
+
+.Ex: `\b` is the word boundary used in regular expressions. So, if a user's `nameid` contains `abc` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g5 PROXY "regex: group=\babc\b"
+----
+////
+* *Match:*
+** abc, def,
+** def, abc, hij
+
+* *Mismatch:*
+** abcd, ef,
+** ef, abcd, hi
+////
 == Test single sign-on
 
 To test if single sign-on is working, visit the GraphStudio UI in your browser.

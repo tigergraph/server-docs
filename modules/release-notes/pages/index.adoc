@@ -2,15 +2,19 @@
 :description: Release notes for TigerGraph {page-component-version} LTS.
 //:page-aliases: change-log.adoc, release-notes.adoc
 :fn-preview: footnote:preview[Features in the preview stage should not be used for production purposes. General Availability (GA) versions of the feature will be available in a later release.]
+:pp: {plus}{plus}
 :toc:
 :toclevels:2
 
+
+TigerGraph Server 3.10.1 LTS was released on May 7th, 2024.
+
 TigerGraph Server 3.10.0 preview version was released on March 13th, 2024.
 
-//LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
+LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
 
 == Key New Features
-=== 3.10.0
+
 * xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc[Change Data Capture (CDC)] - This equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems maintained by the user.
 Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] in xref:gui:admin-portal:overview.adoc[Admin Portal].
 
@@ -31,6 +35,29 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 == Detailed List of New and Modified Features
 
 === TigerGraph Server
+
+* [3.10.1] xref:tigergraph-server:reference:configuration-parameters.adoc#_environment_variables[Two new configurations to help tune re-builder scheduling logic] -  When running `GPE.BasicConfig.Env.` there are two new configurations `SegmentMetaFlushAlways` and `SegmentMetaForceFlushIntervalSec` to help fine tune re-builder scheduling.
+
+* [3.10.1] xref:tigergraph-server:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[Ubuntu 22.04 is now certified] - Ubuntu 22.04 is now one of TigerGraph's certified OS systems.
+
+* [3.10.1] xref:tigergraph-server:troubleshooting:audit-log.adoc#_rest_api_call_audit_logs[Audit log support for direct RESTPP API calls] - Audit logs now record direct REST++ API Calls.
+
+* [3.10.1] Added new xref:tigergraph-server:reference:return-codes.adoc[Return Codes]:
+** `REST-4000` - Response time exceeds the timeout limit.
+** `REST-10020` - License has expired.
+** `REST-10021` - Access to the file has failed.
+** `REST-30001` - The parameter is invalid (general error).
+
+* [3.10.1] xref:tigergraph-server:reference:configuration-parameters.adoc[New configuration field System.Metrics.IncludeHostName] - Users now have the option to include hostname/ip in the metrics output in OpenMetrics format.
+
+* [3.10.1] xref:tigergraph-server:installation:bare-metal-install.adoc[Nodes can now be paired with hostnames in installation] - Users now can set the node by ip or hostname during installation.
+This is supported in both interactive and non-interactive installation.
+
+* [3.10.1] xref:master@cloud:solutions:access-solution/rest-requests.adoc#_secret_request[Make request with GSQL-Secret] -
+users can now use the authorization secret in a request header as a GSQL-Secret.
+
+//* [3.10.1] xref:additional-resources:best-practice-guides/best-prac-scaling-clusters.adoc[New Best Practice Guide: Scaling Out vs Scaling Up] - Recommendation guide for scaling a TigerGraph system.
+
 * xref:tigergraph-server:troubleshooting:audit-log.adoc[] - Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
 * xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[] - Users can now import or export individually selected graphs.
@@ -42,6 +69,10 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 * xref:tigergraph-server:system-management:management-commands.adoc#_gadmin_backup_create[Two new flags for gadmin backup create] - added two parameters to enable data consistency checks during the backup.
 
 === GSQL Command and Querying Language
+
+//* [3.10.1] xref:gsql-ref:querying:func/aggregation-functions.adoc#_percentilecont[New Aggregation funtion percentileCont()] - `percentileCont()` Aggregating Returns the percentile of the given value over a group using linear interpolation.
+
+//* [3.10.1] xref:gsql-ref:querying:accumulators.adoc#_percentilecontaccum[A new accumulator PercentileContAccum()] - `PercentileContAccum()` that returns the percentile of the given value over a group using linear interpolation.
 
 * xref:gsql-ref:querying:func/context-functions.adoc[] - Context functions are a set of new built-in functions that provide insights into the user's information and work inside `INSTALLED` queries, `INTERPRET` queries, and xref:3.10.1@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
 
@@ -65,11 +96,15 @@ Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] i
 
 ==== Querying and Query Management
 
+* [3.10.1] xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_impact_warning[New impact warnings when running schema change job] - Added a warning message when running the global or local schema change job so, users can understand the impact of running a global or local schema change on a query.
+
 * xref:gsql-ref:querying:accumulators.adoc#_edge_accumulators[Support Edge Accumulators] - Support for edge accumulators for a single-hop distributed query.
 
 * xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_global_schema_change_job[Option -N to schema change job] - Added an option to `RUN SCHEMA_CHANGE JOB` that skips recompile and reinstall queries.
 
 === Kubernetes Operator
+
+* [3.10.1] xref:tigergraph-server:kubernetes:k8s-operator/index.adoc[Kubernetes Operator is GA]  - The Kubernetes Operator is now in GA with the 3.10.1.
 
 * https://github.com/tigergraph/ecosys/blob/master/k8s/docs/07-reference/configure-tigergraph-cluster-cr-with-yaml-manifests.md[Added new fields] - `.spec.tigergraphConfig` in TigerGraph CR and a new option `--tigergraph-config` in kubectl-tg plugin.
 
@@ -84,6 +119,12 @@ Added a new field `.spec.pause` in TigerGraph CR and a new subcommand `kubectl t
 Users scan set `.spec.pause=true` to pause a running cluster and resume it by setting `.spec.pause=false`.
 
 === Security
+
+* [3.10.1] xref:tigergraph-server:user-access:sso.adoc#_match_strategy_extensions[SSO Match Strategy Extension] - SSO match strategy has been extended to allow matches via regular expression.
+
+* [3.10.1] xref:tigergraph-server:user-access:jwt-token.adoc#_optional_configurations[Added a JWT Token config] - `Security.JWT.Audience` added to allow users
+to set a JWT Token authentication that verifies if the `aud` (recipient for which the JWT is intended) defined in JWT Token matches the configured one or not.
+
 * xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[RBAC: Row Policy (Preview Feature)] - is used to control access to specific rows of data in TigerGraph.
 See also xref:tigergraph-server:user-access:rbac-row-policy/row-policy-ebnf.adoc[] for examples.
 
@@ -117,12 +158,29 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 * xref:insights:widgets:scatter-plot-widget.adoc[Added Scatter Chart Widget] - The scatter chart will provide a visual representation of the relationship between two numerical variables, allowing users to identify patterns or correlations in the data.
 
 == Fixed issues
+=== Fixed and Improved in 3.10.1
+
+==== Functionality
+
+* Fixed known issue where the attribute name `memberOf` was case-sensitive. It is now case-insensitive (GLE-6660).
+* Fixed issue of clarity for error message/log when global `schema_change` failed for adding edge but it's relied on vertex does not exist (GLE-6751).
+* Fixed issue where installation was halted due to TigerGraph disks mounted with `noexec` on AppRoot or DataRoot, preventing execution (TP-4929).
+* Fixed issue where there was a delay in loading response times due to syntax detection process in GSQL (GLE-6822).
+* Fixed issue were there was a GPE failure reported during query execution prompting relocation from `/tmp` to `System.TempRoot` (GLE-5536).
+* Fixed issue where incorrect error response occurred when specified graph does not exist (APS-2824).
+* Fixed issue where users encountered error `Vertex expansion failed: c.default.post is not a function` during Explore Neighbors operation in Insight (APS-2840).
+
+//==== Crashes and Deadlocks
+//==== Improvements
+//==== Security
+//==== Performance
+
 === Fixed and Improved in 3.10.0
 
 ==== Functionality
-* Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258)
+* Fixed issue where if the primary node is offline, access to Graph Studio was interrupted, but resumed once the primary node is back online (APPS-258).
 * Fixed issue where some `GPR` and `Interpret` queries that specified the built-in `filter()` function would fail installation because of a row policy or tag filter (GLE-6448).
-* Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498)
+* Fixed issue when restarting Restpp and resulted in the task count being greater than the actual number (TP-4498).
 * Fixed Issue in 3.9.3 and 3.10.0 versions could not run a GSQL query when a single node is down in a High Availability cluster. See xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc#_3_9_2_and_below[3.9.2 and below] versions workaround for more details.
 * Fixed issue when changes would not save when switching to fullscreen and back in Insights (APPS-2197).
 * Fixed issues where a vertex would not move after expanding in `Explore Graph` (APPS-2540).
@@ -166,6 +224,25 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦When using xref:tigergraph-server:backup-and-restore:database-import-export.adoc[Import All] if a users schema size in the `.zip` file is exceedingly large, the import may fail with an error messages like this:
+
+`Large catalog file key: /1/ReplicaList.json`
+
+¦ 3.2
+¦ 3.9 and below users need to run the import process manually by executing the GSQL scripts in the `.zip`, manually
+
+3.10.0 and above users should xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[import single or smaller batches of multiple graphs].
+¦ TBD
+
+a¦ If importing a role, policy, or function that has a different signature or content from the existing one, the one being imported will be skipped and not aborted.
+
+.For example:
+* If the original function is: `create function lib1.func2(int param1, float param2, string param3) returns (bool) {}`.
+* And the user imports the new function: `create function lib1.func2(int param1) returns (bool) {}`. This second one will be skipped.
+¦ 3.10.0
+¦ Users need to re-create (delete and create) the imported role, policy, or function manually, and make sure that the importing one meets the requirements set by the existing one.
+¦ TBD
+
 a¦ xref:tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[Row Policy (Preview Feature)] does not yet filter or check vertex attribute data in upsert operations.
 
 Such as,
@@ -183,7 +260,7 @@ Such as,
 ¦ Users should avoid using paths if they are nested.
 
 For example, avoid this scenario, path2 = `"/tmp/more"` and path1= `"/tmp"`.
-¦ TBD
+¦ 3.10.1
 
 ¦ It has been observed that an issue happens when RESTPP will send a request to all gpes, and if one is down, the request sent to it will `timeout`.
 Including the `consistency_check` request will also mark as `timeout`.
@@ -340,9 +417,9 @@ Then the global loading process will exit and fail the local job after timeout w
 ¦ 3.9.1
 
 ¦ The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
-¦ TBD
-¦ TBD
-¦ TBD
+¦ 3.9
+¦ Check the case of the keywords for `memberOf`. This has been fixed in versions 3.10.1 and above.
+¦ 3.10.1
 
 |===
 

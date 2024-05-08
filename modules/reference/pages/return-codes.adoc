@@ -36,6 +36,12 @@ Codes in this range are success codes. When the conditions for multiple codes ar
 
 | `REST-0004`
 | Empty response
+
+
+"REST-4000" - Response exceed limit
+"REST-10020" - License expired
+"REST-10021" - File access failed
+"REST-30001" - The parameter is invalid (general error).
 |===
 
 ==== 1000 - 1999
@@ -72,7 +78,7 @@ Payload errors.
 | The payload contains edges of an invalid type.
 |===
 
-==== 3000 - 3999
+==== 3000 - 4000
 
 RESTPP general errors.
 
@@ -87,6 +93,9 @@ RESTPP general errors.
 
 | `REST-3002`
 | The query timed out from the timeout limit set by the `RESTPP.Factory.DefaultQueryTimeoutSec` parameter.
+
+| `REST-4000`
+| Response time exceeds the timeout limit
 |===
 
 ==== 10000+
@@ -111,6 +120,12 @@ Other RESTPP errors.
 | `REST-10016`
 | Access denied due to an invalid token.
 
+| `REST-10020`
+| License has expired.
+
+| `REST-10021`
+| Access to the file has failed.
+
 | `REST-12000`
 | RESTPP failed to get a response from GSE or GPE in time.
 
@@ -125,6 +140,9 @@ Other RESTPP errors.
 
 | `REST-30000`
 | The payload is invalid (general error).
+
+| `REST-30001`
+| The parameter is invalid (general error).
 
 | `REST-30200`
 | The parameter for xref:tigergraph-server:API:upsert-rest.adoc[upserting data] is invalid.

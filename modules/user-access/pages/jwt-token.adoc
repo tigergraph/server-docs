@@ -57,6 +57,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4
 # payload data
 {
 "iss": "TigerGraph Inc",
+"aud": ["a","b"],
 "exp": 1647334196,
 "sub": "kevin",
 "iat": 1516239022,
@@ -106,6 +107,7 @@ The payload contains statements about the entity (typically, the user) and any a
 # payload data
 {
 "iss": "TigerGraph Inc",
+"aud": ["a","b"],
 "exp": 1647334196,
 "sub": "kevin",
 "iat": 1516239022,
@@ -118,15 +120,28 @@ Currently supported claims are as follows:
 |===
 ¦ Claim / Payload Field ¦ Type ¦ Description
 
-¦ `iss` ¦ string ¦ [optional] Issuer of the JWT Token.
+¦ `iss`
+¦ string
+¦ [optional] Issuer of the JWT Token.
 
-¦ `exp` ¦ int ¦ Time after which the JWT expires.
+¦ `aud`
+¦ string
+¦ [optional] Recipient for which the JWT is intended.
 
-¦ `sub` ¦ string ¦ Subject of the JWT, this is the TigerGraph Username
+¦ `exp`
+¦ int
+¦ Time after which the JWT expires.
 
-¦ `iat` ¦ int ¦ Time at which the JWT was issued; can be used to determine age of the JWT
+¦ `sub`
+¦ string
+¦ Subject of the JWT, this is the TigerGraph Username
 
-¦ `graph` ¦ string
+¦ `iat`
+¦ int
+¦ Time at which the JWT was issued; can be used to determine age of the JWT
+
+¦ `graph`
+¦ string
 ¦ [optional] Graph reference in the token.
 
 Defines the scope of the privileges for the user.
@@ -284,13 +299,55 @@ $ gadmin config set Security.JWT.HMAC.Secret @test.pem
 [   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
 ----
 
-This next configuration is optional, but you may also specify the JWT issuer as well, the default of this claim is left empty:
+=== Optional Configurations
+
+This next configurations are optional.
+
+Users may also specify the JWT issuer and audience. The default for both these claims are empty.
+
+==== Security.JWT.Issuer
+
+.Ex: Security.JWT.Issuer
 [console]
 ----
 $ gadmin config set Security.JWT.Issuer "<issuer-name>"
 ----
 
 If Security.JWT.Issuer is configured, the `iss` claim will be verified against this configured value. Otherwise, the issuer will not be verified.
+
+==== Security.JWT.Audience
+
+//Users can have multiple `audience` claims  included in a JWT token, but when configuring there is only `<audience-name>` allowed at a time.
+
+.Ex: Security.JWT.Audience
+[source, console]
+----
+$ gadmin config set Security.JWT.Audience "<audience-name>"
+----
+
+////
+.Ex: Security.JWT.Audience
+[source, console]
+----
+$ gadmin config set Security.JWT.Audience "<audience-name1>"
+$ gadmin config set Security.JWT.Audience "<audience-name2>"
+----
+////
+Users can set this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not.
+
+If the user configures this claim and the token does not match with a value in the
+`aud` string, then the JWT will fail.
+
+.Example of failed response
+[source, console]
+----
+{"version":{"edition":"enterprise","api":"v2","schema":0},"error":true,"message":"Access Denied because the input token = 'eyJh****4WgE' contains audience [a,b], which doesn't include the configured one c","code":"REST-10016"}
+----
+
+[NOTE]
+====
+Audience strings are case-sensitive.
+====
 
 === Interactive
 Additionally, users can set up JWT, interactively, by running this command to begin security configuration:
@@ -324,6 +381,7 @@ For testing purposes, we recommend using a tool such as https://dinochiesa.githu
 "iat": 1699205547,
 "exp": 1703865599,
 "iss": "TigerGraph",
+"aud": ["a","b"],
 "sub": "tigergraph",
 "graph": "graph"
 }
@@ -353,7 +411,9 @@ When using a JWT token for authentication, please consider these scenarios and h
 
 ¦ Graph Scope ¦ If the graph specified in the token is not accessible to the user due to insufficient permissions, an error is thrown to indicate permission denied.
 
-¦ Issuer Match ¦ If the issuer in the token does not match the configured issuer value set by gadmin, an error throws to indicate an invalid issuer.
+¦ Issuer Match ¦ If the issuer in the token does not match the configured issuer value set by `gadmin`, an error throws to indicate an invalid issuer.
+
+¦ Audience Match ¦ If the audience configured in the token does not match, an error throws indicating it is invalid.
 
 ¦ Format ¦ If the token is in an incorrect format, contains invalid JSON or fails in base64 decoding, an error throws to indicate format or decoding failure.
 

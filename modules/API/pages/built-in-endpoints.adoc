@@ -99,8 +99,6 @@ To include one or more of the endpoint types in the output, include the endpoint
 curl -X GET "http://localhost:9000/endpoints?builtin=true" | jq .
 ----
 
-
-
 ==== Response
 
 There are over a dozen built-in endpoints, and some have several parameters, so the formatted JSON output of all built-in endpoints is over 300 lines long. It is listed in full in Appendix A. Below is a small excerpt of the output:
@@ -132,8 +130,6 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
         }
     }
 ----
-
-
 
 ==== Parameters:
 [%autowidth]
@@ -429,6 +425,13 @@ This interval can be adjusted with the xref:reference:configuration-parameters.a
 
 This endpoint does not require any privileges.
 
+[NOTE]
+====
+As of 3.10.1, the config `System.Metrics.IncludeHostName`, if set to true, the hostname/ip will be included in all metrics output, in OpenMetrics format, as part of the variable labels.
+
+Otherwise, the default is `false` and the response will not include hostname/ip as part of the variable labels.
+====
+
 ==== Parameters:
 None
 
@@ -441,7 +444,7 @@ Request::
 --
 [.wrap.console]
 ----
-$ curl http://localhost:14240/informant/metrics
+$ curl "http://localhost:14240/informant/metrics"
 ----
 --
 Response::
@@ -770,7 +773,7 @@ If there is no query sent in the past given seconds, an empty json will be retur
 === Show service status
 `POST /informant/current-service-status`
 
-*Server*: informanat
+*Server*: informant
 
 This endpoint returns the status of the TigerGraph services specified in the request.
 
@@ -1232,11 +1235,6 @@ Response::
 Keep your tokens accessible in a secure location.
 For security reasons, TigerGraph Support cannot restore access to tokens.
 ====
-
-
-
-
-
 
 '''
 
@@ -2202,7 +2200,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0?limit=2
+curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0?limit=2"
 ----
 --
 Response::
@@ -2290,7 +2288,7 @@ This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud
 
 [source,bash]
 ----
-curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video?limit=2
+curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video?limit=2"
 
 {
   "version": {
@@ -2382,7 +2380,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Video?limit=2
+curl -X GET "http://localhost:9000/graph/socialNet/edges/VidUser/0/User_Video/Video?limit=2"
 ----
 --
 Response::

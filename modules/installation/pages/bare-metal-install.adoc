@@ -62,12 +62,12 @@ This adds firewall rules to allow TCP communication between nodes in the cluster
 The installation process will prompt you for these steps. If you have already completed them, ignore and continue.
 
 
-== Non-interactive installation
+== Non-Interactive Installation
 
 In non-interactive installation, you specify all the desired configurations in a JSON file, and run the installation script with the configurations specified in the file.
 This is the recommended approach as it allows you to see all your configurations in one place and diagnose issues more easily.
 
-=== Extract package
+=== Extract Package
 
 Extract the package by running the following command to create a folder named `tigergraph-<version>-offline`.
 The filename of your package may vary depending on the product edition and version.
@@ -77,7 +77,7 @@ The filename of your package may vary depending on the product edition and versi
 $ tar -xvzf tigergraph-<version>.tar.gz
 ----
 
-=== Edit configuration file
+=== Edit Configuration File
 
 Navigate to the `tigergraph-<version>-offline` folder and open the configuration file called `install_conf.json`.
 
@@ -107,6 +107,22 @@ If you want to pass your own keys you can add the absolute paths here.
 ** For single server installation, you only specify the IP address for m1.
 You can either use loop-back address (e.g. `127.0.0.1`) or the public IP of the machine.
 if you use loop-back address IP for m1, you do not need to specify any sudo user for `SudoUser` or authentication method in the `Method` section.
+** Users can also provide the hostnames in the NodeList:
++
+.Ex. Node and `hostname` pair in `install_conf.json` file:
+[,javascript]
+----
+
+"NodeList": [
+  "m1: hostname1",
+  "m2: hostname2",
+  "m3: hostname3",
+  "m4: hostname4"
+]"
+----
+
+
+
 * *SudoUser*: Username of the sudo user who will be used to execute the installation on all nodes.
 This user *must* exist on all the provisioned machines
 * *Authentication Method*: This refers to how the above sudo user will authenticate between the provisioned machines.
@@ -157,16 +173,16 @@ The following is an example configuration:
 }
 ----
 
-=== Run installation script
+=== Run Installation Script
 
 Save the configuration changes and run `sudo ./install.sh -n` to install  the TigerGraph Cluster in non-interactive mode based on the configuration you passed in the `install_conf.json` file.
 
 
-== Interactive installation
+== Interactive Installation
 
 With interactive installation, you *do not* need to edit the `install_conf.json` configuration file as you will be asked *interactively* to pass the required information while you install TigerGraph.
 
-=== Extract package
+=== Extract Package
 
 Extract the package by running the following command to create a folder named `tigergraph-<version>-offline`. The filename of your package may vary depending on the product edition and version.
 
@@ -175,7 +191,7 @@ Extract the package by running the following command to create a folder named `t
 $ tar -xvzf tigergraph-<version>.tar.gz
 ----
 
-=== Run installation script
+=== Run Installation Script
 
 Navigate to the `tigergraph-<version>-offline`` folder and run the `install.sh` script with the following commands:
 
@@ -187,8 +203,18 @@ $ cd tigergraph-<version>-offline
 $ sudo ./install.sh
 ----
 
-Provide the information that the installer asks for.
-You may choose to hit Enter to skip and use the system default or enter a new value:
+Provide the information that the installer asks for below:
+
+[NOTE]
+====
+You may choose to hit Enter to skip and use the system default or enter a new value.
+====
+
+* Your installation method, you can choose:
+** Install using an IP Address.
+** Install using a hostname.
++
+image:image-20240328-142603.png[]
 
 * Your agreement to the License Terms and Conditions
 * Your license key (not applicable for Enterprise Free)
@@ -203,4 +229,4 @@ The installation folder requires read/write/execute access, and the other folder
 ** For production systems, it’s recommended that you use a separate disk partition to store log files to prevent out-of-space issues.
 * Path to where the temp folder will be
 * The SSH port for your machine
-  
+
