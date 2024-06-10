@@ -15,28 +15,13 @@ TigerGraph Server 4.1.0 preview version was released on June 27th, 2024.
 
 == Key New Features
 
-////
-* xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc[Change Data Capture (CDC)] - This equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems maintained by the user.
-Additionally, CDC can be xref:gui:admin-portal:components/cdc.adoc[configured] in xref:gui:admin-portal:overview.adoc[Admin Portal].
 
-* xref:tigergraph-server:system-management:workload-management.adoc#_workload_queue[Workload Queue] - Configure workload queues so that queries are routed to the appropriate queues during runtime.
-
-* xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc[Spark Connector] - A new dedicated connector used with Apache Spark to read data from a Spark DataFrame and write to TigerGraph.
-
-* xref:tigergraph-server:backup-and-restore:online-backup.adoc[] - Minimizes blocking time during backups, allowing successful execution of post requests for TigerGraph users.
-
-* xref:tigergraph-server:backup-and-restore:differential-backups.adoc[] - Ensure data files that have changed since the most recently completed full backup are backed up without any data lost.
-
-* xref:tigergraph-server:installation:upgrade.adoc#_upgrading_from_3_x[Refined Upgrading process] - Changes to the upgrading process to allow a TigerGraph upgrade without having to upgrade the K8's operator.
-
-* xref:tigergraph-server:installation:upgrade.adoc#_option_n[Support Non-Interactive Upgrade] - The user can use option `-n` to avoid input ( `y/n` ) to switch to the new version.
-
-* xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_global_vs_local_schema_changes[Global Schema Restrict to Global Scope] - Users must have the global scope to interact with global schema change jobs (create, delete, run).
-////
 
 == Detailed List of New and Modified Features
 
 === TigerGraph Server
+
+* xref:tigergraph-server:troubleshooting:audit-log.adoc[Audit Log Expansion] - Added `gadmin` audit log as a new component in Audit Logs.
 
 ////
 * [3.10.1] xref:tigergraph-server:reference:configuration-parameters.adoc#_environment_variables[Two new configurations to help tune re-builder scheduling logic] -  When running `GPE.BasicConfig.Env.` there are two new configurations `SegmentMetaFlushAlways` and `SegmentMetaForceFlushIntervalSec` to help fine tune re-builder scheduling.
