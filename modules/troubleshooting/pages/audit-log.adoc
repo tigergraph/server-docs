@@ -145,11 +145,10 @@ $ gadmin config set System.Audit.DataBaseName <database-name>
 
 You can config `gadmin` command’s audit logging rotation rules with the following gadmin configs:
 
-
-.You can modify the lifetime of file with the following command:
+.You can modify the lifetime of a file with the following command:
 [source, console]
 ----
-gadmin config set Gadmin.BasicConfig.LogConfig.LogFileMaxDurationDay: <lifetime of file>
+gadmin config set Gadmin.BasicConfig.LogConfig.LogFileMaxDurationDay: <lifetime of a file>
 ----
 
 .You can modify the file rotation size with the following command:
@@ -158,7 +157,7 @@ gadmin config set Gadmin.BasicConfig.LogConfig.LogFileMaxDurationDay: <lifetime 
 gadmin config set Gadmin.BasicConfig.LogConfig.LogFileMaxSizeMB: <file rotation size>
 ----
 
-.You can modify the the rotation file number with the following command:
+.You can modify the rotation file number with the following command:
 [source, console]
 ----
 gadmin config set Gadmin.BasicConfig.LogConfig.LogRotationFileNumber: <the rotation file number>
@@ -292,7 +291,7 @@ Values in `requestParams` and `requestBody` will be masked if they contain PII d
 
 Audit logs for gadmin command executions are found in the `log.Audit-GADMIN` file.
 
-Besides from the basic information such as `timestamp`, `OS`, `username`, they capture the `gadmin` commands executed on the node and the outcomes:
+Besides the basic information such as `timestamp`, `OS`, `username`, they capture the `gadmin` commands executed on the node and the outcomes:
 
 .Here is an example of the event after running command: `gadmin start all`
 [source, console]
