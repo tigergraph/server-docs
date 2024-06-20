@@ -341,6 +341,7 @@ This lockup can be cleared by restarting the GSE.
 * Automatic message removal is an Alpha feature of the Kafka connector.  It has several xref:3.9@tigergraph-server:data-loading:load-from-cloud.adoc#_known_issues_with_loading[known issues].
 * The `DATETIME` data type is not supported by the `PRINT … TO CSV` statement (fixed in 3.9.1).
 * The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
+* In v3.9.1, when database backup is performed, the superuser password is reset back to the default. To maintain security, manually reset the superuser password after the export or import completes.
 
 === Compatibility Issues
 * v3.9.3
