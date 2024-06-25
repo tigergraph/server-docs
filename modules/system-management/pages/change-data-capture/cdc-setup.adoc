@@ -131,7 +131,19 @@ $KAFKA_ROOT/bin/zookeeper-server-start.sh $KAFKA_ROOT/config/zookeeper.propertie
 ----
 Now, start a Kafka server
 +
-.Use the default configuration `server.properties`, where it is using default port `9092`:
+.Use the configuration file `server.properties`, where it is using default port `9092`.
++
+For a cluster environment or if the external Kafka server is not local to the GPE servers, need to add the following line to `server.properties` file, to enable listening to messages from remote servers:
++
+[console]
+----
+listeners=PLAINTEXT://<my_ip>:9092
+----
++
+To determine the value for `<my ip>`,  use the command `ifconfig` or `ip addr show`, and find the ip after `inet`.
++
+Command to start a Kafka server:
++
 [console]
 ----
 KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1
@@ -139,18 +151,14 @@ KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1
 $KAFKA_ROOT/bin/kafka-server-start.sh $KAFKA_ROOT/config/server.properties
 ----
 +
-[NOTE]
-====
-To listen to messages produced from remote servers, edit the `server.properties` to add `listeners=PLAINTEXT://<my ip>:9092`.
-For the value of `<my ip>`,  use the command `ifconfig` or `ip addr show`, and find the ip after `inet`.
-====
-+
 *(Optional)* clear Kafka topic
 +
 .Run this command to clear existing old Kafka messages in the Kafka.
 [console]
 ----
-KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1 MYIP=127.0.0.1
+MYIP=127.0.0.1
+
+KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1 
 
 $KAFKA_ROOT/bin/kafka-topics.sh --bootstrap-server $MYIP:9092 --delete --topic cdc_topic
 ----
@@ -199,7 +207,9 @@ If an existing graph is not available, create a new graph by following TigerGrap
 .To consume and display CDC messages, run:
 [console]
 ----
-KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1 MYIP=127.0.0.1
+MYIP=127.0.0.1
+
+KAFKA_ROOT=/home/tigergraph/test_cdc/download_kafka/kafka_2.13-3.3.1
 
 $KAFKA_ROOT/bin/kafka-console-consumer.sh --topic cdc_topic --from-beginning --bootstrap-server $MYIP:9092
 ----

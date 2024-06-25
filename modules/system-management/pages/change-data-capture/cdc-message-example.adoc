@@ -70,20 +70,20 @@ The current message is the second message in the third batch of the transaction.
 . “*op*”: This defines how to apply the value to existing attribute value.
 It can be one of: `"Overwrite"`, `"Add"`, `"Max"`, `"Min"`, `"And"`, `"Or"`, `"IgnoreIfExisted"`, `"Minus"`, `"ReplaceOrAdd"`.
 
-. “Value”: As in this example below:
+. “*Value*”: As in this example below:
 +
 [console]
 ----
-`"content": {
-"actors": {
-"op": "Add",
-"value": [
-"i1",
-"m2"
-]
-},
-...
-}`
+"content": {
+    "actors": {
+        "op": "Add",
+        "value": [
+            "i1",
+            "m2"
+        ]
+    },
+    ...
+}
 ----
 
 == Message Examples
@@ -93,21 +93,21 @@ It can be one of: `"Overwrite"`, `"Add"`, `"Max"`, `"Min"`, `"And"`, `"Or"`, `"I
 [console]
 ----
 {
-"mid": "1|1701548849757|1|0",
-"operator": "insert",
-"timestamp": 1701548849757,
-"type": "vertex",
-"typename": "Company",
-"vid": 99999999,
-"uid": "comp1",
-"content": {
-    "cid": {
-        "op": "Overwrite",
-        "value": 2345
-    },
-    "startDate": {
-        "op": "Overwrite",
-        "value": "2001-01-01 08:00:00"
+    "mid": "1|1701548849757|1|0",
+    "operator": "insert",
+    "timestamp": 1701548849757,
+    "type": "vertex",
+    "typename": "Company",
+    "vid": 99999999,
+    "uid": "comp1",
+    "content": {
+        "cid": {
+            "op": "Overwrite",
+            "value": 2345
+        },
+        "startDate": {
+            "op": "Overwrite",
+            "value": "2001-01-01 08:00:00"
         }
     }
 }
@@ -153,12 +153,12 @@ TigerGraph CDC service will *NOT* produce CDC messages for such “implicit edge
 [console]
 ----
 {
-"mid": "1|1701548854014|2|0",
-"operator": "delete",
-"timestamp": 1701548854014,
-"type": "vertex-type",
-"typename": "Person",
-"content": {}
+    "mid": "1|1701548854014|2|0",
+    "operator": "delete",
+    "timestamp": 1701548854014,
+    "type": "vertex-type",
+    "typename": "Person",
+    "content": {}
 }
 ----
 
@@ -179,34 +179,34 @@ TigerGraph CDC service will *NOT* produce CDC messages for such “implicit edge
 [console]
 ----
 {
-"mid": "1|1701569966031|3|0",
-"operator": "insert",
-"timestamp": 1701569966031,
-"type": "edge",
-"typename": "Creates",
-"hasreverseedge": true,
-"discriminator": "c1:1",
-"from": {
-    "type": "Person",
-    "vid": 12345678,
-    "uid": "person2"
-},
-"to": {
-    "type": "Company",
-    "vid": 87654321,
-    "uid": "comp2"
-},
-"content": {
-    "attr_list_tuple": {
-        "op": "Add",
-        "value": [
-            "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
+    "mid": "1|1701569966031|3|0",
+    "operator": "insert",
+    "timestamp": 1701569966031,
+    "type": "edge",
+    "typename": "Creates",
+    "hasreverseedge": true,
+    "discriminator": "c1:1",
+    "from": {
+        "type": "Person",
+        "vid": 12345678,
+        "uid": "person2"
+    },
+    "to": {
+        "type": "Company",
+        "vid": 87654321,
+        "uid": "comp2"
+    },
+    "content": {
+        "attr_list_tuple": {
+            "op": "Add",
+            "value": [
+                "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
             ]
         },
-    "attr_map_tuple": {
-        "op": "ReplaceOrAdd",
-        "value": {
-            "2011-10-20": "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
+        "attr_map_tuple": {
+            "op": "ReplaceOrAdd",
+            "value": {
+                "2011-10-20": "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
             }
         }
     }
