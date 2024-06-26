@@ -32,14 +32,7 @@ Use `gadmin backup` to xref:tigergraph-server:backup-and-restore:backup-cluster.
 
 For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
 
-If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
-
 === Enable CRR on the DR cluster
-
-The command `gadmin backup restore --dr` does two things:
-
-* Enables CRR.
-* Restores the backup from the primary cluster.
 
 Run the following commands on the DR cluster to enable CRR on the DR cluster.
 
@@ -73,6 +66,14 @@ $ gadmin config apply -y
 [NOTE]
 ====
 These steps above can be skipped if these settings are already configured properly.
+====
++
+[NOTE]
+====
+About `System.CrossRegionReplication.TopicPrefix`.
+We have a set of internal topics that serve GPE/GSQL etc., e.g. `GSE_journa_*`, `Metadata`. Whenever we start CRR, the data synchronization component creates replicas of these internal topics on the DR cluster. These replica topics are prefixed with "primary." to the original topic name.
+This prefix is used by services such as GPE/GSQL to determine which set of internal topics to use. (as a DR cluster, there are at least two sets of internal topics, e.g., the one initialized during installation and the one created by the CRR component)
+So when a DR cluster is switched to a PR cluster, this configuration must remain unchanged. When we need to setup a new DR cluster for this cluster, the CRR component will add the "primary." prefix again when it creates a replica of the topics, so this configuration needs to be set to "primary.primary." for the new DR cluster.
 ====
 
 . Enable the CRR setup.
