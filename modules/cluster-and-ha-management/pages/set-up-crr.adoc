@@ -72,8 +72,8 @@ These steps above can be skipped if these settings are already configured proper
 ====
 About `System.CrossRegionReplication.TopicPrefix`.
 We have a set of internal topics that serve GPE/GSQL etc., e.g. `GSE_journa_*`, `Metadata`. Whenever we start CRR, the data synchronization component creates replicas of these internal topics on the DR cluster. These replica topics are prefixed with "primary." to the original topic name.
-This prefix is used by services such as GPE/GSQL to determine which set of internal topics to use. (as a DR cluster, there are at least two sets of internal topics, e.g., the one initialized during installation and the one created by the CRR component)
-So when a DR cluster is switched to a PR cluster, this configuration must remain unchanged. When we need to setup a new DR cluster for this cluster, the CRR component will add the "primary." prefix again when it creates a replica of the topics, so this configuration needs to be set to "primary.primary." for the new DR cluster.
+So at this point the DR cluster has at least two sets of internal topics, one initialized during installation and one created by CRR synchronization. It is through this configuration `System.CrossRegionReplication.TopicPrefix` that the DR cluster decides which set of internal topics to use.
+If the situation becomes more complicated, suppose this DR cluster is switched to a PR cluster, this configuration must remain unchanged. When we need to setup a new DR cluster for this cluster, the CRR component will add the "primary." prefix again when it creates a replica of the topics, so this configuration needs to be set to "primary.primary." for the new DR cluster.
 ====
 
 . Enable the CRR setup.
