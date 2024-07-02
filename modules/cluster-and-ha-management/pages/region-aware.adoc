@@ -1,0 +1,64 @@
+= Region Awareness
+//:page-aliases: tigergraph-server:region-aware:region-aware.adoc, tigergraph-server:region-aware:index.adoc
+:description: Overview of region awareness for TigerGraph servers.
+
+Region awareness represents a more sophisticated High Availability (HA) configuration within TigerGraph servers. In contrast to xref:ha-overview.adoc[High Availability], region-aware clusters offer HA at the region level rather than the individual node level.
+
+Enabling region awareness involves deploying TigerGraph services based on distinct regions. For instance, consider a 10-node cluster with 2 replica spanning 3 regions:
+
+|===
+| Host ID |   Hostname   | Region
+|   m1    | 192.168.0.1  | us-east-1
+|   m2    | 192.168.0.2  | us-east-1
+|   m3    | 192.168.0.3  | us-east-2
+|   m4    | 192.168.0.4  | us-east-2
+|   m5    | 192.168.0.5  | us-east-2
+|   m6    | 192.168.0.6  | us-east-1
+|   m7    | 192.168.0.7  | us-east-1
+|   m8    | 192.168.0.8  | us-east-3
+|   m9    | 192.168.0.9  | us-east-3
+|   m10   | 192.168.0.10 | us-east-3
+|===
+
+Without region awareness enabled, the service deployments would be as follows:
+
+.Example, Service deployments without region-aware
+|===
+| Service |   Nodes
+|  CTRL   | us-east-1:[m1,m2], us-east-2:[m3]
+|  GSQL   | us-east-1:[m1,m2], us-east-2:[m3,m4,m5]
+|   ZK    | us-east-1:[m1,m2], us-east-2:[m3,m4,m5]
+|  ETCD   | us-east-1:[m1,m2], us-east-2:[m3,m4,m5]
+|  GPE_1  | us-east-1:[m1,m6]
+|  GPE_2  | us-east-1:[m2,m7]
+|  GPE_3  | us-east-2:[m3], us-east-3:[m8]
+|  GPE_4  | us-east-2:[m4], us-east-3:[m9]
+|  GPE_5  | us-east-2:[m5], us-east-3:[m10]
+|===
+
+In this scenario, a failure in the `us-east-1` region would result in GPE_1, and GPE_2 losing all replicas, while a failure in `us-east-2` would cause ZK and ETCD to lose the majority of replicas.
+
+[NOTE]
+====
+ZK and ETCD require at least more than half of the nodes to provide services
+====
+
+By enabling region awareness, the service deployments would be structured as follows:
+
+.Example, Service deployments with region-aware
+|===
+| Service |   Nodes
+|  CTRL   | us-east-1:[m1], us-east-2:[m3], us-east-3:[m8]
+|  GSQL   | us-east-1:[m1,m2], us-east-2:[m3,m4], us-east-3:[m8]
+|   ZK    | us-east-1:[m1,m2], us-east-2:[m3,m4], us-east-3:[m8]
+|  ETCD   | us-east-1:[m1,m2], us-east-2:[m3,m4], us-east-3:[m8]
+|  GPE_1  | us-east-1:[m1], us-east-2:[m3]
+|  GPE_2  | us-east-3:[m8], us-east-1:[m2]
+|  GPE_3  | us-east-2:[m4], us-east-3:[m9]
+|  GPE_4  | us-east-1:[m6], us-east-2:[m5]
+|  GPE_5  | us-east-3:[m10], us-east-1:[m7]
+|===
+
+In this setup, a failure in any region would retain at least one replica of GPE for each partition and the majority count of ZK/ETCD replicas.
+
+
