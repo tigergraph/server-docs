@@ -32,6 +32,11 @@ Required if backup is to be stored on S3.
 *NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.
 |`+nan+`
 
+|System.Backup.S3.RoleARN |The AWS role for accessing s3 bucket, its use is prioritized over the combo of access key id and secret access key in accessing s3. Note this is only for AWS S3, and that using role ARN assumes access key id and secret access key are already configured with AWS CLI
+
+*NOTE*: This is only for AWS S3, and that using role ARN assumes access key id, secret access key and region are already configured with AWS CLI `aws configure`.
+|`+nan+`
+
 |System.Backup.S3.BucketName |Name of the S3 bucket to store backup files.
 Required if backup is to be stored on S3.|null
 
@@ -139,6 +144,12 @@ gadmin config set "System.Backup.S3.AWSAccessKeyID" "<access-key-id>"
 [console,]
 ----
 gadmin config set "System.Backup.S3.AWSSecretAccessKey" "<secret-access-key>"
+----
++
+.Alternatively, instead of using `AccessKeyID` and `SecretAccessKey`, you may use AWS Role ARN for the authentication
+[console,]
+----
+gadmin config set "System.Backup.S3.RoleARN" "<aws-role-arn>"
 ----
 +
 .Apply the new parameter values
