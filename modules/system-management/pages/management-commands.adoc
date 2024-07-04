@@ -164,7 +164,7 @@ Global Flags:
 
 === gadmin backup retain
 
-The `retain` command does cleaning for backups whose tags match the given <TagPrefix>.
+The `retain` command does storage cleaning for backups whose tags match the given <TagPrefix>.
 
 
 [source, console]
@@ -176,21 +176,22 @@ Usage:
 
 Description:
 
-  The 'retain' command applies backup cleaning logic only to the backups that match
-  the given <TagPrefix>.
-  Specifically, the cleaning is done by keeping backups files matching the
+  The 'retain' command performs backup storage cleanup to backups that have
+  the given <TagPrefix>. Backups with a tag other than <TagPrefix> are unaffected.
+
+  Specifically, the cleanup is done by keeping only those backup files that satisfy the
   following conditions:
-  (1) Backups that do NOT contain the given tag prefix
-  (2) Backups that contain the given tag prefix but:
-  (a) it is one of the most recent 'count' backups within the same prefix group;
+  (1) Backups that do NOT contain the given tag prefix, OR
+  (2) Backups that contain the given tag prefix AND
+  (a) it is one of the most recent 'count' backups within the same prefix group AND
   (b) the age of backup is within 'duration'.
   E.g. the following command keeps the most recent 10 backups within 10 days for
   backups starting with the prefix "week":
   gadmin backup retain week -c 10 -d 240h
-  other backups with a name starting with the prefix "week" will be removed.
+  Other backups with a name starting with the prefix "week" will be removed.
 
 Flags:
-  -c, --count int         Being one of the most recent <count> backups. (default -1)
+  -c, --count int         Being one of the most recent <count> backups. (default -1, meaning do not cleanup based on count)
       --dry-run           dry run and output the retain result
   -d, --duration string
                           The age of backup is within <duration>.
