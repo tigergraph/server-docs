@@ -6,42 +6,6 @@ Expanding a cluster adds more nodes to the cluster.
 During the expansion, the cluster's data is redistributed across the expanded cluster.
 You can also change replication factor or enable  xref:region-aware.adoc[region-aware] during an expansion.
 
-----
-$ gadmin cluster expand -h
-Expand the cluster
-
-Usage:
-  gadmin cluster expand [[region:]id:ip],[[region:]id:ip]... [flags]
-
-Description:
-
-  You can use this cmd to:
-  1. Add new nodes to the current cluster
-  2. Change the High Availability (Replication Number) of the current cluster
-  3. Enable/Disable region awareness feature
-  Or do a combination of the above.
-
-  Example:
-  1. Only add new nodes to current cluster
-  gadmin cluster expand m3:192.168.0.3,m4:192.168.0.4
-  2. Only change the replication number to 2
-  gadmin cluster expand --ha 2
-  3. Only enable region awareness
-  gadmin cluster expand --region-aware=true
-  4. Do all of the above
-  gadmin cluster expand ca:m5:192.168.0.5 --ha 2 --region-aware
-
-Flags:
-  -h, --help   help for expand
-
-Global Flags:
-      --debug                 enable debug log output to stdout
-      --ha int                replication number of the new cluster
-      --region-aware          enable region awareness
-      --staging-path string   The path used to store the graph data during expansion/shrinking. Defaults to dataroot.
-  -y, --y                     yes to all questions
-----
-
 Expanding a cluster may make sense for several reasons:
 
 * to improve query performance
