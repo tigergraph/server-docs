@@ -14,6 +14,7 @@ To import an exported database, ensure that the export files are from a database
 ====
 Known Issues:
 
+* Running either `EXPORT GRAPH ALL` or `IMPORT GRAPH ALL` resets the TigerGraph superuser's password back to its default value.  After running either command, change the superuser's password to make it secure again.
 * User-defined loading jobs containing xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
 * If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be re-imported.
 * GSQL EXPORT GRAPH may fail and cause a GPE to crash when UDT type has a fixed STRING size.

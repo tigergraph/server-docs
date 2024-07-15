@@ -312,6 +312,8 @@ Previously affected character sets included the Unicode range `0080` to `00A0` a
 * Extended the timeout length for queries in the wait queue so that they are not timed out early.
 
 == Known Issues
+* Running either `EXPORT GRAPH ALL` or `IMPORT GRAPH ALL` resets the TigerGraph superuser's password back to its default value.  After running either command, change the superuser's password to make it secure again.
+* xref:backup-and-restore:database-import-export.adoc[EXPORT GRAPH ALL] does not correctly handle some special cases: loading jobs containing `DELETE` statements,  graph elements with composite keys, data including a `UDT` with a fixed string size.
 * If the `FROM` clause pattern is a multi-hop and the `ACCUM` clause reads both primitive and container type attributes or accumulators of a vertex, the internal query rewriting logic may generate an invalid rewritten output.
 Resulting in the error message: `It is not allowed to mix primitive types and accumulator types in GroupByAccum`.
 * Users may see a high CPU usage caused by Kafka prefetching when there is no query or posting request.
