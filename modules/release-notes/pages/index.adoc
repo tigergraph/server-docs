@@ -227,7 +227,17 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privlages-tabl
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-¦When using xref:tigergraph-server:backup-and-restore:database-import-export.adoc[Import All] if a users schema size in the `.zip` file is exceedingly large, the import may fail with an error messages like this:
+¦Running either `EXPORT GRAPH ALL` or `IMPORT GRAPH ALL` resets the TigerGraph superuser's password back to its default value.
+¦3.9.1
+¦ After running either command, change the superuser's password to make it secure again.
+¦TBD
+
+¦xref:backup-and-restore:database-import-export.adoc[EXPORT GRAPH ALL] does not correctly handle loading jobs containing `DELETE` statements nor graph elements with composite keys. `EXPORT GRAPH ALL` may fail if the data includes a `UDT` with a fixed string size.
+¦3.2
+¦
+¦TBD
+
+¦When using xref:tigergraph-server:backup-and-restore:database-import-export.adoc[IMPORT ALL] if a users schema size in the `.zip` file is exceedingly large, the import may fail with an error messages like this:
 
 `Large catalog file key: /1/ReplicaList.json`
 
@@ -278,7 +288,7 @@ Running `/rebuildnow` when one gpe is down will result in the request timeout. T
 . Run `/data_consistency_check?realtime=false` to check the consistency.
 ¦ TBD
 
-¦ While running `export graph` if the disk space is not enough, or the data has not been detected, the export data will get stuck loading.
+¦ While running `EXPORT GRAPH` if the disk space is not enough, or the data has not been detected, the export data will get stuck loading.
 ¦ 3.10.0
 ¦ Restart all services in Admin Portal or the backend.
 ¦ TBD
