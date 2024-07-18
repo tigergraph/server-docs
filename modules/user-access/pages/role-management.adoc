@@ -213,7 +213,8 @@ This will allow users with the roles `role1` and `role2` to edit and install que
 To grant xref:access-control-model.adoc#_access_control_lists[ACL privileges] to a role, see xref:acl-management.adoc#_grant_acl_privilege_to_a_role[Grant ACL privileges to a role].
 
 == Grant type-level privilege to a role
-Users with the `WRITE_ROLE` privileges on a scope can grant RBAC privileges to the roles in that scope.
+You can grant certain privileges (`READ_DATA`, `CREATE_DATA`, `DELETE_DATA`, `UPDATE_DATA`) on a type level to the roles in that scope.
+The privilege only applies to the specified types.
 
 === Syntax
 
@@ -226,7 +227,7 @@ GRANT PRIVILEGE privilege_name1 , privilege_name2... ON VERTEX/EDGE <graph_name>
 
 === Example
 
-The following command grants the `READ_DATA` and `CREATE_DATA` privilege on vertex type `Person` to `role2` and `role2`.
+The following command grants the `READ_DATA` and `CREATE_DATA` privilege on vertex type `Person` to `role1` and `role2`.
 
 [source.wrap,gsql]
 GRANT PRIVILEGE READ_DATA, CREATE_DATA ON VERTEX G1.Person TO role1, role2
@@ -315,7 +316,7 @@ REVOKE PRIVILEGE <privilege_name1>, <privilege_name2> ... ON VERTEX/EDGE <graph_
 
 === Example
 
-The following command revokes the `UPDATE_DATA` privilege on type `Friendship` from `role1`, and `role1`:
+The following command revokes the `UPDATE_DATA` privilege on type `Friendship` from `role1`, and `role2`:
 
 [source.wrap,gsql]
 REVOKE PRIVILEGE UPDATE_DATA ON EDGE Social.Friendship FROM role1, role2
