@@ -35,9 +35,9 @@ here, the time range for backup `backup-2024-06-13T061939.131` is `[2024-06-13T0
 
 
 [NOTE]
-===
+====
 because the restore action will make the uncovered timepoint unavailable to restore, if you are not very sure about the time point to restore,  we’d better ensure the possible time points are all covered by existing backups. if there is not this kind of backup, you may create a by `gadmin backup create <backup_tag> --incremental --base <full_backup_tag>`, the new backup will cover the range from the full backup <full_backup_tag>'s create time to the current time.
-===
+====
 
 == Key Benefits
 
@@ -49,7 +49,7 @@ The primary advantage of Point-in-Time Restore is the flexibility it offers in s
 
 . During the week, user creates a differential backup on every day 10pm.
 
-. On Tursday, user finds there are unwanted changes made on Wednesday around 2pm.
+. On Thursday, user finds there are unwanted changes made on Wednesday around 2pm.
 
 . User can restore system to 1:55pm of Wednesday instead of the backup made on Tuesday 10pm.
 
