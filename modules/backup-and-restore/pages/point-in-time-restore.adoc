@@ -32,6 +32,9 @@ Summery of key benefits:
 
 Currently, the Point-in-Time Restore feature has these known limitations:
 
+.Point-in-Time Restore examples.
+image::PIT_restore.png[]
+
 * GSQL’s content can not be restored to the version of user provided time point, like catalog(schemas,RBAC). After completion of a point in time restore, its version will be the same as the differential backup used, that is the nearest differential backup covered that time point.
 * Accuracy, error range of a couple of minutes. To ensure data consistency, point-in-time restore has an error range of a couple of minutes. So if disaster/unwanted operation happened at a timestamp, user should point in time restore to at least 2 mins in advance.
 * Cannot point-in-time restore to a timestamp not covered by a differential backup. A timestamp before the existing earliest full backup cannot be restored to anyway. Other timestamps not covered by an existing differential backup will be reminded to kick off a new differential backup when executing point-in-time restore. After successful completion of the prompted differential backup, user would be able to point in time restore.
