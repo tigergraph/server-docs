@@ -23,8 +23,8 @@ For all TigerGraph Server solutions not on TigerGraph Cloud, or for TigerGraph C
 
 === Echo
 
-`GET /echo` +
-`POST /echo`
+`GET restpp/v1/echo` +
+`POST restpp/v1/echo`
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the RESTPP server is up and running.
 
@@ -34,7 +34,7 @@ These endpoints are simple diagnostic utilities, which respond with the followin
 
 [source,console]
 ----
-curl -X GET "http://localhost:9000/echo"
+curl -X GET "http://localhost:14240/restpp/v1/echo"
 {
     "error": false,
     "message": "Hello GSQL"
