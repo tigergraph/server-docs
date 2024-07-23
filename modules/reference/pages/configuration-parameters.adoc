@@ -1534,9 +1534,9 @@ a|
 | `ServFromDisk`,
 GSE.BasicConfig.Env
 a|
-* Enable the disk mode to read vertex ID from the disk instead of memory by setting it to `1` (Default = `0`). This will help reduce the GSE startup time by skipping loading vertices into the memory from the disk.
-* GSE will perform a one-time DB format conversion during the first startup after turning this flag on. The conversion time depends on the number of vertices.
-* The built-in endpoints xref:API:built-in-endpoints.adoc#_deleted_vertex_check_[`/deleted_vertex_check`] and xref:API:built-in-endpoints.adoc#_data_consistency_check[`/data_consistency_check`] will not be supported under the disk mode as they require the full scan which can take significant time.
+* Enable the disk mode to read vertex ID from the disk instead of memory by setting it to `1` (Default = `0`). This will help reduce the GSE startup time significantly by skipping loading vertices into the memory from the disk with the trade-off of slight (< 10%) performance degradation for data loading and query processing.
+* GSE will perform a one-time DB format conversion during the first startup after turning this flag on. The conversion time depends on the number of vertices. GSE must be restarted after the conversion to take effect as the data is already loaded onto memory for the conversion that is ready to be served as-is.
+* The built-in endpoints xref:API:built-in-endpoints.adoc#_deleted_vertex_check[`/deleted_vertex_check`] and xref:API:built-in-endpoints.adoc#_data_consistency_check[`/data_consistency_check`] will not be supported under the disk mode as they require the full scan which can take significant time.
 | `ServFromdisk=1`
 
 |===
