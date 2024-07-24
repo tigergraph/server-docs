@@ -1,7 +1,7 @@
 === Specify the data mapping
 Next, we use LOAD statements to describe how the incoming data will be loaded to attributes of vertices and edges. Each LOAD statement handles the data mapping, and optional data transformation and filtering, from one filename to one or more vertex and edge types.
 
-[source,php]
+[source,gsql]
 .LOAD statement syntax
 ----
 LOAD [ source_object|filevar|TEMP_TABLE table_name ]
@@ -12,7 +12,7 @@ LOAD [ source_object|filevar|TEMP_TABLE table_name ]
 <1>  As of v3.9.3, TAGS are deprecated.
 
 Let's break down one of the LOAD statements in our example:
-[source,php]
+[source,gsql]
 .Example loading job for local files
 ----
 LOAD file_Person TO VERTEX Person
