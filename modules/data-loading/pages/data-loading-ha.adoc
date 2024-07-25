@@ -1,0 +1,25 @@
+= Data Loading High Availability (HA)
+:page-aliases:
+
+Data Loading High Availability (HA) provides load balancing and automatic fail over in the event of a service disruption.
+
+== `Setup`
+First, set up a cluster with replication factor greater than 1 following xref:cluster-and-ha-management:ha-cluster.adoc[High Availability Cluster Configuration]
+
+Second, enable Kafka Connect V2 using `gadmin` commands.
+[source, bash]
+----
+gadmin config set KafkaConnect.EnableV2 true
+----
+
+Then run config apply and restart dependency services.
+
+[source, bash]
+----
+gadmin config apply --restart-deps
+----
+
+== `Run Loading Job`
+You can now run any loading job as usual following these instructions xref:data-loading:data-loading-overview.adoc[]
+
+NOTE: Modifying security configs such as Nginx SSL while loading job is running may cause failure of the loading job
