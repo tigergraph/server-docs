@@ -23,8 +23,8 @@ In 4.1.0 and later versions, for all TigerGraph Server solutions not on TigerGra
 
 === Echo
 
-`GET restpp/v1/echo` +
-`POST restpp/v1/echo`
+`GET restpp/echo` +
+`POST restpp/echo`
 
 These endpoints are simple diagnostic utilities, which respond with the following message if the RESTPP server is up and running.
 
@@ -34,7 +34,7 @@ These endpoints are simple diagnostic utilities, which respond with the followin
 
 [source,console]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/echo"
+curl -X GET "http://localhost:14240/restpp/echo"
 {
     "error": false,
     "message": "Hello GSQL"
@@ -82,7 +82,7 @@ None
 
 === List all endpoints
 
-`+GET /restpp/v1/endpoints/{graph_name}+`
+`+GET /restpp/endpoints/{graph_name}+`
 
 This endpoint returns a list of the installed endpoints and their parameters. There are three types of endpoints:
 
@@ -96,7 +96,7 @@ To include one or more of the endpoint types in the output, include the endpoint
 
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/endpoints?builtin=true" | jq .
+curl -X GET "http://localhost:14240/restpp/endpoints?builtin=true" | jq .
 ----
 
 ==== Response
@@ -153,7 +153,7 @@ There are over a dozen built-in endpoints, and some have several parameters, so 
 
 === Show component versions
 
-`GET /restpp/v1/version`
+`GET /restpp/version`
 
 This endpoint returns the Git versions of all components of the system.
 
@@ -167,7 +167,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/version"
+curl -X GET "http://localhost:14240/restpp/version"
 ----
 --
 Response::
@@ -671,7 +671,7 @@ ServiceStatus_value = map[string]int32{
 
 === Show query performance
 
-`+GET /restpp/v1/statistics/{graph_name}+`
+`+GET /restpp/statistics/{graph_name}+`
 
 This endpoint returns real-time query performance statistics over the given time period, as specified by the `seconds` parameter. Seconds are measured up to 60, so the `seconds` parameter must be a positive integer less than or equal to 60.
 
@@ -688,7 +688,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/statistics/poc_graph?seconds=60" | jq '.'
+curl -X GET "http://localhost:14240/restpp/statistics/poc_graph?seconds=60" | jq '.'
 ----
 --
 Response::
@@ -918,8 +918,8 @@ Response::
 
 === Rebuild graph engine
 
-`GET /restpp/v1/rebuildnow/\{graph_name}` +
-`POST /restpp/v1/rebuildnow/\{graph_name}`
+`GET /restpp/rebuildnow/\{graph_name}` +
+`POST /restpp/rebuildnow/\{graph_name}`
 
 xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level READ DATA
 
@@ -954,7 +954,7 @@ segments will not be skipped.
 
 [source,console]
 ----
-curl -X GET 'http://localhost:14240/restpp/v1/rebuildnow/social'
+curl -X GET 'http://localhost:14240/restpp/rebuildnow/social'
 
 # JSON response
 {
@@ -980,7 +980,7 @@ cat finished.summary.txt
 
 === Check deleted vertices
 
-`GET /restpp/v1/deleted_vertex_check`
+`GET /restpp/deleted_vertex_check`
 
 xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level READ DATA
 
@@ -1036,7 +1036,7 @@ logs on the obtained deleted ID list
 [source,bash]
 ----
 # Passing check performed on a single-node database
-curl -X GET "http://localhost:14240/restpp/v1/deleted_vertex_check?threadnum=10&verbose=0" |jq .
+curl -X GET "http://localhost:14240/restpp/deleted_vertex_check?threadnum=10&verbose=0" |jq .
 
 {
   "version": {
@@ -1058,7 +1058,7 @@ curl -X GET "http://localhost:14240/restpp/v1/deleted_vertex_check?threadnum=10&
 
 # Failed check performed on a distributed cluster
 
-curl -X GET 'http://localhost:14240/restpp/v1/deleted_vertex_check?threadnum=10&verbose=0&vertextype=region' |jq .
+curl -X GET 'http://localhost:14240/restpp/deleted_vertex_check?threadnum=10&verbose=0&vertextype=region' |jq .
 {
   "version": {
     "edition": "enterprise",
@@ -1180,7 +1180,7 @@ None
 
 === Run a Loading Job
 
-`+POST /restpp/v1/ddl/{graph_name}+`
+`+POST /restpp/ddl/{graph_name}+`
 
 xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level EXECUTE_LOADINGJOB
 
@@ -1217,7 +1217,7 @@ CREATE LOADING JOB load_data for GRAPH poc_graph {
 }
 
 # Provide data for for the second LOAD statement
-curl -X POST --data-binary @./another_company.csv "http://localhost:14240/restpp/v1/ddl/poc_graph?tag=load_data&filename=__GSQL_FILENAME_0__" | jq
+curl -X POST --data-binary @./another_company.csv "http://localhost:14240/restpp/ddl/poc_graph?tag=load_data&filename=__GSQL_FILENAME_0__" | jq
 
 {
   "version": {
@@ -1258,10 +1258,10 @@ curl -X POST --data-binary @./another_company.csv "http://localhost:14240/restpp
 }
 
 # Provide data for filename f1 for the first LOAD statement
-curl -X POST --data-binary @./person.csv  "http://localhost:14240/restpp/v1/ddl/poc_graph?tag=load_data&filename=f1"
+curl -X POST --data-binary @./person.csv  "http://localhost:14240/restpp/ddl/poc_graph?tag=load_data&filename=f1"
 
 # Provide data for filename f3 for the third LOAD statement
-curl -X POST --data-binary @./work_at.csv "http://localhost:14240/restpp/v1/ddl/poc_graph?tag=load_data&filename=f3"
+curl -X POST --data-binary @./work_at.csv "http://localhost:14240/restpp/ddl/poc_graph?tag=load_data&filename=f3"
 ----
 
 ==== Parameters:
@@ -1306,7 +1306,7 @@ The maximum size of data you can upload via this endpoint is controlled by the x
 
 === Run built-in functions on graph
 
-`POST /restpp/v1/builtins/{graph_name}`
+`POST /restpp/builtins/{graph_name}`
 
 This endpoint runs a set of built-in functions and returns relevant statistics about a graph.
 
@@ -1347,7 +1347,7 @@ Below is an example request running `stat_vertex_attr` on `socialNet` and its ou
 
 [source,bash]
 ----
-curl -X POST "http://localhost:14240/restpp/v1/builtins/socialNet" \
+curl -X POST "http://localhost:14240/restpp/builtins/socialNet" \
 -d  '{"function":"stat_vertex_attr","type":"Person"}' | jq .
 
 {
@@ -1377,7 +1377,7 @@ Here is an example request running `stat_edge_attr` on `socialNet` and its outpu
 
 [source,bash]
 ----
-curl -X POST "http://localhost:14240/restpp/v1/builtins/socialNet" \
+curl -X POST "http://localhost:14240/restpp/builtins/socialNet" \
 -d  '{"function":"stat_edge_attr","type":"Liked", "from_type":"*", "to_type":"*"}' | jq .
 
 {
@@ -1406,7 +1406,7 @@ Here is an example request running `stat_vertex_number` and its output.
 
 [source,bash]
 ----
-curl -X POST "http://localhost:14240/restpp/v1/builtins/socialNet" \
+curl -X POST "http://localhost:14240/restpp/builtins/socialNet" \
 -d  '{"function":"stat_vertex_number","type":"*"}' | jq .
 
 {
@@ -1636,7 +1636,7 @@ To insert vertices or edges, use the xref:upsert-rest.adoc[Upsert data to graph]
 
 === List vertices
 
-`+GET /restpp/v1/graph/{graph_name}/vertices/{vertex_type}+`
+`+GET /restpp/graph/{graph_name}/vertices/{vertex_type}+`
 
 This endpoint returns all vertices having the type `vertex_type` in a graph.
 
@@ -1652,7 +1652,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/graph/socialNet/vertices/User"
+curl -X GET "http://localhost:14240/restpp/graph/socialNet/vertices/User"
 ----
 --
 Response::
@@ -1716,7 +1716,7 @@ Response::
 
 === Retrieve a vertex
 
-`GET /restpp/v1/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}`
+`GET /restpp/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}`
 
 This endpoint returns a single vertex by its vertex ID.
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the vertex type.
@@ -1729,7 +1729,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/graph/socialNet/vertices/User/id1"
+curl -X GET "http://localhost:14240/restpp/graph/socialNet/vertices/User/id1"
 ----
 --
 Response::
@@ -1771,7 +1771,7 @@ Response::
 
 === Delete vertices
 
-`+DELETE /restpp/v1/graph/{graph_name}/vertices/{vertex_type}+`
+`+DELETE /restpp/graph/{graph_name}/vertices/{vertex_type}+`
 
 This endpoint deletes vertices by their vertex type.
 The delete operation is a cascading deletion.
@@ -1787,7 +1787,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X DELETE "http://localhost:14240/restpp/v1/graph/socialNet/vertices/User"
+curl -X DELETE "http://localhost:14240/restpp/graph/socialNet/vertices/User"
 ----
 --
 Response::
@@ -1846,7 +1846,7 @@ the system-wide endpoint timeout setting is applied.
 
 === Delete vertices by type
 
-`DELETE /restpp/v1/graph/{graph_name}/delete_by_type/vertices/{vertex_type}`
+`DELETE /restpp/graph/{graph_name}/delete_by_type/vertices/{vertex_type}`
 
 This endpoint deletes all vertices of the given vertex type in a graph.
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] on the vertex type.
@@ -1855,7 +1855,7 @@ This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud
 
 [source.wrap,bash]
 ----
-curl -X DELETE "http://localhost:14240/restpp/v1/graph/poc_graph/delete_by_type/vertices/person"
+curl -X DELETE "http://localhost:14240/restpp/graph/poc_graph/delete_by_type/vertices/person"
 ----
 
 ==== Parameters:
@@ -1874,7 +1874,7 @@ curl -X DELETE "http://localhost:14240/restpp/v1/graph/poc_graph/delete_by_type/
 
 === Delete a vertex
 
-`+DELETE /restpp/v1/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}+`
+`+DELETE /restpp/graph/{graph_name}/vertices/{vertex_type}/{vertex_id}+`
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`DELETE_DATA` privilege] on the vertex type.
 
@@ -1886,7 +1886,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X DELETE "http://localhost:14240/restpp/v1/graph/socialNet/vertices/User/id1"
+curl -X DELETE "http://localhost:14240/restpp/graph/socialNet/vertices/User/id1"
 ----
 --
 Response::
@@ -1928,7 +1928,7 @@ To insert vertices or edges, use the xref:upsert-rest.adoc[Upsert data to graph]
 
 === List edges of a vertex
 
-`+GET /restpp/v1/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}+`
+`+GET /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}+`
 
 This endpoint returns all edges which are connected to a given vertex ID in the graph.
 
@@ -1943,7 +1943,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/graph/socialNet/edges/VidUser/0?limit=2"
+curl -X GET "http://localhost:14240/restpp/graph/socialNet/edges/VidUser/0?limit=2"
 ----
 --
 Response::
@@ -2021,7 +2021,7 @@ Response::
 
 === List edges of a vertex by edge type
 
-`+GET /restpp/v1/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}+`
+`+GET /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}+`
 
 This endpoint lists all the edges of a specified type connected to a given vertex ID in the graph.
 
@@ -2031,7 +2031,7 @@ This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud
 
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/graph/socialNet/edges/VidUser/0/User_Video?limit=2"
+curl -X GET "http://localhost:14240/restpp/graph/socialNet/edges/VidUser/0/User_Video?limit=2"
 
 {
   "version": {
@@ -2103,7 +2103,7 @@ curl -X GET "http://localhost:14240/restpp/v1/graph/socialNet/edges/VidUser/0/Us
 
 [source.wrap,bash]
 ----
-GET /restpp/v1/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}
+GET /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}
 ----
 
 This endpoint lists edges connected to a given vertex by edge type and target vertex type.
@@ -2123,7 +2123,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/graph/socialNet/edges/VidUser/0/User_Video/Video?limit=2"
+curl -X GET "http://localhost:14240/restpp/graph/socialNet/edges/VidUser/0/User_Video/Video?limit=2"
 ----
 --
 Response::
@@ -2206,7 +2206,7 @@ Response::
 
 [source.wrap,bash]
 ----
-GET /restpp/v1/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
+GET /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
 
 This endpoint returns the edge of a specified type between a source vertex and a target vertex.
@@ -2223,7 +2223,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/graph/socialNet/edges/VidUser/0/User_Video/Video/2"
+curl -X GET "http://localhost:14240/restpp/graph/socialNet/edges/VidUser/0/User_Video/Video/2"
 ----
 --
 Response::
@@ -2276,7 +2276,7 @@ If `select` is provided, the edges returned will only show the attributes provid
 
 [.wrap,console]
 ----
-GET /restpp/v1/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}
+GET /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}
 /{target_vertex_type}/{target_vertex_id}/{discriminator}
 ----
 
@@ -2301,7 +2301,7 @@ Single-attribute discriminator::
 --
 [.wrap,console]
 ----
-curl -X GET 'http://localhost:14240/restpp/v1/graph/multiedge/edges/Person/4/transfer/Person/30/2431'
+curl -X GET 'http://localhost:14240/restpp/graph/multiedge/edges/Person/4/transfer/Person/30/2431'
 ----
 --
 Composite discriminator::
@@ -2309,7 +2309,7 @@ Composite discriminator::
 --
 [.wrap,console]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/graph/multiedge/edges/Person/9/transfer2/Account/9/77,1117,2010-04-09%2003:57:01" <1>
+curl -X GET "http://localhost:14240/restpp/graph/multiedge/edges/Person/9/transfer2/Account/9/77,1117,2010-04-09%2003:57:01" <1>
 ----
 <1> `%20` is the URL encoding for a space character.
 --
@@ -2334,7 +2334,7 @@ If `select` is provided, the edges returned will only show the attributes provid
 
 [source.wrap,bash]
 ----
-DELETE /restpp/v1/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
+DELETE /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}/{target_vertex_type}/{target_vertex_id}
 ----
 
 Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
@@ -2352,7 +2352,7 @@ To delete multiple edges, provide the source and target vertex IDs to delete all
 .Delete all transfers between account 40381 and 10327
 [sourece, console]
 ----
-curl -s -X DELETE 'http://localhost:14240/restpp/v1/graph/multiedge/edges/Account/40381/transfer/Account/10327' | jq .
+curl -s -X DELETE 'http://localhost:14240/restpp/graph/multiedge/edges/Account/40381/transfer/Account/10327' | jq .
 ----
 
 Provide only the source to delete all edges from that source, or the source ID and a target type only without the target ID.
@@ -2360,10 +2360,10 @@ Provide only the source to delete all edges from that source, or the source ID a
 [source, console]
 ----
 // Delete all transfers from account 24601
-curl -s -X DELETE 'http://localhost:14240/restpp/v1/graph/multiedge/edges/Account/24601/transfer' | jq .
+curl -s -X DELETE 'http://localhost:14240/restpp/graph/multiedge/edges/Account/24601/transfer' | jq .
 
 // Delete all transfers to Person vertices from account 24601
-curl -s -X DELETE 'http://localhost:14240/restpp/v1/graph/multiedge/edges/Account/24601/transfer/Person' | jq .
+curl -s -X DELETE 'http://localhost:14240/restpp/graph/multiedge/edges/Account/24601/transfer/Person' | jq .
 ----
 
 
@@ -2378,7 +2378,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X DELETE "https://crunch.i.tgcloud.io:14240/restpp/v1/graph/CrunchBasePre_2013/edges/person/p:23601/work_for_company/company/c:14478"
+curl -X DELETE "https://crunch.i.tgcloud.io:14240/restpp/graph/CrunchBasePre_2013/edges/person/p:23601/work_for_company/company/c:14478"
 ----
 --
 Response::
@@ -2424,7 +2424,7 @@ Response::
 
 [source.wrap,console]
 ----
-DELETE /restpp/v1/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}
+DELETE /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type}
 /{target_vertex_type}/{target_vertex_id}/{discriminator}
 ----
 
@@ -2449,7 +2449,7 @@ Single-attribute discriminator::
 --
 [.wrap,console]
 ----
-curl -X DELETE 'http://localhost:14240/restpp/v1/graph/multiedge/edges/Person/4/transfer/Person/30/2431'
+curl -X DELETE 'http://localhost:14240/restpp/graph/multiedge/edges/Person/4/transfer/Person/30/2431'
 ----
 --
 Composite discriminator::
@@ -2457,7 +2457,7 @@ Composite discriminator::
 --
 [.wrap,console]
 ----
-curl -X DELETE "http://localhost:14240/restpp/v1/graph/multiedge/edges/Person/9/transfer2/Account/9/77,1117,2010-04-09%2003:57:01" <1>
+curl -X DELETE "http://localhost:14240/restpp/graph/multiedge/edges/Person/9/transfer2/Account/9/77,1117,2010-04-09%2003:57:01" <1>
 ----
 <1> `%20` is the URL encoding for a space character.
 --
@@ -2703,7 +2703,7 @@ If you install all queries and receive a state of `SUCCESS` for one or more quer
 
 === Run an installed query (`GET`)
 
-`+GET /restpp/v1/query/{graph_name}/{query_name}+`
+`+GET /restpp/query/{graph_name}/{query_name}+`
 
 Each time a new TigerGraph query is installed, a dynamic endpoint is generated.
 This new endpoint enables the user to run the new TigerGraph query through HTTP requests and giving the parameters in URL or in a data payload.
@@ -2814,7 +2814,7 @@ If the type of a vertex is not specified, specify it by adding a parameter `<typ
 
 [source.wrap,console]
 ----
-$ curl -X GET "http://localhost:14240/restpp/v1/query/social/print_params?str=hello&str=world&v=Mary&party=Tobias&party=Jenny&party.type=person&v.type=person"
+$ curl -X GET "http://localhost:14240/restpp/query/social/print_params?str=hello&str=world&v=Mary&party=Tobias&party=Jenny&party.type=person&v.type=person"
 ----
 --
 ====
@@ -2824,29 +2824,29 @@ To run query `hello` on a graph named `social`, and the query parameter is of ty
 .Running a query via HTTP request
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/query/social/hello?p=Tom"
+curl -X GET "http://localhost:14240/restpp/query/social/hello?p=Tom"
 ----
 .Limiting the query to use under 4 threads
 [source.wrap,bash]
 ----
-curl -x GET -H "GSQL-THREAD-LIMIT: 4" "http://localhost:14240/restpp/v1/query/social/hello?p=Tom"
+curl -x GET -H "GSQL-THREAD-LIMIT: 4" "http://localhost:14240/restpp/query/social/hello?p=Tom"
 ----
 .Specifying the query to run on the first replica
 [source.wrap,bash]
 ----
-curl -X GET -H "GSQL-REPLICA: 2" "http://localhost:14240/restpp/v1/query/social/hello?p=Tom"
+curl -X GET -H "GSQL-REPLICA: 2" "http://localhost:14240/restpp/query/social/hello?p=Tom"
 ----
 .Specifying the query to run on the primary cluster
 [source.wrap,bash]
 ----
-curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:14240/restpp/v1/query/social/hello?p=Tom"
+curl -X GET -H "GSQL-REPLICA: 1" "http://localhost:14240/restpp/query/social/hello?p=Tom"
 ----
 
 
 [#_run_an_installed_query_post]
 === Run an installed query (`POST`)
 
-`+POST /restpp/v1/query/{graph_name}/{query_name}+`
+`+POST /restpp/query/{graph_name}/{query_name}+`
 
 Users can also run queries through a `POST` request, which allows them to pass query parameters in JSON format.
 This is especially helpful when the query takes complex parameters.
@@ -2865,7 +2865,7 @@ This is especially helpful when the query takes complex parameters.
 
 [source.wrap, bash]
 ----
-curl -X POST --data-binary @./<sample_file> "http://localhost:14240/restpp/v1/query/<sample_graph>/<sample_query>"
+curl -X POST --data-binary @./<sample_file> "http://localhost:14240/restpp/query/<sample_graph>/<sample_query>"
 ----
 
 
@@ -2967,7 +2967,7 @@ Request::
 --
 [source.wrap,console]
 ----
-$ curl -X POST -d @<path_to_request_body> ""http://localhost:14240/restpp/v1/query/Social/print_params"
+$ curl -X POST -d @<path_to_request_body> ""http://localhost:14240/restpp/query/Social/print_params"
 ----
 --
 Request body::
@@ -2997,24 +2997,24 @@ The query in this sample request takes a parameter of type `VERTEX<person>`:
 [source.wrap,bash]
 ----
 curl -X POST -d '{"p":{"id":"Tom","type":"person"}}'
-"http://localhost:14240/restpp/v1/query/social/hello"
+"http://localhost:14240/restpp/query/social/hello"
 ----
 .Specify that the query run on the first replica
 [source.wrap,bash]
 ----
 curl -X POST -H "GSQL-REPLICA: 2" -d '{"p":{"id":"Tom","type":"person"}}'
-"http://localhost:14240/restpp/v1/query/social/hello"
+"http://localhost:14240/restpp/query/social/hello"
 ----
 .Specify that the query run on the primary cluster
 [source.wrap,bash]
 ----
 curl -X POST -H "GSQL-REPLICA: 1" -d '{"p":{"id":"Tom","type":"person"}}'
-"http://localhost:14240/restpp/v1/query/social/hello"
+"http://localhost:14240/restpp/query/social/hello"
 ----
 .Specify that the query run with a limit of 4 threads
 [source.wrap,bash]
 ----
-curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:14240/restpp/v1/query/social/hello"
+curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:14240/restpp/query/social/hello"
 ----
 
 [NOTE]
@@ -3052,7 +3052,7 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsql/
 
 === List running queries of a graph
 
-`GET /restpp/v1/showprocesslist/{graph_name}`
+`GET /restpp/showprocesslist/{graph_name}`
 
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 This includes installed queries. interpreted queries, as well as built-in queries.
@@ -3070,7 +3070,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/v1/showprocesslist/poc_graph" | jq .
+curl -X GET "http://localhost:14240/restpp/showprocesslist/poc_graph" | jq .
 ----
 --
 Response::
@@ -3110,7 +3110,7 @@ Response::
 No Parameters.
 
 === List all running queries
-`GET /restpp/v1/showprocesslistall`
+`GET /restpp/showprocesslistall`
 
 This endpoint reports the statistics of all running queries across all graphs on a TigerGraph instance: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 This includes installed queries. interpreted queries, as well as built-in queries.
@@ -3128,7 +3128,7 @@ Request::
 +
 [.wrap,console]
 ----
-$ curl -X GET "http://localhost:14240/restpp/v1/showprocesslistall" |jq
+$ curl -X GET "http://localhost:14240/restpp/showprocesslistall" |jq
 ----
 Response::
 +
@@ -3179,7 +3179,7 @@ No parameters.
 
 === Show all delayed queries
 
-`GET /restpp/v1/showdelayedlistall`
+`GET /restpp/showdelayedlistall`
 
 When queries beyond the maximum concurrent query amount (specified in the `RESTPP.WorkLoadManager.MaxConcurrentQueries` parameter) are submitted, they are sent to the delay or overflow queue.
 This overflow queue length is limited by the `RESTPP.WorkLoadManager.MaxDelayQueueSize` parameter.
@@ -3194,7 +3194,7 @@ Request::
 +
 [.wrap,console]
 ----
-$ curl -X GET "http://localhost:14240/restpp/v1/showdelayedlistall" |jq
+$ curl -X GET "http://localhost:14240/restpp/showdelayedlistall" |jq
 ----
 Response::
 +
@@ -3238,7 +3238,7 @@ The `expirationTime` attribute is also not available.
 
 === Abort a query
 
-`+GET /restpp/v1/abortquery/{graph_name}+`
+`+GET /restpp/abortquery/{graph_name}+`
 
 xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level DELETE_DATA
 
@@ -3254,7 +3254,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "localhost:14240/restpp/v1/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1561401340785.N&requestid=16973833.RESTPP_1_1.1561401288421.N"
+curl -X GET "localhost:14240/restpp/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1561401340785.N&requestid=16973833.RESTPP_1_1.1561401288421.N"
 ----
 --
 Response::
@@ -3305,7 +3305,7 @@ Response::
 
 === Check query status (Detached Mode)
 
-`GET /restpp/v1/query_status`
+`GET /restpp/query_status`
 
 This endpoint allows you to check the status of a query run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
@@ -3337,7 +3337,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -s -X GET "http://localhost:14240/restpp/v1/query_status?graph_name=poc_graph&requestid=4.RESTPP_1_1.1599672031541.N"
+curl -s -X GET "http://localhost:14240/restpp/query_status?graph_name=poc_graph&requestid=4.RESTPP_1_1.1599672031541.N"
 ----
 --
 Response::
@@ -3387,7 +3387,7 @@ If a query ID is marked as unknown, it means either the query does not exist or 
 
 === Check query results (Detached Mode)
 
-`GET /restpp/v1/query_result`
+`GET /restpp/query_result`
 
 This endpoint allows you to check the results of queries run in Detached Mode if they have finished running. If the query is still running, the endpoint will respond with an error and a message saying `"Unable to retrieve result for query <requestid>"`.  Ensure that the query is finished before checking its result.
 
@@ -3401,7 +3401,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -s -X GET "http://localhost:14240/restpp/v1/query_result?requestid=196611.RESTPP_1_1.1630601692834.N"
+curl -s -X GET "http://localhost:14240/restpp/query_result?requestid=196611.RESTPP_1_1.1630601692834.N"
 ----
 --
 Response::
@@ -3595,7 +3595,7 @@ Response::
 
 === Data Consistency Check
 
-`GET /restpp/v1/data_consistency_check`
+`GET /restpp/data_consistency_check`
 
 xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Global-level DELETE_DATA
 
@@ -3629,7 +3629,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET http://localhost:14240/restpp/v1/data_consistency_check | jq .
+curl -X GET http://localhost:14240/restpp/data_consistency_check | jq .
 ----
 --
 Response::
@@ -3707,7 +3707,7 @@ The JSON output is a list of vertices and a list of edges. Each vertex and each 
 
 === Find shortest path
 
-`+POST /restpp/v1/shortestpath/{graph_name}+`
+`+POST /restpp/shortestpath/{graph_name}+`
 
 This endpoint takes a source vertex or a set of source vertices and a target vertex or a set of target vertices. It returns the shortest path between the source and the target. If the source is a set of vertices, the resulting path will begin with one of the vertices in the set. If the target is a set of vertices, the resulting path will end with one of the vertices in the set.
 
@@ -3752,7 +3752,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -s -X POST "http://localhost:14240/restpp/v1/shortestpath/movieNet" \
+curl -s -X POST "http://localhost:14240/restpp/shortestpath/movieNet" \
 -d '{
   "sources":[{"type":"VidUser","id":"2"}],
   "targets":[{"type":"VidUser","id":"0"}, {"type":"VidUser","id":"3"}],
@@ -3813,7 +3813,7 @@ Result is an array of vertex json objects and edge json objects describing the s
 
 === Find all paths
 
-`+POST /restpp/v1/allpaths/{graph_name}+`
+`+POST /restpp/allpaths/{graph_name}+`
 
 This endpoint finds all paths between a source vertex (or vertex set) and target vertex (or vertex set).
 
@@ -3878,7 +3878,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -s -X POST "http://localhost:14240/restpp/v1/allpaths/movieNet" -d '{
+curl -s -X POST "http://localhost:14240/restpp/allpaths/movieNet" -d '{
   "sources":[{"type":"Video","id":"0"}],
   "targets":[{"type": "AttributeTag", "id":"action"}],
   "vertexFilters":[{"type":"Video", "condition":"year >= 1984"}],
