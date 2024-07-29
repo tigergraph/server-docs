@@ -138,15 +138,6 @@ data.
 * Copies of the database's queries, loading jobs, and user-defined
 functions.
 * GSQL command files used to recreate the users and their privileges.
-* An encrypted file containing the Access Control List (ACL) privilege catalog.
-
-[NOTE]
-====
-When exporting graphs, ACLs are only exported when both queries and users are exported.
-
-* If you use the `-U` option without using the `-T` option, there is no ACL on the exported graphs because there are no queries.
-* If you use the `-T` option without using the `-U` option, the ACL entries on the exported are reset to the _unspecified_ status.
-====
 
 
 The following files are created in the specified directory when
@@ -187,9 +178,6 @@ For each vertex or edge type called `<type>`, there is one of the following two 
 ** `ExprUtil.hpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
 * Users:
 ** `users.gsql` - DDL to create all exported users, import Secrets and Tokens and grant permissions.
-* ACL privilege catalog:
-** `ACLDict/1/ACLPrivilegeCatalog.json`.
-An encrypted file containing the ACL privilege catalog.
 
 .Example
 [source,gsql]
