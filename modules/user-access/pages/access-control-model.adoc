@@ -51,8 +51,8 @@ Only privileges pertaining to graph data (`CREATE_DATA`, `READ_DATA`, `UPDATE_DA
 
 For example:
 
-* A role with `WRITE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
-In contrast, a role with `WRITE_QUERY` on the global scope can create queries on all graphs.
+* A role with `CREATE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
+In contrast, a role with `CREATE_QUERY` on the global scope can create queries on all graphs.
 * A role with `UPDATE_DATA` on the `age` attribute of the `Person` vertex on graph `Social` are allowed to run queries that update the value of the `age` attribute of `Person` vertices.
 * A role with `READ_DATA` on the global scope can run queries that read graph data on any graph, any type, or any attribute.
 They do not need to have privileges specifically for those graphs, types, or attributes.
@@ -141,6 +141,99 @@ However, if the user specify the attributes for the request to return:
 $ curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1?select=age"
 
 The request would no longer require `READ_DATA` on the attribute `name` and only require `READ_DATA` on `id` and `age`.
+
+=== Fine-grained query privileges
+
+Fine-grained query privileges `CREATE_QUERY`, `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, and `EXECUTE_QUERY` are also special in terms of their scopes.
+
+`CREATE_QUERY` can only be granted/revoked at global and graph level. `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, and `EXECUTE_QUERY` can only be granted/revoked at existing individual query objects.
+
+These privileges govern how a user interact with specific query objects. 
+
+NOTE: Built-in role `superuser` has all fine-grained query privileges on all existing queries in global. Built-in role `admin` has all fine-grained query privileges on all existing queries in the graph where `admin` is granted on. 
+
+
+[.test-class]
+|===
+|Privilege |Global/Graph level |Query level
+
+|`CREATE_QUERY`
+|Permission to create query in global or specific graph where the privilege is granted.
+|N/A.
+This privilege is not applicable on the query level.
+
+
+|`READ_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to read query content on the specific query object where the privilege is granted.
+
+|`UPDATE_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to replace query content on the specific query object where the privilege is granted.
+
+|`DROP_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to drop query on the specific query object where the privilege is granted.
+
+|`INSTALL_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to install query on the specific query object where the privilege is granted.
+
+|`EXECUTE_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to run or interpret query on the specific query object where the privilege is granted.
+
+|===
+
+==== Examples
+
+Assume we created a graph `g1` and assume user does not hold special built-in roles such as `superuser` and `admin`.
+[.wrap,gsql]
+----
+GSQL > CREATE GRAPH g1(*)
+----
+
+To create a query `q1`, `CREATE` privilege on query objects in global or graph `g1` is required.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > create query q1() {print "q1";}
+----
+
+To update a query `q1`, `UPDATE` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > create or replace query q1() {print "new q1";}
+----
+
+To drop a query `q1`, `DROP` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > drop query q1
+----
+
+To install a query `q1`, `INSTALL` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > install query q1
+----
+
+To run/interpret a query `q1`, `EXECUTE` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > run query q1()
+GSQL > interpret query q1()
+----
+
 
 === Roles
 
