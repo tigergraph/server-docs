@@ -7,7 +7,7 @@ More data warehouses will be supported in future releases.
 TigerGraph's BigQuery loader makes use of the https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC connector provided by Google], in collaboration with Simba.
 Use the following configuration for the `DATA_SOURCE`.
 
-[source,php,linenums]
+[source,json,linenums]
 .Data source configuration for BigQuery
 ----
 {
@@ -26,7 +26,7 @@ Use the following configuration for the `DATA_SOURCE`.
 [IMPORTANT]
 In addition, for large query results, we highly recommended specifying the following parameters:
 
-[source,php,linenums]
+[source,json,linenums]
 .Addition parameter setting for large BigQuery results
 ----
 "EnableHighThroughputAPI":"1" -> Storage Read API
@@ -40,7 +40,7 @@ https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC
 
 === Snowflake
 
-[source,php,linenums]
+[source,json,linenums]
 .Data source configuration for Snowflake:
 ----
 {
@@ -75,7 +75,7 @@ Use the required fields below for a Snowflake data `DATA_SOURCE`:
 === PostgreSql
 
 .Data source configuration for PostgreSql:
-[source,php,linenums]
+[source,json,linenums]
 ----
 {
     "type":"postgresql",

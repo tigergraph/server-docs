@@ -8,13 +8,13 @@ Inline mode is required when creating data sources for TigerGraph Cloud instance
 
 In the following example, we create a data source named `s1`, and read its configuration information from a file called `ds_config.json`.
 
-[source,php]
+[source,gsql]
 USE GRAPH ldbc_snb
 CREATE DATA_SOURCE s1 = "ds_config.json" FOR GRAPH ldbc_snb
 
 Older versions of TigerGraph required a keyword after `DATA_SOURCE` such as `STREAM` or `KAFKA`.
 
-[source,php]
+[source,gsql]
 .Inline JSON data format when creating a data source
 CREATE DATA_SOURCE s1 = "{
 type: <type>,
@@ -24,7 +24,7 @@ key: <value>
 String literals can be enclosed with a double quote `"`, triple double quotes `"""`, or triple single quotes `'''`.
 Double quotes `"` in the JSON can be omitted if the key name does not contain a colon `:` or comma `,`.
 
-[source,php]
+[source,gsql]
 .Alternate quote syntax for inline JSON data
 CREATE DATA_SOURCE s1 = """{
 "type": "<type>",
