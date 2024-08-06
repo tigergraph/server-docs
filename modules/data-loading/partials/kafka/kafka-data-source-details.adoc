@@ -25,8 +25,9 @@ If the source cluster is configured for SSL or SASL protocols, you need to provi
 * If the source cluster uses SASL *and* SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster.
 Each file must be at the same absolute path on all nodes.
 
-The following configurations are required for admin, producer and consumer. To supply the configuration for the corresponding component, replace `<prefix>` with `source.admin`, `producer`, or `consumer`.
+The following are generic configurations required for admin, producer and consumer. To supply the configuration for the corresponding component, replace `<prefix>` with `source.admin`, `producer`, or `consumer`.
 For example, to specify `GSSAPI` as the SASL mechanism for consumer, include `"consumer.sasl.mecahnism": "GSSAPI"` in the data source configuration.
+But if the source cluster uses SSL, please skip the generic configurations below and follow this documentation to setup connector xref:tigergraph-server:data-loading:kafka-ssl-security-guide.adoc[]
 
 [%header,cols="1,2"]
 |===
