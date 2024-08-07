@@ -3,7 +3,7 @@
 When a loading job starts, the GSQL server assigns it a job ID and displays it for the user to see.
 There are three key commands to monitor and manage loading jobs:
 
-[source,php]
+[source,gsql]
 ----
 SHOW LOADING STATUS job_id|ALL
 ABORT LOADING JOB job_id|ALL
@@ -12,7 +12,7 @@ RESUME LOADING JOB job_id
 
 `SHOW LOADING STATUS` shows the current status of either a specified loading job or all current jobs, this command should be within the scope of a graph:
 
-[source,php]
+[source,gsql]
 GSQL > USE GRAPH graph_name
 GSQL > SHOW LOADING STATUS ALL
 
