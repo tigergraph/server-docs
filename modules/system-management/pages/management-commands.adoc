@@ -286,13 +286,12 @@ Usage:
   gadmin config apply [flags]
 
 Flags:
-  -y, --confirm                confirm to apply
-  -c, --confirm-restart-deps   confirm to restart dependency services
-  -f, --force                  force components to apply new config
-  -h, --help                   help for apply
-      --initial                config apply with the initial configuration when the remote config (ETCD) is empty
-      --restart-deps           restart dependency services
-      --with-config string     the input config file used to config apply, will overwrite both local and remote(ETCD)
+  -y, --confirm              confirm to apply and restart dependency services if necessary
+  -f, --force                force components to apply new config
+  -h, --help                 help for apply
+      --initial              config apply with the initial configuration when the remote config (ETCD) is empty
+      --restart-deps         restart dependency services
+      --with-config string   the input config file used to config apply, will overwrite both local and remote(ETCD)
 
 Global Flags:
       --debug         enable debug log output to stdout
