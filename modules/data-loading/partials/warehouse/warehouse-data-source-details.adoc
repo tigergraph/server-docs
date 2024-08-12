@@ -51,6 +51,22 @@ https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC
 }
 ----
 
+.Data source configuration with key-pair authentication:
+----
+{
+    "type":"snowflake",
+    "connection.url":"jdbc:snowflake://https://<account_id>.snowflakecomputing.com/?db=<db>&schema=<schema>&role=<role>&private_key_file=<key_file>",
+    "connection.user": "<userwithrsa>",
+    "connection.password": "<anystring>"
+}
+----
+
+[NOTE]
+We recommend to use this version(OpenSSL 3.0.11 19 Sep 2023) to generate the key.
+When the private key is provided, the `connection.password` is still required and can be set to any non-empty string.
+Passing private key directly or using private key file with password is NOT supported.
+More can be found in https://docs.snowflake.com/en/user-guide/key-pair-auth[Snowflake Docs]
+
 [WARNING]
 ====
 For Snowflake loading jobs only the default setting for `batch.max.rows` is set to `100000` for better performance.
