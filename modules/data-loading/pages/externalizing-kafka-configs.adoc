@@ -55,7 +55,7 @@ The config provider will automatically look up the referred source and find the 
 
 ¦ xref:_vault_config_provider[Vault Config Provider]
 ¦ vault
-¦ org.apache.kafka.common.config.provider.EnvVarConfigProvider
+¦ org.apache.kafka.common.config.provider.VaultConfigProvider
 ¦ `${vault:<vault-path>:<key>}`
 |===
 
@@ -77,15 +77,15 @@ S3_ACCESS_KEY=thisisakey
 S3_SECRET_KEY=anotherkey
 ----
 
-.Example stream loading job config file:
-[source,gsql]
+.Example data source config file:
+[source,json]
 ----
 {
-"type": "s3",
-"access.key":"${file:/tmp/secret.properties:S3_ACCESS_KEY}",
-"secret.key":"${file:/tmp/secret.properties:S3_SECRET_KEY}",
-config.providers=file,
-config.providers.file.class=org.apache.kafka.common.config.provider.FileConfigProvider
+    "type": "s3",
+    "access.key":"${file:/tmp/secret.properties:S3_ACCESS_KEY}",
+    "secret.key":"${file:/tmp/secret.properties:S3_SECRET_KEY}",
+    "config.providers":"file",
+    "config.providers.file.class":"org.apache.kafka.common.config.provider.FileConfigProvider"
 }
 ----
 
@@ -110,15 +110,15 @@ gadmin config apply -y
 gadmin restart kafkaconn -y
 ----
 
-.Stream loading job config
-[source,gsql]
+.Data source config
+[source,json]
 ----
 {
-"type": "s3",
-"access.key":"${env:S3_ACCESS_KEY}",
-"secret.key":"${env:S3_SECRET_KEY}",
-"config.providers":"env",
-"config.providers.env.class":"org.apache.kafka.common.config.provider.EnvVarConfigProvider"
+    "type": "s3",
+    "access.key":"${env:S3_ACCESS_KEY}",
+    "secret.key":"${env:S3_SECRET_KEY}",
+    "config.providers":"env",
+    "config.providers.env.class":"org.apache.kafka.common.config.provider.EnvVarConfigProvider"
 }
 ----
 
@@ -182,8 +182,8 @@ storage "file" {
 listener "tcp" {
     address     = "<ip>:<vault_port>"
     tls_disable = "false"
-    tls_cert_file = "<cert>"
-    tls_key_file = "<key>"
+    tls_cert_file = "<path_to_cert_file>"
+    tls_key_file = "<path_to_key_file>"
 }
 
 api_addr = "<VAULT_ADDR>"
@@ -192,7 +192,7 @@ ui = true
 disable_mlock = true
 ----
 
-.Example stream loading job config file
+.Example data source config file
 [source, gsql]
 ----
 {
