@@ -44,14 +44,25 @@ $ gadmin license seed hardware
  .. Contract number. If you do not know your contract number, please contact your sales representative or link:mailto:sales@tigergraph.com.[sales@tigergraph.com.]
 . A new license key file will be certificated and sent back to you.
 . Copy the license key file to a directory on the TigerGraph system where the TigerGraph Linux user has read permission.
-. Run the following three commands to install the license key:
+. Run the following command to install the license key:
 +
 [source,text]
 ----
 $ gadmin license set <new_license_key>
 [   Info] Configuration has been changed.
 Please use 'gadmin config apply' to persist the changes.
+----
+Alternatively, you may save the license key in a file, and set the license key with the filepath syntax:
++
+----
+$ gadmin license set @<path_to_license_file>
+[   Info] Configuration has been changed.
+Please use 'gadmin config apply' to persist the changes.
+----
 
+. Finally, run the following commands to apply the license key and restart services:
++
+----
 $ gadmin config apply
 [Warning] No difference from staging config, config apply is skipped.
 [   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
