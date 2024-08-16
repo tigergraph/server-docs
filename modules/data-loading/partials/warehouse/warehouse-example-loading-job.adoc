@@ -28,15 +28,11 @@ CREATE DATA_SOURCE s1 = """{
 USE GRAPH ldbc_snb
 CREATE LOADING JOB load_data FOR GRAPH ldbc_snb {
 DEFINE FILENAME file_Comment =
-  "$s1:SELECT *
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment";
+  "$s1:SELECT * FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment";
 DEFINE FILENAME file_Person =
-  "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate,
-         locationIP, browserUsed, language, email
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Person";
+  "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate, locationIP, browserUsed, language, email FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Person";
 DEFINE FILENAME file_Comment_hasCreator_Person =
-  "$s1:SELECT *
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment_hasCreator_Person";
+  "$s1:SELECT * FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment_hasCreator_Person";
 LOAD file_Comment
   TO VERTEX Comment
     VALUES ($1, $0, $2, $3, $4, $5)
@@ -68,15 +64,11 @@ CREATE DATA_SOURCE s1= """{
 USE GRAPH ldbc_snb
 CREATE LOADING JOB load_data FOR GRAPH ldbc_snb {
 DEFINE FILENAME file_Comment =
-  "$s1:SELECT *
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment";
+  "$s1:SELECT * FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment";
 DEFINE FILENAME file_Person =
-  "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate,
-         locationIP, browserUsed, language, email
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Person";
+  "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate, locationIP, browserUsed, language, email FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Person";
 DEFINE FILENAME file_Comment_hasCreator_Person =
-  "$s1:SELECT *
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment_hasCreator_Person";
+  "$s1:SELECT * FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment_hasCreator_Person";
 LOAD file_Comment
   TO VERTEX Comment
     VALUES ($1, $0, $2, $3, $4, $5)
@@ -109,15 +101,11 @@ CREATE DATA_SOURCE s1 = """{
 
 CREATE LOADING JOB load_data FOR GRAPH ldbc_snb {
 DEFINE FILENAME file_Comment =
-  "$s1:SELECT *
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment";
+  "$s1:SELECT * FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment";
 DEFINE FILENAME file_Person =
-  "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate,
-         locationIP, browserUsed, language, email
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Person";
+  "$s1:SELECT id, firstName, lastName, gender, birthday, creationDate, locationIP, browserUsed, language, email FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Person";
 DEFINE FILENAME file_Comment_hasCreator_Person =
-  "$s1:SELECT *
-       FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment_hasCreator_Person";
+  "$s1:SELECT * FROM tigergraph-ldbc-benchmark.snb_bi_sf01.Comment_hasCreator_Person";
 LOAD file_Comment
   TO VERTEX Comment
     VALUES ($1, $0, $2, $3, $4, $5)
