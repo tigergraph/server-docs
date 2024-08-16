@@ -16,7 +16,7 @@ This also applies to previously created cloud solutions that are resized on or a
 
 For TigerGraph Cloud solutions created before June 20, 2022, ports 9000 and 14240 remain correct.
 
-In 4.1.0 and later versions, for all TigerGraph Server solutions not on TigerGraph Cloud, port 9000 are no longer exposed, please use `14240/restpp/v1/<endpoint>` instead.
+In 4.1.0 and later versions, for all TigerGraph Server solutions not on TigerGraph Cloud, port 9000 are no longer exposed, please use `14240/restpp/<endpoint>` instead.
 ====
 
 == System Utilities
@@ -1118,7 +1118,7 @@ curl -X GET 'http://localhost:14240/restpp/deleted_vertex_check?threadnum=10&ver
 [IMPORTANT]
 ====
 As of 4.1.0, the use of plaintext tokens in authentication is deprecated.
-Use `/gsql/v1/tokens` trough 8123 port instead, refer to xref:gsql-ref:gsql-endpoints.adoc[] instead.
+Use `/gsql/v1/tokens` trough 14240 port instead, refer to xref:gsql-ref:gsql-endpoints.adoc[] instead.
 ====
 
 '''
@@ -3516,7 +3516,7 @@ Request::
 [source.wrap,bash]
 ----
 curl -X POST --user tigergraph:tigergraph \
-  --url 'http://localhost:14240/gsql/v1/gds.community.louvain?graph=poc_graph' \
+  --url 'http://localhost:14240/gsql/v1/library/gds.community.louvain?graph=poc_graph' \
   --data '{
             "v_type": [
               "members"
