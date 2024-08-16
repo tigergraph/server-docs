@@ -23,7 +23,7 @@ If that's your case, you can run multiple times the above query, API or command 
 
 Another way to validate data integrity between primary and DR is to check `lastSeqId` which is the last replayed replica by GSQL from Kafka Metadata topic.
 If no data loading is happening on primary, the `lastSeqId` on primary and DR must match.
-To check that, run `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql/replication`
+To check that, run `curl -u tigergraph:<tigergraph_password> localhost:14240/gsql/v1/replication`
 
 == Isolate the issue to a specific layer
 
@@ -66,11 +66,11 @@ Each line above is a replica that has been copied from primary Kafka Metadata to
 Each replica has a unique and consistent (across primary and DR) ID which is (based on the above example) `"value:{"256":...` and each replica ID maps to a single GSQL WRITE operation which in this example is `"IMPORT SECRET (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX, AUTO_GENERATED_ALIAS_jf2a021) TO USER foo FOR GRAPH Social\"`.
 Also the replica ID must be sequential and incremental (+1) and there should *not* be any gaps (e.g. 254, 255, 256).
 
-The last replica ID must be the same of the `lastSeqId` returned on each of the primary and DR. In this example the last replica ID is `256` and the output of `curl -u tigergraph:<tigergraph_password> localhost:8123/gsql/replication` is:
+The last replica ID must be the same of the `lastSeqId` returned on each of the primary and DR. In this example the last replica ID is `256` and the output of `curl -u tigergraph:<tigergraph_password> localhost:14240/gsql/v1/replication` is:
 
 [source,console]
 ----
-$ curl -u tigergraph:tigergraph  localhost:8123/gsql/replication | jq
+$ curl -u tigergraph:tigergraph  localhost:14240/gsql/v1/replication | jq
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100    61    0    61    0     0   3812      0 --:--:-- --:--:-- --:--:--  3812
