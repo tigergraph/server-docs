@@ -599,7 +599,7 @@ For example, to specify a limit of four threads that can be used by a query, use
 .Specify that the query run with a limit of 4 threads
 [source.wrap,bash]
 ----
-curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
+curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:14240/restpp/query/social/hello"
 ----
 
 === Specify replica to run query on
@@ -611,7 +611,7 @@ For example, to run the query on the primary cluster, use the `GSQL-REPLICA` hea
 [source.wrap,bash]
 ----
 curl -X POST -H "GSQL-REPLICA: 1" -d '{"p":{"id":"Tom","type":"person"}}'
-"http://localhost:9000/query/social/hello"
+"http://localhost:14240/restpp/query/social/hello"
 ----
 
 == Query Routing Schemes
