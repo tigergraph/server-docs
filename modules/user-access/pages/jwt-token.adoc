@@ -514,10 +514,10 @@ POST :14240/gsql/v1/tokens payload '{"secret":"<secret>", "graph":"<graph name>,
  * `lifetime`: The `lifetime` specifies the duration for which the token can be used, measured in milliseconds. If no lifetime is specified, the default duration is 7 days.
 
 ==== Required Privilege:
-If `secret` is specified in the payload, there is no need for user login and if `graph` is specified in the payload, the user must have access to the data of the graph.
+If `secret` is specified in the payload, the user does not need to login and if `graph` is specified in the payload, the user must have access to the data of the graph.
 
 === drop JWT Token
-Since the JWT token cannot be deleted as it has been created, there is a block list to include JWT tokens that are restricted to access on RESTPP and GSQL server.
+Since the JWT token cannot be deleted as it has been created, a block list is created to include JWT tokens that are restricted to access on RESTPP and GSQL server.
 
 Clear drop list: clear current user’s block list.
 
