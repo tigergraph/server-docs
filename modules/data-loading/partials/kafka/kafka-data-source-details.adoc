@@ -18,7 +18,64 @@ To configure the data source object, the minimum requirement is the address of t
 }
 ----
 
+If the source cluster is configured for SSL or SASL protocols, you need to provide the following SSL/SASL credentials in order to communicate with the source cluster.
+
+* If the source cluster uses SASL, you need to upload the keytab of each Kerberos principal to every node of your TigerGraph cluster at the same absolute path.
 * If the source cluster uses SSL, see our documentation xref:tigergraph-server:data-loading:kafka-ssl-security-guide.adoc[]
+* If the source cluster uses SASL *and* SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster.
+Each file must be at the same absolute path on all nodes.
+
+The following configurations are required for admin, producer and consumer. Basically Kafka allows SSL settings overriding, it respects security settings in precedence order: generic.ssl.setting < source/target.cluster.ssl.setting < admin/producer/consumer.ssl.setting.
+
+If both source and target clusters are sharing the same SSL settings, user can set generic settings for both source/target clusters and all the rols(admin/producer/consumer). For example, user can set "ssl.keystore.location=/path/to/key/store" instead of "source.cluster.ssl.keystore.location=/path/to/key/store", or "admin.ssl.keystore.location=/path/to/key/store", or even "source.cluster.admin.ssl.keystore.location=/path/to/key/store".
+
+If source and target clusters have different SSL settings, to make things simple, users can simply set cluster wide SSL configs, e.g., "target.cluster.ssl.truststore.password=/password/for/trust/store", instead of "target.cluster.producer.ssl.trust.password=/password/for/trust/store".
+
+To supply the configuration for the corresponding component, replace `<prefix>` with `source(/or target).cluster`, `source(or target).cluster.admin(or producer, consumer)`, `admin`, `producer`, or `consumer`.
+For example, to specify `GSSAPI` as the SASL mechanism for consumer, include `"consumer.sasl.mecahnism": "GSSAPI"` in the data source configuration.
+
+Note: SSL is now well supported by TigerGraph, we recommend users to set up regular SSL rather than SASL + PlainText/SSL.
+
+[%header,cols="1,2"]
+|===
+| Field | Description
+
+| <prefix>.security.protocol
+| Protocol used to communicate with brokers.
+Valid values are: `PLAINTEXT`, `SSL, `SASL_PLAINTEXT`, `SASL_SSL`.
+The default is `PLAINTEXT`.
+
+| <prefix>.sasl.mechanism
+| SASL mechanism used for client connections.
+This may be any mechanism for which a security provider is available. GSSAPI is the default mechanism.
+
+| <prefix>.sasl.kerberos.service.name
+| The Kerberos principal name used by your Kafka brokers.
+This could be defined in either JAAS configuration or Kafka’s configuration.
+
+| <prefix>.sasl.jaas.config
+| JAAS login context parameters for SASL connections in the format used by JAAS configuration files.
+See https://docs.oracle.com/javase/8/docs/technotes/guides/security/jgss/tutorials/LoginConfigFile.html[JAAS Login Configuration File] for details.
+
+| <prefix>.ssl.endpoint.identification.algorithm
+| The endpoint identification algorithm used to validate server hostname in the server certificate. Default is `https`.
+If the value is set to an empty string, this will disable server host name verification.
+
+| <prefix>.ssl.keystore.location
+| The location of the key store file.
+
+| <prefix>.ssl.keystore.password
+| The password of the key store file.
+
+| <prefix>.ssl.key.password
+| The password of the private key in the key store file or the PEM key specified in `ssl.keystore.key`.
+
+| <prefix>.ssl.truststore.location
+| The location of the trust store file.
+
+| <prefix>.ssl.truststore.password
+| The password for the trust store file.
+|===
 
 If there is a https://docs.confluent.io/platform/current/schema-registry/index.html[schema registry service] containing the record schema of the source topic, please add it to the data source configuration:
 
