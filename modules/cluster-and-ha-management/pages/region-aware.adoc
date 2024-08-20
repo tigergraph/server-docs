@@ -2,9 +2,9 @@
 //:page-aliases: tigergraph-server:region-aware:region-aware.adoc, tigergraph-server:region-aware:index.adoc
 :description: Overview of region awareness for TigerGraph servers.
 
-Region awareness represents a more sophisticated High Availability (HA) configuration within TigerGraph servers. In contrast to xref:ha-overview.adoc[High Availability], region-aware clusters offer HA at the **region level** rather than the **individual node level**.
+Region awareness represents a more sophisticated High Availability (HA) configuration within TigerGraph servers. In contrast to xref:ha-overview.adoc[High Availability], region-aware clusters offer HA at the **region/zone level** rather than the **individual node level**.
 
-Enabling region awareness involves deploying TigerGraph services based on distinct regions. For instance, consider a 10-node cluster with 2 replica spanning 3 regions:
+Enabling region awareness involves deploying TigerGraph services based on distinct regions/zones. For instance, consider a 10-node cluster with 2 replica spanning 3 regions/zones:
 
 |===
 | Host ID |   Hostname   | Region
@@ -36,7 +36,7 @@ Without region awareness enabled, the service deployments would be as follows:
 |  GPE_5  | us-east-2:[m5], us-east-3:[m10]
 |===
 
-In this scenario, a failure in the `us-east-1` region would result in GPE_1, and GPE_2 losing all replicas, while a failure in `us-east-2` would cause ZK and ETCD to lose the majority of replicas.
+In this scenario, a failure in the region `us-east-1`  would result in GPE_1, and GPE_2 losing all replicas, while a failure in `us-east-2` would cause ZK and ETCD to lose the majority of replicas.
 
 [NOTE]
 ====
@@ -59,7 +59,25 @@ By enabling region awareness, the service deployments would be structured as fol
 |  GPE_5  | us-east-3:[m10], us-east-1:[m7]
 |===
 
-In this setup, a failure in any region would retain at least one replica of GPE for each partition and the majority count of ZK/ETCD replicas.
+In this setup, a failure in any region/zone would retain at least one replica of GPE for each partition and the majority count of ZK/ETCD replicas.
+
+== Compare to CRR
+
+Region-Awareness **is not**  xref:crr-index.adoc[Cross-Region Replication].
+
+Both Region-Aware and CRR can increase your system availability, but they are designed for different purpose.
+
+.Differences between Region-Aware and CRR
+|===
+|             | **Region-Aware**     |   **CRR**
+|Cluster Setup| 1 read-write   cluster  | 1 read-write cluster, other read-only cluster
+|Minimum nodes|  3                   | 2
+|Fail over    | Auto recover         | Manual switch
+|===
+
+Overall, if you are looking for zero downtime region failure toleration, use region-awareness. If you are looking for data residency compliance or Blue/green deployment, use CRR.
+
+This is not an either/or situation, you can enable region-awareness and CRR at the same time.
 
 
 == System Requirements
@@ -70,12 +88,18 @@ To enable region-aware, the following conditions must be met
 
 * Eligible for xref:ha-cluster.adoc#_system_requirements[High Availability Cluster]
 * All nodes contain region information
-* At least 3 regions
-* Nodes are uniformly distributed in the region. That is, the difference in the number of nodes in all regions does not exceed 1
+* At least 3 regions/zones
+* Nodes are uniformly distributed in the region/zone. That is, the difference in the number of nodes in all regions/zones does not exceed 1
 
 == Enable Region Aware
 
-There are two ways to enable region aware cluster:
+[WARNING]
+====
+Cross region will have extended latency for queries.
+====
+
+
+There are two ways to enable region-aware cluster:
 
 * Configure HA settings xref:installation:bare-metal-install.adoc#_step_2_configure_installation_settings[during installation].
 
