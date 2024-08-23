@@ -73,9 +73,16 @@ Both Region-Aware and CRR can increase your system availability, but they are de
 |Cluster Setup| 1 read-write   cluster  | 1 read-write cluster, other read-only cluster
 |Minimum nodes|  3                   | 2
 |Fail over    | Auto recover         | Manual switch
+|Query latency| Higher               | Lower
 |===
 
-Overall, if you are looking for zero downtime region failure toleration, use region-awareness. If you are looking for data residency compliance or Blue/green deployment, use CRR.
+[WARNING ]
+====
+Enabling region-awareness enhances the deployment of cluster nodes across different regions, potentially resulting in increased query latency.
+====
+
+
+For seamless region failure tolerance without downtime, opt for region-awareness. For compliance with data residency regulations and Blue/Green deployments, consider utilizing CRR.
 
 This is not an either/or situation, you can enable region-awareness and CRR at the same time.
 
@@ -93,10 +100,7 @@ To enable region-aware, the following conditions must be met
 
 == Enable Region Aware
 
-[WARNING]
-====
-Cross region will have extended latency for queries.
-====
+
 
 
 There are two ways to enable region-aware cluster:
