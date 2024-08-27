@@ -1,4 +1,4 @@
-= CDC State Monitoring
+= CDC Monitoring and Reset
 
 == State Monitoring
 .Check the state of CDC Service with this command:
@@ -6,11 +6,6 @@
 ----
 grun_p gpe "cat $(gadmin config get System.DataRoot)/gstore/0/part/cdc.yaml"
 ----
-
-The cdc state file should only exist on GPE Replica 1 node of each partition:
-
-* `GPE_1#1`
-* `GPE_2#1`
 
 .The response will look like this:
 [console]
@@ -24,6 +19,10 @@ index: 0
 ### ---- (m2)_10.128.0.84 ---1--
 cat: /home/tigergraph/tigergraph/data/gstore/0/part/cdc.yaml: No such file or directory
 ----
+
+If xref:tigergraph-server:system-management:cdc-overview.adoc#_cdc_ha[CDC HA] is not enabled, cdc state file should only exist on GPE Replica 1 node of each partition, such as `GPE_1#1` or `GPE_2#1`.
+
+If xref:tigergraph-server:system-management:cdc-overview.adoc#_cdc_ha[CDC HA] is enabled (the default setting in multi-replica clusters), the CDC state file may reside on any node with GPE servers. For each partition, only the state file on the GPE leader is active; state files on other nodes may be missing or outdated. You can determine this by checking the tid in the file or the file's last update time.
 
 .For each CDC state field, see the table below:
 [cols="2", separator=¦ ]
@@ -48,6 +47,8 @@ All delta batches with tid `<safe_persistent_tid>` must have been written to ext
 |===
 
 == State of DIM Service
+
+DIM (Deleted Id Map) is an internal service designed to assist the CDC service in processing data updates that involve vertices already deleted from the database.
 
 .Check the state of DIM(Deleted Id Map) service with this command:
 [console]
