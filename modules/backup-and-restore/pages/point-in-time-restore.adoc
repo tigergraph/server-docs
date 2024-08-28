@@ -19,7 +19,7 @@ The point-in-time restore is based on full backup and differential backup. So we
 
 
 * the time points before the first full backup or after the current time.
-* the time points before the last restore and aren’t covered by existing backups. Here not covered means the time points are not contained by any backup’s time points range [POINT-IN-TIME START TIME,  CREATED AT]. We can check the backup’s time points range by `gadmin backup list`. here is an example:
+* the time points not covered by existing backups. Here "not covered" means the time points are not contained by any backup’s time points range [POINT-IN-TIME START TIME,  CREATED AT]. We can check the backup’s time points range by `gadmin backup list`. Here is an example:
 
 [console, gsql]
 ---
@@ -32,7 +32,7 @@ $ gadmin backup list
 |================================================================================================================================================
 ---
 
-here, the time range for backup `backup-2024-06-13T061939.131` is `[2024-06-13T06:19:39Z,2024-06-13T06:19:39Z]`, therefore, for a full backup is just a point. As for the incremental backup `backup-2024-06-13T063915.054`, its range is `[2024-06-13T06:19:39Z , 2024-06-13T06:39:15Z]`. so, for instance, if we have performed a restore at `2024-06-14T06:19:39Z`. And then we can’t restore to the timepoint `2024-06-13T07:00:00Z`, for it is not in any backup's time range. however, `2024-06-13T06:35:00Z` is supported for it is covered by the time range `[2024-06-13T06:19:39Z , 2024-06-13T06:39:15Z]` of the backup `backup-2024-06-13T063915.054`.
+In this example, the time range for backup `backup-2024-06-13T061939.131` is `[2024-06-13T06:19:39Z,2024-06-13T06:19:39Z]`, therefore, for a full backup is just a point. As for the incremental backup `backup-2024-06-13T063915.054`, its range is `[2024-06-13T06:19:39Z , 2024-06-13T06:39:15Z]`. `2024-06-13T06:35:00Z` is supported for it is covered by the time range `[2024-06-13T06:19:39Z , 2024-06-13T06:39:15Z]` of the backup `backup-2024-06-13T063915.054`. While, users can’t restore to the timepoint `2024-06-13T07:00:00Z` directly, for it is not in any backup's time range. However, if no restore was performed since `2024-06-13T07:00:00Z`, users may be able to create a new differential backup at right now and then restore to `2024-06-13T07:00:00Z`. 
 
 
 [NOTE]
