@@ -131,13 +131,13 @@ Running the query would at a minimum require `READ_DATA` on type `City` and `UPD
 If a user were to make the following REST request:
 
 [source.wrap,console]
-$ curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1"
+$ curl -X GET "http://localhost:14240/restpp/graph/Example_Graph/vertices/Person/id1"
 
 The request requires that the user has at least `READ_DATA` on type `Person`, or all attributes of type `Person`.
 However, if the user specify the attributes for the request to return:
 
 [source.wrap,console]
-$ curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1?select=age"
+$ curl -X GET "http://localhost:14240/restpp/graph/Example_Graph/vertices/Person/id1?select=age"
 
 The request would no longer require `READ_DATA` on the attribute `name` and only require `READ_DATA` on `id` and `age`.
 

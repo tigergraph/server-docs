@@ -93,7 +93,7 @@ If using curl, use the `-d` option, followed by the JSON string.
 .Syntax for a POST request with Inline Data Payload
 [source.wrap,bash]
 ----
-curl -X POST -d 'json_string' "http://server_ip:9000/path_to_endpoint?request_parameters"
+curl -X POST -d 'json_string' "http://server_ip:14240/restpp/path_to_endpoint?request_parameters"
 ----
 
 The following example uses the `POST /graph` endpoint to insert one User type vertex whose ID is `id6` into the graph called `"Social_Net"`.
@@ -101,7 +101,7 @@ The following example uses the `POST /graph` endpoint to insert one User type ve
 .Example using inline input data
 [source.wrap,bash]
 ----
-curl -X POST -d '{"vertices":{"User":{"id6":{"id":{"value":"id6"}}}}}' "http://localhost:9000/graph/Social_Net"
+curl -X POST -d '{"vertices":{"User":{"id6":{"id":{"value":"id6"}}}}}' "http://localhost:14240/restpp/graph/Social_Net"
 ----
 
 === Data file
@@ -113,7 +113,7 @@ For curl, use `--data-binary @<path_to_file>` as in the following example:
 .Syntax for a POST request with Payload Data File
 [source.wrap,bash]
 ----
-curl -X POST --data-binary @./person.csv  "http://localhost:9000/ddl/poc_graph?tag=load_data&filename=f1"
+curl -X POST --data-binary @./person.csv  "http://localhost:14240/restpp/ddl/poc_graph?tag=load_data&filename=f1"
 ----
 
 
@@ -267,9 +267,9 @@ To make the JSON output more human-readable in the terminal, use the https://ste
 
 [source,bash]
 ----
-curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | jq .
+curl -X method "http://server_ip:14240/restpp/path_to_endpoint?request_parameters" | jq .
 
-curl -X method "http://server_ip:9000/path_to_endpoint?request_parameters" | python -m json.tool
+curl -X method "http://server_ip:14240/restpp/path_to_endpoint?request_parameters" | python -m json.tool
 ----
 
 ====
