@@ -1,0 +1,113 @@
+=== Common Options
+
+[separator=¦]
+|===
+¦ Key ¦ Default Value ¦  Description ¦ Group
+
+¦ `url`
+¦ (none)
+¦ The connection URL to TigerGraph cluster. It can be a list of URLs separated by comma for load balancing.
+
+The port number can be retrieved by `gadmin config get Nginx.Port`. For TGCloud users, the default port number is 443.
+
+Example:
+http(s)://192.168.1.1:14240,
+http(s)://192.168.1.2:14240,
+http(s)://192.168.1.3:14240
+¦ General
+
+¦ `version`
+¦ (none)
+¦ TigerGraph version, e.g., "3.10.1", "4.1.0".
+¦ General
+
+¦ `graph`
+¦ (none)
+¦ The graph name.
+¦ General
+
+¦ `username`
+¦ (none)
+¦ The GSQL username.
+¦ Authentication
+
+(The username/password pair or secret based authentication is more preferred than a fixed token, as it can generate and refresh token automatically.)
+
+¦ `password`
+¦ (none)
+¦ The GSQL password.
+¦ Authentication
+
+¦ `secret`
+¦ (none)
+¦ The GSQL secret, which is recommended for TGCloud users.
+¦ Authentication
+
+¦ `token`
+¦ (none)
+¦ The classic Bearer token or JWT(since 3.10.1) for RESTPP authentication.
+¦ Authentication
+
+¦ `ssl.mode`
+¦ basic
+¦ The SSL mode, supported values: `basic`, `verifyCA` and `verifyHostname`.
+
+When setting it to `verifyCA` or `verifyHostname`, the truststore file should be given.
+¦ SSL
+
+¦ `ssl.truststore`
+¦ (none)
+¦ Filename of the truststore which stores the SSL certificate chains.
+
+Add `--files /path/to/trust.jks` when submitting the Spark job.
+¦ SSL
+
+¦ `ssl.truststore.type`
+¦ JKS
+¦ Truststore type, e.g., JKS, PKCS12
+¦ SSL
+
+¦ `ssl.truststore.password`
+¦ (none)
+¦ Password of the truststore.
+¦ SSL
+
+¦ `io.connect.timeout.ms`
+¦ 30000
+¦ Connect timeout in ms.
+¦ Transport Timeout
+
+¦ `io.read.timeout.ms`
+¦ 60000
+¦ Socket read timeout in ms.
+¦ Transport Timeout
+
+¦ `io.retry.interval.ms`
+¦ 5000
+¦ The initial retry interval for transport timeout.
+¦ Transport Timeout
+
+¦ `io.max.retry.interval.ms`
+¦ 10000
+¦ The maximum retry interval for transport timeout.
+¦ Transport Timeout
+
+¦ `io.max.retry.attempts`
+¦ 5
+¦ The maximum retry attempts for transport timeout.
+¦ Transport Timeout
+
+¦ `log.level`
+¦ (none)
+¦ The log level of the default logger. Available values: "0", "1", "2" and "3", which represent "ERROR", "WARN", "INFO" and "DEBUG".
+
+The Spark logging configurations(log4j) will be omitted if this option is set.
+
+The log will be printed to stderr unless `log.path` is set.
+¦ Logging
+
+¦ `log.path`
+¦ (none)
+¦ The log file name pattern, e.g., "/tmp/tigergraph-spark-connector.log". It requires setting `log.level` first.
+¦ Logging
+|===

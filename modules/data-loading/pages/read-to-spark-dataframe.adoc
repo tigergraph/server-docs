@@ -1,0 +1,542 @@
+= Read to Spark Dataframe
+
+The TigerGraph Spark Connector is used with
+https://spark.apache.org[Apache Spark] to read data from TigerGraph.
+
+Supported reader types:
+
+* Read Vertices
+* Read Edges
+* Run Pre-installed Query
+* Run Interpreted Query
+
+include::partial$spark/jdbc-deprecation.adoc[]
+
+== Prerequisite
+
+include::partial$spark/prerequisite.adoc[]
+
+== Overview
+TigerGraph Spark connector provides 4 kinds of reader options to read data from TigerGraph:
+
+[separator=¦]
+|===
+¦ Option ¦ Description
+
+¦ `query.vertex`
+¦ Read vertex/vertices with the attributes.
+
+¦ `query.edge`
+¦ Read edge(s) with the attributes.
+
+¦ `query.installed`
+¦ Run a pre-installed query and read the outputs of `PRINT` statement.
+
+¦ `query.interpreted`
+¦ Run a query in interpreted mode and read the outputs of `PRINT` statement.
+|===
+
+Please refer to the following sections for detailed usage and examples. Prior to that, ensure that the connection options are defined in advance.
+
+include::partial$spark/pre_def_options.adoc[]
+
+== Read Vertices
+=== Read all vertices by type
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.vertex`
+¦ <vertex_type>
+|===
+.Example: read all vertices of type `Person`
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.vertex", "Person")
+    .load()
+
+df.show()
+----
+.Results
+[source]
+----
++--------+--------+---+------+-----+
+|    v_id|    name|age|gender|state|
++--------+--------+---+------+-----+
+|person42|person42| 42|female|   ny|
+|person12|person12| 12|  male|   ny|
++--------+--------+---+------+-----+
+----
+
+=== Partitioned Vertex Query
+To fully utilize the parallel and distributed processing capabilities of Spark and TigerGraph, it is recommended to use partitioned queries. This approach involves splitting a query into multiple range queries that are executed in parallel.
+
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.partition.key`
+¦ The name of the attribute that has been indexed.
+
+¦ `query.partition.num`
+¦ The expected partition number.
+
+¦ `query.partition.upper.bound`
+¦ The upper bound used to calculate the partition stride.
+
+¦ `query.partition.lower.bound`
+¦ The lower bound used to calculate the partition stride.
+
+|===
+
+[NOTE]
+====
+Notice that `query.partition.upper.bound` and `query.partition.lower.bound` are just used to decide the partition stride, not for filtering the vertices.
+====
+
+.Example
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.vertex", "Person")
+    .option("query.partition.key", "age")
+    .option("query.partition.num", "5")
+    .option("query.partition.upper.bound", "50")
+    .option("query.partition.lower.bound", "20")
+    .load()
+
+df.show()
+----
+This query will generate 5 separate range queries:
+
+* age < 20
+* 20 ≤ age < 30
+* 30 ≤ age < 40
+* 40 ≤ age < 50
+* 50 ≤ age
+
+
+=== Read a vertex by primary ID
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.vertex`
+¦ <vertex_type>.<vertex_id>
+|===
+.Example: read a vertex of type `Person` and primary ID `person2`
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.vertex", "Person.person2")
+    .load()
+
+df.show()
+----
+.Results
+[source]
+----
++--------+--------+---+------+-----+
+|    v_id|    name|age|gender|state|
++--------+--------+---+------+-----+
+| person2| person2|  3|  male|   tx|
++--------+--------+---+------+-----+
+----
+
+== Read Edges
+=== Read all edges of a vertex
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.edge`
+¦ <src_vertex_type>.<src_vertex_id>
+|===
+.Example: read all edges of vertex type `Person`, ID `person1`
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.edge", "Person.person1")
+    .load()
+
+df.show()
+----
+.Results
+[source]
+----
++---------+-------+-------+-------+-------+--------------------+
+|from_type|from_id|to_type|  to_id| e_type|          attributes|
++---------+-------+-------+-------+-------+--------------------+
+|   Person|person1|  Photo|photo16|  Likes|{"click_time":"20...|
+|   Person|person1|  Short| short1|  Likes|{"click_time":"20...|
+|   Person|person1|  Short| short1|Watches|      {"share":true}|
+|   Person|person1|  Short|short19|Watches|      {"share":true}|
++---------+-------+-------+-------+-------+--------------------+
+----
+The results can contain different types of edges, so the edge attributes won't be flattened.
+
+=== Read edges of a vertex by edge type
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.edge`
+¦ <src_vertex_type>.<src_vertex_id>.<edge_type>
+|===
+.Example: read all edges of type `Likes` from vertex type `Person`, ID `person1`
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.edge", "Person.person1.Likes")
+    .load()
+
+df.show()
+----
+.Results
+[source]
+----
++---------+-------+-------+-------+-------------------+
+|from_type|from_id|to_type|  to_id|         click_time|
++---------+-------+-------+-------+-------------------+
+|   Person|person1|  Photo|photo16|2024-01-22 03:16:45|
+|   Person|person1|  Short| short1|2019-07-15 09:23:41|
++---------+-------+-------+-------+-------------------+
+----
+
+=== Read edges of a vertex by edge type and target vertex type
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.edge`
+¦ <src_vertex_type>.<src_vertex_id>.<edge_type>.<tgt_vertex_type>
+|===
+.Example: read all edges of type `Likes` from vertex type `Person`, ID `person1` to vertex type `Photo`
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.edge", "Person.person1.Likes.Photo")
+    .load()
+
+df.show()
+----
+.Results
+[source]
+----
++---------+-------+-------+-------+-------------------+
+|from_type|from_id|to_type|  to_id|         click_time|
++---------+-------+-------+-------+-------------------+
+|   Person|person1|  Photo|photo16|2024-01-22 03:16:45|
+|   Person|person1|  Photo| photo7|2021-05-09 17:58:00|
++---------+-------+-------+-------+-------------------+
+----
+
+=== Read an edge by source vertex, target vertex, and edge type
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.edge`
+¦ <src_vertex_type>.<src_vertex_id>.<edge_type>.<tgt_vertex_type>.<tgt_vertex_id>
+|===
+.Example: read an edge of type `Likes` from vertex type `Person` and ID `person1`, to vertex type `Photo` and ID `photo7`
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.edge", "Person.person1.Likes.Photo.photo7")
+    .load()
+
+df.show()
+----
+.Results
+[source]
+----
++---------+-------+-------+------+-------------------+
+|from_type|from_id|to_type| to_id|         click_time|
++---------+-------+-------+------+-------------------+
+|   Person|person1|  Photo|photo7|2021-05-09 17:58:00|
++---------+-------+-------+------+-------------------+
+----
+
+[NOTE]
+====
+By default, we use "." to split the query fields. If the vertex ID contains ".", you can set a different separator to avoid the conflict:
+[source, scala]
+----
+.option("query.edge", "Person|jack.smith|Likes|Photo")
+.option("query.field.separator", "|")
+----
+====
+
+== Query Operators
+For the built-in vertex and edge queries mentioned above, there are several available query operators that can be used in combination.:
+[separator=¦]
+|===
+¦ Option ¦ Value ¦ Example
+
+¦ `query.op.select`
+¦ Attributes of the selected vertices/edges to return separated by comma.
+¦ `name,age`
+
+¦ `query.op.filter`
+¦ Conditions used to filter the vertices/edges to return. The parameter takes a list of conditions, which is a string of comma-separated values.
+¦ `age>20,gender=male`
+
+¦ `query.op.limit`
+¦ An integer value that specifies the maximum limit of the total number of vertices/edges to return.
+
+NOTE: When used with partitioned queries, the limit applies to each partition.
+¦ `50`
+
+¦ `query.op.sort`
+¦ Attributes to sort the results by. The parameter takes a list, which is a string of comma-separated values, and will sort all the vertices/edges based on the attributes provided in the list in order.
+
+NOTE: When used with partitioned queries, the sort applies within each partition.
+¦ `age,-salary`
+|===
+
+.Example: read top 10 vertices of type Person, sorted by age(ASC) and last_name(DESC)
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.vertex", "Person")
+    .option("query.op.limit", "10")
+    .option("query.op.sort", "age,-last_name")
+    .load()
+
+df.show()
+----
+
+.Example: read edges of type `Invest`, whose `ratio` attribute should be greater than 0.1, and select only the `timestamp` attribute:
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.edge", "Person.person1.Invest")
+    .option("query.op.filter", "ratio>0.1")
+    .option("query.op.select", "timestamp")
+    .load()
+
+df.show()
+----
+
+== Run a GSQL Query
+
+=== Run a Pre-installed Query
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.installed`
+¦ Name of the pre-installed query.
+
+¦ `query.params`
+¦ The query parameters in JSON format.
+
+Please refer to xref:tigergraph-server:API:index.adoc#_formatting_data_in_json[Formatting data in JSON].
+|===
+Example: run the query `topK` with k=10
+
+.GSQL Query `topK`
+[source, gsql]
+----
+CREATE QUERY topK (INT k) {
+    vSet = SELECT p FROM Person:p ORDER BY p.age LIMIT k;
+    PRINT vSet;
+}
+----
+.Reader Options
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.installed", "topK")
+    .option("query.params", "{\"k\": 10}")
+    .load()
+
+df.show()
+----
+
+=== Run an Interpreted Query
+[separator=¦]
+|===
+¦ Option ¦ Value
+
+¦ `query.interpreted`
+¦ Query body of an anonymous query.
+
+¦ `query.params`
+¦ The query parameters in query string format.
+
+Please refer to xref:tigergraph-server:API:index.adoc#_query_string_parameters[Query string parameters].
+|===
+Example: run the anonymous `topK` query in interpreted mode with k=10
+
+.Define the interpreted query body
+[source, scala]
+----
+val queryBody = """
+    INTERPRET QUERY (INT k) FOR GRAPH gsql_demo {
+        vSet = SELECT p FROM Person:p ORDER BY p.age LIMIT k;
+        PRINT vSet;
+    }
+"""
+----
+.Reader Options
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.interpreted", queryBody)
+    .option("query.params", "k=10")
+    .load()
+
+df.show()
+----
+
+=== DataFrame Schema
+
+==== Schema Inference
+The output format of a GSQL query is flexible, as you can include multiple `PRINT` statements within a single query, with each `PRINT` statement capable of printing multiple objects.
+
+By default, the output of each `PRINT` statement is converted into a row of a DataFrame:
+
+.A portion of a GSQL query with multiple PRINT statements
+[source, gsql]
+----
+...
+ListAccum<INT> @@list_accum = [1,3,5];
+PRINT @@list_accum, @@list_accum.size();
+PRINT @@list_accum.get(0);
+...
+----
+.The resulting DataFrame includes two rows corresponding to the outputs of two PRINT statements.
+[source]
+----
++------------------------------------------------+
+|results                                         |
++------------------------------------------------+
+|{"@@list_accum":[1,3,5],"@@list_accum.size()":3}|
+|{"@@list_accum.get(0)":1}                       |
++------------------------------------------------+
+----
+
+However, sometimes we want to convert a vertex expression set or an accumulator into a Spark DataFrame, with each element being transformed into a row.
+
+The connector can automatically expand the vertex set or accumulator to Spark DataFrame under the following conditions:
+
+* It is an installed query instead of an interpreted query;
+* It contains only one PRINT statement, which print a single object;
+* The printed object must either be a vertex expression set, or an accumulator.
+
+Otherwise, you can explicitly set `.option("query.results.extract", "true")`, which will try to expand the first printed object.
+
+.The above list accumulator is expanded by setting "query.results.extract" to true.
+[source]
+----
++-------+
+|results|
++-------+
+|1      |
+|3      |
+|5      |
++-------+
+----
+
+==== Custom Schema
+For interpreted queries and some installed queries, the schema cannot be inferred accurately, so it's required to manually provide the schema by `.schema(DDLString)`, whose column names should be the same as the corresponding JSON keys. Please check the example below:
+
+.Define the topK query in interpreted mode
+[source, scala]
+----
+val queryBody = """
+    INTERPRET QUERY (INT k) FOR GRAPH gsql_demo {
+        vSet = SELECT p FROM Person:p ORDER BY p.age LIMIT k;
+        PRINT vSet;
+    }
+"""
+----
+.1. without user given schema
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .options(tgOptions)
+    .option("query.interpreted", queryBody)
+    .option("query.results.extract","true") // explicitly expand the vertex
+    .option("query.params", "k=3")
+    .load()
+
+df.show()
++-----------------------------------------------------------------------------------------------------------+
+|results                                                                                                    |
++-----------------------------------------------------------------------------------------------------------+
+|{"v_id":"person1","attributes":{"gender":"male","name":"person1","state":"fl","age":1},"v_type":"Person"}  |
+|{"v_id":"person2","attributes":{"gender":"female","name":"person2","state":"ca","age":2},"v_type":"Person"}|
+|{"v_id":"person3","attributes":{"gender":"male","name":"person3","state":"ny","age":3},"v_type":"Person"}  |
++-----------------------------------------------------------------------------------------------------------+
+----
+
+.2. with user given schema
+[source, scala]
+----
+val df = spark.read
+    .format("tigergraph")
+    .schema("v_id STRING, gender STRING, name STRING, state STRING, age INT") // user given schema
+    .options(tgOptions)
+    .option("query.interpreted", queryBody)
+    .option("query.results.extract","true")  // explicitly expand the vertex set
+    .option("query.params", "k=3")
+    .load()
+
+df.show()
++-------+------+-------+-----+---+
+|v_id   |gender|name   |state|age|
++-------+------+-------+-----+---+
+|person1|male  |person1|fl   |1  |
+|person2|female|person2|ca   |2  |
+|person3|male  |person3|ny   |3  |
++-------+------+-------+-----+---+
+----
+
+== Connector Options
+include::partial$spark/common-options.adoc[]
+=== Query Options
+[separator=¦ ]
+|===
+¦ Key ¦ Default Value ¦ Description ¦ Group
+
+¦ `query.timeout.ms`
+¦ 16000
+¦ By default, an HTTP request in the TigerGraph system times out after 16 seconds. You can customize this timeout limit for a particular query instance by this option.
+
+Equivalent to RESTPP request header `GSQL-TIMEOUT`.
+¦ Query
+
+¦ `query.max.response.bytes`
+¦ (none)
+¦ Specify the response size limit of a query request.
+
+Equivalent to RESTPP request header `RESPONSE-LIMIT`.
+¦ Query
+|===
