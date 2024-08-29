@@ -37,8 +37,13 @@ For example, run the following command to create a backup for a database cluster
 $ gadmin backup create weekly
 ----
 
-This creates a backup file named `weekly-<timestamp>` at the xref:configurations.adoc[backup location you configured].
+This creates a backup named `weekly-<timestamp>` at the xref:configurations.adoc[backup location you configured].
 
+You can also make `weekly` a complete tag by using the flag `--custom-tag`:
+----
+$ gadmin backup create weekly --custom-tag
+----
+This creates a backup named `weekly` without the `-<timestamp>` suffix.
 
 [#_metadata_backup_optional]
 === Metadata backup (Optional)

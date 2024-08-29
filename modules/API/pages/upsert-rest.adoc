@@ -61,7 +61,6 @@ Default value is `false`.
 
 This parameter is mutually exclusive with the general `vertex_must_exist` parameter and will return an error if both are used.
 
-|
 |===
 
 == Response
@@ -280,7 +279,7 @@ The following requests upserts two vertices with the defined composite key, as w
 
 [.wrap,console]
 ----
-curl -X POST "localhost:9000/graph/Person_Movie" -d '
+curl -X POST "localhost:14240/restpp/graph/Person_Movie" -d '
 {
   "vertices": {
     "Composite_Person":{
@@ -358,7 +357,7 @@ The following example submits an upsert request by using the payload data stored
 
 [source,bash]
 ----
-curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph"
+curl -X POST --data-binary @add_id6.json "http://localhost:14240/restpp/graph"
 
 {"accepted_vertices":1,"accepted_edges":2}
 ----
@@ -368,7 +367,7 @@ Therefore, inserting the content of `add_id6.json` to an empty graph would cause
 
 [source,bash]
 ----
-curl -X POST --data-binary @add_id6.json "http://localhost:9000/graph?vertex_must_exist=true"
+curl -X POST --data-binary @add_id6.json "http://localhost:14240/restpp/graph?vertex_must_exist=true"
 
 {
   "version": {
@@ -416,7 +415,7 @@ Request::
 --
 [source.wrap,console]
 ----
-curl --data-binary @vertices.json http://localhost:9000/graph/social
+curl --data-binary @vertices.json http://localhost:14240/restpp/graph/social
 ----
 --
 Request body::
@@ -452,5 +451,5 @@ If you add the `gsql-atomic-level` header to the request URL and set its value t
 [source.wrap,console]
 ----
 # This is an atomic request
-curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:9000/graph/social
+curl -X POST -H 'gsql-atomic-level:atomic' --data-binary @vertices.json http://localhost:14240/restpp/graph/social
 ----

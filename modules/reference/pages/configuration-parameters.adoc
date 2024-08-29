@@ -74,8 +74,6 @@ stored |`configs`
 |Controller.Connect.PruneIntervalMin |The wait time, in minutes, between each prune
 job that removes data already loaded by GSQL in Kafka. Accepts an integer from 1 to 59, inclusive.| `1`
 
-|Controller.Connect.RedactSensitiveConfigValue|Whether to redact sensitive information when displaying the configurations of a connector. |`true`
-
 |Controller.FileRepoRelativePath |The relative path (to the
 System.DataRoot) of the file repo for file management |`files`
 
@@ -1243,6 +1241,10 @@ backup |`nan`
 |System.Backup.S3.AWSSecretAccessKey |The secret access key for s3
 bucket |`nan`
 
+|System.Backup.S3.RoleARN |The AWS role for accessing s3 bucket, its use is prioritized over the combination of access key id and secret access key in accessing s3. To understand what AWS role ARN is, see link:https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-arns[AWS role ARN doc].
+
+*NOTE*: This is only for AWS S3, and TigerGraph assumes the credentials for using `sts:AssumeRole` have been set up. You can verify the credentials are ready by running link:https://docs.aws.amazon.com/cli/latest/reference/sts/assume-role.html#examples[aws sts assume-role]. One way to set up credentials is to configure access key id, secret access key and region with AWS CLI `aws configure`.|`nan`
+
 |System.Backup.S3.BucketName |The S3 bucket name |`nan`
 
 |System.Backup.S3.Enable |Backup data to S3 path |`false`
@@ -1267,11 +1269,6 @@ Kafka Topic, by default is empty. |`nan`
 
 |System.DataRoot |The root directory for data
 |`/home/tigergraph/tigergraph/data`
-
-// DOC-1794 calls for unpublishing ElasticCluster
-//|System.ElasticCluster.Enabled |Enable elastic cluster |`false`
-
-//|System.ElasticCluster.MountPrefix |Elastic cluster mount prefix |`nan`
 
 |System.Event.EventInputTopic |Kafka topic name of event input queue
 |`EventInputQueue`
