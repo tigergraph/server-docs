@@ -1,46 +1,50 @@
 = Query Privilege Migration
 
-This page provides detailed procedures for migrating query privileges when upgrading to version 4.1.0. It also outlines the specific privileges required to successfully carry out the migration process.
+This page provides detailed procedures for migrating query privileges when upgrading to TigerGraph 4.1 from 3.x.
+It also outlines the specific privileges required to successfully carry out the migration process.
 
 To see user management tasks under the xref:access-control-model.adoc#_access_control_lists[Access Control List (ACL)] model, see xref:acl-management.adoc[].
 
 To see Role-based Access Control(RBAC) Object-Based privileges, see xref:rbac-row-policy/rbac-row-policy.adoc#_object_based_privileges[].
 
 == Migrate ACL Privileges
-Starting with version 4.1.0, Access Control Lists (ACLs) are deprecated.
+Starting with TigerGraph 4.1.0, Access Control Lists (ACLs) are deprecated.
 
 Query ACL privileges should be migrated automatically during upgrade. 
 
 [#_migrate_query_acl_owner]
 === Migrate Query ACL Owner
-The query ACL owner should be granted `OWNERSHIP` privilege on the query owned by this user/role after upgrade.
+The query ACL owner will be granted `OWNERSHIP` privilege on the query owned by this user/role after upgrade.
 
 [#_migrate_query_acl_reader]
 === Migrate Query ACL Reader
-The query ACL readers should be granted `READ` privilege on the same query after upgrade.
+The query ACL readers will be granted `READ` privilege on the same query after upgrade.
 
 [#_migrate_query_acl_executor]
 === Migrate Query ACL Executor
-The query ACL executors should be granted `EXECUTE` privilege on the same query after upgrade.
+The query ACL executors will be granted `EXECUTE` privilege on the same query after upgrade.
 
 [NOTE]
 ====
-In some cases, query ACL privileges can't be migrated successfully, the owner of queries should become the user who operates the upgrade procedure.
+In some cases, query ACL privileges can't be migrated successfully.
+Then the owner of queries will become the user who operates the upgrade procedure.
 
-If all ACL query privileges are necessary to be kept, we recommend that you contact TigerGraph Support for the best way to restore consistency.
+Contact TigerGraph Support if you need help retaining ACL-like privileges after upgrading from version 3.x to 4.x.
 ====
 
 == Migrate Role-based Access Control(RBAC) Object-Based Query Privileges
-Since 4.1.0, Query Object-Based privileges are introduced. `CREATE` privilege on queries should exist on the global and local graph scope. Other query privileges, including `READ`, `UPDATE`, `DROP`, `INSTALL`, `EXECUTE` and `OWNERSHIP`, should only exist on the query scope.
+Query Object-Based privileges are introduced in TigerGraph 4.1.
+`CREATE` privilege on queries will exist only at the global and local graph scope.
+Other query privileges, including `READ`, `UPDATE`, `DROP`, `INSTALL`, `EXECUTE` and `OWNERSHIP`, will exist only at the query scope.
 
-All existing Query privileges should be migrated into Query Object-Based privileges during upgrade and fully backwards-compatible with existing queries.
+All existing Query privileges will be migrated into Query Object-Based privileges during upgrade and be fully backwards-compatible with existing queries.
 
 [#_changes_for_builtin_roles]
 === Changes for Built-in roles
-`READ_QUERY` and `WRITE_QUERY` privileges should be removed from all built-in roles.
-The roles held `WRITE_QUERY` privilege before 4.1.0 should hold `CREATE_QUERY` privilege in the same scope since 4.1.0.
-`superuser` should be the owner of all queries.
-`admin` in one graph should be the owner of all queries in a local graph.
+`READ_QUERY` and `WRITE_QUERY` privileges will be removed from all built-in roles.
+The roles held `WRITE_QUERY` privilege before 4.1.0 will hold `CREATE_QUERY` privilege in the same scope since 4.1.0.
+`superuser` will be the owner of all queries.
+`admin` in one graph will be the owner of all queries in a local graph.
 
 To check the detailed changes for all built-in roles, please check the following table.
 
@@ -87,50 +91,50 @@ To check the detailed changes for all built-in roles, please check the following
 
 [#_migrate_rbac_read_query]
 === Migrate RBAC READ_QUERY privilege
-`READ_QUERY` privilege should be migrated to `READ_QUERY` privilege on the query object level for all existing queries since we should only keep query-level `READ_QUERY` privilege for all queries.
+`READ_QUERY` privilege will be migrated to `READ_QUERY` privilege on the query object level for all existing queries since we only keep query-level `READ_QUERY` privilege for all queries.
 
-This migration process should be different for our existing `READ_QUERY` privileges when your users are granted with built-in roles or user-defined roles.
+This migration process may be different for existing `READ_QUERY` privileges granted to built-in roles vs. user-defined roles.
 
 ==== Migrate RBAC READ_QUERY privilege for Built-in roles
-The `READ_QUERY` privilege in global and graph level scopes for built-in roles should not be kept since 4.1.0. For the detailed changes of built-in roles, please refer to the table above.
+The `READ_QUERY` privilege in global and graph level scopes for built-in roles is deprecated in TigerGraph 4.1. For the detailed changes of built-in roles, please refer to the table above.
 
-If users were granted built-in roles with `READ_QUERY` privileges before upgrade, the `READ_QUERY` privileges should be granted to the users directly with all existing queries in the same scope.
+If users were granted built-in roles with `READ_QUERY` privileges before upgrade, the `READ_QUERY` privileges will be granted to the users directly with all existing queries in the same scope.
 
 ====
 .For example:
-* User `Alice` is granted with the built-in role `observer` in graph `recommend` in 3.10.0, and there are two queries `query1` and `query2` in graph `recommend`. After the upgrade process for 4.1.0, user `Alice` should have the `READ_QUERY` privileges on queries `query1` and `query2` in graph `recommend`.
+* User `Alice` is granted with the built-in role `observer` in graph `recommend` in TigerGraph 3.10, and there are two queries `query1` and `query2` in graph `recommend`. After the upgrade to TigerGraph 4.1, user `Alice` will have the `READ_QUERY` privileges on queries `query1` and `query2` in graph `recommend`.
 ====
 
 ==== Migrate RBAC READ_QUERY privilege for User-Defined roles
-If users were granted user-defined roles with `READ_QUERY` privileges before upgrade, the `READ_QUERY` privileges should be granted to the same role with all existing queries in the same scope.
+If users were granted user-defined roles with `READ_QUERY` privileges before upgrade, the `READ_QUERY` privileges will be granted to the same role with all existing queries in the same scope.
 
 ====
 .For example:
-* User `Bob` is granted with the user-defined role `myRole` with `READ_QUERY` in graph `recommend` in 3.10.0, and there are two queries `query1` and `query2` in graph `recommend`. After the upgrade process for 4.1.0, role `myRole` should have the `READ_QUERY` privileges on query `query1` and `query2` in graph `recommend`. User `Bob` can still read queries `query1` and `query2` since he is still granted with role `myRole`.
+* User `Bob` was granted the user-defined role `myRole` with `READ_QUERY` privilege in graph `recommend` in TigerGraph 3.10, and there are two queries `query1` and `query2` in graph `recommend`. After the upgrade to TigerGraph 4.1, role `myRole` will have the `READ_QUERY` privileges on query `query1` and `query2` in graph `recommend`. User `Bob` can still read queries `query1` and `query2` since he is still granted the role `myRole`.
 ====
 
 [#_migrate_rbac_write_query]
 === Migrate RBAC WRITE_QUERY privilege
-In our previous versions, `WRITE_QUERY` privilege means we make all changes for a query. Hence, `WRITE_QUERY` privilege should be migrated to all privileges except `OWNERSHIP` for all existing queries, including `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY` on each query object and `CREATE_QUERY` on the same scope for `WRITE_QUERY` privilege.
+Prior to TigerGraph 4.1, `WRITE_QUERY` privilege permited making any type of change to a query. Hence, `WRITE_QUERY` privilege will be migrated to all privileges except `OWNERSHIP` for all existing queries, including `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY` on each query object and `CREATE_QUERY` on the same scope for `WRITE_QUERY` privilege.
 
-Similarly, this migration process should be different for our existing `WRITE_QUERY` privileges when your users are granted with built-in roles or user-defined roles.
+Similarly, this migration process differs for `WRITE_QUERY` privileges when users are granted built-in roles vs. user-defined roles.
 
 ==== Migrate RBAC WRITE_QUERY privilege for Built-in roles
-The `WRITE_QUERY` privilege for built-in roles should not be kept since 4.1.0. For the detailed changes of built-in roles, please refer to the table above.
+The `WRITE_QUERY` privilege is deprecated in TigerGraph 4.1. For the detailed changes of built-in roles, please refer to the table above.
 
-If users were granted built-in roles with `WRITE_QUERY` privileges before upgrade, following privileges, `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY`, should be granted to the users directly with all existing queries in the same scope.
+If users were granted built-in roles with `WRITE_QUERY` privileges before upgrade, the following privileges, `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY`, will be granted to the users directly with all existing queries in the same scope.
 
 ====
 .For example:
-* User `Alice` is granted with the built-in role `designer` in graph `recommend` in 3.10.0, and there are two queries `query1` and `query2` in graph `recommend`. After the upgrade process for 4.1.0, user `Alice` should hold the `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY` privileges on queries `query1` and `query2` in graph `recommend`. At the same time, user `Alice` can still create queries in graph `recommend` since she still holds the role `designer` in graph `recommend`, which provide the `CREATE_QUERY` privilege in graph `recommend`.
+* User `Alice` was granted the built-in role `designer` in graph `recommend` in TigerGraph 3.10, and there are two queries `query1` and `query2` in graph `recommend`. After the upgrade to TigerGraph 4.1, user `Alice` will hold the `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY` privileges on queries `query1` and `query2` in graph `recommend`. At the same time, user `Alice` can still create queries in graph `recommend` since she still holds the role `designer` in graph `recommend`, which provides the `CREATE_QUERY` privilege in graph `recommend`.
 ====
 
 ==== Migrate RBAC WRITE_QUERY privilege for User-Defined roles
-The `WRITE_QUERY` privilege in global and graph level scopes for user-defined roles should not be kept since 4.1.0.
+The `WRITE_QUERY` privilege in global and graph level scopes for user-defined roles is deprecated in TigerGraph 4.1.
 
-If users were granted user-defined roles with `WRITE_QUERY` privileges before upgrade, following privileges, `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY`, should be granted to the same role with all existing queries in the same scope. At the same time, `CREATE_QUERY` privilege on the same scope should be granted to the same role in the same scope.
+If users were granted user-defined roles with `WRITE_QUERY` privileges before upgrade, the following privileges `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY`, will all be granted to the same role with all existing queries in the same scope. At the same time, `CREATE_QUERY` privilege on the same scope will be granted to the same role in the same scope.
 
 ====
 .For example:
-* User `Bob` is granted with the user-defined role `myRole` with `WRITE_QUERY` in graph `recommend` in 3.10.0, and there are two queries, `query1` and `query2` in graph `recommend`. After the upgrade process for 4.1.0, role `myRole` should have the `CREATE_QUERY` privilege in graph `recommend`, and `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY` privileges on query `query1` and `query2` in graph `recommend`. User `Bob` can still create queries in graph `recommend`, and read, update, drop, install and execute existing queries `query1` and `query2` since he is still granted with role `myRole`.
+* User `Bob` was granted with the user-defined role `myRole` with `WRITE_QUERY` in graph `recommend` in TigerGraph 3.10, and there are two queries, `query1` and `query2` in graph `recommend`. After the upgrade to TigerGraph 4.1, role `myRole` will have the `CREATE_QUERY` privilege in graph `recommend`, and `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY` privileges on query `query1` and `query2` in graph `recommend`. User `Bob` can still create queries in graph `recommend`, and read, update, drop, install and execute existing queries `query1` and `query2` since he is still granted the role `myRole`.
 ====
