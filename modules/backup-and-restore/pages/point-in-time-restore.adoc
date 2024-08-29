@@ -13,7 +13,9 @@ The timepoint should be in timestamp format.
 $ gadmin backup restore <timepoint_to_restore> --time-point
 ----
 
-For example, if you want to restore the cluster to the timepoint `2024-06-01T14:24:31Z` , run `gadmin backup restore 2024-06-01T14:24:31Z --time-point`. remember, the timepoint is precise to only seconds, other minor time parts will be truncated.
+For example, if you want to restore the cluster to the time `2024-06-01T14:24:31Z` , run `gadmin backup restore 2024-06-01T14:24:31Z --time-point`
+
+NOTE: The restore operation has 1 second granularity.  Fractional sections will be ignored.
 
 Point-in-Time Restore relies on both full and differential backups to restore the database to a specific time. When selecting a time point for restoration, it is crucial to ensure that the chosen time point meets certain conditions. Specifically, the time point must not fall under the following cases:
 
