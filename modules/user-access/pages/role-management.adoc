@@ -4,8 +4,6 @@
 
 This page explains the procedures for various role management tasks under TigerGraph's role-based access control model.
 
-To see role management tasks under the Access Control List (ACL) model, see xref:acl-management.adoc[].
-
 [NOTE]
 ====
 For Row Policy and Object-Based privilege EBNF examples see xref:tigergraph-server:user-access:rbac-row-policy/row-policy-ebnf.adoc[].
@@ -76,8 +74,7 @@ Successfully created global roles: [role1].
 
 Users with the `READ_ROLE` privilege in a scope can view the privileges on the roles in that scope.
 
-`SHOW GRANTS TO ROLE` shows both the RBAC and ACL privileges of a role.
-`SHOW PRVILEGE ON ROLE` shows only the `RBAC` privileges of a role.
+Both `SHOW GRANTS TO ROLE` and `SHOW PRVILEGE ON ROLE` shows the RBAC privileges of a role.
 
 === Syntax
 
@@ -109,9 +106,6 @@ READ_DATA
 CREATE_DATA
 - Attribute 'locationIP' Privileges:
 UPDATE_DATA
-
-ACL privileges of Role: "moderator"
-No ACL privileges.
 ----
 
 The following command shows all privileges of the roles `role1` and `role2`:
@@ -121,7 +115,6 @@ The following command shows all privileges of the roles `role1` and `role2`:
 GSQL > SHOW PRIVILEGE ON ROLE role1 , role2
 ----
 
-To view the ACL privileges of a role, see xref:acl-management.adoc#_view_acl_privileges_of_a_role[View ACL privileges of a role].
 
 == View all users who are assigned a role
 You can specify a role and view all users who are assigned that role.
@@ -208,9 +201,7 @@ GSQL > GRANT PRIVILEGE WRITE_QUERY, WRITE_ROLE
         ON GRAPH example_graph TO role1 , role2
 ----
 
-This will allow users with the roles `role1` and `role2` to edit and install queries, as well as modify roles on the graph `example_graph`. To see a full list of privileges and the command they allow users to run, see xref:reference:list-of-privileges.adoc[].
-
-To grant xref:access-control-model.adoc#_access_control_lists[ACL privileges] to a role, see xref:acl-management.adoc#_grant_acl_privilege_to_a_role[Grant ACL privileges to a role].
+This will allow users with the roles `role1` and `role2` to create, read, update, drop, install and execute existing queries, as well as modify roles on the graph `example_graph`. To see a full list of privileges and the command they allow users to run, see xref:reference:list-of-privileges.adoc[].
 
 == Grant type-level privilege to a role
 You can grant certain privileges (`READ_DATA`, `CREATE_DATA`, `DELETE_DATA`, `UPDATE_DATA`) on a type level to the roles in that scope.
@@ -292,13 +283,11 @@ REVOKE PRIVILEGE <privilege_name1> (, privilege_name2)*
 +
 [source,text]
 ----
-GSQL > REVOKE PRIVILEGE WRITE_QUERY
+GSQL > REVOKE PRIVILEGE WRITE_SCHEMA
         ON GRAPH example_graph FROM role1
 ----
 
-This will revoke the `WRITE_QUERY` privilege from the role `role1` on graph `example_graph.`
-
-To revoke xref:access-control-model.adoc#_access_control_lists[ACL privileges] from a role, see xref:acl-management.adoc#_revoke_acl_privilege_from_a_role[Revoke ACL privileges from a role].
+This will revoke the `WRITE_SCHEMA` privilege from the role `role1` on graph `example_graph.`
 
 == Revoke type-level privileges
 You can revoke certain privileges from the type level with the `REVOKE PRIVILEGE` command.
