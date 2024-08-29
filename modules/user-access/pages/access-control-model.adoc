@@ -2,9 +2,8 @@
 :description: A brief explanation of TigerGraph's access control model.
 :page-aliases: roles-and-privileges.adoc
 
-TigerGraph supports both role-based access control (RBAC) and access control lists (ACL).
+TigerGraph supports role-based access control (RBAC).
 RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
-ACLs let you grant fine-grained access to a specific query.
 
 CAUTION: All access control is only in effect when user authentication is enabled.
 Authentication is not enabled by default and xref:enabling-user-authentication.adoc[must be enabled manually].
@@ -51,8 +50,8 @@ Only privileges pertaining to graph data (`CREATE_DATA`, `READ_DATA`, `UPDATE_DA
 
 For example:
 
-* A role with `WRITE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
-In contrast, a role with `WRITE_QUERY` on the global scope can create queries on all graphs.
+* A role with `CREATE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
+In contrast, a role with `CREATE_QUERY` on the global scope can create queries on all graphs.
 * A role with `UPDATE_DATA` on the `age` attribute of the `Person` vertex on graph `Social` are allowed to run queries that update the value of the `age` attribute of `Person` vertices.
 * A role with `READ_DATA` on the global scope can run queries that read graph data on any graph, any type, or any attribute.
 They do not need to have privileges specifically for those graphs, types, or attributes.
@@ -132,15 +131,108 @@ Running the query would at a minimum require `READ_DATA` on type `City` and `UPD
 If a user were to make the following REST request:
 
 [source.wrap,console]
-$ curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1"
+$ curl -X GET "http://localhost:14240/restpp/graph/Example_Graph/vertices/Person/id1"
 
 The request requires that the user has at least `READ_DATA` on type `Person`, or all attributes of type `Person`.
 However, if the user specify the attributes for the request to return:
 
 [source.wrap,console]
-$ curl -X GET "http://localhost:9000/graph/Example_Graph/vertices/Person/id1?select=age"
+$ curl -X GET "http://localhost:14240/restpp/graph/Example_Graph/vertices/Person/id1?select=age"
 
 The request would no longer require `READ_DATA` on the attribute `name` and only require `READ_DATA` on `id` and `age`.
+
+=== Fine-grained query privileges
+
+Fine-grained query privileges `CREATE_QUERY`, `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, and `EXECUTE_QUERY` are also special in terms of their scopes.
+
+`CREATE_QUERY` can only be granted/revoked at global and graph level. `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, and `EXECUTE_QUERY` can only be granted/revoked at existing individual query objects.
+
+These privileges govern how a user interact with specific query objects. 
+
+NOTE: Built-in role `superuser` has all fine-grained query privileges on all existing queries in global. Built-in role `admin` has all fine-grained query privileges on all existing queries in the graph where `admin` is granted on. 
+
+
+[.test-class]
+|===
+|Privilege |Global/Graph level |Query level
+
+|`CREATE_QUERY`
+|Permission to create query in global or specific graph where the privilege is granted.
+|N/A.
+This privilege is not applicable on the query level.
+
+
+|`READ_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to read query content on the specific query object where the privilege is granted.
+
+|`UPDATE_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to replace query content on the specific query object where the privilege is granted.
+
+|`DROP_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to drop query on the specific query object where the privilege is granted.
+
+|`INSTALL_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to install query on the specific query object where the privilege is granted.
+
+|`EXECUTE_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to run or interpret query on the specific query object where the privilege is granted.
+
+|===
+
+==== Examples
+
+Assume we created a graph `g1` and assume user does not hold special built-in roles such as `superuser` and `admin`.
+[.wrap,gsql]
+----
+GSQL > CREATE GRAPH g1(*)
+----
+
+To create a query `q1`, `CREATE` privilege on query objects in global or graph `g1` is required.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > create query q1() {print "q1";}
+----
+
+To update a query `q1`, `UPDATE` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > create or replace query q1() {print "new q1";}
+----
+
+To drop a query `q1`, `DROP` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > drop query q1
+----
+
+To install a query `q1`, `INSTALL` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > install query q1
+----
+
+To run/interpret a query `q1`, `EXECUTE` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > run query q1()
+GSQL > interpret query q1()
+----
+
 
 === Roles
 
@@ -233,150 +325,10 @@ Users can define roles with their own list of privileges they want to grant to t
 To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:role-management.adoc[Role Management].
 
 
-[#_access_control_lists]
-== Access control lists
-ACLs give you the ability to apply finer-grained access control to a GSQL query by specifying who can read or execute the query.
-ACLs are bound to queries.
-
-An ACL contains two entries - `READ` and `EXECUTE` - for read privilege and execute (run) privilege on a given query, respectively.
-Both entries have a permission list that contains roles.
-Users with roles on the list have the permission to either read or execute the query.
-
-[#_acl_entry_status]
-=== ACL entry status
-In the ACL of a query, each type of privilege's entry (`READ`/`EXECUTE`) has three statuses:
-
-Unspecified:: Default status.
-When an ACL privilege is unspecified, RBAC governs the access for that privilege
-
-Specified Roles:: Only the users with specified roles have the ACL privilege.
-Any roles (local/global, built-in/user-defined) can be a grantee of an ACL privilege.
-
-Nobody:: No one, not even the owner, can access the query, even with corresponding RBAC privileges.
-
-=== Query owner
-Every query has one and only one owner.
-Only the owner of a query can:
-
-* run ACL management commands to modify the ACL of query.
-* run `CREATE OR REPLACE` to update a query.
-When the query owner runs `CREATE OR REPLACE` to update a query, the ACL on the query remains unchanged.
-
-When a query is created, the creator of the query is assigned to be the owner automatically.
-When a user is the owner of a query, the user cannot be dropped unless the query is dropped or if the owner of the query is changed.
-
-NOTE: When you upgrade from a version prior to 3.4, the old queries have no owner.
-Users with `WRITE_ROLE` privilege on the graph or on the global scope can assign an owner to a query without owners.
-
-[#_acl_password]
-=== ACL password
-Users have the option of xref:acl-management.adoc#_set_acl_password[setting an ACL password].
-When a user has an ACL password, operations that modify ACL privileges of queries owned by the user requires the ACL password.
-These operations include:
-
-* Changing the owner of a query
-* Modifying the ACL privileges on a query
-
-[#_acl_examples]
-=== Examples
-
-==== Using `NOBODY` entry status to hide query from everyone
-
-In the following example, `user1` protects their query `q1` from being seen by anyone including users with `superuser` roles, by setting the status of the `READ` entry of their query's ACL to `NOBODY`.
-
-Even though no one can see the content of the query, but since the `EXECUTE` entry is unspecified, users with sufficient RBAC privileges can still execute the query.
-This allows you to protect the content of a sensitive query, but still allows people to run it.
-
-The following GSQL command are performed by `user1`.
-
-[source.wrap, gsql]
-----
-GSQL > GRANT ACL PRIVILEGE READ ON QUERY q1 TO NOBODY <1>
-[WARNING] The READ privileges on the query q1 are denied for any user.
-Successfully granted READ on query q1 in the graph ldbc_snb to roles: <NOBODY>.
-GSQL > SHOW ACL PRIVILEGE ON QUERY q1 <2>
-Query: "q1"
-    - Owner:   user1
-    - READ:    <Nobody> <2>
-    - EXECUTE: <Unspecified>
-GSQL > SHOW QUERY q1
-CREATE QUERY q1 () {
-  /******* Query Content is Hidden. Require ACL privilege READ *******/ <3>
-}
-GSQL > ALTER ACL PASSWORD SET XXXXXX <4>
-----
-<1> This command forbids anyone to read the query, even the owner.
-See <<_acl_entry_status, ACL entry status: `NOBODY`>>.
-<2> Use the `SHOW ACL PRIVILEGE ON QUERY` command to verify the `NOBODY` status of the `READ` entry.
-<3> Query content cannot be seen by any user, including the owner.
-<4> If user `user1` does not have an <<_acl_password,ACL password>>, it is important to set one.
-Otherwise, other users with the `WRITE_ROLE` privilege can xref:acl-management.adoc#_change_query_owner[change the owner of the query].
-
-==== Granting and revoking `EXECUTE` Privilege
-
-In this example, the superuser `tigergraph` grants and revokes `EXECUTE` privilege for query `q1` for roles `role1` and `admin`.
-
-User `user1` is first granted the privilege while `user2` is not, then the privilege is revoked from all users.
-
-[source.wrap,gsql]
-----
-GSQL > CREATE ROLE role1 ON GRAPH G1
-Successfully created local roles on graph 'G1': [role1].
-GSQL > GRANT ACL PRIVILEGE EXECUTE ON QUERY q1 TO role1, admin SECURED BY "example_password"
-Successfully granted EXECUTE on query q1 in the graph ldbc_snb to roles: [role1, admin].
-GSQL > SHOW ACL PRIVILEGE ON ROLE role1, admin
-Role: "role1"
-- QUERY:
-  - EXECUTE:
-    - Graph 'G1': [q1]
-Role: "admin"
-- QUERY:
-  - EXECUTE:
-    - Graph 'G1': [q1]
-GSQL > GRANT ROLE role1 ON GRAPH G1 TO user1
-GSQL > SHOW ACL PRIVILEGE ON USER user1
-User: "user1"
-- QUERY:
-  - EXECUTE:
-    - Graph 'G1': [q1]
-----
-
-If someone logs in as user `user2`, who doesn't have the roles `role1` or `admin`, and tries to run the query, their request is denied.
-
-[.wrap,gsql]
-----
-GSQL > INTERPRET QUERY q1()
-User 'user2' does not have the permission to run the command. Required ACL privilege EXECUTE on the query q1.
-----
-
-Log back in as the owner of the query, you can set ACL entries in the query to status `unspecified`.
-This disables ACL access control and revert access control to RBAC.
-[.wrap,gsql]
-----
-GSQL > REVOKE ACL PRIVILEGE EXECUTE ON QUERY q1 FROM ALL SECURED BY XXXXXX
-GSQL > SHOW ACL PRIVILEGE ON USER user1
-User: "user1"
-----
-
-
-== How permissions are evaluated
-All operations that don't involve queries are only governed by RBAC.
-ACLs only apply to queries.
-
-When it comes to evaluating permissions for operations on queries, ACLs are evaluated first:
-
-* When the ACL entry is _unspecified_, RBAC governs the access control of the resource.
-By default, both ACL entries (`READ` and `EXECUTE`) for a query are _unspecified_.
-* If the ACL entry is specified, ACL replaces RBAC to govern access for the query.
-** Even if a user does not have the `READ_QUERY` permission on a graph, they can read a query if they are on the `READ` ACL entry permission list of the query.
-** Even if a user has the `READ_QUERY` permission on a graph, they cannot read a query if the `READ` ACL entry for the query is specified and the user is not on the list.
-
-.How permission is evaluated for a query operation
-image::acl-query-flow.png[Visualization of the hierarchy of permission evaluation for a query evaluation.,1000]
-
 == Importing and exporting
 
-When exporting graphs, ACLs are only exported when both queries and users are exported.
+When exporting and importing graphs, query-level privileges may be affected under the following circumstances:
 
-* When you export graphs without queries, there is no ACL on the exported graphs because there are no queries.
-* When you export graphs with queries but without users, the ACL entries on the exported are reset to the _unspecified_ status.
+* *Exporting graphs without queries (`-S, --SCHEMA`)*: No query-level privileges are granted in the exported graphs since there are no queries included.
+* *Exporting graphs with queries but without users (`-T, --TEMPLATE`)*: The `OWNERSHIP` privileges for all queries will be automatically transferred to the user performing the import graph operation.
+* *LDAP users*: LDAP users are not included during the export of graphs, so any query `OWNERSHIP` privileges previously granted to LDAP users will be automatically transferred to the user performing the import graph operation.

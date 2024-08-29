@@ -2,7 +2,12 @@
 :description: This page describes the procedure to replace a node in a non-ha cluster.
 
 //welcome and introduction
-This guide outlines the procedure for replacing a node in a non-High Availability (HA) cluster. If your system uses xref:ha-overview.adoc[High Availability], refer to the documentation on removing a failed node in xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[].
+This guide outlines the procedure for replacing a node in a cluster regardless of whether it is an High Availability(HA) cluster. If your system uses xref:ha-overview.adoc[High Availability] and ** you do not have a replacement node to use, ** refer to the documentation on removing a failed node in xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[Removal of Failed Nodes].
+
+== Prerequisites
+* TigerGraph is installed with HostName, refer to xref:bare-metal-install.adoc[HostName Installation]. Additionally, TigerGraph should be installed on a device that can be unmounted from the machine to be replaced and mounted to the new machine.
+* This procedure applies to TigerGraph versions 3.10.1 and later. For versions prior to TigerGraph 3.10.1, please refer to link:https://docs.tigergraph.com/tigergraph-server/3.9/cluster-and-ha-management/how_to-replace-a-node-in-a-cluster[node replacement in preceding versions].
+* The procedure requires pointing hostname to different IP addresses by changing DNS record. On AWS, this is done by link:https://docs.aws.amazon.com/route53/[Route 53]. For other cloud service providers, it is doable as long as they offer similar DNS web services.
 
 == Procedure
 //steps
@@ -27,35 +32,38 @@ Prepare the following files not in the TigerGraph directory. These can be copied
 ~/.bashrc
 /etc/security/limits.d/98-tigergraph.conf
 ----
-. Stop All Services:
-Stop all services using the command:
+. Stop All Local Services:
++
+Stop all local services using the command:
 +
 [console, gsql]
 ----
-gadmin stop all
+gadmin stop all --local
 ----
-Use `gadmin stop all --ignore-errors` if the node fails
-. Shut Down Single Node:
+Use `gadmin stop all --local --ignore-error` if the node fails
+. Unmount the device on which TigerGraph is installed with `umount` and the machine can be shut down.
+. Mount the device to the new machine with the same mount point.
+. Point the hostname of the machine to be replaced to the IP address of the new machine by updating the record in the DNS web service provided by your cloud service provider. For instance: 
 +
-Shut down the single node to be replaced.
-. Unmount and Mount Disk:
+On AWS, assuming the to-be-replaced node's hostname is `ip-172-31-26-200.us-west-2.compute.internal`. Initially the DNS server should resolve to its original IP address:
 +
-Unmount the disk containing the TigerGraph directory from the old node and mount it to the new machine. Ensure the disk contains the required folders correctly mounted to the new machine with the same mount point.
-+
-[console, gsql]
 ----
-gadmin config get System.AppRoot --file ~/.tg.cfg
-gadmin config get System.DataRoot --file ~/.tg.cfg
-gadmin config get System.LogRoot --file ~/.tg.cfg
-gadmin config get System.TempRoot --file ~/.tg.cfg
+nslookup ip-172-31-26-200.us-west-2.compute.internal
+...
+Address: 172.31.26.200
 ----
-. Get the IP Address of the New Node:
+Assuming the new IP machin'es IP address is `172.31.23.44`. After link:https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-editing.html[updating the record on AWS Route 53] -- Note that you'll need to link:https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-creating.html[create a private hosted zone on Route 53] and link:https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-creating.html[create a record] before you can update it. The same hostname would resolve to new machine's IP address:
 +
-Retrieve the IP address of the new node using the following commands:
+----
+nslookup ip-172-31-26-200.us-west-2.compute.internal
+...
+Address: 172.31.23.44
+----
+. On the new machine, start all local services:
 +
-[console, gsql]
+Start all local services with:
++
 ----
-gadmin config entry System.HostList --file ~/.tg.cfg #to change the node ip
-gadmin init cluster --skip-stop
-gadmin init etcd  #if etcd node is being replaced
+gadmin start all --local
 ----
+The cluster node replacement is now complete.
