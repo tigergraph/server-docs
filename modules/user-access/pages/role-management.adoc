@@ -204,7 +204,8 @@ GSQL > GRANT PRIVILEGE WRITE_QUERY, WRITE_ROLE
 This will allow users with the roles `role1` and `role2` to create, read, update, drop, install and execute existing queries, as well as modify roles on the graph `example_graph`. To see a full list of privileges and the command they allow users to run, see xref:reference:list-of-privileges.adoc[].
 
 == Grant type-level privilege to a role
-Users with the `WRITE_ROLE` privileges on a scope can grant RBAC privileges to the roles in that scope.
+You can grant certain privileges (`READ_DATA`, `CREATE_DATA`, `DELETE_DATA`, `UPDATE_DATA`) on a type level to the roles in that scope.
+The privilege only applies to the specified types.
 
 === Syntax
 
@@ -217,7 +218,7 @@ GRANT PRIVILEGE privilege_name1 , privilege_name2... ON VERTEX/EDGE <graph_name>
 
 === Example
 
-The following command grants the `READ_DATA` and `CREATE_DATA` privilege on vertex type `Person` to `role2` and `role2`.
+The following command grants the `READ_DATA` and `CREATE_DATA` privilege on vertex type `Person` to `role1` and `role2`.
 
 [source.wrap,gsql]
 GRANT PRIVILEGE READ_DATA, CREATE_DATA ON VERTEX G1.Person TO role1, role2
@@ -291,7 +292,7 @@ This will revoke the `WRITE_SCHEMA` privilege from the role `role1` on graph `ex
 == Revoke type-level privileges
 You can revoke certain privileges from the type level with the `REVOKE PRIVILEGE` command.
 
-If the privilege has already been granted on the global scope or on the graph level, then revoking the privilege on the type level does not revoke the privilege in effect.
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global or graph level). For instance, if a role has `READ_DATA`` on a vertex type globally, revoking this privilege at the type level will not prevent the role from accessing the vertex type.
 
 === Syntax
 
@@ -304,7 +305,7 @@ REVOKE PRIVILEGE <privilege_name1>, <privilege_name2> ... ON VERTEX/EDGE <graph_
 
 === Example
 
-The following command revokes the `UPDATE_DATA` privilege on type `Friendship` from `role1`, and `role1`:
+The following command revokes the `UPDATE_DATA` privilege on type `Friendship` from `role1`, and `role2`:
 
 [source.wrap,gsql]
 REVOKE PRIVILEGE UPDATE_DATA ON EDGE Social.Friendship FROM role1, role2
@@ -312,7 +313,7 @@ REVOKE PRIVILEGE UPDATE_DATA ON EDGE Social.Friendship FROM role1, role2
 == Revoke attribute-level privileges
 You can revoke certain privileges from the attribute level with the `REVOKE PRIVILEGE` command.
 
-If the privilege has already been granted on the global scope, on the graph level, or type level, then revoking the privilege on the type level does not revoke the privilege in effect.
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global, graph level or type level). For instance, if a role has `READ_DATA`` on a vertex type globally, revoking this privilege at the attribute level will not prevent the role from accessing the vertex attribute type.
 
 === Syntax
 [source.wrap,gsql]

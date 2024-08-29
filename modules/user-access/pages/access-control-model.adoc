@@ -267,19 +267,19 @@ The following table details the built-in roles and their corresponding set of pr
 
 | `observer`
 | Local
-| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`
+| `READ_SCHEMA`, `READ_LOADINGJOB`
 
 | `queryreader`
 | Local
-| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`
+| `READ_SCHEMA`, `READ_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `READ_DATA`
 
 | `querywriter`
 | Local
-| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `WRITE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`
+| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `CREATE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`
 
 | `designer`
 | Local
-| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `WRITE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`,  `WRITE_SCHEMA`, `WRITE_LOADINGJOB`, `ACCESS_TAG`
+| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `CREATE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`,  `WRITE_SCHEMA`, `WRITE_LOADINGJOB`, `ACCESS_TAG`
 
 | `admin`
 | Local
@@ -288,7 +288,7 @@ The following table details the built-in roles and their corresponding set of pr
 `READ_QUERY`,
 `EXECUTE_LOADINGJOB`,
 `READ_DATA`,
-`WRITE_QUERY`,
+`CREATE_QUERY`,
 `CREATE_DATA`,
 `UPDATE_DATA`,
 `DELETE_DATA`,
@@ -301,7 +301,8 @@ The following table details the built-in roles and their corresponding set of pr
 `READ_USER`,
 `READ_PROXYGROUP`,
 `READ_POLICY`,
-`WRITE_POLICY`
+`WRITE_POLICY`,
+`OWNERSHIP` on ALL QUERIES
 
 | `globaldesigner`
 | Global
@@ -309,7 +310,8 @@ The following table details the built-in roles and their corresponding set of pr
 
 | `superuser`
 | Global
-| All supported RBAC privileges
+| All supported RBAC privileges, ,
+`OWNERSHIP` on ALL QUERIES
 |===
 
 [NOTE]

@@ -263,6 +263,164 @@ GSQL > REVOKE ROLE role1, role2 ON GRAPH example_graph
 
 The above command will revoke roles `role1` and `role2` on graph `example_graph` from users `user1` and `user2`.
 
+== Grant privileges to a user
+
+Only users with the WRITE_USER privilege at the global level can grant RBAC privileges to other users.
+
+=== Syntax
+
+[source,text]
+----
+GRANT <privilegeName1> (, <privilegeName2>)* ON <privilegeObjects>
+        [IN <privilegeScopes>]? TO <user_name1> (, <user_name2>)*
+----
+
+=== Required privilege
+
+`WRITE_USER`
+
+=== Example
+
+. To grant privileges to a user, run the `GRANT PRIVILEGE` command from the GSQL shell:
++
+[source,text]
+----
+GSQL > GRANT WRITE ON ALL ROLES
+        IN GRAPH example_graph TO user1 , user2
+----
+
+This command will allow `user1` and `user2` to modify roles on the graph `example_graph`.
+Specifically, they can create, modify, or delete roles for that graph.
+To see a full list of privileges and the command they allow users to run, see 
+xref:rbac-row-policy/rbac-row-policy.adoc#_object_based_privileges[]
+
+== Grant type-level privilege to a user
+You can grant certain privileges (`READ_DATA`, `CREATE_DATA`, `DELETE_DATA`, `UPDATE_DATA`) on a type level to users.
+The privilege only applies to the specified types.
+
+=== Syntax
+
+[source.wrap,gsql]
+GRANT <privilege_name1> (, <privilege_name2>)* ON VERTEX/EDGE <type_name> IN GRAPH <graph_name> TO <user_name> (, <user_name2>)*
+
+
+=== Required privilege
+`WRITE_USER` and the privilege being granted
+
+=== Example
+
+The following command grants the `READ_DATA` and `CREATE_DATA` privilege on vertex type `Person` to `user1` and `user2`.
+
+[source.wrap,gsql]
+GRANT READ, CREATE ON VERTEX Person IN GRAPH G1 TO user1, user2
+
+This allows `user1` and `user2` to read all attribute values of type `Person` vertices in graph `G1`.
+However, to insert new vertices, the user must also have `UPDATE_DATA` on all attributes of vertex type `Person`.
+
+== Grant attribute-level privilege to a user
+
+You can grant certain privileges (`READ_DATA`, `CREATE_DATA`, `UPDATE_DATA`) on an attribute level to a user.
+The privilege only applies to the specified attributes of the specified type.
+
+=== Syntax
+[source.wrap,gsql]
+GRANT <privilege_name1> (, <privilege_name2>)* ON VERTEX/EDGE <type_name> ATTRIBUTE <attribute_name> (, <attribute_name2>)* IN GRAPH <graph_name> TO <user_name> (, <user_name2>)*
+
+`from` and `to` are edge attributes that represent the source vertex and target vertex of an edge.
+When you grant access to these attributes, `from` and `to` are case-sensitive.
+You must use lower-case to indicate these two attributes.
+
+=== Required privilege
+`WRITE_USER` and the privilege being granted
+
+=== Example
+
+The following command grants the `READ_DATA` privilege on the `id` and `age` attribute of  the vertex type `Person` to `example_user`.
+
+[source.wrap,gsql]
+GRANT READ ON VERTEX person ATTRIBUTE id, age IN GRAPH G1 TO example_user
+
+This allows the user `example_user` to read the `id` and `age` attribute values of `Person` vertices in graph `G1`.
+However, if the type `Person` has other attributes, such as an `SSN` attribute with their social security number, users who don't have the `READ_DATA` privilege on that attribute are not able to access its attribute value.
+
+The following command grants the `READ_DATA` privilege on the `to` attribute of the edge type `Knows` to `example_user`:
+
+[source.wrap,gsql]
+----
+GRANT READ ON EDGE Knows ATTRIBUTE to IN GRAPH ldbc_snb TO example_user <1>
+----
+<1> `to` must be lower-case.
+
+
+== Revoke privileges from a user
+
+Users with the `WRITE_USER` privileges on global can revoke RBAC privileges from the users.
+
+=== Syntax
+
+[source,text]
+----
+REVOKE <privilegeName1> (, <privilegeName2>)* ON <privilegeObjects>
+        [IN <privilegeScopes>]? FROM <user_name1> (, <user_name2>)*
+----
+
+=== Required privilege
+
+`WRITE_USER`
+
+=== Example
+
+. To revoke privileges from a user, run the `REVOKE PRIVILEGE` command from the GSQL shell:
++
+[source,text]
+----
+GSQL > REVOKE WRITE ON ALL ROLES
+        IN GRAPH example_graph TO user1
+----
+
+This will revoke the `WRITE_ROLE` privilege from the user `user1` on graph `example_graph.`
+
+== Revoke type-level privileges
+You can revoke certain privileges from the type level with the `REVOKE PRIVILEGE` command.
+
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global or graph level). For instance, if a user has `READ_DATA`` on a vertex type globally, revoking this privilege at the type level will not prevent the user from accessing the vertex type.
+
+=== Syntax
+
+[source.wrap,gsql]
+REVOKE <privilege_name1> (, <privilege_name2>)* ON VERTEX/EDGE <type_name> IN GRAPH <graph_name> FROM <user_name> (, <user_name2>)*
+
+
+=== Required privilege
+`WRITE_USER`
+
+=== Example
+
+The following command revokes the `UPDATE_DATA` privilege on type `Friendship` from `user1`, and `user2`:
+
+[source.wrap,gsql]
+REVOKE UPDATE ON EDGE Friendship IN GRAPH Social FROM user1, user2
+
+== Revoke attribute-level privileges
+You can revoke certain privileges from the attribute level with the `REVOKE PRIVILEGE` command.
+
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global, graph level or type level). For instance, if a user has `READ_DATA`` on a vertex type globally, revoking this privilege at the attribute level will not prevent the user from accessing the vertex attribute type.
+
+=== Syntax
+[source.wrap,gsql]
+REVOKE <privilege_name1> (, <privilege_name2>)* ON VERTEX/EDGE <type_name>  ATTRIBUTE <attribute_name> (, <attribute_name>)* IN GRAPH <graph_name> FROM <user_name> (, <user_name2>)*
+
+=== Required privilege
+`WRITE_ROLE` and the privilege being granted
+
+=== Example
+The following command revokes `CREATE_DATA` and `UPDATE_DATA` on the `startdata` attribute from `user1` and `user2`.
+
+If the user doesn't have these privileges, they are not able to create new edges of type `Friendship`.
+
+[source.wrap,gsql]
+REVOKE CREATE, UPDATE ON EDGE Friendship ATTRIBUTE startdata IN GRAPH Social FROM user1, user2
+
 == Change a user's password
 
 Users can change their own passwords used for login without needing any privilege.
