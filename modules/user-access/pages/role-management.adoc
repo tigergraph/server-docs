@@ -292,7 +292,7 @@ This will revoke the `WRITE_SCHEMA` privilege from the role `role1` on graph `ex
 == Revoke type-level privileges
 You can revoke certain privileges from the type level with the `REVOKE PRIVILEGE` command.
 
-If the privilege has already been granted on the global scope or on the graph level, then revoking the privilege on the type level does not revoke the privilege in effect.
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global or graph level). For instance, if a role has `READ_DATA`` on a vertex type globally, revoking this privilege at the type level will not prevent the role from accessing the vertex type.
 
 === Syntax
 
@@ -313,7 +313,7 @@ REVOKE PRIVILEGE UPDATE_DATA ON EDGE Social.Friendship FROM role1, role2
 == Revoke attribute-level privileges
 You can revoke certain privileges from the attribute level with the `REVOKE PRIVILEGE` command.
 
-If the privilege has already been granted on the global scope, on the graph level, or type level, then revoking the privilege on the type level does not revoke the privilege in effect.
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global, graph level or type level). For instance, if a role has `READ_DATA`` on a vertex type globally, revoking this privilege at the attribute level will not prevent the role from accessing the vertex attribute type.
 
 === Syntax
 [source.wrap,gsql]

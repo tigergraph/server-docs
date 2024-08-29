@@ -312,7 +312,7 @@ GRANT <privilege_name1> (, <privilege_name2>)* ON VERTEX/EDGE <type_name> IN GRA
 The following command grants the `READ_DATA` and `CREATE_DATA` privilege on vertex type `Person` to `user1` and `user2`.
 
 [source.wrap,gsql]
-GRANT READ, CREATE_DATA ON VERTEX Person IN GRAPH G1 TO user1, user2
+GRANT READ, CREATE ON VERTEX Person IN GRAPH G1 TO user1, user2
 
 This allows `user1` and `user2` to read all attribute values of type `Person` vertices in graph `G1`.
 However, to insert new vertices, the user must also have `UPDATE_DATA` on all attributes of vertex type `Person`.
@@ -383,7 +383,7 @@ This will revoke the `WRITE_ROLE` privilege from the user `user1` on graph `exam
 == Revoke type-level privileges
 You can revoke certain privileges from the type level with the `REVOKE PRIVILEGE` command.
 
-If the privilege has already been granted on the global scope or on the graph level, then revoking the privilege on the type level does not revoke the privilege in effect.
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global or graph level). For instance, if a user has `READ_DATA`` on a vertex type globally, revoking this privilege at the type level will not prevent the user from accessing the vertex type.
 
 === Syntax
 
@@ -404,7 +404,7 @@ REVOKE UPDATE ON EDGE Friendship IN GRAPH Social FROM user1, user2
 == Revoke attribute-level privileges
 You can revoke certain privileges from the attribute level with the `REVOKE PRIVILEGE` command.
 
-If the privilege has already been granted on the global scope, on the graph level, or type level, then revoking the privilege on the type level does not revoke the privilege in effect.
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global, graph level or type level). For instance, if a user has `READ_DATA`` on a vertex type globally, revoking this privilege at the attribute level will not prevent the user from accessing the vertex attribute type.
 
 === Syntax
 [source.wrap,gsql]
