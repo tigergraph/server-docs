@@ -86,7 +86,7 @@ gadmin backup restore pr_latest_backup --dr
 +
 Adding the backup tag to `gadmin backup restore <backup tag> --dr` will enable CRR in a regular restore. 
 
-Enabling Cross-Region Replication (CRR) with a backup is always recommended, as the Disaster Recovery (DR) cluster will be restored to the state of the backup. This can help avoid data consistency problems caused by unexpected operations or requests before the cluster becomes a DR.
+Enabling Cross-Region Replication (CRR) with a backup is always recommended, as the Disaster Recovery (DR) cluster will be restored to the state of the backup. This can help avoid data inconsistency problems caused by unexpected operations or requests before the cluster becomes a DR.
 
 For special cases, such as enabling Cross-Region Replication (CRR) for a new cluster or switching between PR and DR, backup can be omitted.
 
@@ -98,7 +98,7 @@ However, note that these operations should be performed when there is no traffic
 gadmin backup restore --dr
 ----
 
-Specifically, for the switching between PR and DR, before the switch, it is necessary to  xref:tigergraph-server:crr:troubleshooting.adoc#_check_data_consistency_between_primary_and_dr[Check data consistency between primary and DR]
+Specifically, for the switching between PR and DR, before the switch, it is necessary to xref:tigergraph-server:crr:troubleshooting.adoc#_check_data_consistency_between_primary_and_dr[Check data consistency between primary and DR]
 
 [NOTE]
 ====
