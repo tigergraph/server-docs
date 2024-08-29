@@ -59,7 +59,7 @@ For example, if the request was routed to m3, the log would be in `NGINX#3.out` 
 Example query:
 [source, console]
 ----
-curl -H "Authorization: Bearer 4m6nh1rakn60430rjf5asv" <ip_address>:9000/query/ldbc_snb/example_query
+curl -H "Authorization: Bearer 4m6nh1rakn60430rjf5asv" <ip_address>:14240/restpp/query/ldbc_snb/example_query
 ----
 Nginx logs:
 
@@ -114,7 +114,7 @@ In a cluster, the GSQL request will be served by the current GSQL leader which c
 Leader:
 [source, console]
 ----
-I@20220630 01:58:37.050 example_user|localhost:50366|00000003140 (QueryRunner.java:87) RunQuery: http://10.2.2.3:9000/query/ldbc_snb/example_query
+I@20220630 01:58:37.050 example_user|localhost:50366|00000003140 (QueryRunner.java:87) RunQuery: http://10.2.2.3:14240/restpp/query/ldbc_snb/example_query
 I@20220630 01:58:37.050 example_user|localhost:50366|00000003140 (GlobalCatalog.java:769) use 4m6****asv to authenticate graph ldbc_snb
 I@20220630 01:58:37.066 example_user|localhost:50366|00000003140 (CommandHandler.java:125) (Succeeded) _GSQL_CMD_DDL: run query example_query(...)
 ----
