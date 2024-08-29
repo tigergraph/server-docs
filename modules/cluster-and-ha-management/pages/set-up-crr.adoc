@@ -32,20 +32,15 @@ Make sure TigerGraph is *not* installed with a local loopback IP such as 127.0.0
 
 The following setup is needed in order to enable Cross Region Replication.
 
-=== Backup primary data
+=== Obtain the latest Backup of the primary data
 
-Use `gadmin backup` to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[].
+Retrieve the latest backup, for instance, `pr_latest_backup` from the Primary Cluster. How recent the backup is will determine how much the DR cluster lags behind and how long it will take to catch up with the Primary cluster.
+
+If there is no proper backup, use `gadmin backup create <pr_latest_backup>` to create one. For more details refer to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[].
 
 For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
 
-If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
-
 === Enable CRR on the DR cluster
-
-The command `gadmin backup restore --dr` does two things:
-
-* Enables CRR.
-* Restores the backup from the primary cluster.
 
 Run the following commands on the DR cluster to enable CRR on the DR cluster.
 
@@ -86,11 +81,16 @@ These steps above can be skipped if these settings are already configured proper
 .Run with the latest backup from its primary cluster.
 [source.wrap,console]
 ----
-gadmin backup restore <latest-backup> --dr
+gadmin backup restore pr_latest_backup --dr
 ----
 +
-Adding the backup tag to `gadmin backup restore <backup tag> --dr` will enable CRR in a regular restore.
-The backup parameter is not necessary for a new cluster or when you just want to enable CRR.
+Adding the backup tag to `gadmin backup restore <backup tag> --dr` will enable CRR in a regular restore. 
+
+Enabling Cross-Region Replication (CRR) with a backup is always recommended, as the Disaster Recovery (DR) cluster will be restored to the state of the backup. This can help avoid data consistency problems caused by unexpected operations or requests before the cluster becomes a DR.
+
+For special cases, such as enabling Cross-Region Replication (CRR) for a new cluster or switching between PR and DR, backup can be omitted.
+
+However, note that these operations should be performed when there is no traffic, because gadmin backup restore --dr won't overwrite the data of the cluster before it is set to be a DR.
 +
 .Instead, simply run:
 [source.wrap,console]
@@ -98,6 +98,7 @@ The backup parameter is not necessary for a new cluster or when you just want to
 gadmin backup restore --dr
 ----
 
+Specifically, for the switching between PR and DR, before the switch, it is necessary to  xref:tigergraph-server:crr:troubleshooting.adoc#_check_data_consistency_between_primary_and_dr[Check data consistency between primary and DR]
 
 [NOTE]
 ====
