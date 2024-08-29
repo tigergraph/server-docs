@@ -1,0 +1,90 @@
+= Fine-Grained Query Privileges: Changes in 4.1
+
+== Summary
+
+Previously, query privileges in TG is managed at global and graph level with `READ_QUERY` and `WRITE_QUERY` privileges. For example, if a user has `READ_QUERY` privilege on graph `g1`, then the user can read any queries under graph `g1`. If a user has `WRITE_QUERY` privilege on global, then the user can create or replace any query under any graph in TG. 
+
+With fine-grained query privileges, following changes will take effects:
+
+* `WRITE_QUERY` privilege is deprecated. It has been split into privileges such as `CREATE_QUERY`, `UPDATE_QUERY` and `DROP_QUERY`.
+
+* New privileges `INSTALL_QUERY` and `EXECUTE_QUERY` are added.
+
+* Query privilege scope changes:
+** `CREATE_QUERY` privilege can only be granted/revoked at global and graph level.
+** `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY` and `EXECUTE_QUERY` privileges can only be granted/revoked at individual query level.
+
+With above changes, corresponding grant/revoke commands and query related operations are also changed. Details of such changes will be displayed in the following sections.
+
+== Usage Examples 
+
+[NOTE]
+====
+It is strongly recommend to use object-based syntax for granting/revoking fine-grained query privileges.
+====
+
+Below are several commands for common use cases of granting/revoking fine-grained query privileges.
+
+.Ex. Grant `CREATE` privilege in global to role `r1`:
+[console, gsql]
+----
+GSQL > GRANT CREATE ON ALL QUERIES IN GLOBAL to r1
+The privilege "CREATE" is successfully granted on "ALL QUERIES" IN GLOBAL to role: r1
+----
+
+
+Notice `UPDATE` privilege depends on `READ` privilege. You need to grant `READ` before `UPDATE`, and revoke `UPDATE` before `READ`.
+
+.Ex. Grant `READ`, `UDPATE` privilege on existing specific query objects `q1`, `q2` in graph `g1` to user `u1`:
+[console, gsql]
+----
+GSQL > GRANT READ, UPDATE ON QUERY q1, q2 IN GRAPH g1 to u1
+The privileges "READ, UPDATE" are successfully granted on "QUERY q1, q2" IN GRAPH g1 to user: u1
+----
+
+.Ex. Revoke `INSTALL, EXECUTE` privileges on all existing queries in global from user `u1`:
+[console, gsql]
+----
+GSQL > REVOKE INSTALL, EXECUTE ON ALL QUERIES IN GLOBAL FROM u1
+The privileges "EXECUTE, INSTALL" are successfully revoked on "ALL QUERIES" IN GLOBAL from user: u1
+----
+
+If you want to revoke query privileges on specific existing query objects from a user or a role, make sure the user or role has the query privileges on all involved query objects.
+
+.Ex. Revoke `DROP` privileges on existing specific query objects `q1`, `q2` in graph `g1` from role `r1`:
+[console, gsql]
+----
+// role r1 must already has DROP privilege on query q1, q2.
+GSQL > REVOKE DROP ON QUERY q1, q2 IN GRAPH g1 FROM r1
+The privilege "DROP" is successfully revoked on "QUERY q1, q2" IN GRAPH g1 from role: r1
+----
+
+[NOTE]
+====
+For individual query level privileges, you can only grant/revoke on existing query objects.
+====
+
+.Ex. Grant `READ`, `UDPATE` privilege on existing queries (q1, q2) in graph `g1` to user `u1`, then create new query `q3`:
+----
+GSQL > use graph g1
+GSQL > GRANT READ, UPDATE ON ALL QUERIES IN GRAPH g1 to u1
+GSQL > show privilege on user u1
+User: "u1"
+  - Graph 'g1' Privileges:
+      - Query 'q1' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+      - Query 'q2' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+GSQL > create query q3() for graph g1 {print "q3";}
+GSQL > show privilege on user u1
+User: "u1"
+  - Graph 'g1' Privileges:
+      - Query 'q1' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+      - Query 'q2' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+----

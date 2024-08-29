@@ -3,8 +3,6 @@
 
 This page explains the procedures for various user management tasks under TigerGraph's role-based access control(RBAC) model.
 
-To see user management tasks under the xref:access-control-model.adoc#_access_control_lists[Access Control List (ACL)] model, see xref:acl-management.adoc[].
-
 == Create a user
 
 You can run the `CREATE USER` command to create a user.
@@ -178,8 +176,7 @@ User: "tigergraph"
     READ_LOADINGJOB
     EXECUTE_LOADINGJOB
     WRITE_LOADINGJOB
-    READ_QUERY
-    WRITE_QUERY
+    CREATE_QUERY
     READ_DATA
     WRITE_DATA
     WRITE_DATASOURCE
@@ -197,8 +194,6 @@ User: "tigergraph"
     DROP_ALL
     ACCESS_TAG
 ----
-
-To view xref:access-control-model.adoc#_access_control_lists[ACL privileges] of a user, see xref:acl-management.adoc#_view_acl_privileges_of_a_user_[View ACL privileges of a user].
 
 [#_grant_a_role_to_a_user]
 == Grant a role to a user/proxy group
@@ -294,8 +289,6 @@ GSQL > ALTER PASSWORD username
 ----
 
 . Enter the new password in the prompt that follows.
-
-NOTE: To see how to change a user's xref:access-control-model.adoc#_acl_password[ACL password], see xref:acl-management.adoc#_change_acl_password[Change ACL password]
 
 ==== Non-Interactive Mode
 
