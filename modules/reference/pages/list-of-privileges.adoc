@@ -64,13 +64,45 @@ a|* `run loading job <ljName>`
 a|* `create loading job <ljName>`
 * `drop loading job <ljName>` |No
 
-|`READ_QUERY` |`show query <qName>` |No
+|`READ_QUERY` 
+a|* `show query <qName>` 
+|No
 
-|`WRITE_QUERY`
+|`CREATE_QUERY`
 a|* `create query <qName>`
-* `install query <qName>`
+|No
+
+|`UPDATE_QUERY`
+a|* `create or replace query <qName>`
+|No
+
+|`DROP_QUERY`
+a|
 * `drop query <qName>`
 |No
+
+|`INSTALL_QUERY`
+a|
+* `install query <qName>`
+|No
+
+|`EXECUTE_QUERY`
+a|
+* `run query <qName>`
+* `interpret query <qName>`
+|No
+
+|`OWNERSHIP`
+a|
+* `show query <qName>` 
+* `create or replace query <qName>`
+* `drop query <qName>`
+* `run query <qName>`
+* `interpret query <qName>`
+* `grant <queryPrivileges> on query <queryName> in <gName> to <roleName>`
+* `grant <queryPrivileges> on query <queryName> in <gName> to <userName>`
+* `revoke <queryPrivileges> on query <queryName> in <gName> from <roleName>`
+* `revoke <queryPrivileges> on query <queryName> in <gName> from <userName>`
 
 |`CREATE_DATA`|
 Running queries that insert vertices or edges in the allowed scope.
