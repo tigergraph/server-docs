@@ -8,11 +8,28 @@ With fine-grained query privileges, following changes will take effects:
 
 * `WRITE_QUERY` privilege is deprecated. It has been split into privileges such as `CREATE_QUERY`, `UPDATE_QUERY` and `DROP_QUERY`.
 
-* New privileges `INSTALL_QUERY` and `EXECUTE_QUERY` are added.
+* New privileges `INSTALL_QUERY`, `EXECUTE_QUERY` and `OWNERSHIP` are added.
+
+[NOTE]
+====
+`OWNERSHIP` is a special privilege introduced in version 4.1.0.
+It is granted automatically to the user who creates a query.
+
+The entity (a user or a role) who owns a query holds all privileges on a query. That means, this entity can read, update, drop, install and execute this query.
+
+An entity with `OWNERSHIP` privilege (e.g., the creator) on a query can grant privileges to other entities, including the `OWNERSHIP` privilege. Once the `OWNERSHIP` privilege is granted to another entity, the previous owner loses `OWNERSHIP` privilege on this query.
+
+Each object can have only one explicit owner entity.  
+
+Users with the `superuser` role hold the `OWNERSHIP` privilege on all queries in all graphs implicitly.
+
+Users with the `admin` role in one graph hold the `OWNERSHIP` privilege on all queries in this graph implicitly.
+====
 
 * Query privilege scope changes:
 ** `CREATE_QUERY` privilege can only be granted/revoked at global and graph level.
 ** `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY` and `EXECUTE_QUERY` privileges can only be granted/revoked at individual query level.
+** `OWNERSHIP` privilege can only be granted at the individual query level and only to one entity, e.g.: a user or a user-defined role.
 
 With above changes, corresponding grant/revoke commands and query related operations are also changed. Details of such changes will be displayed in the following sections.
 
@@ -88,3 +105,28 @@ User: "u1"
         READ_QUERY
         UPDATE_QUERY
 ----
+
+.Ex. Grant `OWNERSHIP` privilege on existing query q3 in graph `g1` to user `u1`:
+[console, gsql]
+----
+GSQL > use graph g1
+GSQL > GRANT OWNERSHIP ON QUERY q3 IN GRAPH g1 TO u1
+Transfer the ownership of query q3 in graph g1 from entity tigergraph to entity u1
+The privilege "OWNERSHIP" is successfully granted on "QUERY q3" IN GRAPH g1 to user: u1
+GSQL > show privilege on user u1
+User: "u1"
+  - Graph 'g1' Privileges:
+      - Query 'q1' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+      - Query 'q2' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+      - Query 'q3' Privileges:
+        OWNER
+----
+
+[NOTE]
+====
+After this step, `u1` becomes the owner of `q3`, and owns all privileges on `q3`. `u1` can read, update, drop, install and execute query `q3`. At the same time, `u1` can grant the query privileges to other entities, including the `OWNERSHIP` privilege.
+====
