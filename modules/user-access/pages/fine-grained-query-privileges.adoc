@@ -17,7 +17,11 @@ It is granted automatically tp the user who creates a query.
 
 The entity (a user or a role) who owns a query holds all privileges on a query. That means, this entity can read, update, drop, install and execute this query.
 
-At the same time, this entity can grant the query privileges to other entities, including the `OWNERSHIP` privilege. Once the `OWNERSHIP` privilege is granted to another entity, the previous owner should lose `OWNERSHIP` privilege on this query.
+An entity with `OWNERSHIP` privilege (e.g., the creator) on a query can grant privileges to other entities, including the `OWNERSHIP` privilege. Once the `OWNERSHIP` privilege is granted to another entity, the previous owner loses `OWNERSHIP` privilege on this query.
+[NOTE]
+====
+Each object can have only one explicit owner entity.  
+====
 
 Users with the `superuser` role should hold the `OWNERSHIP` privilege on all queries in all graphs implicitly.
 
