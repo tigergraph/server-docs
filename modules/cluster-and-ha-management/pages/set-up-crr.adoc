@@ -8,12 +8,6 @@ Changes on the primary cluster are copied over to the DR cluster.
 
 When necessary, you can fail over to a DR cluster, making it the new primary cluster.
 
-[NOTE]
-====
-This setup assumes that you are setting up a DR cluster for an existing primary cluster.
-If you are setting up both the primary cluster and DR cluster from scratch, you only need perform Step 3 after TigerGraph is installed on both clusters.
-====
-
 == Before you begin
 
 * Install TigerGraph 3.10.0 or higher on both the primary cluster and the DR cluster *in the same version*.
@@ -38,14 +32,7 @@ Use `gadmin backup` to xref:tigergraph-server:backup-and-restore:backup-cluster.
 
 For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
 
-If you are setting up both the primary cluster and the DR cluster from scratch, you can skip Steps 1, 2, and 4 and only perform Step 3.
-
 === Enable CRR on the DR cluster
-
-The command `gadmin backup restore --dr` does two things:
-
-* Enables CRR.
-* Restores the backup from the primary cluster.
 
 Run the following commands on the DR cluster to enable CRR on the DR cluster.
 
@@ -63,7 +50,7 @@ $ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs <PRIMARY_IP1,P
 $ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
 ----
 +
-.The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+.The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty. For setting up new DR after failover, refer to xref:tigergraph-server:cluster-and-ha-management:fail-over.adoc#_set_up_a_new_dr_cluster_after_failover[].
 [source.wrap,console]
 ----
 $ gadmin config set System.CrossRegionReplication.TopicPrefix Primary
