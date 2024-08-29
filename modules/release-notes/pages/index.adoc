@@ -62,11 +62,11 @@ Previously, backups were unavailable if a node failed.
 
 === Data Streaming/Connector Enhancements
 
-* **Malformed Loading Data Inspector**
-- *Don't see doc ticket*
-
-The Malformed Loading Data Inspector allows users to inspect sampled error data from a loading job, along with the reasons for the errors.
-Users can easily locate error data, which helps them modify their source data and loading job definitions. The error data is also protected by existing ACLs, ensuring it is secured and no longer exposed in files.
+* **xref:gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_error[Malformed Loading Data Inspector]**
+- Loading jobs log a sample of malformed data lines and their error types.
+`SHOW LOADING ERROR` presents this information to an authorized user.
+- Users can easily locate and diagnose error data, speeding up their corrective action.
+The error data is also protected by RBAC, ensuring it is secured and no longer exposed in files.
 
 * **Spark Connector - Streaming Read**
 - https://graphsql.atlassian.net/browse/DOC-2130 to *Write*. Ticket had generic title and no description.
@@ -97,6 +97,7 @@ Users no longer need to manage the details of Kubernetes service creation for Ti
 
 === Language Enhancements
 
+////
 * **GSQL OpenCypher additions**
 - *It is annoying to me as a writer and to readers that these are listed as separate bullet points without a logical reason for the separation. It is actually 5 separate doc tickets. Working incrementally without a top-down view leads to poor results.*
 - https://graphsql.atlassian.net/browse/DOC-2249 to *WRITE*
@@ -106,6 +107,7 @@ Users no longer need to manage the details of Kubernetes service creation for Ti
 - Adds StartNode and EndNode functions to GSQL for use in GSQL OpenCypher.
 - Introduces Range() and Split() functions to GSQL and OpenCypher.
 - Introduces stDevP() function for population standard deviation in GSQL and OpenCypher.
+////
 
 * **REST APIs for Programmatic Use**
 - https://graphsql.atlassian.net/browse/DOC-2194 to *REVIEW*
