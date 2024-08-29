@@ -26,6 +26,12 @@ Then run config apply and restart dependency services.
 gadmin config apply --restart-deps
 ----
 
+=== `HA Setup`
+To enable data loading HA, use a cluster with replication factor greater than 1 following xref:cluster-and-ha-management:ha-cluster.adoc[High Availability Cluster Configuration]
+
+Then data loading HA will be enabled by default with data loading V2 enabled.
+
+
 === `Validation`
 To confirm data loading V2 is successfully enabled, try running a loading job as usual described in xref:data-loading:data-loading-overview.adoc[]
 
@@ -35,11 +41,7 @@ The jobid generated for the loading job should contain v2 tag, for example, `tes
 .Data Loading V2 Loading Progress Example
 image::data-loading:data-loading-v2-progress-example.png[Example GSQL loading progress with data loading v2 enabled]
 
-
-=== `HA Setup`
-To enable data loading HA, use a cluster with replication factor greater than 1 following xref:cluster-and-ha-management:ha-cluster.adoc[High Availability Cluster Configuration]
-
-Then data loading HA will be enabled by default with data loading V2 enabled.
+If you want to validate the HA capability, you may shut down one node or service in the TG cluster. The data loading process should automatically adjust and continue.
 
 == `Run Loading Job`
 You can now run any loading job as usual following these instructions xref:data-loading:data-loading-overview.adoc[]
