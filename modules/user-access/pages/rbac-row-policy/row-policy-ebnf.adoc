@@ -47,9 +47,9 @@ dropFunction := DROP FUNCTION packageName
 == EBNF for the Object-Based Privileges
 [source,gsql]
 ----
-grantObjectBasePrivilege := GRANT privilegeNames ON privilegeObjects [IN privilegeScopes]? TO roleNames
+grantObjectBasePrivilege := GRANT privilegeNames ON privilegeObjects [IN privilegeScopes]? TO userOrRoleNames
 
-revokeObjectBasePrivilege := REVOKE privilegeNames ON privilegeObjects [IN privilegeScopes]? FROM roleNames
+revokeObjectBasePrivilege := REVOKE privilegeNames ON privilegeObjects [IN privilegeScopes]? FROM userOrRoleNames
 
 privilegeNames := privilegeName ["," privilegeName]*
 
