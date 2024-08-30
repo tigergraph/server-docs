@@ -18,16 +18,18 @@ TigerGraph Server 4.1.0 preview version was released on August 28, 2024.
 
 === Backup and Restore Enhancements
 
-* **xref:tigergraph-server:backup-and-restore:point-in-time-restore.adoc[Point in Time Restore]** - Users can roll back the database to a moment they select, not only at the time of the available backup snapshots.
+* **xref:tigergraph-server:backup-and-restore:point-in-time-restore.adoc[Point in Time Restore]**: +
+Users can roll back the database to a moment they select, not only the time of an available backup snapshots.
 
-* **xref:tigergraph-server:backup-and-restore:configurations.adoc#_configure_backup_to_aws_s3_endpoint[Role ARN for Backup to AWS S3 buckets]** - Users can use AWS Role ARNs (Amazon Resource Names) for convenient and secure management of backups. 
+* **xref:tigergraph-server:backup-and-restore:configurations.adoc#_configure_backup_to_aws_s3_endpoint[Role ARN for Backup to AWS S3 buckets]**: +
+Users can use AWS Role ARNs (Amazon Resource Names) for convenient and secure management of backups.
 
 * See also HA Enhancements.
 
 === Security Enhancements
 
 [#finer_grain_query_privileges]
-* **xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc[Fine-grained Privileges on Queries]** - gives adminstrators finer control over who may do what actions with which objects
+* **xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc[Fine-grained Privileges on Queries]** gives adminstrators finer control over who may do what actions with which objects:
 - Introduces ownership of graph and query objects.
 - Allows privileges to be granted/revoked at the query level.
 - Adds new query privileges INSTALL and EXECUTE, and splits  WRITE to CREATE, UPDATE and DROP.
@@ -36,13 +38,11 @@ TigerGraph Server 4.1.0 preview version was released on August 28, 2024.
 - https://graphsql.atlassian.net/browse/DOC-2129 to *Write*
 - Users can generate and use JWT tokens when sending REST requests to the GSQL or REST servers.
 - JWT authorization/authentication is more secure than the plaintext token used in earlier TigerGraph versions.
-* **Password Complexity and Rotation Rules**
-https://graphsql.atlassian.net/browse/DOC-2103 to *Write*
-- Administrators can specify rules for the complexity of passwords and for how long or how many times a password may be used before it must be updated.
-- Such rules improve security and help organziations to satisfy compliance requirements.
+* **xref:tigergraph-server:security:password-policy.adoc[Password Complexity and Rotation Rules]**: +
+Administrators can specify rules for the complexity of passwords and how long or how many times a password may be used, in order to improve security and help organizations to satisfy compliance requirements.
 
-* **xref:tigergraph-server:troubleshooting:audit-log.adoc[Expanded Audit Log Coverage]**
-- Audit logs now include `gadmin` activity, for more complete audit coverage.
+* **xref:tigergraph-server:troubleshooting:audit-log.adoc[Expanded Audit Log Coverage]** +
+Audit logs now include `gadmin` activity, for more complete audit coverage.
 
 === High Availability (HA) Enhancements
 
@@ -79,20 +79,30 @@ The error data is also protected by RBAC, ensuring it is secured and no longer e
 
 === Kubernetes Operator Enhancements
 
-* **Supporting Multi-AZ Cluster Resiliency for Better High Availability and Efficiency**
+TigerGraph Operator 1.2.0 introduces several significant new features, including the ability to create services for sidecar containers, support for cluster storage resizing, new lifecycle hooks for TigerGraph CR, and enhanced Multi-AZ cluster resiliency.
 
-The Multi-AZ cluster resiliency feature allows users to enable region-aware replica placement of TigerGraph and configure topologySpreadConstraints for TigerGraph Pods.
-This feature empowers users to achieve enhanced high availability and efficient resource utilization within TigerGraph deployments.
+.TigerGraph K8s Operator 1.2.0 details
+[%collapsible]
+====
+- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/03-deploy/region-awareness-with-pod-topology-spread-constraints.md[Region Awareness with Pod Topology Spread Constraints]**: +
+Improve workload distribution and availability by enabling region awareness.
 
-* **Supporting Expanding PVC Automatically**
+- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/04-manage/expand-storage.md[Automatic Expansion of PVCs for TigerGraph CR]**: +
+Simplify storage management with automated Persistent Volume Claim (PVC) resizing.
 
-The expanding PVC automatically feature allows users to increase the Persistent Volume size automatically by configuring the TigerGraph Custom Resource (CR).
-Customers can expand the storage of clusters by modifying the storage size in the TigerGraph CR, with the TigerGraph Operator handling the automatic expansion of all PVCs, eliminating the need for manual intervention.
+- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/03-deploy/lifecycle-of-tigergraph.md[New Lifecycle Hooks for TigerGraph CR]**: +
+Utilize preDeleteAction and prePauseAction lifecycle hooks for better control and automation during cluster operations.
 
-* **Supporting the Creation of Services for Sidecar Containers**
+- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/03-deploy/configure-services-of-sidecar-containers.md[Service Creation for Sidecar Containers]**: +
+Easily create services for sidecar containers with TigerGraph CR.
 
-This feature allows users to configure services for sidecar containers during cluster deployment, with the TigerGraph Operator responsible for the service creation and updating.
-Users no longer need to manage the details of Kubernetes service creation for TigerGraph pods to expose sidecar container services, as the process is automated for easier use, similar to other configurations in the TigerGraph CR.
+- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/04-manage/debug-mode.md[Enhanced Debugging Mode]**: +
+Debug more effectively with the newly introduced debugging mode in the operator.
+
+- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/03-deploy/tigergraph-on-eks.md#install-tigergraph-operator[Customization of MaxConcurrentReconciles for the operator]**: +
+Fine tune TigerGraph operator's performance by customizing the maximum number of concurrent reconciles.
+
+====
 
 === Language Enhancements
 
@@ -113,65 +123,52 @@ Users no longer need to manage the details of Kubernetes service creation for Ti
 - Adds several new REST endpoints, to provide complete coverage for defining schema, loading data, querying, updating data, and managing database-related tasks.
 - Introduces a REST API format that follows standard practices, empowering users to interact with TigerGraph programmatically, automate tasks, integrate databases with various applications, and leverage cloud services effectively, ultimately enhancing their development and operational efficiency.
 
+////
 * **xref:gsql-ref:querying:accumulators.adoc#_edge_attached_accumulators[Edge Accumulators in Multi-hop Queries]**
 - Edge accumulators can now be using in multi-hop pattern matching queries.
 - Query writers can save and retreive intermediate results using edge-based containers, enhancing the capabilities of the GSQL language for comprehensive graph data analysis.
+////
 
-NOTE: Haven't compared the below items against the DOC tickets yet.
 
 == TigerGraph Suite
 
 === GraphStudio
 
-* **Default User-Managed Layout**
-
-Custom layout is now the default view in GraphStudio, allowing for a more personalized and efficient graph visualization experience. Users can hold the Option/Alt key while adjusting the layout if they still want the force layout effect..
-This enhances user productivity by providing a tailored visual representation of their data while still allowing flexibility with the force layout effect when needed.
+* **Highlight Connected Edges When Hovering Over a Vertex**: +
+to show users the relationships and structure at a glance.
 Also available in Insights.
 
-* **Highlight Edges When Hovering Over a Vertex**
-
-When a user hovers over a vertex in GraphStudio, the connected edges are now highlighted, making it easier to see relationships and connections at a glance. This visual aid helps in quickly identifying the structure and connections within the graph.
-Users can more easily understand and analyze the relationships in their graph data, improving the efficiency of their data exploration.
-Also available in Insights.
-
-* **Collapsible Sidebar**
-
-The sidebar in GraphStudio can now be collapsed, providing more screen space for graph visualization and manipulation. This feature allows users to maximize their workspace and focus on the graph itself.
-By offering a cleaner and more spacious working environment, users can better concentrate on their graph data, enhancing overall usability and user experience.
+* **Collapsible Sidebar**: +
+to let users use their screen space more effiently.
 
 * **Implement query_status Endpoint in GUI**
 
 A new query_status endpoint has been added to the GUI for tracking the status of asynchronous query calls. This allows users to monitor the progress and completion of their queries without blocking their workflow.
 Users can now manage and track their async queries more effectively, improving the efficiency of their workflow and resource management.
 
-* **Mandatory Password Change upon Expiration**
+* **Mandatory Password Change upon Expiration**: +
+A password must be changed when it expires or reaches a time/usage limit, enhancing security protocols.
+Not available on TigerGraph Cloud.
 
-GraphStudio now enforces users to change their password when it expires or when the password rotation period is due, enhancing security protocols. This feature ensures that users maintain strong and up-to-date passwords.
-By enforcing regular password updates, users benefit from improved security, reducing the risk of unauthorized access to their graph data.
-Not available on TigerGraph Cloud
+* **Customizable Naming of Reverse Edges**: +
+enables data modelers to apply more intuitive and domain-specific names.
 
-* **Customizable Naming of Reverse Edges**
+* ** User-Customizable Layout**:
 
-Users can now customize the naming of reverse edges in GraphStudio, providing greater flexibility in how relationships are represented and understood within the graph.
-Customizable reverse edge naming helps users create more comprehensible and domain-specific graph models.
+>> Need a clearer description.  Right now, I don't understannd "user managed" layout. I'm not sure if this is a feature I want.
+
+Also applies to Insights.
 
 === TigerGraph Insights
 
-* **Downloadable Query Output**
+* **Downloadable Query Output**: +
+as CSV or JSON
 
-Adds the capability to download query output as a CSV/JSON file in the table widget. This feature allows users to export the results of their queries directly into a CSV/JSON format for further analysis or reporting.
-Users can easily export query results for further analysis, sharing, or reporting in other applications.
+* **"Tree" View Respects Direction of Directed Edges**: +
+to depict hierarchical structures and dependencies more meaningfully
 
-* **"Tree" View Respects Direction of Directed Edges**
-
-The "Tree" view now respects the direction of directed edges. This enhancement ensures that hierarchical structures and dependencies are accurately represented according to the directionality of the edges.
-Users gain a more accurate visualization of hierarchical data, improving their understanding of relationships and dependencies.
-
-* **Support for Variables in Markdown Widget**
-
-The Markdown widget now supports the use of variables. This feature allows users to dynamically insert variable values into their Markdown content, enabling more interactive and context-sensitive displays.
-Users can create more dynamic and context-sensitive dashboards by incorporating variable data into their Markdown content.
+* **Support for Variables in Markdown Widget**: +
+for more context-aware and interactive dashboard displays
 
 === AdminPortal
 
@@ -182,7 +179,7 @@ Users can create more dynamic and context-sensitive dashboards by incorporating 
 The Health Check Tool in TigerGraph AdminPortal provides administrators with a comprehensive utility to monitor and assess the health and performance of their TigerGraph system. This tool conducts various checks and diagnostics to ensure the system is running optimally.
 Administrators can proactively identify and address potential issues, ensuring system reliability and optimal performance.
 
-* **Fine-grained Query Privileges in RBAC**
+* **Fine-grained Query Privileges in RBAC**:
 AdminPortal UI for the xref:#finer_grain_query_privileges[fine-grained query privileges] described above.
 
 == Fixed issues
