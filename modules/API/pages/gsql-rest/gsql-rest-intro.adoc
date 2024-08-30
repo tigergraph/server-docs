@@ -1,0 +1,41 @@
+= GSQL Server REST API (TigerGraph 4.x)
+:description: Overview of GSQL SERVER's REST API.
+:pp: {plus}{plus}
+:page-aliases: API:intro.adoc, api:intro.adoc
+
+This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while xref:gsql-rest/gsql-endpoints.adoc[] describes in detail each endpoint and its input and output.
+
+To submit a request, send an HTTP request to the NGINX server or the GSQL server.
+By default, the GSQL server listens for requests at port 8123 and the NGINX server listens on port 14240.
+A request must include the following specifications:
+
+* The request method (`GET`, `POST`, `PUT`, or `DELETE`)
+* The endpoint address
+* Any required or optional request parameters in URL encoding
+* For `POST` requests, a data payload (i.e., request body) in JSON encoding unless otherwise specified
+* In some cases, request header parameters
+
+For requests sent to the GSQL server, TigerGraph user credentials must be provided for the request to be accepted.
+
+
+== `curl` options
+
+Request examples in this guide are made using https://curl.se/docs/manpage.html[`curl`]. Below is a list of `curl` options used in our code examples:
+
+* `-d <data>`
+** Sends the specified data in a `POST` request to the HTTP server in the same way that a browser does when a user has filled in an HTML form and presses the submit button. This will cause curl to pass the data to the server using the content-type `application/x-www-form-urlencoded`.
+** If the data starts with the character @, the rest should specify the filepath from which to read the data. The command `curl -d @foobar` will read data from a file named `foobar`.
+* `--data-binary <data>`
+** Sends data with a `POST` request exactly as specified with no extra processing.
+* `--fail`
+** Makes curl fail silently (no output at all) on server errors.
+** This is mostly done to enable scripts etc. to better deal with failed attempts. In normal cases when an HTTP server fails to deliver a document, it returns an HTML document stating so (which often also describes why and more). This flag will prevent curl from outputting that and return error 22.
+* `-H <header>`
+** Extra header to include in the request when sending HTTP to a server. Any number of extra headers can be specified.
+** TigerGraph APIs use headers to specify xref:API:index.adoc#_size_and_time_limits[size and time limits], as well as to provide RESTPP xref:API:authentication.adoc#_rest_server_requests[authentication] tokens.
+* `-s`
+** Silent or quiet mode. Don't show a progress meter or error messages. It will still output the data you ask for, potentially even to the terminal/stdout unless you redirect it.
+* `-u <user:password>`
+** Submits the specified user name and password for server authentication.
+* `-X <request_method>`
+** Specifies a custom request method to use when communicating with the HTTP server. If this option is not used, curl will make a `GET` request by default.
