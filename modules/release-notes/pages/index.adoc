@@ -24,16 +24,15 @@ Users can roll back the database to a moment they select, not only the time of a
 * **xref:tigergraph-server:backup-and-restore:configurations.adoc#_configure_backup_to_aws_s3_endpoint[Role ARN for Backup to AWS S3 buckets]**: 
 Users can use AWS Role ARNs (Amazon Resource Names) for convenient and secure management of backups.
 
-* See also HA Enhancements.
+* See also xref:_high_availability_ha_enhancements[]
 
 === Security Enhancements
 
 [#finer_grain_query_privileges]
 * **xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc[Fine-grained Privileges on Queries]**:
 gives adminstrators finer control over who may do what actions with which objects:
-- Introduces ownership of graph and query objects.
 - Allows privileges to be granted/revoked at the query level.
-- Adds new query privileges INSTALL and EXECUTE, and splits  WRITE to CREATE, UPDATE and DROP.
+- Adds new query privileges OWNERSHIP, INSTALL and EXECUTE, and splits  WRITE to CREATE, UPDATE and DROP.
 
 * **xref:tigergraph-server:user-access:jwt-token.adoc#_usage_of_gsql_jwt_token[JWT Authentication]**:
 JWT authorization/authentication is more secure than the plaintext tokens used in earlier TigerGraph versions.
@@ -66,18 +65,20 @@ Previously, backups were unavailable if a node failed.
 `SHOW LOADING ERROR` presents a sample of malformed data lines and their error types to an authorized user,
 enabling them to quickly locate and diagnose loading problems.
 
-* **Spark Connector - Streaming Read**
-- https://graphsql.atlassian.net/browse/DOC-2130 to *Write*. Ticket had generic title and no description.
-- Using the Spark data source reader API, users can run TigerGraph queries, stream the output to Spark, and then read Spark DataFrames.
-- Streaming the output lifts the 2GB query response size limitation for non-streaming output.
-* **Notification for Stuck Loader** +
+* **xref:tigergraph-server:data-loading:read-to-spark-dataframe.adoc[Stream Data into Spark]**:
+Using the Spark data source reader API, users can run TigerGraph queries and stream the output to Spark as DataFrames.
+Streaming the output lifts the 2GB query response size limitation for non-streaming output.
+
+* **Notification for Stuck Loader**:
 If loading is stuck or acting abnormally, the loader sends an alert message to the console,
 including a diagnosis, enabling users to take timely action.
 
+* See also xref:_high_availability_ha_enhancements[]
+
 === Kubernetes Operator Enhancements
 
-TigerGraph Operator 1.2.0 introduces several significant new features, including the ability to create services for sidecar containers, support for cluster storage resizing, new lifecycle hooks for TigerGraph CR, and enhanced Multi-AZ cluster resiliency.
-
+* TigerGraph Operator 1.2.0 introduces several significant new features, including the ability to create services for sidecar containers, support for cluster storage resizing, new lifecycle hooks for TigerGraph CR, and enhanced Multi-AZ cluster resiliency.
++
 .TigerGraph K8s Operator 1.2.0 details
 [%collapsible]
 ====
