@@ -52,12 +52,12 @@ Audit logs now include `gadmin` activity, for more complete audit coverage.
 - In the event of a node failure, the connectors can detect the issue and failover to other active nodes, continuing the data loading process without requiring manual intervention.
 -  Available for data streaming connectors, including data sources such Kafka and cloud storage on AWS, Azure, and Google Cloud.
 
-* **xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc#_cdc_ha[Change Data Capture (CDC) HA]**
-- CDC continues to function as long as at least one replica per partition is online.
+* **xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc#_cdc_ha[Change Data Capture (CDC) HA]**:
+CDC continues to function as long as at least one replica per partition is online.
 Previously, Replica 1 needed to remain operational.
 
-* **Backup HA**
-- Backups remain available even if a node fails.
+* **Backup HA**:
+Backups remain available even if a node fails.
 Previously, backups were unavailable if a node failed.
 
 === Data Streaming/Connector Enhancements
@@ -65,7 +65,6 @@ Previously, backups were unavailable if a node failed.
 * **xref:gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_error[Malformed Loading Data Inspector]**:
 `SHOW LOADING ERROR` presents a sample of malformed data lines and their error types to an authorized user,
 enabling them to quickly locate and diagnose loading problems.
-The error data access obeys RBAC rules.
 
 * **Spark Connector - Streaming Read**
 - https://graphsql.atlassian.net/browse/DOC-2130 to *Write*. Ticket had generic title and no description.
