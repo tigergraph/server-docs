@@ -29,19 +29,20 @@ Users can use AWS Role ARNs (Amazon Resource Names) for convenient and secure ma
 === Security Enhancements
 
 [#finer_grain_query_privileges]
-* **xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc[Fine-grained Privileges on Queries]** gives adminstrators finer control over who may do what actions with which objects:
+* **xref:tigergraph-server:user-access:fine-grained-query-privileges.adoc[Fine-grained Privileges on Queries]**:
+gives adminstrators finer control over who may do what actions with which objects:
 - Introduces ownership of graph and query objects.
 - Allows privileges to be granted/revoked at the query level.
 - Adds new query privileges INSTALL and EXECUTE, and splits  WRITE to CREATE, UPDATE and DROP.
 
-* **xref:tigergraph-server:user-access:jwt-token.adoc#_usage_of_gsql_jwt_token[JWT Authentication]**
+* **xref:tigergraph-server:user-access:jwt-token.adoc#_usage_of_gsql_jwt_token[JWT Authentication]**:
 JWT authorization/authentication is more secure than the plaintext tokens used in earlier TigerGraph versions.
 Users can generate and use JWT tokens when sending REST requests to the GSQL or REST servers.
 
 * **xref:tigergraph-server:security:password-policy.adoc[Password Complexity and Rotation Rules]**: 
 Administrators can specify rules for the complexity of passwords and how long or how many times a password may be used, in order to improve security and help organizations to satisfy compliance requirements.
 
-* **xref:tigergraph-server:troubleshooting:audit-log.adoc[Expanded Audit Log Coverage]** 
+* **xref:tigergraph-server:troubleshooting:audit-log.adoc[Expanded Audit Log Coverage]**: 
 Audit logs now include `gadmin` activity, for more complete audit coverage.
 
 === High Availability (HA) Enhancements
@@ -61,11 +62,10 @@ Previously, backups were unavailable if a node failed.
 
 === Data Streaming/Connector Enhancements
 
-* **xref:gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_error[Malformed Loading Data Inspector]**
-- Loading jobs log a sample of malformed data lines and their error types.
-`SHOW LOADING ERROR` presents this information to an authorized user.
-- Users can easily locate and diagnose error data, speeding up their corrective action.
-The error data is also protected by RBAC, ensuring it is secured and no longer exposed in files.
+* **xref:gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_error[Malformed Loading Data Inspector]**:
+`SHOW LOADING ERROR` presents a sample of malformed data lines and their error types to an authorized user,
+enabling them to quickly locate and diagnose loading problems.
+The error data access obeys RBAC rules.
 
 * **Spark Connector - Streaming Read**
 - https://graphsql.atlassian.net/browse/DOC-2130 to *Write*. Ticket had generic title and no description.
@@ -74,7 +74,6 @@ The error data is also protected by RBAC, ensuring it is secured and no longer e
 * **Notification for Stuck Loader** +
 If loading is stuck or acting abnormally, the loader sends an alert message to the console,
 including a diagnosis, enabling users to take timely action.
-
 
 === Kubernetes Operator Enhancements
 
