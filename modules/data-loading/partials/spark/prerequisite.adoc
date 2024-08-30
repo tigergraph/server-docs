@@ -1,0 +1,47 @@
+=== Compatibility
+* TigerGraph 3.6.0 or higher.
+* Spark 3.2 or higher with Scala 2.12 and Scala 2.13.
+* JAVA 8 or higher.
+
+=== Download the JARs
+This connector can be downloaded from the Maven central repository:
+https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector/overview[Maven Central]
+it has 3 types of release format:
+
+
+
+* `tigergraph-spark-connector-<version>.jar`: The `JAR` file containing only the compiled classes of the connector, which does not include any dependencies.
+* `tigergraph-spark-connector-<version>-jar-with-dependencies.jar`: The `JAR` file that includes compiled classes, as well as all the dependencies.
+* `tigergraph-spark-connector-<version>.tar.gz`: The compressed `TAR` archive that includes `tigergraph-spark-connector-<version>.jar` and dependencies in separate `JAR` files.
+
+To use the TigerGraph Spark connector in a Spark shell:
+
+.use the `--jars` option:
+[console]
+----
+spark-shell --jars tigergraph-spark-connector-<version>-jar-with-dependencies.jar
+----
+
+[NOTE]
+====
+If you want to include TigerGraph Spark Connector in your Spark installation, add the `JAR` with dependencies to Spark's `jars` folder.
+====
+
+=== Configure Logging
+
+We highly recommend setting the log level to `info` to monitor the execution. There are two methods to enable logging for the connector.
+
+==== Connector Default Logger
+The connector has a built-in logger based on _java.util.logging_.
+To activate it, set the option `log.level` to 2, which enables info-level logging.
+
+Please refer to <<Common Options>> to learn more about `log.level` and `log.path` options.
+
+==== Spark Logger
+Configure Spark Log4j by `$SPARK_HOME/conf/log4j2.properties` as follows, or other SLF4j bindings if any:
+
+[console]
+----
+logger.tg.name = com.tigergraph
+logger.tg.level = info
+----
