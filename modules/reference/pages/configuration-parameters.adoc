@@ -53,7 +53,7 @@ System.LogRoot) of the log directory for Admin |`admin`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
-|
+|`HostID`: the host ID; `Replica`: the Admin replica server id.
 
 |Admin.Port |The port for Admin |`12471`
 |`int32`
@@ -108,7 +108,7 @@ System.LogRoot) of log directory for Controller |`controller`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
-|
+|`HostID`: the host ID; `Replica`: the Controller replica server id.
 
 |Controller.ConfigRepoRelativePath |The relative path (to the
 System.DataRoot) of config repo where the service config files are
@@ -201,7 +201,7 @@ System.LogRoot) of log directory for Dict |`dict`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`{HostID: "m1", Replica: 1}`
-|
+|`HostID`: the host ID; `Replica`: the Dict replica server id.
 
 |Dict.Port |The port for Dict |`17797`
 |`int32`
@@ -257,7 +257,7 @@ System.LogRoot) of the log directory for ETCD |`etcd`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`{HostID: "m1", Replica: 1}`
-|
+|`HostID`: the host ID; `Replica`: the ETCD replica server id.
 
 |ETCD.ClientPort |The port of ETCD to listen for client traffic |`20000`
 |`int32`
@@ -742,7 +742,7 @@ System.LogRoot) of log directory for GSE |`gse`
 |`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
-|
+|`HostID`: the host ID; `Partition`: the partition id of GSE data; `Replica`: the GSE replica server id.
 
 |GSE.IdRequestPort |The id request serving port of GSE |`6500`
 |`int32`
@@ -812,7 +812,7 @@ System.LogRoot) of log directory for GSQL |`gsql`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1", "Replica":1},{"HostID":"m2", "Replica":2}]`
-|
+|`HostID`: the host ID; `Replica`: the GSQL replica server id.
 
 |GSQL.CatalogBackupFileMaxDurationDay |The maximum number of days for
 catalog backup files to retain |`30`
@@ -1062,7 +1062,7 @@ System.LogRoot) of log directory for GUI |`gui`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1","Replica":1},{"HostID":"m2", "Replica":2}]`
-|
+|`HostID`: the host ID; `Replica`: the GraphStudio replica server id.
 
 |GUI.ClientIdleTimeSec |The maximum idle time of client-side GraphStudio
 and AdminPortal before inactivity logout |`604800`
@@ -1231,7 +1231,7 @@ System.LogRoot) of log directory for Informant |`informant`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1","Replica":1},{"HostID":"m2", "Replica"}]`
-|
+|`HostID`: the host ID; `Replica`: the Informant replica server id.
 
 |Informant.DBRelativePath |The relative path (to the System.DataRoot) of
 informant database source folder |`informant/db`
@@ -1298,7 +1298,7 @@ System.LogRoot) of log directory for Kafka |`kafka`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{HostID: "m2", Replica: 2}]`
-|
+|`HostID`: the host ID; `Replica`: the Kafka replica server id.
 
 |Kafka.DataRelativePath |The data dir of kafka under $DataRoot |`kafka`
 |`string`
@@ -1414,7 +1414,7 @@ System.LogRoot) of log directory for Kafka connect |`kafkaconn`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1","Replica":1},{"HostID":"m2", "Replica":2}]`
-|
+|`HostID`: the host ID; `Replica`: the Kafka connect replica server id.
 
 |KafkaConnect.MaxMemorySizeMB
 
@@ -1604,7 +1604,7 @@ LoadingLog
 |`[{"HostID":"m1","Partition":1,"Replica":0},{"HostID":"m2","Partition":2,"Replica":0}]`
 |`json`
 |`[{"HostID":"m1","Partition":1},{"HostID":"m2","Partition":2}]`
-|
+|`HostID`: the host ID; `Replica`: the Kafka stream replica server id.
 
 |KafkaStreamLL.MaxPartitionFetchBytes |Max partition fetch bytes size
 |`104857600`
@@ -1670,7 +1670,7 @@ System.LogRoot) of log directory for Nginx |`nginx`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
 |`[{"HostID":"m1","Replica":1},{"HostID":"m2","Replica":2}]`
-|
+|`HostID`: the host ID; `Replica`: the Nginx replica server id.
 
 |Nginx.ClientMaxBodySize |The maximum request size for Nginx in MB
 |`200`
@@ -1696,7 +1696,7 @@ keywords(string like *UPPER_CASE*) in template.)
 |`[{"FieldName":"X-Frame-Options","FieldValue":"SAMEORIGIN"}]`
 |`json`
 |`[{"FieldName":"X-Frame-Options","FieldValue":"SAMEORIGIN"}]`
-|
+| `FieldName`: indicating head name; `FieldValue`: the value of this head.
 
 |Nginx.SSL.Cert |Public certificate for SSL. (Could use @cert_file_path
 to parse the certificate from file) |`nan`
@@ -1768,8 +1768,8 @@ System.LogRoot) of log directory for RESTPP |`restpp`
 |RESTPP.BasicConfig.Nodes |The node list for RESTPP
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
 |`json`
-|`[{"HostID":"m1", "Replica":1},{"HostID":"m2"}, "Replica":2}]`
-|
+|`[{"HostID":"m1", "Replica":1},{"HostID":"m2", "Replica":2}]`
+|`HostID`: the host ID; `Replica`: the RestApp replica server id.
 
 |RESTPP.FCGISocketBackLogMaxCnt |RESTPP fcgi socket backlog max length
 which is the listen queue depth used in the listen() call. |`36864`
