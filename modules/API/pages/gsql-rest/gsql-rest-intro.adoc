@@ -5,8 +5,8 @@
 
 This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while xref:gsql-rest/gsql-endpoints.adoc[] describes in detail each endpoint and its input and output.
 
-To submit a request, send an HTTP request to the NGINX server or the GSQL server.
-By default, the GSQL server listens for requests at port 8123 and the NGINX server listens on port 14240.
+To submit a request, send an HTTP request to the NGINX server with the port number 14240.
+By default, the NGINX server listens on port 14240 and forward request to correct service, such as GSQL, RESTPP and GUI.
 A request must include the following specifications:
 
 * The request method (`GET`, `POST`, `PUT`, or `DELETE`)
@@ -16,6 +16,12 @@ A request must include the following specifications:
 * In some cases, request header parameters
 
 For requests sent to the GSQL server, TigerGraph user credentials must be provided for the request to be accepted.
+User credentials can be provided in 3 ways:
+
+* `-u <user:password>`: pass the specified user name and password with curl option
+* `-H 'Authorization: Bearer <JWT-token>'`: pass JWT token via header, note that JWT token was requested on graph level, so user will only has the access to the specific graph with JWT token
+* `-H 'Authorization: Basic <encoded-username-password>'`: pass encoded username and password via header
+* `-H 'Authorization: GSQL-Secret <gsql-secret>'`: pass gsql secret via header
 
 
 == `curl` options
