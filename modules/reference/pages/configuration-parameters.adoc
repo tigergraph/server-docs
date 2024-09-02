@@ -363,9 +363,9 @@ System.LogRoot) of log directory for Executor |`executor`
 
 |Executor.BasicConfig.Nodes |The nodes to deploy Executors
 |`[{"HostID":"m1","Partition":1,"Replica":0},{"HostID":"m2","Partition":2,"Replica":0}]`
-|`string`
+|`json`
 |`[{"HostID":"m1","Partition":1},{"HostID":"m2","Partition":2}]`
-|
+|`HostID`: the host ID; Partition: the partition id of the Executors.
 
 |Executor.DataRelativePath |The data dir of executor under $DataRoot
 |`executor`
@@ -549,9 +549,9 @@ System.LogRoot) of log directory for GPE |`gpe`
 
 |GPE.BasicConfig.Nodes |The node list for GPE
 |`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
-|`string`
+|`json`
 |`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
-|
+|`HostID`: the host ID; `Partition`: the partition id of GPE data; `Replica`: the GPE replica server id.
 
 |GPE.Disk.CompressMethod |The compression method of GPE disk data |`nan`
 |`string`
@@ -2585,9 +2585,9 @@ System.LogRoot) of log directory for ZK |`zk`
 
 |ZK.BasicConfig.Nodes |The node list for Zookeeper
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
-|`string`
+|`json`
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
-|
+|`HostID`: the host ID; `Replica`: the Zookeeper replica server id.
 
 |ZK.DataRelativePath |The data dir of zookeeper under $DataRoot |`zk`
 |`string`
