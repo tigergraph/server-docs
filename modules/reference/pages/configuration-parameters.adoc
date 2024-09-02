@@ -11,371 +11,691 @@ In addition, the last table is for runtime environment variables. Each component
 
 [cols="3", options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |Admin.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
 |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|`string`
+|`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|
 
 |Admin.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number
 of days to retain old log files based on the timestamp encoded in their
 filename |`90`
+|`int32`
+|`90`
+|
 
 |Admin.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |Admin.BasicConfig.LogConfig.LogLevel |The log
 level(`INFO`,`WARN`,`ERROR`), default is `INFO` |`INFO`
+|`string`
+|`INFO`
+|
 
 |Admin.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number
 of old log files to retain |`100`
+|`int32`
+|`50`
+|
 
 |Admin.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of the log directory for Admin |`admin`
+|`string`
+|`admin`
+|
 
 |Admin.BasicConfig.Nodes |The node list for Admin
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|
 
 |Admin.Port |The port for Admin |`12471`
+|`int32`
+|`12471`
+|
+
 |===
 
 == Controller
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |Controller.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
+|`string`
+|``
+|
 
 |Controller.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
 their filename |`90`
+|`int32`
+|`90`
+|
 
 |Controller.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |Controller.BasicConfig.LogConfig.LogLevel |The log
 level(`DEBUG`,`INFO`,`WARN`,`ERROR`,`PANIC`,`FATAL`),
 default is INFO |`INFO`
+|`string`
+|`INFO`
+|
 
 |Controller.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
+|`int32`
+|`50`
+|
 
 |Controller.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for Controller |`controller`
+|`string`
+|`controller`
+|
 
 |Controller.BasicConfig.Nodes |The nodes to deploy Controller
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|
 
 |Controller.ConfigRepoRelativePath |The relative path (to the
 System.DataRoot) of config repo where the service config files are
 stored |`configs`
+|`string`
+|`configs`
+|
 
 |Controller.Connect.PrunerEnabled |Whether to automatically remove data that was already loaded by GSQL in Kafka.
 |`True`
+|`bool`
+|`true`
+|
 
 |Controller.Connect.PruneIntervalMin |The wait time, in minutes, between each prune
 job that removes data already loaded by GSQL in Kafka. Accepts an integer from 1 to 59, inclusive.| `1`
+|`int32`
+|`1`
+|
 
 |Controller.FileRepoRelativePath |The relative path (to the
 System.DataRoot) of the file repo for file management |`files`
+|`string`
+|`files`
+|
 
 |Controller.FileRepoVersionNum |The maximum version of files to keep in
 the file repo |`3`
+|`int32`
+|`3`
+|
 
 |Controller.LeaderElectionHeartBeatIntervalMS |The maximum
 interval(milliseconds) at which each service should call controller
 leader election service to be considered alive. |`6000`
+|`int32`
+|`6000`
+|
 
 |Controller.LeaderElectionHeartBeatMaxMiss |The maximum number of
 heartbeats that can be missed before one service is considered dead by the
 controller |`5`
+|`int32`
+|`5`
+|
 
 |Controller.Port |The serving gRPC (Google Remote Procedure Call) port for Controller |`9188`
+|`int32`
+|`9188`
+|
 |===
 
 == Dict
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |Dict.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
 |`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|`string`
+|`LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|
 
 |Dict.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
 filename |`90`
+|`int32`
+|`90`
+|
 
 |Dict.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |Dict.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
+|`int32`
+|`50`
+|
 
 |Dict.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for Dict |`dict`
+|`string`
+|`dict`
+|
 
 |Dict.BasicConfig.Nodes |The node list for Dict
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`{HostID: "m1", Replica: 1}`
+|
 
 |Dict.Port |The port for Dict |`17797`
+|`int32`
+|`17797`
+|
+
 |===
 
 == ETCD
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |ETCD.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
 |`ETCD_UNSUPPORTED_ARCH=arm64`
+|`string`
+|`ETCD_UNSUPPORTED_ARCH=arm64`
+|
 
 |ETCD.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
 filename |`90`
+|`int32`
+|`90`
+|
 
 |ETCD.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |ETCD.BasicConfig.LogConfig.LogLevel |The log
 level(`DEBUG`,`INFO`,`WARN`,`ERROR`,`PANIC`,`FATAL`),
 default is `INFO` |`INFO`
+|`string`
+|`INFO`
+|
 
 |ETCD.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
+|`int32`
+|`50`
+|
 
 |ETCD.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of the log directory for ETCD |`etcd`
+|`string`
+|`etcd`
+|
 
 |ETCD.BasicConfig.Nodes |The node list for ETCD
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`{HostID: "m1", Replica: 1}`
+|
 
 |ETCD.ClientPort |The port of ETCD to listen for client traffic |`20000`
+|`int32`
+|`20000`
+|
 
 |ETCD.DataRelativePath |The data dir of etcd under `$DataRoot` |`etcd`
+|`string`
+|`etcd`
+|
 
 |ETCD.ElectionTimeoutMS |Time (in milliseconds) for an election to
 timeout |`1000`
+|`int32`
+|`5000`
+|
 
 |ETCD.HeartbeatIntervalMS |Time (in milliseconds) of a heartbeat
 interval |`100`
+|`int32`
+|`500`
+|``
 
 |ETCD.MaxRequestBytes |Maximum client request size in bytes the server
 will accept |`52428800`
+|`int32`
+|`52428800`
+|
 
 |ETCD.MaxSnapshots |Maximum number of snapshot files to retain (0 is
 unlimited) |`5`
+|`int32`
+|`5`
+|
 
 |ETCD.MaxTxnOps |Maximum number of operations permitted in a transaction
 |`8192`
+|`int32`
+|`8192`
+|
 
 |ETCD.MaxWals |Maximum number of wal files to retain (0 is unlimited)
 |`5`
+|`int32`
+|`5`
+|
 
 |ETCD.PeerPort |The port of ETCD to listen for peer traffic |`20001`
+|`int32`
+|`20001`
+|
 
 |ETCD.SnapshotCount |Number of committed transactions to trigger a
 snapshot to disk |`50000`
+|`int32`
+|`50000`
+|
 |===
 
 == Executor
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |Executor.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
 |`nan`
+|`string`
+|empty string
+|
 
 |Executor.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
 their filename |`90`
+|`int32`
+|`90`
+|
 
 |Executor.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
+
 
 |Executor.BasicConfig.LogConfig.LogLevel |The log
 level(`DEBUG`,`INFO`,`WARN`,`ERROR`,`PANIC`,`FATAL`),
 default is `INFO` |`INFO`
+|`string`
+|`INFO`
+|
 
 |Executor.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
+|`int32`
+|`50`
+|
 
 |Executor.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for Executor |`executor`
+|`string`
+|`executor`
+|
 
 |Executor.BasicConfig.Nodes |The nodes to deploy Executors
 |`[{"HostID":"m1","Partition":1,"Replica":0},{"HostID":"m2","Partition":2,"Replica":0}]`
+|`string`
+|`[{"HostID":"m1","Partition":1},{"HostID":"m2","Partition":2}]`
+|
 
 |Executor.DataRelativePath |The data dir of executor under $DataRoot
 |`executor`
+|`string`
+|`executor`
+|
 
 |Executor.FileTransferConcurrency |The maximum concurrency for Executor
 file transfer |`10`
+|`int32`
+|`10`
+|
 
 |Executor.FileTransferPort |The port for Executor to do file transfer
 |`9178`
+|`int32`
+|`9178`
+|
 
 |Executor.FileVersionNum |The maximum version of files to keep |`10`
+|`int32`
+|`10`
+|
 
 |Executor.Port |The serving port for Executor |`9177`
+|`int32`
+|`9177`
+|
 
 |Executor.WatchDogIntervalMS |The process status check interval (ms)
 |`1000`
+|`int32`
+|`1000`
+|
 |===
 
 == FileLoader
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |FileLoader.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
+|`string`
+|empty string
+|
 
 |FileLoader.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
 their filename |`90`
+|`int32`
+|`90`
+|
 
 |FileLoader.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |FileLoader.BasicConfig.LogConfig.LogLevel |The log level(`OFF`,
 `BRIEF`, `DEBUG`, `VERBOSE`), default is `BRIEF` |`BRIEF`
+|`string`
+|`BRIEF`
+|
 
 |FileLoader.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
+|`int32`
+|`50`
+|
 
 |FileLoader.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for FileLoader |`fileLoader`
+|`string`
+|`fileLoader`
+|
 
 |FileLoader.Factory.DefaultLoadingTimeoutSec |The default per request
 loading timeout (s) for FileLoader |`600`
+|`int32`
+|`600`
+|
 
 |FileLoader.Factory.DefaultQueryTimeoutSec |The default query timeout
 (s) for FileLoader |`16`
+|`int32`
+|`16`
+|
 
 |FileLoader.Factory.DynamicEndpointRelativePath |FileLoader’s relative
 (to data root) path to store the dynamic endpoint
 |`fileLoader/endpoint/`
+|`string`
+|`fileLoader/endpoint/`
+|
 
 |FileLoader.Factory.DynamicSchedulerRelativePath |FileLoader’s relative
 (to data root) path to store the dynamic scheduler
 |`fileLoader/scheduler/`
+|`string`
+|`fileLoader/scheduler/`
+|
 
 |FileLoader.Factory.EnableAuth |Enable authentication of FileLoader
 |`false`
+|`string`
+|`false`
+|
 
 |FileLoader.Factory.HandlerCount |FileLoader’s handler count |`4`
+|`int32`
+|`4`
+|
 
 |FileLoader.Factory.StatsIntervalSec |FileLoader’s time interval to
 collect stats (e.g. QPS) |`60`
+|`int32`
+|`60`
+|
 
 |FileLoader.GPEResponseBasePort |The port of FileLoader to accept GPE
 response |`8400`
+|`int32`
+|`8400`
+|
 
 |FileLoader.GSEResponseBasePort |The port of FileLoader to accept GSE
 response |`8500`
+|`int32`
+|`8500`
+|
 
 |FileLoader.ReplicaNumber |The number of replicas of Fileloader per node
 |`1`
+|`int32`
+|`1`
+|
 |===
 
 == GPE
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |GPE.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;`
 |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=34; MALLOC_CONF=prof:true,prof_active:false; ZMQ_KEEPALIVE=1`
+|`string`
+|`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=34; MALLOC_CONF=prof:true,prof_active:false; ZMQ_KEEPALIVE=1`
+|
 
 |GPE.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
 filename |`90`
+|`int32`
+|`90`
+|
 
 |GPE.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |GPE.BasicConfig.LogConfig.LogLevel |The log level (`OFF`, `BRIEF`,
 `DEBUG`, `VERBOSE`), default is `BRIEF` |`BRIEF`
+|`string`
+|`BRIEF`
+|
 
 |GPE.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |GPE.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for GPE |`gpe`
+|`string`
+|`gpe`
+|
 
 |GPE.BasicConfig.Nodes |The node list for GPE
 |`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
+|`string`
+|`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
+|
 
 |GPE.Disk.CompressMethod |The compression method of GPE disk data |`nan`
+|`string`
+|Empty string
+|
 
 |GPE.Disk.DiskStoreRelativePath |The path (relative to temp root) to
 store GPE temporary disk data |`gpe/disks`
+|`string`
+|`gpe/disks`
+|
 
 |GPE.Disk.LoadThreadNumber |The number of threads to load from disk |`1`
+|`int32`
+|`1`
+|
 
 |GPE.Disk.SaveThreadNumber |The number of threads to save to disk |`1`
+|`int32`
+|`1`
+|
 
 |GPE.EdgeDataMemoryLimit |The memory limit for edge data. |`-1`
+|`int32`
+|`-1`
+|
 
 |GPE.GPE2GPEResponsePort |The GPE port for receiving response back from
 other GPEs |`7501`
+|`int32`
+|`7501`
+|
 
 |GPE.GPERequestPort |The GPE port for receiving requests |`7502`
+|`int32`
+|`7502`
+|
 
 |GPE.IdResponsePort |The GPE port for receiving id response from GSE
 |`7500`
+|`int32`
+|`7500`
+|
 
 |GPE.Kafka.BatchMsgNumber |The number of messages to send in one batch
 when using async mode. The producer will wait until either this number
 of messages are ready to send or queue buffer max ms is reached. |`64`
+|`int32`
+|`64`
+|
 
 |GPE.Kafka.CompressCodec |This parameter allows you to specify the
 compression codec for all data generated by this producer. Valid values
 are none, gzip and snappy. |`none`
+|`string`
+|`none`
+|
 
 |GPE.Kafka.FetchErrorBackoffTimeMS |How long to postpone the next fetch
 request for a topic+partition in case of a fetch error. |`6`
+|`int32`
+|`6`
+|
 
 |GPE.Kafka.FetchWaitMaxTimeMS |The maximum amount of time the server
 will block before answering the fetch request if there isn’t sufficient
 data to immediately satisfy fetch min bytes. |`10`
+|`int32`
+|`10`
+|
 
 |GPE.Kafka.MsgMaxBytes |Maximum transmit message size. |`10485760`
+|`float32`
+|`10485760`
+|
 
 |GPE.Kafka.QueueBufferMaxMsgNumber |The maximum number of unsent
 messages that can be queued up the producer when using async mode before
 either the producer must be blocked or data must be dropped. |`64`
+|`int32`
+|`64`
+|
 
 |GPE.Kafka.QueueBufferMaxTimeMS |Maximum time to buffer data when using
 async mode. |`1`
+|`int32`
+|`1`
+|
 
 |GPE.Kafka.QueueMinMsgNumber |Minimum number of messages per
 topic+partition in the local consumer queue. |`100000`
+|`int32`
+|`100000`
+|
 
 |GPE.Kafka.RequestRequiredAcks |This field indicates how many
 acknowledgements the leader broker must receive from ISR brokers before
 responding to the request. |`1`
+|`int32`
+|`1`
+|
 
 |GPE.LeaderElectionTTLSec |The time-to-live of a GPE election
 participant. A GPE will be kicked out of election if one GPE is not
 responsive after the TTL. |`30`
+|`int32`
+|`30`
+|
 
 |GPE.MemoryLimitMB |The total topology memory limit.
 For graphs with large topology data, this parameter can limit the system memory used for topology data in order to free up memory for query processing.
-
 This parameter takes precedence over the `EdgeDataMemoryLimit` and `VertexDataMemoryLimit` parameters.
 |`-1`
+|`int32`
+|`-1`
+|
 
 |GPE.NumberOfHashBucketInBit |The number of bits used to represent hash
 bucket counts. |`5`
+|`int32`
+|`5`
+|
 
 |GPE.RebuildThreadNumber |The number of rebuild threads for GPE |`3`
+|`int32`
+|`3`
+|
 
 |GPE.StopTimeoutMS |Stop GPE timeout |`300000`
+|`int32`
+|`300000`
+|
 
 |GPE.VertexDataMemoryLimit |The memory limit for vertex data in the topology.|`-1`
+|`int32`
+|`-1`
+|
 |===
 
 == GSE
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |GSE.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
 
 Some of the environment variables:
@@ -383,137 +703,272 @@ Some of the environment variables:
 `LicenseCheckInterval`: how often (in seconds) to check license violations, default/max value: 300;
 `UpdateGraphInterval`: how often (in seconds) to pull topology info from Zookeeper, default/max value: 300
 |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=34; MALLOC_CONF=prof:true,prof_active:false`
+|`string`
+|`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; CPUPROFILE=/tmp/tg_cpu_profiler; CPUPROFILESIGNAL=34; MALLOC_CONF=prof:true,prof_active:false`
+|
 
 |GSE.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
 filename |`90`
+|`int32`
+|`90`
+|
 
 |GSE.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |GSE.BasicConfig.LogConfig.LogLevel |The log level(``OFF'', ``BRIEF'',
 ``DEBUG'', ``VERBOSE''), default is BRIEF |`BRIEF`
+|`string`
+|`BRIEF`
+|
 
 |GSE.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |GSE.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for GSE |`gse`
+|`string`
+|`gse`
+|
 
 |GSE.BasicConfig.Nodes |The node list for GSE
 |`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1","Partition":1,"Replica":1},{"HostID":"m2","Partition":1,"Replica":2}]`
+|
 
 |GSE.IdRequestPort |The id request serving port of GSE |`6500`
+|`int32`
+|`6500`
+|
 
 |GSE.JournalTopicPrefix |Kafka Topic prefix of GSE journal
 storage/replication |`GSE_journal_`
+|`string`
+|`GSE_journal_`
+|
 
 |GSE.LeaderElectionTTLSec |The time-to-live of a GSE election
 participant.A GSE will be kicked out of election if one GSE is not
 responsive after the TTL. |`30`
+|`int32`
+|`30`
+|
 
 |GSE.RLSPort |The serving port of GSE RLS |`8900`
+|`int32`
+|`8900`
+|
 
 |GSE.StopTimeoutMS |Stop GSE timeout |`300000`
+|`int32`
+|`300000`
+|
 |===
 
 == GSQL
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |GSQL.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;`
 |`CPATH=$CPATH; LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|`string`
+|`CPATH=$CPATH; LD_LIBRARY_PATH=$LD_LIBRARY_PATH;`
+|
 
 |GSQL.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |GSQL.BasicConfig.LogConfig.LogLevel |GSQL log level: ERROR, INFO, DEBUG
 |`INFO`
+|`string`
+|`INFO`
+|
 
 |GSQL.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |GSQL.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for GSQL |`gsql`
+|`string`
+|`gsql`
+|
 
 |GSQL.BasicConfig.Nodes |The node list for GSQL
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1", "Replica":1},{"HostID":"m2", "Replica":2}]`
+|
 
 |GSQL.CatalogBackupFileMaxDurationDay |The maximum number of days for
 catalog backup files to retain |`30`
+|`int32`
+|`30`
+|
 
 |GSQL.CatalogBackupFileMaxNumber |The maximum number of catalog backup
 files to retain |`20`
+|`int32`
+|`20`
+|
 
 |GSQL.DataRelativePath |The data dir of gsql under $DataRoot |`gsql`
+|`string`
+|`gsql`
+|
 
 |GSQL.EnableStringCompress |Enable string compress |`false`
+|`boolean`
+|`false`
+|
 
 |GSQL.FileOutputPolicy |The policy to control file outputs in GSQL
 queries |`["/"]`
+|`string[]`
+|`["/"]`
+|
 
 |GSQL.GithubBranch |The working branch in provided repository. Will use
 `master' as the default branch |`nan`
+|`string`
+|Empty string
+|
 
 |GSQL.GithubPath |The path to the directory in the github that has
 TokenBank.cpp, ExprFunctions.hpp, ExprUtil.hpp, e.g. sample_code/src
 |`nan`
+|`string`
+|Empty string
+|
 
 |GSQL.GithubRepository |The repository name, e.g. tigergraph/ecosys
 |`nan`
+|`string`
+|Empty string
+|
 
 |GSQL.GithubUrl |The url that is used for github enterprise,
 e.g. https://api.github.com |`nan`
+|`string`
+|Empty string
+|
 
 |GSQL.GithubUserAcessToken |The credential for github. Set it to
 `anonymous' for public access, or empty to not use github |`nan`
+|`string`
+|Empty string
+|
 
 |GSQL.GrpcMessageMaxSizeMB |The maximum size of grpc message request of
 gsql |`40`
+|`int32`
+|`40`
+|
 
 |GSQL.HA.BufferedReaderBufferSizeBytes |Customizes the buffer size (in bytes) for messages sent between GSQL servers in a HA cluster. |`8192` (bytes). If it is set below `8192`, GSQL will reset it to `8192`.
 Must be a positive 32-bit integer (less than `2147483647`).
+|`int32`
+|`8192`
+|
 
 |GSQL.LoginLimit.InitialWaitTimeSec|The amount of time in seconds a user has to wait for the subsequent login after the number of successive failed login attempts reaches the initial threshold. | `10`
+|`int32`
+|`10`
+|
 
 |GSQL.LoginLimit.InitialThreshold |The number of successive failed login attempts since the last successful login to apply the wait time for the subsequent login attempts. Set 0 to disable the rate limiting. | `5`
+|`int32`
+|`5`
+|
 
 |GSQL.LoginLimit.SecondaryThreshold | The number of successive failed login attempts after reaching the initial threshold that the wait time will be doubled for every this number of successive failed login attempts afterward.
 | `2`
+|`int32`
+|`2`
+|
 
 |GSQL.ManageCatalogTimeoutSec |GSQL connection timeout (second) to admin
 server when trying to download/upload/delete catalog. Default value: 20 | 20
+|`int32`
+|`20`
+|
 
 |GSQL.MaxAuthTokenLifeTimeSec |The maximum lifetime of auth token in
 seconds, 0 means unlimited |`0`
+|`int32`
+|`0`
+|
 
 |GSQL.OutputTokenBufferSize |The buffer size for output token from GSQL
 |`16000000`
+|`int32`
+|`16000000`
+|
 
 |GSQL.Port |The server port for GSQL |`8123`
+|`int32`
+|`8123`
+|
 
 |GSQL.QueryResponseMaxSizeByte |Maximum response size in byte
 |`33554432`
+|`int32`
+|`33554432`
+|
 
 |GSQL.RESTPPRefreshTimeoutSec |Refresh time in Seconds of Restpp |`60`
+|`int32`
+|`60`
+|
 
 |GSQL.SchemaIndexFileNumber |File number |`10`
+|`int32`
+|`10`
+|
 
 |GSQL.TokenCleaner.GraceTimeSec |The grace time (in seconds) for expired
 tokens to exist without being cleaned |`0`
+|`int32`
+|`0`
+|
 
 |GSQL.TokenCleaner.IntervalTimeSec |The running interval of TokenCleaner
 in seconds |`10800`
+|`int32`
+|`10800`
+|
 
 |GSQL.UDF.EnablePutTokenBank | Whether to enable the `PUT` command to upload a TokenBank file.
 |`false`
+|`bool`
+|`false`
+|
 
 |GSQL.UDF.EnablePutExpr |Whether to enable the `PUT` command to upload an ExprFunction file.
 |`false`
+|`bool`
+|`false`
+|
 
 |GSQL.UDF.Policy.Enable | Whether to enforce a policy on the contents of UDF files (see xref:security:index.adoc#_udf_file_scanning[UDF file scanning]).
 |`true`
+|`bool`
+|`true`
+|
 
 |GSQL.UDF.Policy.HeaderAllowlist | A default set of C{plus}{plus} headers that are allowed to be included in a UDF file.
 |`["stdlib.h", "string", "tuple",
@@ -524,400 +979,746 @@ in seconds |`10800`
 "iterator",
 "sstream",
 "algorithm", "math.h"]`
+|`string[]`
+|`["stdlib.h", "string", "tuple",
+"vector", "list", "deque", "arrays", "forward_list",
+"queue", "priority_queue", "stack",
+"set", "multiset", "map", "multimap",
+"unordered_set", "unordered_multiset", "unordered_map", "unordered_multimap",
+"iterator",
+"sstream",
+"algorithm", "math.h"]`
+|
 
 |GSQL.UserInfoLimit.TokenSizeLimit |The max number of tokens allowed
 |`60000`
+|`int32`
+|`60000`
+|
 
 |GSQL.UserInfoLimit.UserCatalogFileMaxSizeByte |The file size limit for
 user metadata in byte |`2097152`
+|`int32`
+|`2097152`
+|
 
 |GSQL.UserInfoLimit.UserSizeLimit |The max number of users allowed
 |`12000`
+|`int32`
+|`12000`
+|
 
 |GSQL.WaitServiceOnlineTimeoutSec |Timeout to wait for all services
 online |`300`
+|`int32`
+|`300`
+|
 |===
 
 == GUI
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |GUI.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
 |`nan`
+|`string`
+|Empty string
+|
 
 |GUI.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number of
 days to retain old log files based on the timestamp encoded in their
 filename |`90`
+|`int32`
+|`90`
+|
 
 |GUI.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |GUI.BasicConfig.LogConfig.LogLevel |The log
 level(`'DEBUG'`,`'INFO'`,`'WARN'`,`'ERROR'`,`'PANIC'`,`'FATAL'`),
 default is INFO |`INFO`
+|`string`
+|`INFO`
+|
 
 |GUI.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |GUI.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for GUI |`gui`
+|`string`
+|`gui`
+|
 
 |GUI.BasicConfig.Nodes |The node list for GraphStudio
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1","Replica":1},{"HostID":"m2", "Replica":2}]`
 
 |GUI.ClientIdleTimeSec |The maximum idle time of client-side GraphStudio
 and AdminPortal before inactivity logout |`604800`
+|`int32`
+|`604800`
+|
 
 |GUI.Cookie.DurationSec |GUI Cookie duration time in seconds |`86400`
+|`int32`
+|`86400`
+|
 
 |GUI.Cookie.SameSite |Default mode: 1; Lax mode: 2; Strict mode: 3; None
 mode: 4 |`3`
+|`int32`
+|`3`
+|
 
 |GUI.EnableConcurrentSession |Enable or disable concurrent sessions for GUI. Setting to `false` will disable concurrent sessions.The default value is `true`.
-
 |`true`
+|`bool`
+|`true`
+|
 
 |GUI.DataDirRelativePath |The relative path of gui data folder (to the
 System.DataRoot) |`gui`
+|`string`
+|`gui`
+|
 
 |GUI.EnableDarkTheme |The boolean value on whether or not GUI should
 enable dark theme |`true`
+|`bool`
+|`true`
+|
 
 |GUI.GraphQLConfig.SchemaRefreshPeriod |The schema refresh period of
 GraphQL service |`10`
+|`int32`
+|`10`
+|
+
 
 |GUI.GraphStatCheckIntervalSec |The internval(in seconds) GraphStudio
 wait before checking the graph statistics |`10`
+|`int32`
+|`10`
+|
 
 |GUI.HTTPRequest.RetryMax |GUI http request max retry times |`4`
+|`int32`
+|`4`
+|
 
 |GUI.HTTPRequest.RetryWaitMaxSec |GUI HTTP request max retry waiting
 time in seconds |`30`
+|`int32`
+|`30`
+|
 
 |GUI.HTTPRequest.RetryWaitMinSec |GUI HTTP request minimum retry waiting
 time in seconds |`1`
+|`int32`
+|`1`
+|
 
 |GUI.HTTPRequest.TimeoutSec |GUI HTTP request timeout in seconds
 |`604800`
+|`int32`
+|`604800`
+|
 
 |GUI.Port |The serving port for GraphStudio Websocket communication
 |`14242`
+|`int32`
+|`14242`
+|
 
 |GUI.RESTPPResponseMaxSizeBytes |The RESTPP response size limit bytes.
 |`33554432`
+|`float32`
+|`33554432`
+|
 
 |GUI.TempDirRelativePath |The relative path of gui temp folder (to the
 System.TempRoot) |`gui`
+|`string`
+|`gui`
+|
 
 |GUI.TempFileMaxDurationDay |GUI temp file max duration time in days
 |`7`
+|`int32`
+|`7`
+|
 |===
 
 == Gadmin
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |Gadmin.StartServiceDefaultTimeoutMS |The start one service default
 timeout in milliseconds |`30000`
+|`int32`
+|`30000`
+|
 
 |Gadmin.StartStopRequestTimeoutMS |The start/stop service default
 request timeout in milliseconds |`600000`
+|`int32`
+|`600000`
+|
 
 |Gadmin.StopServiceDefaultTimeoutMS |The stop one service default
 request timeout in milliseconds |`30000`
+|`int32`
+|`30000`
+|
 |===
 
 == Informant
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |Informant.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;
 |`nan`
+|`string`
+|Empty string
+|
 
 |Informant.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
 their filename |`90`
+|`int32`
+|`90`
+|
 
 |Informant.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |Informant.BasicConfig.LogConfig.LogLevel |The log
 level(``DEBUG'',``INFO'',``WARN'',``ERROR'',``PANIC'',``FATAL''),
 default is INFO |`INFO`
+|`string`
+|`INFO`
+|
 
 |Informant.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |Informant.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for Informant |`informant`
+|`string`
+|`informant`
+|
 
 |Informant.BasicConfig.Nodes |The nodes to deploy Informant
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1","Replica":1},{"HostID":"m2", "Replica"}]`
+|
 
 |Informant.DBRelativePath |The relative path (to the System.DataRoot) of
 informant database source folder |`informant/db`
+|`string`
+|`informant/db`
+|
 
 |Informant.GrpcPort |The grpc server port for Informant |`9166`
+|`int32`
+|`9166`
+|
 
 |Informant.RestPort |The restful server port for Informant |`9167`
+|`int32`
+|`9167`
+|
 
 |Informant.RetentionPeriodDay |The period in days for local data
 records to be kept, set to -1 for forever (not advised).
 Longer retention results in higher disk space usage and slower search for historical status
 |`7` (default. Prior to v3.9.2, the default was 30.)
+|'int32'
+|`7`
+|
 |===
 
 == Kafka
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |Kafka.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
 |`nan`
+|`string`
+|`JMX_PORT=29999;`
+|
 
 |Kafka.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |Kafka.BasicConfig.LogConfig.LogLevel |The log level for kafka
 (``TRACE'', ``DEBUG'', ``INFO'', ``WARN'', ``ERROR'', ``FATAL'' ``OFF'')
 |`INFO`
+|`string`
+|`INFO`
+|
 
 |Kafka.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number
 of old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |Kafka.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for Kafka |`kafka`
+|`string`
+|`kafka`
+|
 
 |Kafka.BasicConfig.Nodes |The node list for Kafka
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1","Partition":0,"Replica":1},{HostID: "m2", Replica: 2}]`
+|
 
 |Kafka.DataRelativePath |The data dir of kafka under $DataRoot |`kafka`
+|`string`
+|`kafka`
+|
 
 |Kafka.IOThreads |The number of threads for Kafka IO |`2`
+|`int32`
+|`2`
+|
 
 |Kafka.LogFlushIntervalMS |The threshold of time for flushing log (ms)
 |`10000`
+|`int32`
+|`10000`
+|
 
 |Kafka.LogFlushIntervalMessage |The threshold of message for flushing
 log |`10000`
+|`int32`
+|`10000`
+|
 
 |Kafka.MessageMaxSizeMB |The maximum size of a message of Kafka to be
 produced (megabytes) |`10`
+|`int32`
+|`10`
+|
 
 |Kafka.MinInsyncReplicas |The minimal number of insync replicas that
 must acknowledge, when producer sets acks to `all' |`1`
+|`int32`
+|`1`
+|
 
 |Kafka.NetworkThreads |The number of threads for Kafka Network |`4`
+|`int32`
+|`4`
+|
 
 |Kafka.Port |The serving port for Kafka |`30002`
+|`int32`
+|`30002`
+|
 
 |Kafka.RetentionHours |The minimum age of a log file of Kafka to be
 eligible for deletion (hours) |`168`
+|`int32`
+|`168`
+|
 
 |Kafka.RetentionSizeGB |The minimum size of a log file of Kafka to be
 eligible for deletion (gigabytes) |`40`
+|`int32`
+|`40`
+|
 
 |Kafka.StartTimeoutMS |Start kafka timeout |`300000`
+|`int32`
+|`300000`
+|
 
 |Kafka.TopicReplicaFactor |The default replica number for each topic
 |`1`
+|`int32`
+|`1`
+|
 |===
 
 == KafkaConnect
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 
 |KafkaConnect.AllowedTaskPerCPU |[v3.9.2+] Maximum number of allowed connector tasks = (#CPUs) x AllowedTaskPerCPU.
 Range is [0.5,10]. It is recommended to stay below 2.0. |`1.5` (default)
+|`float32`
+|`1.5`
+|
 
 |KafkaConnect.BasicConfig.Env |A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
+|`string`
+|`KAFKA_JVM_PERFORMANCE_OPTS=\"-server -XX:+UseShenandoahGC -XX:+ExplicitGCInvokesConcurrent -XX:MaxInlineLevel=15 -Djava.awt.headless=true`
+|
 
 |KafkaConnect.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size
 in megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |KafkaConnect.BasicConfig.LogConfig.LogLevel |The log level for kafka
 connect (``TRACE'', ``DEBUG'', ``INFO'', ``WARN'', ``ERROR'', ``FATAL''
 ``OFF'') |`INFO`
+|`string`
+|`INFO`
+|
 
 |KafkaConnect.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |KafkaConnect.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for Kafka connect |`kafkaconn`
+|`string`
+|`kafkaconn`
+|
 
 |KafkaConnect.BasicConfig.Nodes |The node list for Kafka connect
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1","Replica":1},{"HostID":"m2", "Replica":2}]`
+|
 
 |KafkaConnect.MaxMemorySizeMB
 
 |The max memory usage limit of Kafka Connect in MB.
 
 |10240
+|`int32`
+|`10240`
+|
 
 //|KafkaConnect.MaxPollIntervalMS |The interval between Kafka connect poll
 //loop processing message |`900000`
 
 |KafkaConnect.MaxRequestSize |The max request size of kafka connect
 producer |`5242880`
+|`int32`
+|`5242880`
+|
 
 |KafkaConnect.OffsetFlushIntervalMS |The interval at which Kafka connect
 tasks’ offsets are committed |`10000`
+|`int32`
+|`10000`
+|
 
 |KafkaConnect.Port |The port used for kafka connect |`30003`
+|`int32`
+|`30003`
+|
 
 |KafkaConnect.ReconnectBackoffMS |The amount of time to wait before
 attempting to reconnect to a given host |`500`
+|`int32`
+|`500`
+|
 
 |KafkaConnect.RetryBackoffMS |The amount of time to wait before
 attempting to retry a failed fetch request to a given topic partition
 |`10000`
+|`int32`
+|`10000`
+|
 |===
 
 == KafkaLoader
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |KafkaLoader.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
+|`string`
+|Empty string
+|
 
 |KafkaLoader.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum
 number of days to retain old log files based on the timestamp encoded in
 their filename |`90`
+|`int32`
+|`90`
+|
 
 |KafkaLoader.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |KafkaLoader.BasicConfig.LogConfig.LogLevel |The log level(``OFF'',
 ``BRIEF'', ``DEBUG'', ``VERBOSE''), default is BRIEF |`BRIEF`
+|`string`
+|`BRIEF`
+|
 
 |KafkaLoader.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |KafkaLoader.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for KafkaLoader |`kafkaLoader`
+|`string`
+|`kafkaLoader`
+|
 
 |KafkaLoader.Factory.DefaultLoadingTimeoutSec |The default per request
 loading timeout (s) for KafkaLoader |`600`
+|`int32`
+|`600`
+|
 
 |KafkaLoader.Factory.DefaultQueryTimeoutSec |The default query timeout
 (s) for KafkaLoader |`16`
+|`int32`
+|`16`
+|
 
 |KafkaLoader.Factory.DynamicEndpointRelativePath |KafkaLoader’s relative
 (to data root) path to store the dynamic endpoint
 |`kafkaLoader/endpoint/`
+|`string`
+|`kafkaLoader/endpoint/`
+|
 
 |KafkaLoader.Factory.DynamicSchedulerRelativePath |KafkaLoader’s
 relative (to data root) path to store the dynamic scheduler
 |`kafkaLoader/scheduler/`
+|`string`
+|`kafkaLoader/scheduler/`
+|
+
 
 |KafkaLoader.Factory.EnableAuth |Enable authentication of KafkaLoader
 |`false`
+|`bool`
+|`false`
+|
 
 |KafkaLoader.Factory.HandlerCount |KafkaLoader’s handler count |`4`
+|`int32`
+|`4`
+|
 
 |KafkaLoader.Factory.StatsIntervalSec |KafkaLoader’s time interval to
 collect stats (e.g. QPS) |`60`
+|`int32`
+|`60`
+|
 
 |KafkaLoader.GPEResponseBasePort |The port of KafkaLoader to accept GPE
 response |`9400`
+|`int32`
+|`9400`
+|
 
 |KafkaLoader.GSEResponseBasePort |The port of KafkaLoader to accept GSE
 response |`9500`
+|`int32`
+|`9500`
+|
 
 |KafkaLoader.ReplicaNumber |The number of replica of kafkaloader per
 node |`1`
+|`int32`
+|`1`
+|
 |===
 
 == KafkaStreamLL
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |KafkaStreamLL.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;` |`nan`
+|`string`
+|Empty string
+|
 
 |KafkaStreamLL.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size
 in megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |KafkaStreamLL.BasicConfig.LogConfig.LogLevel |The log level for Kafka
 stream LoadingLog (``TRACE'', ``DEBUG'', ``INFO'', ``WARN'', ``ERROR'',
 ``FATAL'' ``OFF'') |`INFO`
+|`string`
+|`INFO`
+|
 
 |KafkaStreamLL.BasicConfig.LogConfig.LogRotationFileNumber |The maximum
 number of old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |KafkaStreamLL.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for Kafka stream LoadingLog
 |`kafkastrm-ll`
+|`string`
+|`kafkastrm-ll`
+|
 
 |KafkaStreamLL.BasicConfig.Nodes |The node list for Kafka stream
 LoadingLog
 |`[{"HostID":"m1","Partition":1,"Replica":0},{"HostID":"m2","Partition":2,"Replica":0}]`
+|`json`
+|`[{"HostID":"m1","Partition":1},{"HostID":"m2","Partition":2}]`
+|
 
 |KafkaStreamLL.MaxPartitionFetchBytes |Max partition fetch bytes size
 |`104857600`
+|`int32`
+|`104857600`
+|
 
 |KafkaStreamLL.Port |The port used for Kafka stream LoadingLog |`30004`
+|`int32`
+|`30004`
+|
 
 |KafkaStreamLL.ReplicaNumber |The number of standby replicas. Standby
 replicas are shadow copies of local state stores |`1`
+|`int32`
+|`1`
+|
 
 |KafkaStreamLL.StateDirRelativePath |The relative folder path for Kafka
 stream LoadingLog state |`kafkastrm-ll`
+|`string`
+|`kafkastrm-ll`
+|
 |===
 
 == Nginx
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |Nginx.AllowedCIDRList |The allowlist of IPv4/IPv6 CIDR blocks to
 restrict the application access, separate in comma. |`0.0.0.0/0, ::/0`
+|`string`
+|`0.0.0.0/0, ::/0`
+|
 
 |Nginx.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number
 of days to retain old log files based on the timestamp encoded in their
 filename |`90`
+|`int32`
+|`90`
+|
 
 |Nginx.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |Nginx.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number
 of old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |Nginx.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for Nginx |`nginx`
+|`string`
+|`nginx`
+|
 
 |Nginx.BasicConfig.Nodes |The node list for Nginx
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1","Replica":1},{"HostID":"m2","Replica":2}]`
+|
 
 |Nginx.ClientMaxBodySize |The maximum request size for Nginx in MB
 |`200`
+|`int32`
+|`200`
+|
 
 |Nginx.ConfigTemplate |The template to generate nginx config. Please use
 `@filepath` to parse template from file. Check the default template
 first at https://docs.tigergraph.com.(Warning: Don’t modify the reserved
 keywords(string like *UPPER_CASE*) in template.)
 |`worker_processes __WORKER_PROCESSES__;\ndaemon off;\npid   __NGINX_PID_PATH__;\n\nevents {\n  worker_connections  10240;\n}\n\nhttp {\n\n    server_tokens off;\n\n    map $request_uri $request_uri_path {\n        \~^(?P\u003cpath\u003e[^?]*)(\\?.*)?$\"  $path;\n    }\n\n  log_format combined_no_query '$remote_addr - $remote_user [$time_local] '\n           '\"$request_method $request_uri_path $server_protocol\" $status $body_bytes_sent '\n           '\"$http_referer\" \"$http_user_agent\"';\n\n\t#Set allowed CIDR blocks\n__CIDR_LIST__\n    types {\n        text/html                                        html htm shtml;\n        text/css                                         css;\n        text/xml                                         xml;\n        image/gif                                        gif;\n        image/jpeg                                       jpeg jpg;\n        application/javascript                           js;\n        application/atom+xml                             atom;\n        application/rss+xml                              rss;\n\n        text/mathml                                      mml;\n        text/plain                                       txt;\n        text/vnd.sun.j2me.app-descriptor                 jad;\n        text/vnd.wap.wml                                 wml;\n        text/x-component                                 htc;\n\n        image/png                                        png;\n        image/svg+xml                                    svg svgz;\n        image/tiff                                       tif tiff;\n        image/vnd.wap.wbmp                               wbmp;\n        image/webp                                       webp;\n        image/x-icon                                     ico;\n        image/x-jng                                      jng;\n        image/x-ms-bmp                                   bmp;\n\n        font/woff                                        woff;\n        font/woff2                                       woff2;\n\n        application/java-archive                         jar war ear;\n        application/json                                 json;\n        application/mac-binhex40                         hqx;\n        application/msword                               doc;\n        application/pdf                                  pdf;\n        application/postscript                           ps eps ai;\n        application/rtf                                  rtf;\n        application/vnd.apple.mpegurl                    m3u8;\n        application/vnd.google-earth.kml+xml             kml;\n        application/vnd.google-earth.kmz                 kmz;\n        application/vnd.ms-excel                         xls;\n        application/vnd.ms-fontobject                    eot;\n        application/vnd.ms-powerpoint                    ppt;\n        application/vnd.oasis.opendocument.graphics      odg;\n        application/vnd.oasis.opendocument.presentation  odp;\n        application/vnd.oasis.opendocument.spreadsheet   ods;\n        application/vnd.oasis.opendocument.text          odt;\n        application/vnd.openxmlformats-officedocument.presentationml.presentation\n                                                         pptx;\n        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\n                                                         xlsx;\n        application/vnd.openxmlformats-officedocument.wordprocessingml.document\n                                                         docx;\n        application/vnd.wap.wmlc                         wmlc;\n        application/x-7z-compressed                      7z;\n        application/x-cocoa                              cco;\n        application/x-java-archive-diff                  jardiff;\n        application/x-java-jnlp-file                     jnlp;\n        application/x-makeself                           run;\n        application/x-perl                               pl pm;\n        application/x-pilot                              prc pdb;\n        application/x-rar-compressed                     rar;\n        application/x-redhat-package-manager             rpm;\n        application/x-sea                                sea;\n        application/x-shockwave-flash                    swf;\n        application/x-stuffit                            sit;\n        application/x-tcl                                tcl tk;\n        application/x-x509-ca-cert                       der pem crt;\n        application/x-xpinstall                          xpi;\n        application/xhtml+xml                            xhtml;\n        application/xspf+xml                             xspf;\n        application/zip                                  zip;\n\n        application/octet-stream                         bin exe dll;\n        application/octet-stream                         deb;\n        application/octet-stream                         dmg;\n        application/octet-stream                         iso img;\n        application/octet-stream                         msi msp msm;\n\n        audio/midi                                       mid midi kar;\n        audio/mpeg                                       mp3;\n        audio/ogg                                        ogg;\n        audio/x-m4a                                      m4a;\n        audio/x-realaudio                                ra;\n\n        video/3gpp                                       3gpp 3gp;\n        video/mp2t                                       ts;\n        video/mp4                                        mp4;\n        video/mpeg                                       mpeg mpg;\n        video/quicktime                                  mov;\n        video/webm                                       webm;\n        video/x-flv                                      flv;\n        video/x-m4v                                      m4v;\n        video/x-mng                                      mng;\n        video/x-ms-asf                                   asx asf;\n        video/x-ms-wmv                                   wmv;\n        video/x-msvideo                                  avi;\n    }\n    default_type  application/octet-stream;\n    client_max_body_size __MAX_BODY_SIZE__;\n\n    access_log __NGINX_LOG_PER_RESTPP__ combined_no_query;\n    error_log  __NGINX_ERR_PER_RESTPP__;\n    fastcgi_temp_path  __TEMP_ROOT__;\n    fastcgi_buffers 256 8k;\n\n    ###### [BEGIN] customized headers ######\n    __HEADER_CONFIG__\n    ###### [END] customized headers ######\n\n\n    keepalive_timeout  900s;\n\n    upstream fastcgi_backend {\n      server unix:__FASTCGI_PASS__;\n      keepalive 128;\n    }\n\n    # Use upstream derivative for listing all gsql server \n    # that could be used in requesttoken proxy_pass\n   __ENABLE_RESTPP_AUTH__ upstream gsql_token_server {\n   __ENABLE_RESTPP_AUTH__     __GSQL_TOKEN_SERVER_LIST__\n   __ENABLE_RESTPP_AUTH__ }\n\n    # Use upstream derivative to list all informant server\n    upstream informant_server {\n      __INFORMANT_SERVER_LIST__\n    }\n\n    upstream gsql_server {\n      server localhost:__GSQL_SERVER_PORT__ max_fails=10;\n    }\n\n    # Keep it for backward compatibility\n    server {\n        add_header Strict-Transport-Security \"max-age=63072000; includeSubdomains; preload\";\n        ssl_protocols TLSv1.2;\n        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;\n        ssl_prefer_server_ciphers on;\n        listen       __PORT_PER_RESTPP__ __GUI_CONNECTION_TYPE__;\n        server_name  localhost;\n        large_client_header_buffers __LARGE_CLIENT_HEADER_BUFFER_NUM__ __LARGE_CLIENT_HEADER_BUFFER_SIZE__;\n\n        fastcgi_read_timeout 72000s;\n        fastcgi_send_timeout 72000s;\n\n        __SSL_CERT_ATTR__ __SSL_CERT_PATH__;  # if SSL is disabled, here should be '#'\n        __SSL_KEY_ATTR__ __SSL_KEY_PATH__;  # if SSL is disabled, here should be '#'\n\n\n        location / {\n           fastcgi_pass fastcgi_backend;\n           fastcgi_keep_conn on;\n           fastcgi_param REQUEST_METHOD  $request_method;\n           fastcgi_param CONTENT_TYPE    $content_type;\n           fastcgi_param CONTENT_LENGTH  $content_length;\n           fastcgi_param REQUEST_URI     $request_uri;\n           fastcgi_param GSQL_ASYNC      $http_gsql_async;\n           fastcgi_param GSQL_TIMEOUT    $http_gsql_timeout;\n           fastcgi_param GSQL_MEMLIMIT   $http_gsql_memlimit;\n           fastcgi_param RESPONSE_LIMIT  $http_response_limit;\n        }\n\n        # To ensure the performance of RESTPP, this rule shouldn't be enabled\n        # unless restpp.authentication is True.\n        # And for performance consideration,\n        #!!!!!!!   DO NOT USE REGULAR EXPRESSION HERE !!!!!!!\n        __ENABLE_RESTPP_AUTH__ location = /requesttoken {\n        __ENABLE_RESTPP_AUTH__      proxy_ssl_verify __PROXY_SSL_VERIFY__;\n        __ENABLE_RESTPP_AUTH__      proxy_set_header X-Real-IP $remote_addr;\n        __ENABLE_RESTPP_AUTH__      proxy_pass __REQUEST_TOKEN_PROTOCOL__://gsql_token_server;\n        __ENABLE_RESTPP_AUTH__ }\n    }\n\n    server {\n\t\tlisten __NGINX_SERVICES_PORT__ __GUI_CONNECTION_TYPE__;\n    ssl_protocols TLSv1.2;\n\t\tlarge_client_header_buffers __LARGE_CLIENT_HEADER_BUFFER_NUM__ __LARGE_CLIENT_HEADER_BUFFER_SIZE__;\n\t\tproxy_buffer_size __PROXY_BUFFER_SIZE__;\n\t\tproxy_buffers __PROXY_BUFFERS_NUM__ __PROXY_BUFFERS_SIZE__;\n\t\tproxy_busy_buffers_size __PROXY_BUSY_BUFFERS_SIZE__;\n\n\t\t__SSL_CERT_ATTR__ __SSL_CERT_PATH__;  # if SSL is disabled, here should be '#'\n\t\t__SSL_KEY_ATTR__ __SSL_KEY_PATH__;  # if SSL is disabled, here should be '#'\n\n\t\tlocation / {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\troot __TOOLS_STATIC_FOLDER__;\n\t\t\ttry_files $uri $uri/ @backend;\n\t\t}\n\n\t\tlocation /assets/img/user-uploaded-icons/ {\n\t\t\talias __GUI_DATA_FOLDER__/user_icons/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location /gsql/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __GSHELL_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location = /gsql {\n\t\t\trewrite /gsql /gsql/ last;\n\t\t}\n\n    location ^~/insights/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __INSIGHTS_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ /insights/index.html;\n\t\t}\n\n    location = /insights {\n\t\t\trewrite /insights /insights/ last;\n\t\t}\n\n    location /graphql/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __GRAPHQL_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location = /graphql {\n\t\t\trewrite /graphql /graphql/ last;\n\t\t}\n\n    location /studio/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __GST_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location = /studio {\n\t\t\trewrite /studio /studio/ last;\n\t\t}\n\n\t\tlocation /admin/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __ADMIN_PORTAL_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location = /admin {\n\t\t\trewrite /admin /admin/ last;\n\t\t}\n\n\t\tlocation @backend {\n\t\t\tproxy_read_timeout 604800s;\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t\tproxy_pass http://localhost:__GUI_WEBSERVER_PORT__;\n\t\t}\n\n\t\tlocation ~ ^/informant/(?\u003cinformant_uri\u003e.*) {\n      \t\t\trewrite ^/informant/(.*) /$informant_uri break;\n     \t\t\tproxy_read_timeout 3600s;\n      \t\t\tproxy_set_header X-Real-IP $remote_addr;\n      \t\t\tproxy_pass http://informant_server;\n    \t\t}\n\n\t\tlocation ~ ^/gsqlserver/(?\u003cgsql_uri\u003e.*) {\t\n\t\t\trewrite ^/gsqlserver/(.*) /$gsql_uri break;\n\t\t\tproxy_read_timeout 604800s;\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t\tproxy_pass http://gsql_server;\n\t\t\tproxy_http_version 1.1;\n\t\t\tproxy_buffering off;\n\t\t}\n\n\t\t# This RESTPP endpoint shares the same security configuration\n\t\tfastcgi_read_timeout 72000s;\n\t\tfastcgi_send_timeout 72000s;\n\n\t\t__ENABLE_RESTPP_AUTH__ location ~ ^/restpp/(?\u003ctoken_uri\u003erequesttoken.*) {\n\t\t__ENABLE_RESTPP_AUTH__      rewrite ^/restpp/(.*) /$token_uri break;\n\t\t__ENABLE_RESTPP_AUTH__      proxy_ssl_verify __PROXY_SSL_VERIFY__;\n\t\t__ENABLE_RESTPP_AUTH__      proxy_set_header X-Real-IP $remote_addr;\n\t\t__ENABLE_RESTPP_AUTH__      proxy_pass __REQUEST_TOKEN_PROTOCOL__://gsql_token_server;\n\t\t__ENABLE_RESTPP_AUTH__ }\n\n\t\tlocation ~ ^/restpp/(.*) {\n\t\t\tfastcgi_pass fastcgi_backend;\n\t\t\tfastcgi_keep_conn on;\n\t\t\tfastcgi_param REQUEST_METHOD  $request_method;\n\t\t\tfastcgi_param CONTENT_TYPE    $content_type;\n\t\t\tfastcgi_param CONTENT_LENGTH  $content_length;\n\t\t\tfastcgi_param REQUEST_URI     $1?$query_string;  # the url pattern matched above\n\t\t\tfastcgi_param GSQL_TIMEOUT    $http_gsql_timeout;\n\t\t\tfastcgi_param GSQL_MEMLIMIT   $http_gsql_memlimit;\n      fastcgi_param GSQL_ASYNC      $http_gsql_async;\n\t\t\tfastcgi_param RESPONSE_LIMIT  $http_response_limit;\t           \n\t\t}\n\t}\n}\n"`
+|`string`
+|`worker_processes __WORKER_PROCESSES__;\ndaemon off;\npid   __NGINX_PID_PATH__;\n\nevents {\n  worker_connections  10240;\n}\n\nhttp {\n\n    server_tokens off;\n\n    map $request_uri $request_uri_path {\n        \~^(?P\u003cpath\u003e[^?]*)(\\?.*)?$\"  $path;\n    }\n\n  log_format combined_no_query '$remote_addr - $remote_user [$time_local] '\n           '\"$request_method $request_uri_path $server_protocol\" $status $body_bytes_sent '\n           '\"$http_referer\" \"$http_user_agent\"';\n\n\t#Set allowed CIDR blocks\n__CIDR_LIST__\n    types {\n        text/html                                        html htm shtml;\n        text/css                                         css;\n        text/xml                                         xml;\n        image/gif                                        gif;\n        image/jpeg                                       jpeg jpg;\n        application/javascript                           js;\n        application/atom+xml                             atom;\n        application/rss+xml                              rss;\n\n        text/mathml                                      mml;\n        text/plain                                       txt;\n        text/vnd.sun.j2me.app-descriptor                 jad;\n        text/vnd.wap.wml                                 wml;\n        text/x-component                                 htc;\n\n        image/png                                        png;\n        image/svg+xml                                    svg svgz;\n        image/tiff                                       tif tiff;\n        image/vnd.wap.wbmp                               wbmp;\n        image/webp                                       webp;\n        image/x-icon                                     ico;\n        image/x-jng                                      jng;\n        image/x-ms-bmp                                   bmp;\n\n        font/woff                                        woff;\n        font/woff2                                       woff2;\n\n        application/java-archive                         jar war ear;\n        application/json                                 json;\n        application/mac-binhex40                         hqx;\n        application/msword                               doc;\n        application/pdf                                  pdf;\n        application/postscript                           ps eps ai;\n        application/rtf                                  rtf;\n        application/vnd.apple.mpegurl                    m3u8;\n        application/vnd.google-earth.kml+xml             kml;\n        application/vnd.google-earth.kmz                 kmz;\n        application/vnd.ms-excel                         xls;\n        application/vnd.ms-fontobject                    eot;\n        application/vnd.ms-powerpoint                    ppt;\n        application/vnd.oasis.opendocument.graphics      odg;\n        application/vnd.oasis.opendocument.presentation  odp;\n        application/vnd.oasis.opendocument.spreadsheet   ods;\n        application/vnd.oasis.opendocument.text          odt;\n        application/vnd.openxmlformats-officedocument.presentationml.presentation\n                                                         pptx;\n        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\n                                                         xlsx;\n        application/vnd.openxmlformats-officedocument.wordprocessingml.document\n                                                         docx;\n        application/vnd.wap.wmlc                         wmlc;\n        application/x-7z-compressed                      7z;\n        application/x-cocoa                              cco;\n        application/x-java-archive-diff                  jardiff;\n        application/x-java-jnlp-file                     jnlp;\n        application/x-makeself                           run;\n        application/x-perl                               pl pm;\n        application/x-pilot                              prc pdb;\n        application/x-rar-compressed                     rar;\n        application/x-redhat-package-manager             rpm;\n        application/x-sea                                sea;\n        application/x-shockwave-flash                    swf;\n        application/x-stuffit                            sit;\n        application/x-tcl                                tcl tk;\n        application/x-x509-ca-cert                       der pem crt;\n        application/x-xpinstall                          xpi;\n        application/xhtml+xml                            xhtml;\n        application/xspf+xml                             xspf;\n        application/zip                                  zip;\n\n        application/octet-stream                         bin exe dll;\n        application/octet-stream                         deb;\n        application/octet-stream                         dmg;\n        application/octet-stream                         iso img;\n        application/octet-stream                         msi msp msm;\n\n        audio/midi                                       mid midi kar;\n        audio/mpeg                                       mp3;\n        audio/ogg                                        ogg;\n        audio/x-m4a                                      m4a;\n        audio/x-realaudio                                ra;\n\n        video/3gpp                                       3gpp 3gp;\n        video/mp2t                                       ts;\n        video/mp4                                        mp4;\n        video/mpeg                                       mpeg mpg;\n        video/quicktime                                  mov;\n        video/webm                                       webm;\n        video/x-flv                                      flv;\n        video/x-m4v                                      m4v;\n        video/x-mng                                      mng;\n        video/x-ms-asf                                   asx asf;\n        video/x-ms-wmv                                   wmv;\n        video/x-msvideo                                  avi;\n    }\n    default_type  application/octet-stream;\n    client_max_body_size __MAX_BODY_SIZE__;\n\n    access_log __NGINX_LOG_PER_RESTPP__ combined_no_query;\n    error_log  __NGINX_ERR_PER_RESTPP__;\n    fastcgi_temp_path  __TEMP_ROOT__;\n    fastcgi_buffers 256 8k;\n\n    ###### [BEGIN] customized headers ######\n    __HEADER_CONFIG__\n    ###### [END] customized headers ######\n\n\n    keepalive_timeout  900s;\n\n    upstream fastcgi_backend {\n      server unix:__FASTCGI_PASS__;\n      keepalive 128;\n    }\n\n    # Use upstream derivative for listing all gsql server \n    # that could be used in requesttoken proxy_pass\n   __ENABLE_RESTPP_AUTH__ upstream gsql_token_server {\n   __ENABLE_RESTPP_AUTH__     __GSQL_TOKEN_SERVER_LIST__\n   __ENABLE_RESTPP_AUTH__ }\n\n    # Use upstream derivative to list all informant server\n    upstream informant_server {\n      __INFORMANT_SERVER_LIST__\n    }\n\n    upstream gsql_server {\n      server localhost:__GSQL_SERVER_PORT__ max_fails=10;\n    }\n\n    # Keep it for backward compatibility\n    server {\n        add_header Strict-Transport-Security \"max-age=63072000; includeSubdomains; preload\";\n        ssl_protocols TLSv1.2;\n        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;\n        ssl_prefer_server_ciphers on;\n        listen       __PORT_PER_RESTPP__ __GUI_CONNECTION_TYPE__;\n        server_name  localhost;\n        large_client_header_buffers __LARGE_CLIENT_HEADER_BUFFER_NUM__ __LARGE_CLIENT_HEADER_BUFFER_SIZE__;\n\n        fastcgi_read_timeout 72000s;\n        fastcgi_send_timeout 72000s;\n\n        __SSL_CERT_ATTR__ __SSL_CERT_PATH__;  # if SSL is disabled, here should be '#'\n        __SSL_KEY_ATTR__ __SSL_KEY_PATH__;  # if SSL is disabled, here should be '#'\n\n\n        location / {\n           fastcgi_pass fastcgi_backend;\n           fastcgi_keep_conn on;\n           fastcgi_param REQUEST_METHOD  $request_method;\n           fastcgi_param CONTENT_TYPE    $content_type;\n           fastcgi_param CONTENT_LENGTH  $content_length;\n           fastcgi_param REQUEST_URI     $request_uri;\n           fastcgi_param GSQL_ASYNC      $http_gsql_async;\n           fastcgi_param GSQL_TIMEOUT    $http_gsql_timeout;\n           fastcgi_param GSQL_MEMLIMIT   $http_gsql_memlimit;\n           fastcgi_param RESPONSE_LIMIT  $http_response_limit;\n        }\n\n        # To ensure the performance of RESTPP, this rule shouldn't be enabled\n        # unless restpp.authentication is True.\n        # And for performance consideration,\n        #!!!!!!!   DO NOT USE REGULAR EXPRESSION HERE !!!!!!!\n        __ENABLE_RESTPP_AUTH__ location = /requesttoken {\n        __ENABLE_RESTPP_AUTH__      proxy_ssl_verify __PROXY_SSL_VERIFY__;\n        __ENABLE_RESTPP_AUTH__      proxy_set_header X-Real-IP $remote_addr;\n        __ENABLE_RESTPP_AUTH__      proxy_pass __REQUEST_TOKEN_PROTOCOL__://gsql_token_server;\n        __ENABLE_RESTPP_AUTH__ }\n    }\n\n    server {\n\t\tlisten __NGINX_SERVICES_PORT__ __GUI_CONNECTION_TYPE__;\n    ssl_protocols TLSv1.2;\n\t\tlarge_client_header_buffers __LARGE_CLIENT_HEADER_BUFFER_NUM__ __LARGE_CLIENT_HEADER_BUFFER_SIZE__;\n\t\tproxy_buffer_size __PROXY_BUFFER_SIZE__;\n\t\tproxy_buffers __PROXY_BUFFERS_NUM__ __PROXY_BUFFERS_SIZE__;\n\t\tproxy_busy_buffers_size __PROXY_BUSY_BUFFERS_SIZE__;\n\n\t\t__SSL_CERT_ATTR__ __SSL_CERT_PATH__;  # if SSL is disabled, here should be '#'\n\t\t__SSL_KEY_ATTR__ __SSL_KEY_PATH__;  # if SSL is disabled, here should be '#'\n\n\t\tlocation / {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\troot __TOOLS_STATIC_FOLDER__;\n\t\t\ttry_files $uri $uri/ @backend;\n\t\t}\n\n\t\tlocation /assets/img/user-uploaded-icons/ {\n\t\t\talias __GUI_DATA_FOLDER__/user_icons/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location /gsql/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __GSHELL_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location = /gsql {\n\t\t\trewrite /gsql /gsql/ last;\n\t\t}\n\n    location ^~/insights/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __INSIGHTS_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ /insights/index.html;\n\t\t}\n\n    location = /insights {\n\t\t\trewrite /insights /insights/ last;\n\t\t}\n\n    location /graphql/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __GRAPHQL_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location = /graphql {\n\t\t\trewrite /graphql /graphql/ last;\n\t\t}\n\n    location /studio/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __GST_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location = /studio {\n\t\t\trewrite /studio /studio/ last;\n\t\t}\n\n\t\tlocation /admin/ {\n\t\t\t# Set whether to enable compression\n\t\t\tgzip on;\n\t\t\tgzip_types\n\t\t\t\tapplication/javascript  # works significantly with javascript files in GUI\n\t\t\t;\n\t\t\talias __ADMIN_PORTAL_STATIC_FOLDER__/;\n\t\t\ttry_files $uri $uri/ = 404;\n\t\t}\n\n    location = /admin {\n\t\t\trewrite /admin /admin/ last;\n\t\t}\n\n\t\tlocation @backend {\n\t\t\tproxy_read_timeout 604800s;\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t\tproxy_pass http://localhost:__GUI_WEBSERVER_PORT__;\n\t\t}\n\n\t\tlocation ~ ^/informant/(?\u003cinformant_uri\u003e.*) {\n      \t\t\trewrite ^/informant/(.*) /$informant_uri break;\n     \t\t\tproxy_read_timeout 3600s;\n      \t\t\tproxy_set_header X-Real-IP $remote_addr;\n      \t\t\tproxy_pass http://informant_server;\n    \t\t}\n\n\t\tlocation ~ ^/gsqlserver/(?\u003cgsql_uri\u003e.*) {\t\n\t\t\trewrite ^/gsqlserver/(.*) /$gsql_uri break;\n\t\t\tproxy_read_timeout 604800s;\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t\tproxy_pass http://gsql_server;\n\t\t\tproxy_http_version 1.1;\n\t\t\tproxy_buffering off;\n\t\t}\n\n\t\t# This RESTPP endpoint shares the same security configuration\n\t\tfastcgi_read_timeout 72000s;\n\t\tfastcgi_send_timeout 72000s;\n\n\t\t__ENABLE_RESTPP_AUTH__ location ~ ^/restpp/(?\u003ctoken_uri\u003erequesttoken.*) {\n\t\t__ENABLE_RESTPP_AUTH__      rewrite ^/restpp/(.*) /$token_uri break;\n\t\t__ENABLE_RESTPP_AUTH__      proxy_ssl_verify __PROXY_SSL_VERIFY__;\n\t\t__ENABLE_RESTPP_AUTH__      proxy_set_header X-Real-IP $remote_addr;\n\t\t__ENABLE_RESTPP_AUTH__      proxy_pass __REQUEST_TOKEN_PROTOCOL__://gsql_token_server;\n\t\t__ENABLE_RESTPP_AUTH__ }\n\n\t\tlocation ~ ^/restpp/(.*) {\n\t\t\tfastcgi_pass fastcgi_backend;\n\t\t\tfastcgi_keep_conn on;\n\t\t\tfastcgi_param REQUEST_METHOD  $request_method;\n\t\t\tfastcgi_param CONTENT_TYPE    $content_type;\n\t\t\tfastcgi_param CONTENT_LENGTH  $content_length;\n\t\t\tfastcgi_param REQUEST_URI     $1?$query_string;  # the url pattern matched above\n\t\t\tfastcgi_param GSQL_TIMEOUT    $http_gsql_timeout;\n\t\t\tfastcgi_param GSQL_MEMLIMIT   $http_gsql_memlimit;\n      fastcgi_param GSQL_ASYNC      $http_gsql_async;\n\t\t\tfastcgi_param RESPONSE_LIMIT  $http_response_limit;\t           \n\t\t}\n\t}\n}\n"`
+|
 
 |Nginx.Port |The serving port for Nginx |`14240`
+|`int32`
+|`14240`
+|
 
 |Nginx.ResponseHeaders |The customized headers in HTTP Response
 |`[{"FieldName":"X-Frame-Options","FieldValue":"SAMEORIGIN"}]`
+|`json`
+|`[{"FieldName":"X-Frame-Options","FieldValue":"SAMEORIGIN"}]`
+|
 
 |Nginx.SSL.Cert |Public certificate for SSL. (Could use @cert_file_path
 to parse the certificate from file) |`nan`
+|`string`
+|Empty string
+|
 
 |Nginx.SSL.Enable |Enable SSL connection for all HTTP requests |`false`
+|`bool`
+|`false`
+|
 
 |Nginx.SSL.Key |Private key for SSL. (Could use @key_file_path to parse
 the key from file) |`nan`
+|`string`
+|Empty string
+|
 
 |Nginx.WorkerProcessNumber |The number of worker processes for Nginx
 |`4`
+|`int32`
+|`4`
+|
 |===
 
 [#_restpp]
@@ -925,160 +1726,308 @@ the key from file) |`nan`
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |RESTPP.BasicConfig.Env | A list of `<environment variable>=<value>` pairs, separated by `;`
 |`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; REPORT_FIRST_N_LINES=$REPORT_FIRST_N_LINES`
+|`string`
+|`LD_PRELOAD=$LD_PRELOAD; LD_LIBRARY_PATH=$LD_LIBRARY`
+|
 
 |RESTPP.BasicConfig.LogConfig.LogFileMaxDurationDay |The maximum number
 of days to retain old log files based on the timestamp encoded in their
 filename |`90`
+|`int32`
+|`90`
+|
 
 |RESTPP.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |RESTPP.BasicConfig.LogConfig.LogLevel |The log level(``OFF'',
 ``BRIEF'', ``DEBUG'', ``VERBOSE''), default is BRIEF |`BRIEF`
+|`string`
+|`BRIEF`
+|
 
 |RESTPP.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number
 of old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |RESTPP.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for RESTPP |`restpp`
+|`string`
+|`restpp`
+|
 
 |RESTPP.BasicConfig.Nodes |The node list for RESTPP
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`json`
+|`[{"HostID":"m1", "Replica":1},{"HostID":"m2"}, "Replica":2}]`
+|
 
 |RESTPP.FCGISocketBackLogMaxCnt |RESTPP fcgi socket backlog max length
 which is the listen queue depth used in the listen() call. |`36864`
+|`int32`
+|`36864`
+|
 
 |RESTPP.FCGISocketFileRelativePath |The relative path of FCGI socket for
 RESTPP-Nginx communitation under $TempRoot
 |`rest/restpp-nginx.fcgi.sock`
+|`string`
+|`rest/restpp-nginx.fcgi.sock`
+|
 
 |RESTPP.Factory.DefaultLoadingTimeoutSec |The default per request
 loading timeout (s) for RESTPP |`600`
+|`int32`
+|`600`
+|
 
 |RESTPP.Factory.DefaultQueryTimeoutSec |The default query timeout (s)
 for RESTPP |`16`
+|`int32`
+|`16`
+|
 
 |RESTPP.Factory.DynamicEndpointRelativePath |RESTPP’s relative (to data
 root) path to store the dynamic endpoint |`restpp/endpoint/`
+|`string`
+|`restpp/endpoint/`
+|
 
 |RESTPP.Factory.DynamicSchedulerRelativePath |RESTPP’s relative (to data
 root) path to store the dynamic scheduler |`restpp/scheduler/`
+|`string`
+|`restpp/scheduler/`
+|
 
 |RESTPP.Factory.EnableAuth |Enable authentication of RESTPP |`false`
+|`bool`
+|`false`
+|
 
 |RESTPP.Factory.HandlerCount |RESTPP’s handler count |`4`
+|`int32`
+|`4`
+|
 
 |RESTPP.Factory.QueryMemoryLimitMB |The memory limit of query runs for
 container on disk. The default value is -1, meaning no limit |`-1`
+|`int32`
+|`-1`
+|
 
 |RESTPP.Factory.StatsIntervalSec |RESTPP’s time interval to collect
 stats (e.g. QPS) |`60`
+|`int32`
+|`60`
+|
 
 |RESTPP.GPEResponsePort |The port of RESTPP to accept GPE response
 |`5400`
+|`int32`
+|`5400`
+|
 
 |RESTPP.GSEResponsePort |The port of RESTPP to accept GSE response
 |`5500`
+|`int32`
+|`5500`
+|
 
 |RESTPP.HttpServer.Enable |Enable RESTPP’s http server |`false`
+|`bool`
+|`false`
+|
 
 |RESTPP.HttpServer.Port |RESTPP’s http server port |`10000`
+|`int32`
+|`10000`
+|
 
 |RESTPP.HttpServer.WorkerNum |RESTPP’s http server worker number |`2`
+|`int32`
+|`2`
+|
 
 |RESTPP.LoadedOffsetTraceBackHr |The trace back time (hour) of loaded
 offset, offsets will not be reported beyond the specified time |`24`
+|`int32`
+|`24`
+|
 
 |RESTPP.NginxPort |The port of RESTPP to accept upstream Nginx requests
 |`9000`
+|`int32`
+|`9000`
+|
 
 |RESTPP.WorkLoadManager.MaxHeavyBuiltinQueries |The maximum number of concurrent
 “heavy“ built-in queries (kstep_expansion, searchvertex,
 allpaths, shortestpath) on a restpp server |`100`
+|`int32`
+|`100`
+|
 
 |RESTPP.WorkLoadManager.MaxConcurrentQueries |The maximum number of concurrent
 queries allowed to run, *excluding* heavy queries | `50`
+|`int32`
+|`50`
+|
 
 |RESTPP.WorkLoadManager.MaxDelayQueueSize |The maximum number of
 concurrent queries in the delay queue |`20`
+|`int32`
+|`20`
+|
 
 |RESTPP.QueryRouting.Mode | Set the query routing mode (0=RoundRobin, 1=CPULoadAware) | `0`
+|`int32`
+|`0`
+|
 
 |RESTPP.QueryRouting.TargetSelectionCPUThreshold| Set the query routing mode CPU usage threshold | `50`
+|`int32`
+|`50`
+|
 |===
 
 == Security
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 
 | Security.JWT.RSA.PublicKey
 | Configure a RSA public key for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.RSA.PublicKey <public-key content or URL or @filepath>`
+| `string`
+| `gadmin config set Security.JWT.RSA.PublicKey <public-key content or URL or @filepath>`
+|
 
 | Security.JWT.HMAC.Secret
 | Configure a HMAC Secret for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>`
+| `string`
+| `gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>`
+|
 
 | Security.JWT.Issuer
 | Configure the `iss` claim that will be verified against this configured value for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.Issuer "<issuer-name>"`
+| `string`
+| `gadmin config set Security.JWT.Issuer "<issuer-name>"`
+|
 
 | Security.JWT.Audience
 | Configure this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.Audience "<audience-name>"`
+| `string`
+| `gadmin config set Security.JWT.Audience "<audience-name>"`
+|
 
 |Security.LDAP.AdminDN |Configure the DN of LDAP user who has read
 access to the base DN specified above. Empty if everyone has read access
 to LDAP data: default empty |`nan`
+|`string`
+|Empty string
+|
 
 |Security.LDAP.AdminPassword |Configure the password of the admin DN
 specified above. Needed only when admin_dn is specified: default empty
 |`secret`
+|`string`
+|Empty string
+|
 
 |Security.LDAP.BaseDN |Configure LDAP search base DN, the root node to
 start the LDAP search for user authentication: must specify |`nan`
+|`string`
+|Empty string
+|
 
 |Security.LDAP.Enable |Enable LDAP authentication: default false
 |`false`
+|`bool`
+|`false`
+|
+
 |Security.LDAP.GroupFilter
 |list of group objects on LDAP server used to retrieve group hierarchy information, default value: (objectClass=group)
 |(objectClass=group)
+|`string`
+|`(objectClass=group)`
+|
 
 |Security.LDAP.GroupHierarchyRefreshIntervalMin
 |Refresh time in minutes of ldap group hierarchy information. default 240
 |60
+|`int32`
+|`240`
+|
 
 |Security.LDAP.Hostname |Configure LDAP server hostname: default
 localhost |`localhost`
+|`string`
+|`localhost`
+|
 
 |Security.LDAP.Port |Configure LDAP server port: default 389 |`389`
+|`int32`
+|`389`
+|
 
 |Security.LDAP.SearchFilter |Configure LDAP search base DN, the root
 node to start the LDAP search for user authentication.
 |`(objectClass=*)`
+|`string`
+|`(objectClass=*)`
+|
 
 |Security.LDAP.Secure.Protocol |Enable SSL/StartTLS for LDAP connection
 [none/ssl/starttls]: default none |`none`
+|`string`
+|`none`
+|
 
 |Security.LDAP.Secure.TrustAll |Configure to trust all LDAP servers
 (unsafe): default false |`false`
+|`bool`
+|`false`
+|
 
 |Security.LDAP.Secure.TruststoreFormat |Configure the truststore format
 [JKS/PKCS12]: default JKS |`JKS`
+|`string`
+|`JSK`
+|
 
 |Security.LDAP.Secure.TruststorePassword |Configure the truststore
 password: default changeit |`changeit`
+|`string`
+|`changeit`
+|
 
 |Security.LDAP.Secure.TruststorePath |Configure the truststore absolute
 path for the certificates used in SSL: default empty |`nan`
+|`string`
+|Empty string
+|
 
 |Security.LDAP.UsernameAttribute |Configure the username attribute name
 in LDAP server: default uid |`uid`
+|`string`
+|`uid`
+|
+|===
+
+== Security (Advanced)
 
 | Security.SSO.OIDC.OP.AccessTokenURL
 | The API to request access token from OP.
@@ -1089,29 +2038,51 @@ Type: `STRING`
 
 |Security.SSO.OIDC.BuiltinUser |The builtin user for OIDC, default:
 __GSQL__oidc |`__GSQL__oidc`
+|`string`
+|`__GSQL__oidc`
+|
 
 |Security.SSO.OIDC.CallBackUrl |TigerGraph service provider callback
 URL: default http://127.0.0.1:14240 |`http://127.0.0.1:14240`
+|`string`
+|`http://127.0.0.1:14240`
+|
 
 | Security.SSO.OIDC.ClaimAsUserID
 | The OIDC claim which will be used as username in TigerGraph
 
 Type: `STRING`
 | `email`
+|`string`
+|`email`
+|
 
 |Security.SSO.OIDC.Enable |Enable OIDC based SSO [true/false]: default
 false |`false`
+|`bool`
+|`false`
+|
 
 |Security.SSO.OIDC.OP.ClientId |The client id assigned by Openid
 Provider when registers TigerGraph |`nan`
+|`string`
+|Empty string
+|
+
 
 |Security.SSO.OIDC.OP.ClientSecret |The client secret generated by OIDC
 provider, this config is only needed if algorithm is HMAC type |`nan`
+|`string`
+|Empty string
+|
 
 |Security.SSO.OIDC.OP.JWKSUrl |The url of the OpenID provider to
 retrieve the public JSON web key set,
 e.g. https://op.example.com/.well-known/jwks.json. It is only needed if
 algorithm is RSA type |`https://op.example.com/.well-known/jwks.json`
+|`string`
+|`https://op.example.com/.well-known/jwks.json`
+|
 
 | Security.SSO.OIDC.OP.Issuer
 | Required, not needed for TG-Cloud.
@@ -1119,25 +2090,43 @@ Entity that issues a set of claims.
 
 Type: `STRING`
 | https://example.issuer.tigergraph.com.
+|`string`
+|https://example.issuer.tigergraph.com.au/
+|
 
 |Security.SSO.OIDC.OP.SSOUrl |Single Sign-On URL: default
 https://op.example.com/oauth/authorize
 |`https://op.example.com/oauth/authorize`
+|`string`
+|https://op.example.com/oauth/authorize
+|
 
 |Security.SSO.OIDC.OP.SigAlgorithm |Define the algorithm that OIDC
 provider used to sign the ID token, [RS256/HS256/…]: default RS256
 |`RS256`
+|`string`
+|`RS256`
+|
 
 |Security.SSO.OIDC.OrganizationId |The organization ID for cloud OpenId
 server |`nan`
+|`string`
+|Empty string
+|
 
 |Security.SSO.OIDC.ResponseType |Define the kind of credential that OIDC
 provider will return [code/token/id_token/code id_token/…]: default code
 |`code`
+|`string`
+|`code`
+|
 
 |Security.SSO.OIDC.Scope |Specifies the claims (or user attributes) to
 retrieve, separated by a space [openid email/openid profile/…]: default
 openid profile (means user’s full profile). |`openid profile`
+|`string`
+|`openid profile`
+|
 
 | Security.SSO.OIDC.OP.UserInfoURL
 | Required for OIDC code flow, not needed for implicit flow.
@@ -1145,75 +2134,144 @@ The API to request user information via an access token.
 
 Type: `STRING`
 | `https://op.example.com/userinfo`
+|`string`
+| `https://op.example.com/userinfo`
+|
 
 |Security.SSO.SAML.AssertionSigned |Require Identity Provider to sign
 assertions: default true |`true`
+|`bool`
+|`true`
+|
 
 |Security.SSO.SAML.AuthnRequestSigned |Sign AuthnRequests before sending
 to Identity Provider: default true |`true`
+|`bool`
+|`true`
+|
 
 |Security.SSO.SAML.BuiltinUser |The builtin user for SAML
 |`__GSQL__saml`
+|`string`
+|`__GSQL__saml`
+|
 
 |Security.SSO.SAML.Enable |Enable SAML2-based SSO: default false
 |`false`
+|`bool`
+|`false`
+|
 
 |Security.SSO.SAML.IDP.EntityId |Identity Provider Entity ID: default
 http://idp.example.com |`http://idp.example.com`
+|`string`
+|`http://idp.example.com`
+|
 
 |Security.SSO.SAML.IDP.SSOUrl |Single Sign-On URL: default
 http://idp.example.com/sso/saml |`http://idp.example.com/sso/saml`
+|`string`
+|http://idp.example.com/sso/saml
+|
 
 |Security.SSO.SAML.IDP.X509Cert |Identity Provider’s x509 Certificate
 filepath: default empty. You can use @/cert/file/path to pass the
 certificate from a file. |`nan`
+|`string`
+|Empty string
+|
 
 |Security.SSO.SAML.MetadataSigned |Sign Metadata: default true |`true`
+|`bool`
+|`true`
+|
 
 |Security.SSO.SAML.RequestedAuthnContext |Authentication context (comma
 separate multiple values) |`nan`
+|`string`
+|Empty string
+|
 
 |Security.SSO.SAML.ResponseSigned |Require Identity Provider to sign
 SAML responses: default true |`true`
+|`bool`
+|`true`
+|
 
 |Security.SSO.SAML.SP.Hostname |TigerGraph Service Provider URL: default
 http://127.0.0.1:14240 |`http://127.0.0.1:14240`
+|`string`
+|`http://127.0.0.1:14240`
+|
 
 |Security.SSO.SAML.SP.PrivateKey |Content of the host machine’s private
 key. Require PKCS#8 format (start with ``BEGIN PRIVATE KEY''). You can
 use @/privatekey/file/path to pass the certificate from a file. |`nan`
+|`string`
+|Empty string
+|
 
 |Security.SSO.SAML.SP.X509Cert |Content of the x509 Certificate: default
 empty. You can use @/cert/file/path to pass the certificate from a file.
 |`nan`
+|`string`
+|Empty string
+|
 
 |Security.SSO.SAML.SignatureAlgorithm |Signiture algorithm
 [rsa-sha1/rsa-sha256/rsa-sha384/rsa-sha512]: default rsa-sha256
 |`rsa-sha256`
+|`string`
+|`rsa-sha256`
+|
 
 |Security.UserPasswordPolicy.Enable |Enable/disable the password policy
 |`false`
+|`bool`
+|`false`
+|
 
 |Security.UserPasswordPolicy.MinLength |Password min length
 |`8`
+|`int32`
+|`8`
+|
 
 |Security.UserPasswordPolicy.UppercaseLetterRequired |Requires password must have at least one uppercase character
 |`true`
+|`bool`
+|`true`
+|
 
 |Security.UserPasswordPolicy.LowercaseLetterRequired |Requires password must have at least one lowercase character
 |`true`
+|`bool`
+|`true`
+|
 
 |Security.UserPasswordPolicy.DigitRequired |Requires password must have at least one digit
 |`true`
+|`bool`
+|`true`
+|
 
 |Security.UserPasswordPolicy.SpecialCharacterRequired |Requires password must have at least one special character
 |`true`
+|`bool`
+|`true`
+|
 
 |Security.UserPasswordPolicy.ExpirationDay |How long the password remains valid after it has been updated
 |`90`
+|`int32`
+|`90`
+|
 
 |Security.UserPasswordPolicy.PasswordReuseThreshold |What is the minimum number of unique passwords required before a previously used password can be reused
 |`5`
+|`int32`
+|`5`
+|
 |===
 
 == System
@@ -1221,177 +2279,339 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 [cols="3",options="header",]
 //[%autowidth,options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 
 |System.AppRoot |The root directory for TigerGraph applications
 |`/home/tigergraph/tigergraph/app`
+|`string`
+|`/home/tigergraph/tigergraph/app`
+|
 
 | System.Audit.Enable | Setting to enable audit logs. | `System.Audit.Enable true`
+|`bool`
+|`true`
 
 | System.Audit.DatabaseName | Modify the DataBaseName field in log file header. | `System.Audit.DataBaseName <database-name>`
 
 | System.Audit.LogDirRelativePath | Modify the relative audit log path. | `System.Audit.LogDirRelativePath <audit-log-relative-path>`
+|`string`
+| `System.Audit.LogDirRelativePath <audit-log-relative-path>`
+|
 
 | System.Audit.LogConfig.LogFileMaxDurationDay | Modify the audit log file’s modification date. | `System.Audit.LogConfig.LogFileMaxDurationDay <max-duration-day>`
+|`int32`
+| `90`
+|
 
 | System.Audit.LogConfig.LogFileMaxSizeMB | Modify the audit log file’s max size. | `System.Audit.LogConfig.LogFileMaxSizeMB <file-size>`
+|`int32`
+|`100`
+|
 
 | System.Audit.LogConfig.LogRotationFileNumber | Modify the max amount of Audit Log files in the Audit Log folder. | `System.Audit.LogConfig.LogRotationFileNumber <file-number>`
+|`int32`
+|`100`
+|
 
 | System.Audit.MaskPII
 | Mask Sensitive data or PII in the audit log. Default value is: `true`. If it is `false`, the PII data will not be masked.
 | `System.Audit.MaskPII true`
+|`bool`
+|`true`
+|
 
 |System.AuthToken |The authorization token for TigerGraph services
 |`Va2V7mdpTY5ErZRmTBBRqYtkgR7CiGbF`
+|`string`
+| random string of length 32
+|
 
 |System.Backup.CompressProcessNumber |The number of concurrent process
 for compression during backup. Value `10` means the number of processes
 used to compress equals the node CPU’s cores. |`10`
+|`int32`
+|`10`
+|
 
 |System.Backup.DecompressProcessNumber | The number of concurrent processes for decompression during the restore.
 | `8`
+|`int32`
+|`8`
+|
 
 |System.Backup.CompressionLevel |The backup compression level strikes a balance between size and speed. The better compression, the longer it takes.
 ("BestSpeed", "DefaultCompression", "BestCompression")
 | "DefaultCompression"
+|`string`
+|`DefaultCompression`
+|
 
 |System.Backup.Local.Enable |Backup data to local path *IMPORTANT*: If set to `true`, this also enables a daily full backup at 12:00am UTC. |`false`
+|`bool`
+|`false`
+|
 
 |System.Backup.Local.Path |The path to store the backup files |`nan`
 |System.Backup.S3.AWSAccessKeyID |The AWS access key ID for s3 bucket of
 backup |`nan`
+|`string`
+|Empty string
+|
 
 |System.Backup.S3.AWSSecretAccessKey |The secret access key for s3
 bucket |`nan`
+|`string`
+|Empty string
+|
 
 |System.Backup.S3.RoleARN |The AWS role for accessing s3 bucket, its use is prioritized over the combination of access key id and secret access key in accessing s3. To understand what AWS role ARN is, see link:https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-arns[AWS role ARN doc].
 
 *NOTE*: This is only for AWS S3, and TigerGraph assumes the credentials for using `sts:AssumeRole` have been set up. You can verify the credentials are ready by running link:https://docs.aws.amazon.com/cli/latest/reference/sts/assume-role.html#examples[aws sts assume-role]. One way to set up credentials is to configure access key id, secret access key and region with AWS CLI `aws configure`.|`nan`
+|`string`
+|Empty string
+|
 
 |System.Backup.S3.BucketName |The S3 bucket name |`nan`
+|`string`
+|Empty string
+|
 
 |System.Backup.S3.Enable |Backup data to S3 path |`false`
+|`bool`
+|`false`
+|
 
 |System.Backup.S3.Endpoint | Endpoint to use instead of the S3 default endpoint. Must be a fully qualified URL.
 Typically used when operating in a private network or with a non-AWS S3-compatible endpoint. | null
-
+|`string`
+|Empty string
+|
 
 |System.Backup.TimeoutSec |The backup timeout in seconds |`18000`
+|`int32`
+|`18000`
+|
 
 |System.CrossRegionReplication.Enabled |Enable Kafka Mirrormaker
 |`false`
+|`bool`
+|`false`
+|
 
 |System.CrossRegionReplication.PrimaryKafkaIPs |Kafka mirrormaker
 primary cluster’s IPs, separator by `,' |`nan`
+|`string`
+|Empty string
+|
 
 |System.CrossRegionReplication.PrimaryKafkaPort |Kafka mirrormaker
 primary cluster’s KafkaPort |`30002`
+|`int32`
+|`30002`
+|
 
 |System.CrossRegionReplication.TopicPrefix |The prefix of GPE/GUI/GSQL
 Kafka Topic, by default is empty. |`nan`
+|`string`
+|Empty string
+|
 
 |System.DataRoot |The root directory for data
 |`/home/tigergraph/tigergraph/data`
+|`string`
+|`/home/tigergraph/tigergraph/data`
+|
 
 |System.Event.EventInputTopic |Kafka topic name of event input queue
+|`EventInputQueue`
+|`string`
 |`EventInputQueue`
 
 |System.Event.EventOffsetFolderRelativePath |The relative path (to the
 System.DataRoot) of the folder to keep track of Kafka offsets for event
 input/output queue |`offset`
+|`string`
+| `offset`
+|
 
 |System.Event.EventOutputTopic |Kafka topic name of event output queue
 |`EventOutputQueue`
+|`string`
+|`EventOutputQueue`
+|
 
 |System.Event.MetricsTopic |Kafka topic name of metrics event queue
 |`MetricsQueue`
+|`string`
+|`MetricsQueue`
+|
 
 |System.HostList |The aliases and hostnames/IPs for nodes
 |`[{"ID":"m1","Hostname":"192.168.1.1","Region":"r1"},{"ID":"m2","Hostname":"192.168.1.2","Region":"r2"}]`
+|`string`
+|`[{"ID":"m1","Hostname":"192.168.1.1","Region":"r1"},{"ID":"m2","Hostname":"192.168.1.2","Region":"r2"}]`
 
 |System.License |The license key for TigerGraph system |`nan`
+|`string`
+|Empty string
+|
 
 |System.LogRoot |The root directory for TigerGraph logs
 |`/home/tigergraph/tigergraph/log`
+|`string`
+|`/home/tigergraph/tigergraph/log`
+|
 
 |System.Metrics.CPUIntervalSec |The CPU metric data collect interval (s)
 |`60`
+|`int32`
+|`60`
+|
 
 |System.Metrics.DiskspaceIntervalSec |The diskspace metric data collect
 interval (s) |`300`
+|`int32`
+|`300`
+|
 
 |System.Metrics.MemoryIntervalSec |The memory metric data collect
 interval (s) |`60`
+|`int32`
+|`60`
+|
 
 |System.Metrics.NetworkIntervalSec |The network metric data collect
 interval (s) |`60`
+|`int32`
+|`60`
+|
 
 |System.Metrics.QPSIntervalSec |The QPS metric data collect interval (s)
+|`int32`
 |`60`
+|
 
 |System.Metrics.IncludeHostName
 | If set to true, the hostname/ip will be included in all metrics output, in OpenMetrics format, as part of the variable labels.
 
 Otherwise, the default is `false` and the response will not include hostname/ip as part of the variable labels. As in the example xref:tigergraph-server:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics_format[Monitor system metrics (OpenMetrics format)]
 | `System.Metrics.IncludeHostName true`
+|`bool`
+|`false`
+|
 
 
 |System.SSH.ConfigFileRelativePath |The relative path (to the
 System.DataRoot) of SSH config file |`ssh/ssh_config`
+|`string`
+|`ssh/ssh_config`
+|
 
 |System.SSH.Port |SSH port |`22`
+|`int32`
+|`22`
+|
 
 |System.SSH.User.Password |OS User password (optional if using
 privatekey) |`tigergraph`
+|`string`
+|`tigergraph`
+|
 
 |System.SSH.User.Privatekey |OS user private key path |`nan`
+|`string`
+|Empty string
+|
 
 |System.SSH.User.Username |OS Username for TigerGraph database
 |`tigergraph`
+|`string`
+|`tigergraph`
+|
 
 |System.TempRoot |The temporary directory for TigerGraph applications
 |`/home/tigergraph/tigergraph/tmp`
+|`string`
+|`/home/tigergraph/tigergraph/tmp`
+|
 |===
 
 == ZK
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |===
-|Name |Description |Example
+|Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 |ZK.BasicConfig.Env |  A list of `<environment variable>=<value>` pairs, separated by `;`
 |`ZK_SERVER_HEAP=4096;`
+|`string`
+|`ZK_SERVER_HEAP=4096;`
+|
 
 |ZK.BasicConfig.LogConfig.LogFileMaxSizeMB |The maximum size in
 megabytes of the log file before it gets rotated |`100`
+|`int32`
+|`100`
+|
 
 |ZK.BasicConfig.LogConfig.LogLevel |The log level for zk (``TRACE'',
 ``DEBUG'', ``INFO'', ``WARN'', ``ERROR'', ``FATAL'' ``OFF'') |`INFO`
+|`string`
+|`INFO`
+|
 
 |ZK.BasicConfig.LogConfig.LogRotationFileNumber |The maximum number of
 old log files to retain |`100`
+|`int32`
+|`100`
+|
 
 |ZK.BasicConfig.LogDirRelativePath |The relative path (to the
 System.LogRoot) of log directory for ZK |`zk`
+|`string`
+|`zk`
+|
 
 |ZK.BasicConfig.Nodes |The node list for Zookeeper
 |`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|`string`
+|`[{"HostID":"m1","Partition":0,"Replica":1},{"HostID":"m2","Partition":0,"Replica":2}]`
+|
 
 |ZK.DataRelativePath |The data dir of zookeeper under $DataRoot |`zk`
+|`string`
+|`zk`
+|
 
 |ZK.ElectionPort |The port for Zookeeper to do leader election |`3888`
+|`int32`
+|`3888`
+|
 
 |ZK.ForceSync |The force synchronize property of zookeeper |`false`
+|`bool`
+|`false`
 
 |ZK.InitLimit |The amount of time, in ticks(by default 2s for one tick),
 to allow followers to connect and sync to a leader. Increased this value
 as needed, if the amount of data managed by ZooKeeper is large |`30`
+|`int32`
+|`30`
+|
 
 |ZK.Port |The serving port for Zookeeper |`19999`
+|`int32`
+|`19999`
+|
 
 |ZK.QuorumPort |The port for Zookeeper to do peer communication |`2888`
+|`int32`
+|`2888`
+|
 
 |ZK.StartTimeoutMS |Start zookeeper timeout |`120000`
+|`int32`
+|`120000`
+|
 |===
 
 == Environment Variables
@@ -1402,17 +2622,23 @@ If you use `gadmin config set GPE.BasicConfig.Env` or `gadmin config entry GPE.B
 
 [cols="4",options="header",]
 |===
-|Component |Name |Description |Example
+|Component |Name |Description |Example |Value types |Default value |Explanation of parameters that use complex values
 
 | GSQL
 |`GPE_DSC_APPLY_TIMEOUT_MINUTE`, GSQL.Basic.ConfigEnv
 | [v3.9.2+] Timeout (minutes) for dynamic schema change. Default = 30
 | 30
+| `int32`
+| `30`
+|
 
 |RESPP
 | `SSL_CA_CERT`, RESETPP.BasicConfig.Env
 | Set the CA certificate `SSL_CA_CERT` to establish the connection with the URL being set with xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `SSL_CA_CERT=/home/tigergraph/cacertificate/example/;`
+|`string`
+|`SSL_CA_CERT=/home/tigergraph/cacertificate/example/;`
+|
 
 |GPE
 | `SegmentMetaFlushAlways`,
@@ -1424,6 +2650,12 @@ Default is set to `false`.
 * Setting this flag can ensure the most aggressive refresh logic, which can benefit Kafka retention and lower the disk usage most promptly.
 But it can cause slow scheduling in lower `WRITE IO` environment like `EFS`, `S3`, and not release the memory efficiently.
 | `SegmentMetaFlushAlways=true`
+|`bool`
+|`true`
+|
+
+|GPE
+| `SegmentMetaFlushIntervalSec`,
 
 
 || `SegmentMetaForceFlushIntervalSec`, GPE.BasicConfig.Env
@@ -1436,6 +2668,11 @@ Default to 600 sec (10 minutes).
 * Lowering the interval value means a more aggressive refresh logic, which can benefit Kafka retention and lower the disk usage more promptly.
 But can cause slow scheduling in lower WRITE IO environment like EFS, S3, and memory not released efficiently.
 | `SegmentMetaForceFlushIntervalSec=600`
+|`int32`
+|`600`
+|
+
+|GPE
 
 || `CDCKafkaFlushTimeoutMs`, GPE.BasicConfig.Env
 a|
@@ -1444,27 +2681,46 @@ a|
 * When set to -1, there is an infinite timeout, which may slow the GPE shutdown.
 
 | `CDCKafkaFlushTimeoutMs=-1`
+|`int32`
+|`-1`
+|
 
 
 || `CDCDeltaBufferCapInMB`, GPE.BasicConfig.Env
 | In-memory buffer limit for delta message in CDC service.
 | `CDCDeltaBufferCapInMB=10`
+|`int32`
+|`10`
+|
 
 || `DIMDeltaBufferCapInMB`, GPE.BasicConfig.Env
 | In-memory buffer limit for “vertex-deletion“ delta message in deleted id map service.
 | `DIMDeltaBufferCapInMB=100`
+|`int32`
+|`100`
+|
 
 || `DIMCacheLimitInMB`, GPE.BasicConfig.Env
 | In-memory cache limit for deleted id map.
 | `DIMCacheLimitInMB=1024`
+|`int32`
+|`1024`
+|
 
 || `DIMPurgeIntervalInMin`, GPE.BasicConfig.Env
 | Interval for purging outdated entries in deleted id map.
 | `DIMPurgeIntervalInMin=30`
+|`int32`
+|`30`
+|
+
+|GPE
 
 || `TransactionStoreMemLimit`, GPE.BasicConfig.Env
 | The value must be uint64_t type and in unit: Byte. The default value is 4194304, which means 4 MB.
 | `TransactionStoreMemLimit=4194304`
+|`int32`
+|`4194304`
 
 || `TransactionSizeLimit`, GPE.BasicConfig.Env
 a|
@@ -1472,5 +2728,7 @@ a|
 
 * The default value is 0. When the value is 0, the threshold is dynamically decided by TigerGraph, based on current memory usage statistics.
 | `TransactionSizeLimit=1073741824`
+|`int64`
+|`1073741824`
 
 |===
