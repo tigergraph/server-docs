@@ -383,19 +383,15 @@ df.show()
 
 ¦ `query.interpreted`
 ¦ Query body of an anonymous query.
-
-¦ `query.params`
-¦ The query parameters in query string format.
-
-Please refer to xref:tigergraph-server:API:index.adoc#_query_string_parameters[Query string parameters].
 |===
-Example: run the anonymous `topK` query in interpreted mode with k=10
+Example: run the anonymous `topK` query in interpreted mode with k=10. Because no parameter is allowed, the parameter k is set within the query.
 
 .Define the interpreted query body
 [source, scala]
 ----
 val queryBody = """
-    INTERPRET QUERY (INT k) FOR GRAPH gsql_demo {
+    INTERPRET QUERY () FOR GRAPH gsql_demo {
+        INT k=10;
         vSet = SELECT p FROM Person:p ORDER BY p.age LIMIT k;
         PRINT vSet;
     }
@@ -408,7 +404,6 @@ val df = spark.read
     .format("tigergraph")
     .options(tgOptions)
     .option("query.interpreted", queryBody)
-    .option("query.params", "k=10")
     .load()
 
 df.show()
@@ -441,17 +436,26 @@ PRINT @@list_accum.get(0);
 +------------------------------------------------+
 ----
 
-However, sometimes we want to convert a vertex expression set or an accumulator into a Spark DataFrame, with each element being transformed into a row.
+However, sometimes we want to convert a vertex expression set or an accumulator into a Spark DataFrame, like `@@list_accum`, with each element being transformed into a row of the DataFrame.
 
 The connector can automatically expand the vertex set or accumulator to Spark DataFrame under the following conditions:
 
 * It is an installed query instead of an interpreted query;
-* It contains only one PRINT statement, which print a single object;
+* It contains only one PRINT statement, which only print a single object;
 * The printed object must either be a vertex expression set, or an accumulator.
 
-Otherwise, you can explicitly set `.option("query.results.extract", "true")`, which will try to expand the first printed object.
+You can also explicitly extract an object from multiple PRINT statements by option `query.results.extract`:
+[separator=¦]
+|===
+¦ Option ¦ Value
 
-.The above list accumulator is expanded by setting "query.results.extract" to true.
+¦ `query.results.extract`
+¦ The row index and the object key concatenated with colon.
+
+E.g.: `1:vSet`, which can extract `vSet` from the output of the 2nd PRINT statement.
+|===
+
+.Example: The above list accumulator is extracted and expanded by setting "query.results.extract" to "0:@@list_accum".
 [source]
 ----
 +-------+
@@ -470,7 +474,8 @@ For interpreted queries and some installed queries, the schema cannot be inferre
 [source, scala]
 ----
 val queryBody = """
-    INTERPRET QUERY (INT k) FOR GRAPH gsql_demo {
+    INTERPRET QUERY () FOR GRAPH gsql_demo {
+        INT k=3;
         vSet = SELECT p FROM Person:p ORDER BY p.age LIMIT k;
         PRINT vSet;
     }
@@ -483,8 +488,7 @@ val df = spark.read
     .format("tigergraph")
     .options(tgOptions)
     .option("query.interpreted", queryBody)
-    .option("query.results.extract","true") // explicitly expand the vertex
-    .option("query.params", "k=3")
+    .option("query.results.extract","0:vSet") // explicitly expand the vertex set
     .load()
 
 df.show()
@@ -505,8 +509,7 @@ val df = spark.read
     .schema("v_id STRING, gender STRING, name STRING, state STRING, age INT") // user given schema
     .options(tgOptions)
     .option("query.interpreted", queryBody)
-    .option("query.results.extract","true")  // explicitly expand the vertex set
-    .option("query.params", "k=3")
+    .option("query.results.extract","0:vSet")  // explicitly expand the vertex set
     .load()
 
 df.show()
