@@ -1,6 +1,6 @@
 = Point-in-Time Restore
 
-Point-in-Time Restore, introduced in version 4.1, enables users to restore the database to a previous time point using previously made backups, even though no backup was conducted at exactly that time point.
+Point-in-Time Restore, introduced in version 4.1, enables users to restore the database to a previous time point using previously made backups, even though no backup was conducted at exactly that time point. This feature offers flexibility in undoing unwanted changes or recovering from data corruption without losing other valuable work.
 This feature replies on the user having made one or more xref:tigergraph-server:backup-and-restore:differential-backups.adoc[differential backups].
 
 == Usage
@@ -62,9 +62,9 @@ The primary advantage of Point-in-Time Restore is the flexibility it offers, all
 . The changes made between Tuesday 10pm and Wednesday 1:55pm are saved this way.
 ====
 
-Summery of key benefits:
+Summary of key benefits:
 
-* Precise recover time point to save a much as possible correct work made to database.
+* Precise recover time point to save as much as possible correct work made to database.
 
 
 == Limitations and Considerations
@@ -77,6 +77,6 @@ image::PIT_restore.png[]
 * GSQL Content: The GSQL content, such as schemas and RBAC settings, cannot be restored to the exact version at the provided time point. After a Point-in-Time Restore, these elements will reflect the version of the nearest differential backup used.
 * Precision Window: Point-in-Time Restore operates with a precision window of a few minutes. To ensure optimal data consistency, it is recommended to restore to a time point at least 2-3 minutes before the timestamp of any unwanted changes.
 * Coverage: Point-in-Time Restore cannot be performed for timestamps not covered by an existing differential backup. If the desired time point is not covered, a new differential backup must be created before performing the restore.
-** To maximize the potential of Point-in-Time Restore, users are expected to do backups regulary. A good example can be doing weekly full backup and daily differential backup in days between two full backups.
+** To maximize the effectiveness of Point-in-Time Restore, it’s recommended to perform weekly full backups and daily differential backups. This routine helps ensure that any desired restore point is covered and available when needed.
 
 
