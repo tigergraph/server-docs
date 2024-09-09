@@ -1,15 +1,26 @@
-= TigerGraph REST API
+= REST API for GSQL Server
 :description: Overview of TigerGraph's REST API.
 :pp: {plus}{plus}
 //:page-aliases: API:intro.adoc, api:intro.adoc
 
-TigerGraph's REST API endpoints exist on the REST{pp} and the GSQL server. REST{pp} (or RESTPP) is the TigerGraph customized https://en.wikipedia.org/wiki/Representational_state_transfer[REST] server.
+This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while xref:gsql-endpoints.adoc[] describes in detail each endpoint and its input and output.
+
+[IMPORTANT]
+====
+Version 4.1 introduces changes to consolidate and unify the syntax for REST endpoints:
+
+* The REST API endpoints have been consolidated onto the GSQL server.
+* For self-installed systems, send requests to the NGINX proxy server (port 14240). For TigerGraph Cloud users, send requests to port 443.
+* The path prefix for endpoints has changed.
+* All endpoints can use token authentication instead of username and password.
+====
+
+A request must include the following specifications:
+
 Our API accepts URL-encoded query string parameters, https://www.json.org/json-en.html[JSON]-encoded request bodies and returns JSON encoded responses.
 
-This user guide provides information on how to engage with our REST APIs: the introduction section explains how to send requests, pass parameters, and format request bodies, while xref:built-in-endpoints.adoc[] describes in detail each endpoint and its input and output.
-
 To submit a request, send an HTTP request to the REST{pp} server or the GSQL server.
-By default, the REST{pp} server listens for requests at port 9000 and the GSQL server listens on port 14240.
+By default, both REST{pp} server and GSQL server listens for requests on port 14240.
 A request needs to specify the following:
 
 * The request method (`GET`, `POST`, `PUT`, or `DELETE`)
@@ -20,11 +31,17 @@ A request needs to specify the following:
 
 For requests that are sent to the GSQL server, the sender needs to provide TigerGraph user credentials for the request to be accepted.
 If authentication is enabled on the RESTPP server, a request token needs to be included in the request header as well.
+User credentials can be provided in 3 ways:
 
-[NOTE]
+* `-u <user:password>`: pass the specified user name and password with curl option
+* `-H 'Authorization: Bearer <JWT-token>'`: pass JWT token via header, note that JWT token was requested on graph level, so user will only has the access to the specific graph with JWT token
+* `-H 'Authorization: Basic <encoded-username-password>'`: pass encoded username and password via header
+* `-H 'Authorization: GSQL-Secret <gsql-secret>'`: pass gsql secret via header
+
+[TIP]
 ====
-In a test or development environment, the requester may be on the same server as REST{pp}.
-In this case, the server IP is *localhost*.
+When making a REST request, you need to know the IP address of the REST server.
+If the requester happens to be on the same server (e.g., in test set up), you can replace the IP address with  `localhost`.
 ====
 
 [#_query_string_parameters]
@@ -326,7 +343,7 @@ Request examples in this guide are made using https://curl.se/docs/manpage.html[
 
 * `-d <data>`
  ** Sends the specified data in a `POST` request to the HTTP server in the same way that a browser does when a user has filled in an HTML form and presses the submit button. This will cause curl to pass the data to the server using the content-type `application/x-www-form-urlencoded`.
- ** If you start the data with the character `@`, the rest should be a filepath from which to read the data. The command `curl -d @foobar` will read data from a file named `foobar`.
+ ** To read the data from a file, start with a`@` character, followed by the filepath. For example, the command `curl -d @foobar` will read data from a file named `foobar`.
 * `--data-binary <data>`
  ** Sends data with a `POST` request exactly as specified with no extra processing.
 * `--fail`
@@ -334,7 +351,7 @@ Request examples in this guide are made using https://curl.se/docs/manpage.html[
  ** This is mostly done to enable scripts etc. to better deal with failed attempts. In normal cases when an HTTP server fails to deliver a document, it returns an HTML document stating so (which often also describes why and more). This flag will prevent curl from outputting that and return error 22.
 * `-H <header>`
  ** Extra header to include in the request when sending HTTP to a server. You may specify any number of extra headers.
- ** TigerGraph APIs use headers to specify xref:API:index.adoc#_size_and_time_limits[size and time limits], as well as to provide RESTPP xref:authentication.adoc#_restpp_server_requests[authentication] tokens.
+ ** TigerGraph APIs use headers to specify xref:API:index.adoc#_size_and_time_limits[size and time limits], as well as to provide xref:tigergraph-server:user-access:jwt-token.adoc#_usage_of_gsql_jwt_token[authentication tokens].
 * `-s`
  ** Silent or quiet mode. Don't show a progress meter or error messages. It will still output the data you ask for, potentially even to the terminal/stdout unless you redirect it.
 * `-u <user:password>`
