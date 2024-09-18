@@ -5,8 +5,8 @@
 
 === Download the JARs
 This connector can be downloaded from the Maven central repository:
-https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector/overview[Maven Central]
-it has 3 types of release format:
+https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector/overview[Maven Central].
+It is available in three formats:
 
 
 
@@ -14,6 +14,10 @@ it has 3 types of release format:
 * `tigergraph-spark-connector-<version>-jar-with-dependencies.jar`: The `JAR` file that includes compiled classes, as well as all the dependencies.
 * `tigergraph-spark-connector-<version>.tar.gz`: The compressed `TAR` archive that includes `tigergraph-spark-connector-<version>.jar` and dependencies in separate `JAR` files.
 
+[IMPORTANT]
+====
+Beginning with version 0.2.0 of the connector, the following xref:data-loading:load-from-spark-dataframe.adoc#_connector_options[connector options] are required: `version`, `log.level`, and `log.path`.
+====
 To use the TigerGraph Spark connector in a Spark shell:
 
 .use the `--jars` option:
@@ -24,7 +28,7 @@ spark-shell --jars tigergraph-spark-connector-<version>-jar-with-dependencies.ja
 
 [NOTE]
 ====
-If you want to include TigerGraph Spark Connector in your Spark installation, add the `JAR` with dependencies to Spark's `jars` folder.
+If you want to include the TigerGraph Spark Connector in your Spark installation, add the `JAR` with dependencies to Spark's `jars` folder.
 ====
 
 === Configure Logging

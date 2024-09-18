@@ -26,7 +26,7 @@ This connector has multiple optimizations and is backward compatible with TigerG
 
 include::partial$spark/jdbc-deprecation.adoc[]
 
-== Prerequisite
+== Prerequisites
 
 include::partial$spark/prerequisite.adoc[]
 
@@ -34,19 +34,22 @@ include::partial$spark/prerequisite.adoc[]
 [source, gsql]
 ----
 
-CREATE VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME, locationIP STRING, browserUsed STRING, content STRING, length UINT) WITH primary_id_as_attribute="TRUE", STATS="outdegree_by_edgetype"
+CREATE VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME,
+  locationIP STRING, browserUsed STRING, content STRING, length UINT)
+  WITH primary_id_as_attribute="TRUE", STATS="outdegree_by_edgetype"
 CREATE GRAPH demo_graph (*)
 
 USE GRAPH demo_graph
 CREATE LOADING JOB load_Comment FOR GRAPH demo_graph {
     DEFINE FILENAME file_Comment;
     LOAD file_Comment
-        TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+        TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5)
+        USING header="true", separator="|";
 }
 ----
 
 == Overview
-TigerGraph Spark loading is leveraging xref:tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[loading job built-in endpoint].
+TigerGraph Spark loading leverages  xref:tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[TigerGraph loading job's built-in endpoint].
 It requires a pre-defined loading job, then the dataframe will be processed as follows:
 
 .Spark dataframe:
@@ -63,12 +66,13 @@ It requires a pre-defined loading job, then the dataframe will be processed as f
 +--------------------+-------------+-------------+-----------+--------------------+------+
 ----
 
-.The connector concatenates columns to delimited data:
+.The connector concatenates columns to delimited data.
+If the following options are used,
 
 - loading.separator = "|"
 - loading.eol = "\n"
 
-the processed data would be:
+then the processed data would be
 [console]
 ----
 2012-07-04T06:10:43.489+00:00|7696585588755|46.23.82.182|Firefox|LOL|3
@@ -78,7 +82,7 @@ the processed data would be:
 2012-11-11T08:59:21.311+00:00|9345853030710|166.75.225.76|Chrome|good|4
 ----
 
-.The processed data will be sent to TigerGraph like CSV files to run the loading job:
+.The processed data will be sent to TigerGraph as CSV file sources for the loading job:
 - loading.job = "load_Comment"
 - loading.filename = "file_Comment"
 
@@ -88,6 +92,7 @@ To let TigerGraph parse the data correctly, please make sure you are setting `lo
 include::partial$spark/pre_def_options.adoc[]
 
 [NOTE]
+.Authentication
 ====
 Authenticate with the username/password or secret to support token refresh, otherwise, make sure the lifetime of the token is long enough for the loading job.
 ====
@@ -110,6 +115,8 @@ df.write
     .option("loading.job", "load_Comment")
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.path", "/tmp/tigergraph-spark-connector.log")
     .save()
 ----
 
@@ -136,6 +143,8 @@ df.writeStream
     .option("loading.job", "load_Comment")
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.path", "/tmp/tigergraph-spark-connector.log")
     .start()
     .awaitTermination()
 ----
@@ -237,6 +246,8 @@ df.write
     .option("loading.job", "load_Comment")
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.path", "/tmp/tigergraph-spark-connector.log")
     .save()
 ----
 
@@ -274,6 +285,8 @@ df.writeStream
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
     .start()
+    .option("log.level", "2")
+    .option("log.path", "/tmp/tigergraph-spark-connector.log")
     .awaitTermination()
 ----
 
@@ -306,6 +319,8 @@ df.write
     .option("loading.job", "load_Comment")
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.path", "/tmp/tigergraph-spark-connector.log")
     .save()
 ----
 
@@ -339,6 +354,8 @@ df.writeStream
     .option("loading.job", "load_Comment")
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.path", "/tmp/tigergraph-spark-connector.log")
     .start()
     .awaitTermination()
 ----
@@ -374,6 +391,8 @@ df.write
     .option("loading.job", "load_Comment")
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.path", "/tmp/tigergraph-spark-connector.log")
     .save()
 ----
 
@@ -406,6 +425,8 @@ df.writeStream
     .option("loading.job", "load_Comment")
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.path", "/tmp/tigergraph-spark-connector.log")
     .start()
     .awaitTermination()
 ----
