@@ -20,7 +20,7 @@ A request must include the following specifications:
 Our API accepts URL-encoded query string parameters, https://www.json.org/json-en.html[JSON]-encoded request bodies and returns JSON encoded responses.
 
 To submit a request, send an HTTP request to the REST{pp} server or the GSQL server.
-By default, the REST{pp} server listens for requests at port 9000 and the GSQL server listens on port 14240.
+By default, both REST{pp} server and GSQL server listens for requests on port 14240.
 A request needs to specify the following:
 
 * The request method (`GET`, `POST`, `PUT`, or `DELETE`)
@@ -31,6 +31,12 @@ A request needs to specify the following:
 
 For requests that are sent to the GSQL server, the sender needs to provide TigerGraph user credentials for the request to be accepted.
 If authentication is enabled on the RESTPP server, a request token needs to be included in the request header as well.
+User credentials can be provided in 3 ways:
+
+* `-u <user:password>`: pass the specified user name and password with curl option
+* `-H 'Authorization: Bearer <JWT-token>'`: pass JWT token via header, note that JWT token was requested on graph level, so user will only has the access to the specific graph with JWT token
+* `-H 'Authorization: Basic <encoded-username-password>'`: pass encoded username and password via header
+* `-H 'Authorization: GSQL-Secret <gsql-secret>'`: pass gsql secret via header
 
 [TIP]
 ====
