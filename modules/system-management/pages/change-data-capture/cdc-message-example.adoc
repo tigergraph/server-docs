@@ -86,6 +86,17 @@ It can be one of: `"Overwrite"`, `"Add"`, `"Max"`, `"Min"`, `"And"`, `"Or"`, `"I
 }
 ----
 
+[NOTE]
+====
+Format for `"value"` of MAP attribute has been updated to ensure consistency with the xref:tigergraph-server:API:index.adoc#_formatting_data_in_json[POST request data format] in TigerGraph v3.11.0, v4.1.1, v4.2.0 and subsequent releases. For instance:
+
+* Updated format: `{ "keylist":["k1", "k2"], "valuelist": [10.5, 24.8] }`
+* Legacy format: `{ "k1": 10.5, "k2": 24.8 }`
+
+The lagacy format is utilized only if adding `CDCLegacyFormat=true;` in `gadmin config entry GPE.BasicConfig.Env`.
+====
+
+
 == Message Examples
 === CDC Message with Type: Vertex
 
