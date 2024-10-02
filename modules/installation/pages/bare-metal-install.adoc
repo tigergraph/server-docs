@@ -81,20 +81,25 @@ $ tar -xvzf tigergraph-<version>.tar.gz
 
 Navigate to the `tigergraph-<version>-offline` folder and open the configuration file called `install_conf.json`.
 
-Edit the configuration file according to your needs, pay extra attention to the following entries:
+Edit the configuration file according to your needs, paying extra attention to the following entries:
 
-* *TigerGraph Username and Password*: A TigerGraph database has a built-in superuser, whose default username and password are `tigergraph`. You can either customize the username and password now or after installation.
+* *TigerGraph Username and Password*: A TigerGraph database has a built-in superuser, whose default username and password are `tigergraph`.
+You can either customize the username and password now or after installation.
 If the username already exists, the installer will skip creating a new user.
 +
 WARNING: Deploying a database without changing the password for the TigerGraph superuser is a security risk.
 
-* *SSHPort*: By default, the SSH port is `22`, if this port is open in all the provisioned machines you can leave it as it is.
-Otherwise change the port to the actual SSH port in your environment.
+* *SSHPort*: By default, the SSH port is `22`.
+If this port is open in all the provisioned machines you can leave it as it is.
+Otherwise, set this parameter to the actual SSH port in your environment.
 The SSH port number *must* be the same across all the provisioned machines.
-* *PrivateKeyFile* and *PublicKeyFile*: The TigerGraph installer creates these keys by default, so these fields are optional.
-If you want to pass your own keys you can add the absolute paths here.
 
-* *RegionAware*: The option to enable region-aware, see requirements at xref:cluster-and-ha-management:region-aware-config.adoc[], default `false`
+* *PrivateKeyFile* and *PublicKeyFile*: The TigerGraph installer creates these keys by default, so these fields are optional.
+If you want to pass your own keys, you can add the absolute paths here.
+
+* *RegionAware*: For more information on the significance and requirements for setting the `RegionAware` parameter, see xref:cluster-and-ha-management:region-aware.adoc[].
+The default is `false`.
+
 * *NodeList*: The list of your provisioned machines IPs in the following JSON format:
 +
 [,javascript]
