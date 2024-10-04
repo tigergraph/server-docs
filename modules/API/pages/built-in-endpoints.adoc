@@ -1,22 +1,19 @@
-= Built-in Endpoints
+= RESTPP and Informant Built-in Endpoints
 :pp: {plus}{plus}
-:description: All built-in REST API endpoints in TigerGraph server.
+:description: built-in REST API endpoints in TigerGraph server.
 :toc:
 
-This page describes the REST API endpoints accessible on a TigerGraph server.
+This page is an updated version of the REST API endpoints which were avaiable in TigerGraph 3.x.
+TigerGraph 4.1+ adds many new endpoints to the GSQL server which were not available in TigerGraph 3.x.
+For these new endpoints, see xref:API:gsql-endpoints.adoc.
 
-[NOTE]
+[IMPORTANT]
+.REST Server Ports
 ====
-*Note for users of TigerGraph Cloud*
+For all TigerGraph Cloud solutions created on or after June 20, 2022, use port 443 for REST endpoints.
 
-For all TigerGraph Cloud solutions created on or after June 20, 2022, port 14240 are no longer exposed.
-This also applies to previously created cloud solutions that are resized on or after June 20, 2022. Use port 443 instead for API endpoint connectivity on cloud solutions:
-
-** Use API endpoint `443/<endpoint>` for endpoints that were on port 14240
-
-For TigerGraph Cloud solutions created before June 20, 2022, ports 9000 and 14240 remain correct.
-
-In 4.1.0 and later versions, for all TigerGraph Server solutions not on TigerGraph Cloud, port 9000 are no longer exposed, please use `14240/restpp/<endpoint>` instead.
+In 4.1.0 and later versions, for all TigerGraph Server solutions not on TigerGraph Cloud, port 9000 is no longer exposed.
+Please use port 14240 instead.
 ====
 
 == System Utilities
