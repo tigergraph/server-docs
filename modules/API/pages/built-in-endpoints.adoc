@@ -3195,11 +3195,10 @@ The Run Query endpoint accepts a number of headers that allow you to configure t
 
 |`GSQL-REPLICA`
 |The replica where the query is to be run.
-The value of the header needs to be an integer within the range one to the replication factor of the cluster.
+The value of the header needs to be an integer within the range 1 to the replication factor of the cluster.
 If you supply an invalid value for the header, the request returns an error.
 
-A value of `0` specifies that the query be run on the primary copy;
-a value of `1` specifies that the query be run on the first replica, and so on.
+A cluster that has only one copy of the database has a replication factor of 1.
 
 |`GSQL-THREAD-LIMIT`
 |Maximum limit on the number of threads that the query is allowed to use on each node.
