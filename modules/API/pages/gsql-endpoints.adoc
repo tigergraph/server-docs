@@ -4077,7 +4077,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens'
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens' -d {"secret":"$secret", "graph":"$graph", "lifetime":99999999999}
 ----
 --
 Sample Response::
