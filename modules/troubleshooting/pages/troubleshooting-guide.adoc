@@ -229,7 +229,7 @@ Query Installation may fail for a handful of reasons. If a query fails to instal
 /home/tigergraph/tigergraph/logs/gsql_server_log/GSQL_LOG
 ----
 
-Go down to the last error and it will point you to the error. This will show you any query errors that could be causing the failed installation. If you have created a xref:3.2@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined function], you could potentially have a c{pp} compilation error.
+Go down to the last error and it will point you to the error. This will show you any query errors that could be causing the failed installation. If you have created a xref:gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined function], you could potentially have a c{pp} compilation error.
 
 [WARNING]
 ====
@@ -369,7 +369,7 @@ When a loading job seems to be stuck, here are things to check for:
 If  the loading job completes, but data is not loaded, there may be issues with the data source or your loading job. Here are things to check for:
 
 * Any invalid lines in the data source file. Check the log file for any errors. If an input value does not match the vertex or edge type, the corresponding vertex or edge will not be created.
-* Using quotes in the data file may cause interference with the tokenization of elements in the data file. Please check the GSQL Language Reference section under xref:3.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_other_optional_load_clauses[Other Optional LOAD Clauses]. Look for the QUOTE parameter to see how you should set up your loading job.
+* Using quotes in the data file may cause interference with the tokenization of elements in the data file. Please check the GSQL Language Reference section under xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_using_clause[]. Look for the QUOTE parameter to see how you should set up your loading job.
 * Your loading job loads edges in the incorrect order. When you defined the graph schema, the *from*  and *to* vertex order will affect the way you write the loading job. If you wrote the loading job in reversed order, the edges will not be created, possibly also affecting the population of vertices.
 
 === Loading is Incorrect
@@ -393,7 +393,7 @@ Possible causes of a loading job failure are:
 
 == Schema Change Debugging
 
-This section will only cover the debugging schema change jobs, for more information about schema changes, please read the xref:3.2@gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc[Modifying a Graph Schema] page.
+This section will only cover the debugging schema change jobs, for more information about schema changes, please read the xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc[Modifying a Graph Schema] page.
 
 Understanding what happens behind the scenes during a schema change.
 
