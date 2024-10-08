@@ -1223,7 +1223,7 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 
 |System.Backup.CompressProcessNumber |The number of concurrent process
 for compression during backup. Value `0` means the number of processes
-used to compress equals the node CPU’s cores. |`0`
+used to compress equals the node CPU’s cores. |`10`
 
 |System.Backup.DecompressProcessNumber | The number of concurrent processes for decompression during the restore.
 | `8`
@@ -1234,12 +1234,12 @@ used to compress equals the node CPU’s cores. |`0`
 
 |System.Backup.Local.Enable |Backup data to local path *IMPORTANT*: If set to `true`, this also enables a daily full backup at 12:00am UTC. |`false`
 
-|System.Backup.Local.Path |The path to store the backup files |`nan`
-|System.Backup.S3.AWSAccessKeyID |The AWS access key ID used for the S3 backup bucket. It corresponds to the "Access Key" in GCS and the "Account Name" in Azure Blob, respectively. | `nan`
+|System.Backup.Local.Path |The path to store the backup files |`null`
+|System.Backup.S3.AWSAccessKeyID |The AWS access key ID used for the S3 backup bucket. It corresponds to the "Access Key" in GCS and the "Account Name" in Azure Blob, respectively. | `null`
 
-|System.Backup.S3.AWSSecretAccessKey |The secret access key used for the AWS S3 bucket. It corresponds to the "Secret" in GCS and the "Account Key" in Azure Blob, respectively.  |`nan`
+|System.Backup.S3.AWSSecretAccessKey |The secret access key used for the AWS S3 bucket. It corresponds to the "Secret" in GCS and the "Account Key" in Azure Blob, respectively.  |`null`
 
-|System.Backup.S3.BucketName |The S3 bucket name. It corresponds to the "Bucket" in GCS and the "Container" in Azure Blob, respectively. | `nan`
+|System.Backup.S3.BucketName |The S3 bucket name. It corresponds to the "Bucket" in GCS and the "Container" in Azure Blob, respectively. | `null`
 
 |System.Backup.S3.Enable |Data is backed up to various S3-compatible storage services, including AWS S3, S3-compatible services such as Ceph S3, 
 and specifically supported services like Google Cloud Storage (GCS) and Azure Blob Storage. 
@@ -1247,15 +1247,7 @@ The specific storage service used for the backup is determined by the `System.Ba
 
 |System.Backup.S3.Endpoint 
 a| A fully qualified URI, such as https://s3.amazonaws.com/, 
-is used to specify the storage service’s endpoint for the client.
-It is used in the following situations:
-
-* To backup to a private AWS S3, typically set it to "https://s3.amazonaws.com/" or any available URI.
-* To backup to an S3-compatible service, set it to its corresponding service URI.
-* To backup to Google Cloud Storage (GCS), set it to "https://storage.googleapis.com"
-* To backup to Azure Blob, set it to "https://<your storage account name>.blob.core.windows.net"." +
-
-Except for the above specific situations, leave it empty.| null
+is used to specify the storage service’s endpoint for the client.| `null`
 
 |System.Backup.TimeoutSec |The backup timeout in seconds |`18000`
 
