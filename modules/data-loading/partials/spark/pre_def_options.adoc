@@ -1,0 +1,19 @@
+=== Database Connection
+
+You may find it convenient to bundle the options related to making a database connection in a data object (e.g. `tgOptions`) and then use `.options(tgOptions)` when running the connector.
+
+Using username/password has the advantage that this authentication method will automatically refresh an access token as needed. Placing the credentials in a data object keeps them separate for the connection commands.
+
+If you choose to use a token, please make sure the lifetime of the token is long enough for the loading job.
+
+.Predefined connection options:
+[source, scala]
+----
+val tgOptions = Map(
+    "url" -> "http(s)://<tg_node_host>:<tg_nginx_port>",
+    "version" -> "<tg_version>",
+    "graph" -> "<graph_name>",
+    "username" -> "<username>",
+    "password" -> "<password>"
+)
+----

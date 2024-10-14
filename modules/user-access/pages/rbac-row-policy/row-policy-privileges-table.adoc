@@ -1,4 +1,5 @@
 = Object-Based Privilege Tables
+:page-aliases: rbac-row-policy/row-policy-privlages-table.adoc
 
 == App Data
 [separator=¦]
@@ -107,8 +108,13 @@
 |===
 ¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
 
-¦ READ ¦ QUERY ¦ QUERIES ¦ GLOBAL, GRAPH  ¦ READ_QUERY
-¦ WRITE ¦ QUERY ¦ QUERIES ¦ GLOBAL, GRAPH ¦ WRITE_QUERY
+¦ READ ¦ QUERY ¦ QUERIES ¦ QUERY ¦ READ_QUERY
+¦ CREATE ¦ QUERY ¦ QUERIES ¦ GLOBAL, GRAPH ¦ WRITE_QUERY
+¦ UPDATE ¦ QUERY ¦ QUERIES ¦ QUERY ¦ WRITE_QUERY
+¦ DROP ¦ QUERY ¦ QUERIES ¦ QUERY ¦ WRITE_QUERY
+¦ INSTALL ¦ QUERY ¦ QUERIES ¦ QUERY ¦ N/A
+¦ EXECUTE ¦ QUERY ¦ QUERIES ¦ QUERY ¦ N/A
+¦ OWNERSHIP ¦ QUERY ¦ QUERIES ¦ QUERY ¦ N/A
 |===
 
 == Role
@@ -127,12 +133,4 @@
 
 ¦ READ ¦ SCHEMA ¦ SCHEMA ¦ GLOBAL, GRAPH  ¦ READ_SCHEMA
 ¦ WRITE ¦ SCHEMA ¦ SCHEMA ¦ GLOBAL, GRAPH ¦ WRITE_SCHEMA
-|===
-
-== Tag
-[separator=¦]
-|===
-¦ Name ¦ Object ¦ Plural Objects ¦ Scope  ¦ Legacy
-
-¦ ACCESS ¦ TAG ¦ TAGS ¦ GLOBAL, GRAPH  ¦ ACCESS_TAG
 |===

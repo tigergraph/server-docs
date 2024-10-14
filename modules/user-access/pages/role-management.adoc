@@ -4,8 +4,6 @@
 
 This page explains the procedures for various role management tasks under TigerGraph's role-based access control model.
 
-To see role management tasks under the Access Control List (ACL) model, see xref:acl-management.adoc[].
-
 [NOTE]
 ====
 For Row Policy and Object-Based privilege EBNF examples see xref:tigergraph-server:user-access:rbac-row-policy/row-policy-ebnf.adoc[].
@@ -76,8 +74,7 @@ Successfully created global roles: [role1].
 
 Users with the `READ_ROLE` privilege in a scope can view the privileges on the roles in that scope.
 
-`SHOW GRANTS TO ROLE` shows both the RBAC and ACL privileges of a role.
-`SHOW PRVILEGE ON ROLE` shows only the `RBAC` privileges of a role.
+Both `SHOW GRANTS TO ROLE` and `SHOW PRVILEGE ON ROLE` shows the RBAC privileges of a role.
 
 === Syntax
 
@@ -109,9 +106,6 @@ READ_DATA
 CREATE_DATA
 - Attribute 'locationIP' Privileges:
 UPDATE_DATA
-
-ACL privileges of Role: "moderator"
-No ACL privileges.
 ----
 
 The following command shows all privileges of the roles `role1` and `role2`:
@@ -121,7 +115,6 @@ The following command shows all privileges of the roles `role1` and `role2`:
 GSQL > SHOW PRIVILEGE ON ROLE role1 , role2
 ----
 
-To view the ACL privileges of a role, see xref:acl-management.adoc#_view_acl_privileges_of_a_role[View ACL privileges of a role].
 
 == View all users who are assigned a role
 You can specify a role and view all users who are assigned that role.
@@ -190,8 +183,9 @@ Users with the `WRITE_ROLE` privileges on a scope can grant RBAC privileges to t
 
 [source,text]
 ----
-GRANT PRIVILEGE <privilege_name1> (, privilege_name2)*
-        [ON GRAPH <graph_name>] TO <role_name1> (, <role_name2>)*
+GRANT <privilege_name1> (, <privilege_name2>)* 
+ON (GLOBAL | ALL <object_type_plural1> (, ALL <object_type_plural2>)* | <object_type> <object_name1> ((, <object_name2>)* | <attribute_type> <attribute_name1> (, <attribute_name2>)*)?)
+IN [GRAPH <graph_name>|GLOBAL] TO <role_name1> (, <role_name2>)*
 ----
 
 === Require privilege
@@ -200,25 +194,24 @@ GRANT PRIVILEGE <privilege_name1> (, privilege_name2)*
 
 === Example
 
-. To grant privileges to a role, run the `GRANT PRIVILEGE` command from the GSQL shell:
+. To grant privileges to a role, run the Object-based grant privilege command from the GSQL shell:
 +
 [source,text]
 ----
-GSQL > GRANT PRIVILEGE WRITE_QUERY, WRITE_ROLE
-        ON GRAPH example_graph TO role1 , role2
+GSQL > GRANT WRITE ON ALL QUERIES, ALL ROLES
+        IN GRAPH example_graph TO role1 , role2
 ----
 
-This will allow users with the roles `role1` and `role2` to edit and install queries, as well as modify roles on the graph `example_graph`. To see a full list of privileges and the command they allow users to run, see xref:reference:list-of-privileges.adoc[].
-
-To grant xref:access-control-model.adoc#_access_control_lists[ACL privileges] to a role, see xref:acl-management.adoc#_grant_acl_privilege_to_a_role[Grant ACL privileges to a role].
+This will allow users with the roles `role1` and `role2` to create, read, update, drop, install and execute existing queries, as well as modify roles on the graph `example_graph`. To see a full list of privileges and the command they allow users to run, see xref:reference:list-of-privileges.adoc[].
 
 == Grant type-level privilege to a role
-Users with the `WRITE_ROLE` privileges on a scope can grant RBAC privileges to the roles in that scope.
+You can grant certain privileges (`READ_DATA`, `CREATE_DATA`, `DELETE_DATA`, `UPDATE_DATA`) on a type level to the roles in that scope.
+The privilege only applies to the specified types.
 
 === Syntax
 
 [source.wrap,gsql]
-GRANT PRIVILEGE privilege_name1 , privilege_name2... ON VERTEX/EDGE <graph_name>.<type.name>  TO <role_name> , <role_name2>...
+GRANT <privilege_name1> (, <privilege_name2>)* ON [VERTEX|EDGE] <type_name1> (, <type_name2>)* IN [GRAPH <graph_name>|GLOBAL] TO <role_name> (, <role_name2>)*
 
 
 === Required privilege
@@ -226,10 +219,10 @@ GRANT PRIVILEGE privilege_name1 , privilege_name2... ON VERTEX/EDGE <graph_name>
 
 === Example
 
-The following command grants the `READ_DATA` and `CREATE_DATA` privilege on vertex type `Person` to `role2` and `role2`.
+The following command grants the `READ_DATA` and `CREATE_DATA` privilege on vertex type `Person` to `role1` and `role2`.
 
 [source.wrap,gsql]
-GRANT PRIVILEGE READ_DATA, CREATE_DATA ON VERTEX G1.Person TO role1, role2
+GRANT READ, CREATE ON VERTEX Person IN GRAPH G1 TO role1, role2
 
 This allows users with `role1` and `role2` to read all attribute values of type `Person` vertices.
 However, to insert new vertices, the user must also have `UPDATE_DATA` on all attributes of vertex type `Person`.
@@ -241,7 +234,7 @@ The privilege only applies to the specified attributes of the specified type.
 
 === Syntax
 [source.wrap,gsql]
-GRANT PRIVILEGE privilege_name1 , privilege_name2... ON VERTEX/EDGE <graph_name>.<type.name> (<attribute1>, <attribute2> ...) TO <role_name> , <role_name2>...
+GRANT <privilege_name1> (, <privilege_name2>)* ON [VERTEX|EDGE] <type_name> ATTRIBUTE <attribute_name1> (, <attribute_name2>)* IN [GRAPH <graph_name>|GLOBAL] TO <role_name> (, <role_name2>)*
 
 `from` and `to` are edge attributes that represent the source vertex and target vertex of an edge.
 When you grant access to these attributes, `from` and `to` are case-sensitive.
@@ -255,7 +248,7 @@ You must use lower-case to indicate these two attributes.
 The following command grants the `READ_DATA` privilege on the `id` and `age` attribute of  the vertex type `Person` to `example_role`.
 
 [source.wrap,gsql]
-GRANT PRIVILEGE READ_DATA ON VERTEX G1.person (id, age) TO example_role
+GRANT READ ON VERTEX person ATTRIBUTE id, age IN GRAPH G1 TO example_role
 
 This allows users with `example_role` to read the `id` and `age` attribute values of `Person` vertices.
 However, if the type `Person` has other attributes, such as an `SSN` attribute with their social security number, users who don't have the `READ_DATA` privilege on that attribute are not able to access its attribute value.
@@ -264,7 +257,7 @@ The following command grants the `READ_DATA` privilege on the `to` attribute of 
 
 [source.wrap,gsql]
 ----
-GRANT PRIVILEGE READ_DATA ON edge ldbc_snb.Knows(to) TO example_role <1>
+GRANT READ ON EDGE Knows ATTRIBUTE to IN GRAPH ldbc_snb TO example_role <1>
 ----
 <1> `to` must be lower-case.
 
@@ -277,8 +270,10 @@ Users with the `WRITE_ROLE` privileges on a scope can revoke RBAC privileges fro
 
 [source,text]
 ----
-REVOKE PRIVILEGE <privilege_name1> (, privilege_name2)*
-        [ON GRAPH <graph_name>] FROM <role_name1> (, <role_name2>)*
+REVOKE <privilege_name1> (, <privilege_name2>)*
+ON (GLOBAL | ALL <object_type_plural1> (, ALL <object_type_plural2>)* | <object_type> <object_name1> ((, <object_name2>)* | <attribute_type> <attribute_name1> (, <attribute_name2>)*)?)
+IN [GRAPH <graph_name> | GLOBAL]
+FROM <role_name1> (, <role_name2>)*
 ----
 
 === Required privilege
@@ -287,27 +282,25 @@ REVOKE PRIVILEGE <privilege_name1> (, privilege_name2)*
 
 === Example
 
-. To revoke privileges from a role, run the `REVOKE PRIVILEGE` command from the GSQL shell:
+. To revoke privileges from a role, run the Object-based revoke privilege command from the GSQL shell:
 +
 [source,text]
 ----
-GSQL > REVOKE PRIVILEGE WRITE_QUERY
-        ON GRAPH example_graph FROM role1
+GSQL > REVOKE WRITE ON ALL SCHEMA
+        IN GRAPH example_graph FROM role1
 ----
 
-This will revoke the `WRITE_QUERY` privilege from the role `role1` on graph `example_graph.`
-
-To revoke xref:access-control-model.adoc#_access_control_lists[ACL privileges] from a role, see xref:acl-management.adoc#_revoke_acl_privilege_from_a_role[Revoke ACL privileges from a role].
+This will revoke the `WRITE_SCHEMA` privilege from the role `role1` on graph `example_graph.`
 
 == Revoke type-level privileges
-You can revoke certain privileges from the type level with the `REVOKE PRIVILEGE` command.
+You can revoke certain privileges from the type level with the Object-based revoke privilege command.
 
-If the privilege has already been granted on the global scope or on the graph level, then revoking the privilege on the type level does not revoke the privilege in effect.
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global or graph level). For instance, if a role has `READ_DATA`` on a vertex type globally, revoking this privilege at the type level will not prevent the role from accessing the vertex type.
 
 === Syntax
 
 [source.wrap,gsql]
-REVOKE PRIVILEGE <privilege_name1>, <privilege_name2> ... ON VERTEX/EDGE <graph_name>.<type.name> FROM <role_name> , <role_name2>...
+REVOKE <privilege_name1> (, <privilege_name2>)* ON [VERTEX|EDGE] <type_name> (, <type_name2>)* IN [GRAPH <graph_name>|GLOBAL] FROM <role_name> (, <role_name2>)*
 
 
 === Required privilege
@@ -315,19 +308,19 @@ REVOKE PRIVILEGE <privilege_name1>, <privilege_name2> ... ON VERTEX/EDGE <graph_
 
 === Example
 
-The following command revokes the `UPDATE_DATA` privilege on type `Friendship` from `role1`, and `role1`:
+The following command revokes the `UPDATE_DATA` privilege on type `Friendship` from `role1`, and `role2`:
 
 [source.wrap,gsql]
-REVOKE PRIVILEGE UPDATE_DATA ON EDGE Social.Friendship FROM role1, role2
+REVOKE UPDATE ON EDGE Friendship IN GRAPH Social FROM role1, role2
 
 == Revoke attribute-level privileges
-You can revoke certain privileges from the attribute level with the `REVOKE PRIVILEGE` command.
+You can revoke certain privileges from the attribute level with the Object-based revoke privilege command.
 
-If the privilege has already been granted on the global scope, on the graph level, or type level, then revoking the privilege on the type level does not revoke the privilege in effect.
+Revoking a privilege at the type does not affect privileges granted at higher levels (e.g., global, graph level or type level). For instance, if a role has `READ_DATA`` on a vertex type globally, revoking this privilege at the attribute level will not prevent the role from accessing the vertex attribute type.
 
 === Syntax
 [source.wrap,gsql]
-REVOKE PRIVILEGE privilege_name1 , privilege_name2... ON VERTEX/EDGE <graph_name>.<type.name> (<attribute1>, <attribute2> ...) FROM <role_name> , <role_name2>...
+REVOKE <privilege_name1> (, privilege_name2)* ON [VERTEX|EDGE] <type_name> ATTRIBUTE <attribute1> (, <attribute2>)* FROM <role_name> (, <role_name2>)*
 
 === Required privilege
 `WRITE_ROLE` and the privilege being granted
@@ -338,7 +331,7 @@ The following command revokes `CREATE_DATA` and `UPDATE_DATA` on the `startdata`
 If the user doesn't have these privileges, they are not able to create new edges of type `Friendship`.
 
 [source.wrap,gsql]
-REVOKE PRIVILEGE CREATE_DATA, UPDATE_DATA ON EDGE Social.Friendship (startdata) FROM role1, role2
+REVOKE CREATE, UPDATE ON EDGE Friendship ATTRIBUTE startdata IN GRAPH Social FROM role1, role2
 
 == Drop a role
 

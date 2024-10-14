@@ -10,6 +10,11 @@ You should only consider removing a node when the node has failed.
 Removing a node from a cluster does not redistribute the data in the cluster.
 If all nodes are working in a cluster, and you want to reduce the size of the cluster, xref:shrink-a-cluster.adoc[shrink the cluster] instead.
 
+[NOTE]
+====
+Removal of failed nodes will disable xref:region-aware.adoc[region-aware].
+====
+
 == Remove a single node
 If only a single node fails in a HA cluster, you can always remove the node without incurring any data loss.
 
@@ -52,7 +57,7 @@ NOTE: If you experience multi-node failures without modifying the default config
 You can check service status by running xref:system-management:management-with-gadmin.adoc#_gadmin_status[`gadmin status -v`].
 If a service is down, and you cannot restart it, please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
 * There is at least 1 complete instance of the data.
-In other words, at least one replica does have a failed node.
+In other words, at lease one live replica for each partition.
 
 === Procedure
 To remove failed nodes from a cluster, run the following command.

@@ -331,7 +331,7 @@ Here are some important terms and details for object-based privileges:
 They can be things like `GLOBAL`, `VERTEX`, `EDGE`, etc.
 * *Privilege Scopes*: Define where these privileges apply, like `GRAPH`, `PACKAGE`, or `GLOBAL`.
 
-To see a complete list, as well as the xref:tigergraph-server:reference:list-of-privileges.adoc[legacy privilege syntax] that the object-base privilege relate to, go to the xref:rbac-row-policy/row-policy-privlages-table.adoc[].
+To see a complete list, as well as the xref:tigergraph-server:reference:list-of-privileges.adoc[legacy privilege syntax] that the object-base privilege relate to, go to the xref:rbac-row-policy/row-policy-privileges-table.adoc[].
 
 === Privilege Commands
 
@@ -340,13 +340,13 @@ To grant or revoke object-based privileges, use these commands.
 .Ex. Granting Privileges:
 [console, gsql]
 ----
-GRANT privilegeNames ON privilegeObjects IN privilegeScopes TO roleNames
+GRANT privilegeNames ON privilegeObjects IN privilegeScopes TO userOrRoleNames
 ----
 
 .Ex. Revoking Privileges:
 [console, gsql]
 ----
-REVOKE privilegeNames ON privilegeObjects IN privilegeScopes FROM roleNames
+REVOKE privilegeNames ON privilegeObjects IN privilegeScopes FROM userOrRoleNames
 ----
 
 For users that grant privileges in the legacy privilege syntax, transitioning to object-based privilege syntax is simple.

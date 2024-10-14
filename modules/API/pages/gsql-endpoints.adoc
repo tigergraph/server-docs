@@ -1,0 +1,6432 @@
+
+= GSQL Endpoints
+:pp: {plus}{plus}
+:description: A set of GSQL REST API endpoints about vertex in TigerGraph server.
+//:page-aliases: built-in-endpoints.adoc
+:toc:
+
+This page describes the REST API endpoints accessible on a TigerGraph server. Assume all the sample requests and sample response are based on this sample schema (graph name is "financialGraph"):
+
+NOTE: For comparison, you can refer to the xref:built-in-endpoints.adoc[REST endpoints for TigerGraph 3.x].
+
+.Sample schema
+image::schema Graph GSQL.png[]
+
+
+== Schema
+
+=== show vertices
+
+`GET /gsql/v1/schema/vertices`
+
+This endpoint is used to show all the local vertices on a graph or show all the global vertices
+
+==== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph for which vertices should be displayed. If not provided, it indicates that all global vertices should be shown.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"Account"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"City"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"Phone"}]}
+----
+--
+====
+
+'''
+=== show a vertex
+
+`GET /gsql/v1/schema/vertices/{vertexName}`
+
+This endpoint is used to show a local/global vertex.
+
+==== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph for which the vertex should be displayed. If not provided, it indicates that the global vertex should be shown.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"Account"}}
+----
+--
+====
+
+'''
+
+=== create vertex using gsql command
+
+`POST /gsql/v1/schema/vertices`
+
+This endpoint is used to create global vertices using json contains gsql command
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| no
+| Indicates whether to use the GSQL command for creation. Here must be set to true. The request body should contain the GSQL command within the JSON object.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully create vertices: [UserA, UserB]"}
+----
+--
+====
+
+
+'''
+
+=== add global vertices to a local graph
+
+`POST /gsql/v1/schema/vertices`
+
+This endpoint is used to add existing global vertices to a local graph
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph to which the global vertices should be added. Here must provide.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph" -d '{"addVertices":["UserA","UserB"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully add vertices: [UserA, UserB] on graph financialGraph"}
+----
+--
+====
+
+'''
+=== create vertices (create vertices in global level)
+
+`POST /gsql/v1/schema/vertices`
+
+This api is used to create global vertices using json
+
+==== Parameters:
+
+None
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices" -d '{
+    "createVertices": [
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User5"
+        },
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User4"
+        }
+    ]
+}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully create vertices: [User5, User4]"}
+----
+--
+====
+
+'''
+
+=== drop vertices
+
+`DELETE /gsql/v1/schema/vertices`
+
+This endpoint is used to drop local vertices on specific graph or drop global vertices.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `vertex`
+| yes
+| Specifies the vertex types to be deleted. If there are multiple vertex types, separate them with commas. Use "all" to delete all vertices.
+
+| `graph`
+| no
+| Specifies the graph from which vertices should be deleted. If not provided, it indicates that global vertices should be dropped.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?vertex=user5,user4"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Vertices [user5, user4] deleted successfully."}
+----
+--
+====
+
+
+'''
+
+=== drop a vertex
+
+`DELETE /gsql/v1/schema/vertices/{vertexName}`
+
+This endpoint is used to drop a local/global vertex.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph from which the vertex should be deleted. If not provided, it indicates that a global vertex should be dropped.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/userB?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Vertices [userB] deleted successfully."}
+----
+--
+====
+
+
+'''
+
+=== update a vertex attribute
+
+`PUT /gsql/v1/schema/vertices/{vertexName}`
+
+This endpoint is used to update a vertex attributes.
+
+==== Parameters:
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph in which the vertex attributes should be updated. If not provided, it indicates that the attributes of a global vertex should be updated.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PUT -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph" -d '{"dropAttributes":["isBlocked"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully update vertex: Account"}
+----
+--
+====
+
+
+'''
+
+=== show all indexes
+`GET /gsql/v1/schema/indexes`
+
+This endpoint is used to display all indexes within a specific graph or across all global vertices.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph for which to display indexes. If not provided, all indexes on global vertices will be shown.
+|===
+
+==== Example
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"Account":[{"index":"index_type_name","attribute":"name"}]}]}
+----
+--
+====
+
+
+'''
+=== show an index
+`GET /gsql/v1/schema/indexes/{indexName}`
+
+This endpoint endpoint is used to retrieve information about a specific index.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph in which the index is located.
+|===
+
+==== Example
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/index_type_name?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"index":"index_type_name","attribute":"name"}}
+----
+--
+====
+
+
+'''
+=== create indexes
+`POST /gsql/v1/schema/indexes`
+
+This endpoint is used to create indexes.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph where the indexes should be created. If not provided, the indexes will be created in the default graph.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph" -d '{"vertex":"Account","addIndexAttributes":[{"indexName":"nameIndex","attributeName":"name"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully add index nameIndex on attribute name\n"}
+----
+--
+====
+
+
+'''
+=== drop an index
+`DELETE /gsql/v1/schema/indexes/{indexName}`
+
+This endpoint is used to drop an index.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `vertex`
+| yes
+| Specifies the vertex from which to drop the index
+
+| `graph`
+| no
+| Specifies the graph from which the index should be dropped. If not specified, the index will be dropped from the global vertex.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/nameIndex"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully drop index"}
+----
+--
+====
+
+
+'''
+=== drop indexes
+`DELETE /gsql/v1/schema/indexes`
+
+This endpoint is used to drop indexes.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `vertex`
+| yes
+| Specifies the vertex on which to drop the indexes.
+
+| `index`
+| yes
+| Specifies the indexes to drop (separated by commas)
+
+| `graph`
+| no
+| Specifies the graph from which the indexes should be dropped.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph&vertex=Account&index=nameIndex"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully drop index"}
+----
+--
+====
+
+
+'''
+=== get all edges
+
+`GET /gsql/v1/schema/edges`
+
+This endpoint is used to retrieve all local edges within a specific graph or retrieve all global edges.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph from which to retrieve the edges. If not provided, means to get all global edges.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"IsDirected":true,"ToVertexTypeName":"Account","Config":{"REVERSE_EDGE":"Transfer_Reverse"},"DiscriminatorCount":1,"Attributes":[{"AttributeType":{"Name":"DATETIME"},"IsDiscriminator":true,"AttributeName":"date"},{"AttributeType":{"Name":"UINT"},"AttributeName":"amount"}],"FromVertexTypeName":"Account","CompositeDiscriminator":["date"],"Name":"Transfer"},{"IsDirected":false,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"},{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"}]}
+----
+--
+====
+
+'''
+=== retrieve a specific edge type info
+
+`GET /gsql/v1/schema/edges/{edgeName}`
+
+This endpoint is used to retrieve information about a specific edge type within a local graph, or retrieve information about a specific global edge type.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph in which the edge type is located. If not provided, it retrieves the global edge type information.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/isLocatedIn?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"}}
+----
+--
+====
+
+
+'''
+
+=== create edges using gsql command statement
+
+`POST /gsql/v1/schema/edges`
+
+This endpoint is used to create global edges using gsql command statement.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| no
+| Indicates whether to use the GSQL command for creating edges. Here must set to true. The request body should contain the GSQL command within the JSON object.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from Account, to City, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from Account, to Phone, attr2 float)"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully create edges: [edge1, edge2]"}
+----
+--
+====
+
+
+'''
+
+=== add global edges to graph using json format
+
+`POST /gsql/v1/schema/edges`
+
+This endpoint is used to add global edges to graph using json format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph to which the global edges will be added. Here must provide.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph" -d '{"addEdges":["has_account"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":true,"message":"Failed to create edges [has_account]. Semantic Check Fails: The schema change job tries to add edge has_account to graph financialGraph, but the FROM vertex type user does not exist on the graph.\n"}
+----
+--
+====
+
+'''
+=== create global edges using json format
+
+`POST /gsql/v1/schema/edges`
+
+This endpoint is used to create global edges using json format.
+
+==== Parameters:
+
+None
+
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges" -d ' {"createEdges":["IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully create edges: [isLocatedIn, hasPhone]"}
+----
+--
+====
+
+'''
+
+=== drop edges from graph
+
+`DELETE /gsql/v1/schema/edges`
+
+This endpoint is used to drop edges from a graph or drop global edges.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `edge`
+| yes
+| Specifies the edge types to be deleted. If there are multiple edge types, separate them with a comma. Use 'all' to drop all edges.
+
+
+| `graph`
+| no
+| Specifies the graph from which the edges will be deleted. If not provided, it means the operation will drop global edges.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?edge=hasPhone&graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Edges [hasPhone] deleted successfully."}
+----
+--
+====
+
+'''
+=== drop an edge
+
+`DELETE /gsql/v1/schema/edges/{edgeName}`
+
+This endpoint is used to drop a local/global edge.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph from which the edge will be deleted. If not provided, it means the operation will drop a global edge.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/hasPhone?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Edges [hasPhone] deleted successfully."}
+----
+--
+====
+
+'''
+=== update attribute in edge
+
+`PUT /gsql/v1/schema/edges/{edgeName}`
+
+This endpoint is used to update attributes in edge.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| Specifies the graph in which the edge's attributes will be updated. If not provided, it means the operation will update attributes on the global level.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PUT -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/Transfer?graph=financialGraph" -d '{"dropAttributes":["date"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully update edge: Transfer"}
+----
+--
+====
+
+
+'''
+=== show all graphs info that only contains the name of vertices and edges
+
+`GET /gsql/v1/schema/graphs`
+
+This endpoint is used to show all graphs info only containing names of vertices and edges.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/graphs"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"graphs":[{"graphName":"financialGraph","vertices":["Account","City","Phone"],"edges":["Transfer","Transfer_Reverse","hasPhone","isLocatedIn"]}],"error":false,"message":""}
+----
+--
+====
+
+'''
+=== show one graph detailed info with given graph name
+
+
+`GET /gsql/v1/schema/graphs`
+
+This endpoint is used to show one graph detailed info with given graph name.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Specifies for which graph the schema details to be shown.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/graphs?graphName=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+
+{"error":false,"message":"","results":{"GraphName":"financialGraph","VertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Account"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"City"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"},{"AttributeType":{"Name":"STRING"},"AttributeName":"number"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"id"},"Name":"Phone"}],"EdgeTypes":[{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},{"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}, {"IsDirected":false,"ToVertexTypeName":"Account","Config":{"REVERSE_EDGE":"Transfer_Reverse"},"Attributes":[{"AttributeType":{"Name":"UINT"},"AttributeName":"amount"},{"AttributeType":{"Name":"DATETIME"},"AttributeName":"date"}],"FromVertexTypeName":"Account","Name":"Transfer"}]}}
+
+----
+--
+====
+
+'''
+
+
+=== create one graph using gsql command
+
+`POST /gsql/v1/schema/graphs`
+
+This endpoint is used to create one graph using gsql command.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| no
+| default: false. Indicates whether to use the GSQL command for creation. Here must be set to true. The request body should contain the GSQL command within the JSON object.
+
+| `graphName`
+| yes
+| Specifies the name of the graph to be created.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?gsql=true" -d '{"gsql": "create graph g(*)"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created graph: [g]."}
+----
+--
+====
+
+'''
+
+=== create one graph using JSON format
+
+`POST /gsql/v1/schema/graphs`
+
+This endpoint is used to create one graph using JSON format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| no
+| default: false. Indicates whether to use a GSQL command for graph creation. Here must set to false to use JSON format.
+
+| `graphName`
+| yes
+| Specifies the name of the graph to be created.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?graphName=gtest&gsql=false
+" -d '{"VertexTypes":["Account","Phone"], "EdgeTypes":["hasPhone"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created graph: [gtest]."}
+----
+--
+====
+
+'''
+
+=== drop one graph
+
+`DELETE /gsql/v1/schema/graphs/{graphName}`
+
+This endpoint is used to drop one graph.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `cascade`
+| no
+| default: `false`. If set to `true`, it will automatically drop the queries and loading jobs associated with this graph. If set to `false`, the operation will fail if there are any existing queries or loading jobs related to the graph.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/financialGraph?cascade=true"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped graph: financialGraph."}
+----
+--
+====
+
+'''
+
+=== drop graphs with given names
+
+`DELETE /gsql/v1/schema/graphs`
+
+This endpoint is used to drop graphs with given names.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graphNames`
+| yes
+| Specifies the names of the graphs to be dropped, separated by commas. Use 'all' to drop all graphs.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs?graphNames=financialGraph,recommend"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped graphs: [financialGraph, recommend]."}
+----
+--
+====
+
+'''
+=== drop local/global schema change jobs
+
+`DELETE /gsql/v1/schema/jobs`
+
+This endpoint is used to drop local/global schema change jobs.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobName`
+| yes
+| Specifies the schema jobs to drop, separated by commas.
+
+| `graph`
+| no
+| Specifies the graph whose jobs are to be dropped. If not provided, means drop the global schema change jobs.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs?jobName=test1,test2&graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped schema change jobs: [test1, test2]."}
+----
+--
+====
+
+
+'''
+=== create local/global schema change job using gsql command
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+This endpoint is used to create local/global schema change job using gsql command.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `gsql`
+| no
+| Indicates whether to use the GSQL command for creation. Here must be set to true. The request body should contain the GSQL command within the JSON object.
+
+| `graph`
+| no
+| Which graph to create schema change. Global schema change doesn't need provide.
+
+| `type`
+| no
+| When creating a global schema change job, provide `global`. This is not required for local schema change jobs.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs/test3?gsql=true&type=global" -d ' {"gsql" : "create global schema_change job test3 {add vertex website to graph financialGraph;}"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created global schema change job: [test3]."}
+----
+--
+====
+
+
+'''
+=== create global schema change job using json
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+This endpoint is used to create global schema change job using json.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4" -d '{"graphs": [{"graphName":"financialGraph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created global schema change job: [test4]."}
+----
+--
+====
+
+
+'''
+=== create local schema change job using json
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+This endpoint is used to create local schema change job using json.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| The graph whose schema change job is to be created. Here should provide.
+|===
+
+==== Example:
+Assuming we already have the following vertices and edges in the local graph financialGraph:
+
+[source]
+----
+VERTEX LocalAccount (
+    name STRING PRIMARY KEY,
+    isBlocked BOOL
+)
+
+VERTEX LocalCity (
+    name STRING PRIMARY KEY
+)
+
+VERTEX LocalPhone (
+    name STRING PRIMARY KEY,
+    isBlocked BOOL
+)
+
+DIRECTED EDGE LocalTransfer (
+    FROM Account,
+    TO Account,
+    DISCRIMINATOR(date DATETIME),
+    amount UINT
+) WITH REVERSE_EDGE="LocalTransfer_Reverse"
+
+UNDIRECTED EDGE LocalhasPhone (
+    FROM Account,
+    TO Phone
+)
+
+DIRECTED EDGE LocalisLocatedIn (
+    FROM Account,
+    TO City
+)
+----
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph" -d '
+{
+    "dropVertexTypes": [
+        "LocalPhone"
+    ],
+    "alterVertexTypes": [
+        {
+            "name": "LocalAccount",
+            "addAttributes": [
+                {
+                    "DefaultValue": "defaultValue1",
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "attr2"
+                }
+            ],
+            "addIndexAttributes": [
+                {
+                    "indexName": "ppIndex",
+                    "attributeName": "name"
+                }
+            ]
+        }
+    ],
+    "addVertexTypes": [
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User5"
+        },
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User4"
+        }
+    ],
+    "addEdgeTypes": [
+        {
+            "IsDirected": true,
+            "ToVertexTypeName": "User4",
+            "Config": {
+
+            },
+            "IsLocal": true,
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "DATETIME"
+                    },
+                    "AttributeName": "live_date"
+                }
+            ],
+            "FromVertexTypeName": "User5",
+            "Name": "edge1"
+        }
+    ],
+    "dropEdgeTypes": [
+        "LocalhasPhone"
+    ],
+    "alterEdgeTypes": [
+        {
+            "dropAttributes": [
+                "amount"
+            ],
+            "addAttributes": [
+                {
+                    "DefaultValue": "defaultValue1",
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "attr2"
+                }
+            ],
+            "name": "LocalTransfer"
+        }
+    ]
+}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created schema change job: [test5]."}
+----
+--
+====
+
+'''
+=== get a specific local/global schema change job
+
+`GET /gsql/v1/schema/jobs/{jobName}`
+
+This endpoint is used to retrieve a specific local/global schema change job.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+|  no
+| the graph whose schema change job to show. don't provide this if get a global schema change job.
+
+| `json`
+| yes
+| Set to `true` to receive the response in JSON format; otherwise, the response will be in text format.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/job12?json=true&graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"job12":{"dropVertexTypes":[],"addTags":[],"name":"job12","alterVertexTypes":[],"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"LocalAccount"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"LocalCity"},{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},{"AttributeType":{"Name":"BOOL"},"AttributeName":"isBlocked"}],"PrimaryId":{"IsUsingNewSyntax":true,"AttributeType":{"Name":"STRING"},"AttributeName":"name","IsPrimaryKey":true},"Name":"LocalPhone"}],"addEdgeTypes":[{"IsDirected":true,"ToVertexTypeName":"Account","Config":{"REVERSE_EDGE":"LocalTransfer_Reverse"},"DiscriminatorCount":1,"Attributes":[{"AttributeType":{"Name":"DATETIME"},"IsDiscriminator":true,"AttributeName":"date"},{"AttributeType":{"Name":"UINT"},"AttributeName":"amount"}],"FromVertexTypeName":"Account","Name":"LocalTransfer"},{"IsDirected":false,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"LocalhasPhone"},{"IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"LocalisLocatedIn"}],"dropEdgeTypes":[],"graph":"financialGraph","alterEdgeTypes":[],"dropTags":[]}}}
+----
+--
+====
+
+'''
+=== run global schema change job directly
+
+`POST /gsql/v1/schema/change`
+
+This endpoint is used to run global schema change job directly.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/change" -d '
+ {"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User5"},
+{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User4"}
+]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Global schema change runs successfully"}
+----
+--
+====
+
+'''
+=== run the schema change job directly
+
+`POST /gsql/v1/schema/change`
+
+This endpoint is used to run the schema change job directly.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| which graph to run the local schema change job on, run local schema change need provide this. If not provided, means running global schema change job.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=financialGraph" -d '
+{
+    "dropVertexTypes": [],
+    "alterVertexTypes": [
+        {
+            "name": "LocalAccount",
+            "dropAttributes": [],
+            "addAttributes": [
+                {
+                    "DefaultValue": "defaultValue1",
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "attr2"
+                }
+            ],
+            "dropIndexAttributes": [],
+            "addIndexAttributes": [
+                {
+                    "indexName": "xIndex",
+                    "attributeName": "name"
+                },
+                {
+                    "indexName": "yIndex",
+                    "attributeName": "isBlocked"
+                }
+            ]
+        }
+    ],
+    "addVertexTypes": [
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User5"
+        },
+        {
+            "Config": {
+                "STATS": "OUTDEGREE_BY_EDGETYPE"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "name"
+                }
+            ],
+            "PrimaryId": {
+                "AttributeType": {
+                    "Name": "UINT"
+                },
+                "AttributeName": "user_id"
+            },
+            "Name": "User4"
+        }
+    ],
+    "addEdgeTypes": [
+        {
+            "IsDirected": true,
+            "ToVertexTypeName": "User4",
+            "Config": {},
+            "IsLocal": true,
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "DATETIME"
+                    },
+                    "AttributeName": "live_date"
+                }
+            ],
+            "FromVertexTypeName": "User5",
+            "Name": "edge1"
+        }
+    ],
+    "dropEdgeTypes": [],
+    "alterEdgeTypes": [
+        {
+            "dropAttributes": ["isBlocked"],
+            "addAttributes": [
+                {
+                    "DefaultValue": "defaultValue1",
+                    "AttributeType": {
+                        "Name": "STRING"
+                    },
+                    "AttributeName": "attr2"
+                }
+            ],
+            "name": "LocalPhone"
+        }
+    ]
+}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Schema change job runs successfully"}
+----
+--
+====
+
+'''
+=== run an existing schema change job
+
+`POST /gsql/v1/schema/jobs/{jobName}`
+
+This endpoint is used to run an existing schema change job.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| which graph to run the schema change job on. If not provided, means run the global schema change job.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Schema change job run successfully!"}
+----
+--
+====
+
+'''
+=== get schema change jobs
+
+`GET /gsql/v1/schema/jobs`
+
+This endpoint is used to get all local/global schema change jobs.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| The graph whose schema change job to show. If not provided, means to get all the global schema change job.
+
+| `json`
+| yes
+| Set to `true` means response in JSON format; otherwise, the response will be in text format.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/jobs?graph=financialGraph"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"job12":"CREATE SCHEMA_CHANGE JOB job12 FOR GRAPH financialGraph {\n      ADD VERTEX LocalAccount(name STRING primary key, isBlocked BOOL) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD VERTEX LocalCity(name STRING primary key) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD VERTEX LocalPhone(name STRING primary key, isBlocked BOOL) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD DIRECTED EDGE LocalTransfer(FROM Account, TO Account, DISCRIMINATOR( date DATETIME), amount UINT) WITH REVERSE_EDGE=\"LocalTransfer_Reverse\";\n      ADD UNDIRECTED EDGE LocalhasPhone(FROM Account, TO Phone);\n      ADD DIRECTED EDGE LocalisLocatedIn(FROM Account, TO City);\n    }\n"},{"test5":"CREATE SCHEMA_CHANGE JOB test5 {\n      ADD VERTEX User5(PRIMARY_ID user_id UINT, name STRING) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD VERTEX User4(PRIMARY_ID user_id UINT, name STRING) WITH STATS=\"OUTDEGREE_BY_EDGETYPE\";\n      ADD DIRECTED EDGE edge1(FROM User5, TO User4, live_date DATETIME);\n      DROP VERTEX LocalPhone;\n      DROP EDGE LocalhasPhone;\n      ALTER VERTEX LocalAccount ADD ATTRIBUTE (attr2 STRING DEFAULT \"defaultValue1\");\n      ALTER VERTEX LocalAccount ADD INDEX ppIndex ON (name);\n      ALTER EDGE LocalTransfer ADD ATTRIBUTE (attr2 STRING DEFAULT \"defaultValue1\");\n      ALTER EDGE LocalTransfer DROP ATTRIBUTE (amount);\n    }\n"}]}
+----
+--
+====
+
+'''
+
+== Loading job
+
+=== get loading job names
+
+`GET /gsql/v1/loading-jobs`
+
+This endpoint is used to get all loading job names in a graph.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the loading job names of which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","jobNames":["incidents_fraud_report_company_csv"]}
+----
+--
+====
+
+'''
+
+=== create a loading job
+
+`POST /gsql/v1/loading-jobs`
+
+This endpoint is used to create a new loading job
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| create loading job of which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph' -d '<loading job statement>'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created loading job: <jobName>"}
+----
+--
+====
+
+'''
+
+=== upload a loading job
+
+`PUT /gsql/v1/loading-jobs`
+
+This endpoint is used to update an existing loading job.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| update loading job of which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph' -d '<loading job statement>'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created loading job: <jobName>"}
+----
+--
+====
+
+'''
+
+=== get loading job info
+
+`GET /gsql/v1/loading-jobs/{jobName}`
+
+This endpoint is used to get a specific loading job's information.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| get the loading job information under which graph
+
+| `verbose`
+| no
+| default: false, true means show verbose version, true means show concise version.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: applicaiton/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/incidents_fraud_report_company_csv?graph=financialGraph&json=[true/false]'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+Default behavior:
+json=false:
+{"error":false,"message":"","results":{"jobName":"incidents_fraud_report_company_csv","jobContent":"this is jobContent"}}
+
+json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","Headers":{"f1_header":["report_id","report_updated_at","report_status","report_type","report_source","report_data_source","fraud_type","tax_id"],"f1_header_company":["tax_id","report_updated_at","tax_status"]},"JobName":"incidents_fraud_report_company_csv","FileNames":{"f1":""},"LoadingStatements":[{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"report_status"},{"Type":"SrcColName","Value":"report_type"},{"Type":"SrcColName","Value":"report_source"},{"Type":"SrcColName","Value":"report_data_source"},{"Type":"SrcColName","Value":"fraud_type"}],"TargetName":"FraudReport","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header_company"},"Mappings":[{"Type":"SrcColName","Value":"tax_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"tax_status"}],"TargetName":"Company","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Edge","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"tax_id"}],"TargetName":"HasIncident","FromVertexType":"FraudReport","ToVertexType":"Company","DataSource":{"Type":"FileVar","Value":"f1"}}]}}
+----
+--
+====
+
+'''
+
+=== run loading job
+
+`POST /gsql/v1/loading-jobs/run`
+
+This endpoint is used to run a loading job.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| run the loading job under which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/loading-jobs/run?graph=financialGraph'
+payload could be one of these:
+kafka loading: [{"name":"load_kafka","dataSources":[{"filename":"f1","name":"k1","path":"","config":{"topic":"regress7715","partition_list":[{"start_offset":-2,"partition":0}]}}],"streaming":false}]
+s3: [{"name":"load_comment","streaming":true,"dataSources":[{"filename":"file_Comment","name":"s1","path":"s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment"}]}]
+file loading: [{"name":"load_job","sys.data_root":"/tmp","dataSources":[{"filename":"f","path":"./data","name":"file"}]}]
+full parameters: [{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1,"dataSources":[{"filename":"f","path":"./data","name":"file"}]}]
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully ran loading job(s): [jobName]", "jobIds": ["jobId"]}
+----
+--
+====
+
+'''
+
+=== drop a loading job
+
+`DELETE /gsql/v1/loading-jobs/{jobName}`
+
+This endpoint is used to drop a loading job by name.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| drop the loading job under which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/loading-jobs/jobName?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully drop loading job 'jobName'."}
+----
+--
+====
+
+'''
+
+=== abort loading job(s)
+
+`GET /gsql/v1/loading-jobs/abort`
+
+This endpoint is used to abort mutilple running loading jobs.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| abort the loading job under which graph
+
+| `jobIds`
+| yes
+| the loading job Ids
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financialGraph&jobIds=jobId1'
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financialGraph&jobIds=jobId1&isPause=true'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+default behavior: {"error": false,"message":"Successfully dropped loading job(s): [jobId1]."}
+{"error": false,"message":"Successfully paused loading job(s): [jobId1]."}
+----
+--
+====
+
+'''
+
+=== abort one loading job
+
+`GET /gsql/v1/loading-jobs/abort/{jobId}`
+
+This endpoint is used to abort a one loading job by job Id.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| abort the loading job under which graph
+
+| `jobId`
+| yes
+| the loading job Id
+|===
+
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/jobId1?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+default behavior: {"error": false,"message":"Successfully dropped loading job(s): [jobId1]."}
+{"error": false,"message":"Successfully paused loading job(s): [jobId1]."}
+----
+--
+====
+
+'''
+
+=== resume loading job
+
+`GET /gsql/v1/loading-jobs/resume/{jobId}`
+
+This endpoint is used to resume a paused loading job by job Id.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobId`
+| yes
+| the loading job Id
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/resume/jobId1'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully resumed loading job(s): [jobId1]."}
+----
+--
+====
+
+'''
+
+=== get loading job status
+
+`GET /gsql/v1/loading-jobs/status`
+
+This endpoint is used to get multiple loading jobs status.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobIds`
+| yes
+| the loading job Ids
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/jobIds=financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financialGraph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
+----
+--
+====
+
+'''
+
+=== get one loading job status
+
+`GET /gsql/v1/loading-jobs/status/{jobId}`
+
+This endpoint is used to get a loading job's status by job Id.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobId`
+| yes
+| the loading job Id
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financialGraph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
+----
+--
+====
+
+'''
+
+
+== Data source
+
+=== get a data source
+
+`GET /gsql/v1/data-sources/{dsName}`
+
+This endpoint is used to get a data source.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/data-sources/k1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"name":"k1","type":"KAFKA","content":{"broker":"kafka-0.tigergraph.com","kafka_config":{"security.protocol":"SSL"}}}}
+----
+--
+====
+
+'''
+
+=== get all data sources
+
+`GET /gsql/v1/data-sources`
+
+This endpoint is used to get all data sources.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/data-sources"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"name":"s1","belongTo":"empty_graph","type":"S3","content":{"access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":"","type":"s3"},"isLocal":true},{"name":"s2","belongTo":"person_movie","type":"S3","content":{"access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":"","type":"s3"},"isLocal":true},{"name":"k1","type":"KAFKA","content":{"broker":"kafka-0.tigergraph.com","kafka_config":{"security.protocol":"SSL"}},"isLocal":false}]}
+----
+--
+====
+
+
+'''
+=== update a data source
+
+`PUT /gsql/v1/data-sources`
+
+This endpoint is used to update a data source .
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to update. If not provided, means to update a global data source.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PUT 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/s5?graph=financialGraph" -d '{"name":"s5","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Data source s5 is created"}
+----
+--
+====
+
+'''
+=== create data source
+
+`POST /gsql/v1/data-sources`
+
+This endpoint is used to create a data source.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to create. If not provided, means to create a global data source.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources?graph=financialGraph" -d '{"name":"s4","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Data source s4 is created"}
+----
+--
+====
+
+'''
+=== drop one data source
+
+`DELETE /gsql/v1/data-sources/{dsName}`
+
+This endpoint is used to drop one data source.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| the graph whose data source to delete. If not provided, means to delete a global data source.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/k1?graph=financialGraph" -d '{"error":false,"message":"Data source k1 is dropped."}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Data source k1 is dropped."}
+----
+--
+====
+
+'''
+=== grant one data source
+
+`POST /gsql/v1/data-sources/grant`
+
+This endpoint is used to grant one data source.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/grant" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully grant datasource k1 to the graph(s) [empty_graph, person_movie]"}
+----
+--
+====
+
+'''
+=== revoke datasource
+
+`POST /gsql/v1/data-sources/revoke`
+
+This endpoint is used to revoke data source.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/revoke" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully revoke datasource k1 from graph(s) [empty_graph, person_movie]"}
+----
+--
+====
+
+'''
+=== drop all data source
+
+`DELETE /gsql/v1/data-sources/dropAll`
+
+This endpoint is used to drop all data source.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| If given, will delete all the data sources used by this graph. otherwise will delete all the global data sources.
+|===
+
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/dropAll"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"All data sources is dropped successfully."}
+----
+--
+====
+
+'''
+=== get the sample data of S3 file.uris or local files
+
+`POST /gsql/v1/sample-data`
+
+This endpoint is used to get the sample data of S3 file.uris or local files.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/sample-data" -d '
+ {
+  "graphName": "ldbc_snb",
+  "dataSource": "adsafsfsfsfds",
+  "type": "s3",
+  "path": "s3a://gsql-sample-data/test-json/test.json",
+  "dataFormat": "json",
+  "parsing": {
+    "fileFormat": "none",
+    "eol": "\\n"
+  },
+  "filling": "N/A",
+  "size": 10
+}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+    "error": false,
+    "message": "",
+    "results": {
+        "data": [
+            {
+                "age": 40,
+                "gender": "male",
+                "name": "Tom",
+                "state": "ca"
+            },
+            {
+                "age": 34,
+                "gender": "male",
+                "name": "Dan",
+                "state": "ny"
+            },
+            {
+                "age": 25,
+                "gender": "female",
+                "name": "Jenny",
+                "state": "tx"
+            },
+            [
+                {
+                    "age": 28,
+                    "gender": "male",
+                    "name": "Kevin",
+                    "state": "az"
+                },
+                {
+                    "age": 22,
+                    "gender": "female",
+                    "name": "Amily",
+                    "state": "ca"
+                },
+                {
+                    "age": 20,
+                    "gender": "female",
+                    "name": "Nancy",
+                    "state": "ky"
+                }
+            ],
+            {
+                "age": 26,
+                "gender": "male",
+                "name": "Jack",
+                "state": "fl"
+            },
+            {
+                "age": 8,
+                "gender": "male",
+                "name": "a",
+                "state": "OR"
+            },
+            {
+                "age": 57,
+                "gender": "male",
+                "name": "aa",
+                "state": "MA"
+            },
+            {
+                "age": 25,
+                "gender": "male",
+                "name": "aaa",
+                "state": "MI"
+            },
+            {
+                "age": 71,
+                "gender": "female",
+                "name": "ab",
+                "state": "WY"
+            },
+            {
+                "age": 71,
+                "gender": "female",
+                "name": "abandoned",
+                "state": "KS"
+            }
+        ],
+        "header": [],
+        "json": true
+    }
+}
+----
+--
+====
+
+'''
+=== get all buckets of given S3 data source
+
+`GET /gsql/v1/list-buckets/{s3Name}`
+
+This endpoint is used to get all buckets of given S3 data source.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-buckets/abcd"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+"error":false,"message":"","results":["acxiom2019","antifraudtg","aws-cloudtrail-logs-966275272565-4bde22f6","aws-glue-assets-966275272565-us-east-1","aws-logs-966275272565-us-east-1","bofa-louvain","ces-bucket-2","ces-neptune-bucket","ces-new-bucket","cf-templates-58ygac5qoly7-us-east-1","cloud-gbar-test","config-bucket-966275272565","databricks-workspace-stack-aa423-lambdazipsbucket-xjxhu6ikq892","databricks-workspace-stack-f31e4-bucket","databricks-workspace-stack-f31e4-lambdazipsbucket-ucd8ilhr3buv","databricks-workspace-stack-lambdazipsbucket-1qcpzmo9f4qzv","databricks-workspace-stack-lambdazipsbucket-1tycaofagn975","db-0cb8f9da9d4e67f9345947c4c54a5c3e-s3-root-bucket","db-81dc2edb4436079cea7c8c522f2ca24c-s3-root-bucket","db-ed2852b62420a6b838035944365a583a-s3-root-bucket","docker-image-store","docker-registry-backup","faerskit","faq.graphtiger.com","fareshealthcare","files.graphtiger.com","finfraud-demo-files","gbar-test","graphsql","graphsql-ctrip","graphsql-download","graphsql-elb-log","graphsql-eric-elb-log","graphsql-s3download","graphsql-test","graphsql-testdrive","graphsql-web","graphsql-xyz","graphsql-yeepay","graphstudio-customerportal","graphstudio-s3-e2e-test","graphstudio-sample-data-e2e-test","gsql-sample-data","kafka-connector-experiment","ldbc1","like-elb-test","litong","loading-test","merklescience","movie-rec-demo","pmitigergraph","presalesdocs","presalestg","racsftp","release-download-access-log","release-package-stats","release.graphtiger.com","renmaitong","rhfraud1","rik-bucket1","robb-tg-finfraud","robb-tgload-data","s3-import-test","s3-loading-test","se.training.deepdive","stevefuller-db","tango-test","test-gbar","test-graphstudio-bucket","test-s3import-el","test-website.graphtiger.com","tg-app-team","tg-isgs","tg-it-resource","tigergraph-aws-usage","tigergraph-benchmark-dataset","tigergraph-build-artifacts","tigergraph-cloudphysics","tigergraph-customer-support","tigergraph-development-artifects","tigergraph-download-hk","tigergraph-engineering-development-packages","tigergraph-fs-data","tigergraph-gle-prebuild","tigergraph-gui-prebuild-package","tigergraph-kafka-prebuild-package","tigergraph-mcafee-dlp","tigergraph-misc","tigergraph-release-download","tigergraph-release-prebuild","tigergraph-release-replica","tigergraph-temporary-files","tigergraph-test-dataset","tigergraph-testdrive-testdata","tigergraph-training","traininggsql","twitter-graph-benchmark","urbana-docker-ws","vladsynthea","xandrlog"]}
+----
+--
+====
+
+'''
+=== get all files and directories under given S3 bucket path
+
+`GET /gsql/v1/list-files/{s3Name}`
+
+This endpoint is used to get all files and directories under given S3 bucket path.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| no
+| Uri of the data source. If not provide, list files under `/`
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-files/fl2323?path=s3a://import-test"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"results":{"folders":["test-folder"],"files":["chinese.csv","movies.csv","ratings.csv","ratings.tar","ratings.tar.gz","ratings.zip","中文®初めまして.csv"]}}
+----
+--
+====
+
+'''
+
+== Query
+
+=== install queries
+
+`GET /gsql/v1/queries/install`
+
+This api is used for installing queries
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| which graph to install queries
+
+| `queries`
+| yes
+| query names(join with `,` separated); value `*` or `all` mean all the queries.
+
+| `flag`
+| no
+| Possible values:
+`-single`: Install the query in single gpr mode.
+`-force`: Force the installation of the query.
+`-legacy`: Install the query in UDF mode.
+`-debug`: Present results contains debug info.
+`-cost`: Present results contains performance consumption.
+`-single` and `-legacy` cannot be used together. The other options can be combined.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=financialGraph1&queries=q1,q2&flag=-single"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+"requestId": ": "121212121331",
+"message": "Successfully submitted request",
+"startTime":  "2024-07-07T23:17:06.831474Z"
+}
+----
+--
+====
+
+'''
+
+===  check query install status
+
+`GET /gsql/v1/queries/install/{requestId}`
+
+This api is used for checking query install status
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install/121212121331"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+"error":false,
+"message":"Request 121212121331 is running",
+"requestId" : "121212121331",
+"startTime": "2024-07-07T23:17:06.831474Z"
+}
+----
+--
+====
+
+'''
+
+=== list query names
+
+`GET /gsql/v1/queries`
+
+This endpoint is used to get all query names of a graph.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/quries?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":["query1","query2"]}
+----
+--
+====
+
+'''
+
+=== create query
+
+`POST /gsql/v1/queries`
+
+This endpoint is used to create a query.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query created under which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/quries?graph=financialGraph'  -d 'create query q1 {...}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created queries: [q1].\n"}
+----
+--
+====
+
+'''
+
+=== drop query
+
+`DELETE /gsql/v1/queries`
+
+This endpoint is used to drop quries.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `query`
+| yes
+| the queries to be dropped
+
+| `graph`
+| yes
+| the queries dropped under which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/queries?query=q1&graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"failedToDrop":[],"dropped":["q1"],"error":false,"message":""}
+----
+--
+====
+
+'''
+
+=== get query content
+
+`GET /gsql/v1/queries/{queryName}`
+
+This endpoint is to get the content of a query by its name. Please note that calling this endpoint needs to set 'Content-Type: application/json' in header.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `queryName`
+| yes
+| the content of which query
+
+| `graph`
+| yes
+| the query under which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/queires/q1?graph=financialGraph
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"queryContent":"CREATE QUERY q1() { print 1;}","name":"test","syntax":"GSQL v2","error":false,"message":"","status":"VALID"}
+----
+--
+====
+
+'''
+
+=== run query
+
+`POST /gsql/v1/queires/{queryName}`
+
+The endpoint is used to run a query by its name.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `queryName`
+| yes
+| the query to run
+|===
+
+==== Example
+
+[,tabs]
+====
+
+Sample Query::
++
+--
+[source,bash]
+----
+CREATE QUERY q1(String param1) { print param1;}
+----
+--
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/queires/q1?graph=financialGraph
+-d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{"param1":"1"}}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"1":1}]}}
+----
+--
+====
+
+'''
+
+=== drop one query
+
+`DELETE /gsql/v1/queries/{queryName}`
+
+This endpoint is used to drop a query by its name.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `queryName`
+| yes
+| the query to drop
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/queires/q1?graph=financialGraph
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"failedToDrop":[],"dropped":["q1"],"error":false,"message":""}
+----
+--
+====
+
+'''
+
+=== interpret query
+
+`POST /gsql/v1/queries/interpret`
+
+This endpoint is used to intepret query. Please note that calling this endpont need to set 'Content-Type: text/plain' in header.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query interpreted under which graph
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"p1":["hello","world"]}]}
+----
+--
+====
+
+'''
+
+=== get query info
+
+`GET /gsql/v1/queries/info`
+
+This endpoint is used to get the query's information.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query under which graph
+
+| `query`
+| no
+| the query name
+
+| `status`
+| no
+| the query status
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/queries/info?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"graphUpdate":false,"installed":true,"endpoint":{"query":{"financialGraph":{"q1":{"GET/POST":{"graphUpdate":false,"summary":"This is query entrance","readDataList":{},"alternative_endpoint":"/query/q1","graph_name":"financialGraph","needReadRole":false,"executeGranted":false,"updateDataList":{},"enabled":true,"target":"GPE","deleteDataList":{},"libudf":"libudf-financialGraph-1","payload":[{"rule":"AS_JSON"},{"rule":"AS_QUERY_STRING"}],"function":"queryDispatcher","needCurrentRoles":false,"createDataList":{},"action":"query","executorList":[],"parameters":{"query":{"default":"q1","type":"STRING"}}}}}}},"code":"create query q1(){ print 1;}","callerQueries":[],"isACLSpecified":false,"name":"q1","syntax":"GSQL v2","installing":false,"enabled":true,"isHidden":false,"status":"VALID"}]}
+----
+--
+====
+
+'''
+
+=== get query signature
+
+`GET /gsql/v1/queries/signature`
+
+This endpoint is used to get query's signature by its name.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the query under which graph
+
+| `queryName`
+| no
+| the query name to get query signature
+
+| `interpret`
+| no
+| default: false, false means the query in compiled mode and true means the query in interpret mode
+|===
+
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X GET 'localhost:14240/gsql/v1/queries/signature?queryName=q1&graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"output":[{"1":"int"}],"input":[],"queryname":"q1","error":false,"message":"","version":{"schema":0,"edition":"ENTERPRISE_EDITION","api":"V2"}}
+----
+--
+====
+
+'''
+
+=== query semantic check
+
+`POST /gsql/v1/internal/check/query`
+
+This endpoint is used to query semantic check.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/internal/check/query' -d ' {"code":""}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"warnings":[],"errors":[]}
+----
+--
+====
+
+'''
+
+== Template query
+
+=== get all package names
+
+`GET /gsql/v1/packages`
+
+This endpoint is used to get all package names.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/packages
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":["gds","gds.community"]}
+----
+--
+====
+
+'''
+
+=== get package content
+
+`GET /gsql/v1/package/{packageName}`
+
+This endpoint is used to get package by its name.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/packages/gds.community
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"fullPackageName":"gds.community","functions":[],"templateQueries":["printVertex"],"subpackageNames":[]}}
+----
+--
+====
+
+'''
+
+=== create package
+
+`POST /gsql/v1/package/{packageName}`
+
+This endpoint is used to create package.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'localhost:14240/gsql/v1/packages/gds.commumity1
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created package: [gds.community1]."}
+----
+--
+====
+
+'''
+
+=== drop package
+
+`DELETE /gsql/v1/package/{packageName}`
+
+This endpoint is used to drop package by its name.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE 'localhost:14240/gsql/v1/packages/gds.commumity1
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped package: [gds.community1]."}
+----
+--
+====
+
+'''
+
+=== create function
+
+`POST /gsql/v1/package/function`
+
+This endpoint is used to create function
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'localhost:14240/gsql/v1/packages/function -d 'create function gds.community.func1 {<content>}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created function: [gds.community.func1]."}
+----
+--
+====
+
+'''
+
+=== delete function
+
+`DELETE /gsql/v1/package/{functionName}`
+
+This endpoint is used to delete function by its name.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE 'localhost:14240/gsql/v1/packages/function/gds.community.func1'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped function: [gds.community.func1]."}
+----
+--
+====
+
+'''
+
+=== create template query
+
+`POST /gsql/v1/package/template`
+
+This endpoint is used to create template query.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'localhost:14240/gsql/v1/packages/template' -d 'create template query gds.community.templateQuery1 {<content>}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created template query: [gds.community.templateQuery1]."}
+----
+--
+====
+
+'''
+
+=== drop template query
+
+`DELETE /gsql/v1/package/template/{queryName}`
+
+This endpoint is used to drop template query.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE 'localhost:14240/gsql/v1/packages/template/gds.community.templateQuery1'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped template query: [gds.community.templateQuery1]."}
+----
+--
+====
+
+'''
+
+=== import package
+
+`POST /gsql/v1/package/import/{packageName}`
+
+This endpoint is used to import package.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST 'localhost:14240/gsql/v1/packages/import/pkg'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully import package pkg."}
+----
+--
+====
+
+'''
+
+=== call template query
+
+`POST /gsql/v1/library/{functionName}`
+
+This endpoint is used to call template query.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| the function under which graph
+
+| `functionName`
+| yes
+| the function name to call
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/library/gds_community_printVertex_0000000000?graph=financialGraph' -d '{parameters: {"vertex": ""}}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"generatedQueryName":"gds_community_printVertex_0000000000","error":false,"message":"","results":{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"a":"3"}]}}
+----
+--
+====
+
+'''
+
+=== get template query info
+
+`GET /gsql/v1/library/{functionName}`
+
+This endpoint is used to get template query's information.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `functionName`
+| yes
+| the function name of the tempalte query
+
+| `isRegularExpression`
+| no
+| deafult: false, true means using the regex pattern to match function name
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/library/printVertex'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"query":"CREATE template QUERY gds.community.printVertex(vertex a) SYNTAX V1 {\n  print a;\n}","name":"printVertex","params":{"a":{"id_type":"$a.type","type":"STRING","is_id":"true","min_count":0},"a.type":{"type":"STRING","min_count":0}}}]}
+----
+--
+====
+
+'''
+
+
+== Database Utilities
+
+=== generic endpoint to execute any GSQL command
+
+`POST /gsql/v1/statements`
+
+This endpoint is used to execute any GSQL command asynchronously or synchronously.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `async`
+| no
+| default: false; run the request asynchronously if true, otherwise run the request synchronously.
+
+| `timeout`
+| no
+| default: 0; the request will be aborted if not finished in timeout seconds. A value of 0 means the request will never time out.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/statements" -d 'ls'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+---- Global vertices, edges, and all graphs
+Vertex Types:
+Edge Types:
+
+Graphs:
+Jobs:
+
+
+JSON API version: v2
+Syntax version: v2
+----
+--
+====
+
+'''
+
+=== check status of asynchronous request with requestId
+
+`GET /gsql/v1/statements/{requestId}`
+
+This endpoint is used to check status of asynchronous request with requestId.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/statements/00000000006.317280417"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+"endTime":"2024-08-08T13:16:10.038174Z",
+"error":false,
+"message":"Request 00000000006.317280417 is finished with status SUCCESS",
+"results":"---- Global vertices, edges, and all graphs\nVertex Types: \nEdge Types: \n\n\nGraphs: \nJobs: \n\n\n\n\nJSON API version: v2 \nSyntax version: v2\n"
+}
+----
+--
+====
+
+'''
+
+=== cancel an asynchronous request with requestId
+
+`PUT /gsql/v1/statements/{requestId}/cancel`
+
+This endpoint is used to cancel an asynchronous request with requestId.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/statements/00000000006.317280417/cancel"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+"error":false,
+"message":"Successfully aborted request 00000000006.317280417",
+}
+----
+--
+====
+
+'''
+
+=== recover gdict catalog
+
+`POST /gsql/v1/schema/recover`
+
+This endpoint is used to recover catalog.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/recover"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Recover schema succeed!"}
+----
+--
+====
+
+'''
+=== validate graph schema
+
+`POST /gsql/v1/schema/check`
+
+This endpoint is used to validate graph schema.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/check"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Schema Check succeeded."}
+----
+--
+====
+
+'''
+
+=== clear graph store
+
+`GET /gsql/v1/clear-store`
+
+This endpoint permanently deletes all the data out of the graph store (database), for all graphs.
+It does not delete the database schema, nor does it delete queries or loading jobs.
+It is equivalent to the GSQL command xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
+
+[WARNING]
+====
+This operation is not reversible.
+The deleted data cannot be recovered.
+====
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/clear-store'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully cleared graph store."}
+----
+--
+====
+
+'''
+=== get gsql version
+
+`GET /gsql/v1/version`
+
+This endpoint used for get the gsql version infomation.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `verbose`
+| no
+| `bool` type, `true` will print detail info.
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X GET 'http://localhost:14240/gsql/v1/version?verbose=true'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+GSQL version: GLE-7162
+GSQL commit number: 3f46585895039eb41a460e87e6b8f15eef224800
+GSQL commit date: 2024-07-26 08:56:11 +0800
+Copyright (c) 2014-2024 TigerGraph. All rights reserved.
+This product is protected by U.S. and international copyright and intellectual property laws.
+----
+--
+====
+
+'''
+
+=== drop all
+
+`GET /gsql/v1/drop-all`
+
+This endpoint is used to drop all.
+
+[WARNING]
+====
+This operation is not reversible.
+The deleted data cannot be recovered.
+====
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/drop-all'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped all."}
+----
+--
+====
+
+'''
+
+=== graph export
+
+`POST /gsql/v1/db-export`
+
+This endpoint is used to export database.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/db-export' -d  '{"path":"pass","graphNames":["*"],"schema":false,"template":false,"data":false,"users":false,"password":"password","separator":"\u001d","eol":"\u001c"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully exported database."}
+----
+--
+====
+
+'''
+
+=== graph import
+
+`POST /gsql/v1/db-import`
+
+This endpoint is used to import database.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/db-import' -d  '{"path":"pass","graphNames":["*"],"keepUsers":false,"password":"password"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully imported database."}
+----
+--
+====
+
+'''
+
+== Security
+
+=== create new JWT token
+
+`POST /gsql/v1/tokens`
+
+This endpoint is used to create a new JWT token.
+
+==== Payload:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `secret`
+| no
+| the secret denotes the user
+
+| `graph`
+| no
+| the graph the token created for
+
+| `lifetime`
+| no
+| default: one week, the duration time of the token
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"expiration":"Wed Jul 10 06:12:47 UTC 2024","error":false,"message":"Generate new JWT token successfully.","token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzE5OTg3MTYyLCJleHAiOjE3MjA1OTE5NjcsImlzcyI6IlRpZ2VyR3JhcGgiLCJncmFwaCI6InBvY19ncmFwaCJ9.w4ms-si5egtbhI2Cms7uL1qUU8oG0S08KIiaG_VL3Fs"}
+----
+--
+====
+
+'''
+
+=== drop JWT tokens
+
+`DELETE /gsql/v1/tokens`
+
+This endpoint is used to drop specific a list of tokens.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `clear`
+| no
+| default: false, true means clear out the current block list.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/tokens' -d {"tokens": "$token1,$token2"}
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped the specified JWT tokens"}
+----
+--
+====
+
+'''
+
+=== check JWT token
+
+`POST /gsql/v1/tokens/check`
+
+This endpoint is used to check JWT token is valid or not.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens/check' -d {"token": "$token1"}
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"The token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzE5OTg3MTYyLCJleHAiOjE3MjA1OTE5NjcsImlzcyI6IlRpZ2VyR3JhcGgiLCJncmFwaCI6InBvY19ncmFwaCJ9.w4ms-si5egtbhI2Cms7uL1qUU8oG0S08KIiaG_VL3Fs verification succeed."}
+----
+--
+====
+
+'''
+
+=== create secret
+
+`POST /gsql/v1/secrets`
+
+This endpoint is used to create a secret.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user the secret created for. The default user is the logged-in user if not specified.
+
+| `alias`
+| no
+| the alias of the secret created.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/secrets?alias=s1'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"alias":"s1","value":"59ccqdlqmkfcqjl99u2jv4qt2telmeoj"}}
+----
+--
+====
+
+'''
+
+=== show secrets
+
+`GET /gsql/v1/secrets`
+
+This endpoint is used to show secrets for the user.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to show the secrets. The default user is the logged-in user if not specified.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/secrets'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"alias":"s1","value":"59ccqdlqmkfcqjl99u2jv4qt2telmeoj"}}
+----
+--
+====
+
+'''
+
+=== delete secrets
+
+`DELETE /gsql/v1/secrets`
+
+This endpoint is used to delete the secrets of the user.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to delete the secrets. The default user is the logged-in user if not specified.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/secrets' -d '{"secrets":[$secret1,$secret2]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully removed the secrets for user tigergraph."}
+----
+--
+====
+
+'''
+
+=== get secret by alias
+
+`GET /gsql/v1/secrets/{alias}`
+
+This endpoint is used to get the secrets by its alias name.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to get the secret. The default user is the logged-in user if not specified.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/secrets/s2'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"alias":"s2","value":"g2ea27q79tes6nsark3k3ecp718rp4ej"}}
+----
+--
+====
+
+'''
+
+=== drop secret by alias
+
+`DELETE /gsql/v1/secrets/{alias}`
+
+This endpoint is used to delete the secret of the user by its alias name.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `userName`
+| no
+| the user who wants to delete the secret. The default user is the logged-in user if not specified.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/secrets/s2'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully removed the secrets for user tigergraph."}
+----
+--
+====
+
+'''
+
+=== retrieve a group by id using gsql format
+
+`GET /gsql/v1/groups/{id}`
+
+This endpoint is used to retrieve a group by id response scim format or gsql format JSON.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/groups/g1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"lastSuccessLogin":"Thu Aug 08 16:31:56 HKT 2024","privileges":{},"nextValidLogin":"Thu Aug 08 16:31:56 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g1","rule":"group=th-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}}
+----
+--
+====
+
+'''
+
+=== retrieve groups using gsql format
+
+`GET /gsql/v1/groups`
+
+This endpoint is used to retrieve groups response gsql format JSON.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| If the graph is not specified and the current user has global READ_PROXYGROUP privilege, they can see all proxy groups. Otherwise, no proxy group information can be accessed.
+
+If the graph is specified and the current user has local READ_PROXYGROUP privilege for this graph, they can only view the proxy groups on this specific graph.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "Content-type: text/plain" "http://localhost:14240/gsql/v1/groups"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"results":[{"lastSuccessLogin":"Tue Jul 02 17:07:50 HKT 2024","privileges":{},"nextValidLogin":"Tue Jul 02 17:07:50 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g1","rule":"group=tech-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]},{"lastSuccessLogin":"Tue Jul 02 17:07:50 HKT 2024","privileges":{},"nextValidLogin":"Tue Jul 02 17:07:50 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g2","rule":"group=tech-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}]}
+----
+--
+====
+
+'''
+
+=== create a group using gsql format
+
+`POST /gsql/v1/groups`
+
+This endpoint is used to create a group using gsql format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/v1/groups" -d '{"groupName":"g4","proxyRule":"group=tech-department"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created group g4","results":{"lastSuccessLogin":"Tue Jul 02 17:32:40 HKT 2024","privileges":{},"nextValidLogin":"Tue Jul 02 17:32:40 HKT 2024","roles":{},"failedAttempts":0,"members":[],"name":"g4","rule":"group=tech-department","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}}
+----
+--
+====
+
+'''
+=== update a group using gsql format
+
+`PUT /gsql/v1/groups`
+
+This endpoint is used to update a group.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PUT "Content-type: application/json" "http://localhost:14240/gsql/v1/groups" -d '{"name": "g1", "rule": ""group=tech-department""}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": true, "message": "Successfully change the proxy rule for group g1"}
+----
+--
+====
+
+'''
+
+=== drop one group by name using gsql format
+
+`DELETE /gsql/v1/groups/{id}`
+
+This endpoint is used to drop one group by name.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped group g1"}
+----
+--
+====
+
+'''
+
+=== drop groups using gsql format
+
+`POST /gsql/v1/groups`
+
+This endpoint is used to drop groups.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `action`
+| no
+| The default value is `create`. Possible values are `create` and `delete`. `Delete` indicates dropping groups, while `create`  indicates creating groups.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/v1/groups?action=delete" -d '{"groupNames":["g1"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped groups: [g1]"}
+----
+--
+====
+
+'''
+
+=== retrieve a user by id using gsql format
+
+`GET /gsql/v1/users/{id}`
+
+This endpoint is used to retrieve a user by id respond gsql format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/v1/users/u1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"lastSuccessLogin":"Thu Aug 08 16:51:23 HKT 2024","privileges":{"recommend":{"privileges":[]}},"nextValidLogin":"Thu Aug 08 16:51:23 HKT 2024","roles":{"recommend":["r1"]},"failedAttempts":0,"name":"u1","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}}
+----
+--
+====
+
+'''
+=== update an user using gsql format
+
+`PUT /gsql/v1/users`
+
+This endpoint is used to update a user.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users"  -d '{"name": "tigergraph", "password": "123"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": false, "message": "Successfully updated user tigergraph"}
+----
+--
+====
+
+'''
+
+=== drop users for gsql format
+
+`POST /gsql/v1/users`
+
+This endpoint is used to drop users.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `action`
+| no
+| default: `create`. Possible values: `create`, `delete`. `delete` indicates to drop users; `create` indicates to create users. Here set the value `delete`.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users?action=delete"  -d ' {"userNames":["u1"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped users: [u1]"}
+----
+--
+====
+
+'''
+
+=== drop a user using gsql format
+
+`DELETE /gsql/v1/users/{id}`
+
+This endpoint is used to drop a user.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users/u1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped user u1"}
+----
+--
+====
+
+'''
+
+=== create a user using gsql format
+
+`POST /gsql/v1/users`
+
+This endpoint is used to create a user using gsql format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users" -d ' {"password":"tiger123","username":"user2"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created user user2"}
+----
+--
+====
+
+'''
+
+=== retrieve users using gsql format
+
+`GET /gsql/v1/users`
+
+This endpoint is used to retrieve users response gsql format JSON.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| If the graph is not provided and the current user has global READ_USER privilege, they can view all users. Otherwise, no user information can be accessed.
+
+If the graph is provided, users with global READ_USER privilege can view all users. If the current user holds local READ_USER privilege for this graph, they can only see users with access to this specific graph. Otherwise, they can only view their own information if they have access to the graph.
+|===
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"results":[{"lastSuccessLogin":"Wed Jul 03 15:26:33 HKT 2024","privileges":{"1":{"privileges":["READ_SCHEMA","WRITE_SCHEMA","READ_LOADINGJOB","EXECUTE_LOADINGJOB","WRITE_LOADINGJOB","CREATE_QUERY","WRITE_DATASOURCE","READ_ROLE","WRITE_ROLE","READ_USER","WRITE_USER","READ_PROXYGROUP","WRITE_PROXYGROUP","READ_FILE","WRITE_FILE","DROP_GRAPH","EXPORT_GRAPH","CLEAR_GRAPHSTORE","DROP_ALL","READ_DATA","CREATE_DATA","UPDATE_DATA","DELETE_DATA","APP_ACCESS_DATA","READ_POLICY","WRITE_POLICY","USE_FUNCTION","WRITE_FUNCTION","READ_WORKLOAD_QUEUE","WRITE_WORKLOAD_QUEUE"]},"recommend":{"privileges":[]}},"nextValidLogin":"Wed Jul 03 15:26:33 HKT 2024","roles":{"1":["superuser"],"recommend":["superuser"]},"failedAttempts":0,"name":"tigergraph","disabled":false,"isSuperUser":true,"showAlterPasswordWarning":false,"secrets":[]},{"lastSuccessLogin":"Wed Jul 03 15:26:33 HKT 2024","privileges":{"recommend":{"privileges":[]}},"nextValidLogin":"Wed Jul 03 15:26:33 HKT 2024","roles":{"recommend":["r1"]},"failedAttempts":0,"name":"u1","disabled":false,"isSuperUser":false,"showAlterPasswordWarning":false,"secrets":[]}]}
+----
+--
+====
+
+'''
+
+=== show all privileges
+
+`GET /gsql/v1/privileges`
+
+This endpoint is used to list all built-in privileges.
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/privileges"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"privilegeType":"GRAPH","privilege":"READ_SCHEMA"},{"privilegeType":"GRAPH","privilege":"WRITE_SCHEMA"},{"privilegeType":"GRAPH","privilege":"READ_LOADINGJOB"},{"privilegeType":"GRAPH","privilege":"EXECUTE_LOADINGJOB"},{"privilegeType":"GRAPH","privilege":"WRITE_LOADINGJOB"},{"privilegeType":"QUERY","privilege":"READ_QUERY"},{"privilegeType":"GRAPH","privilege":"CREATE_QUERY"},{"privilegeType":"QUERY","privilege":"UPDATE_QUERY"},{"privilegeType":"QUERY","privilege":"DROP_QUERY"},{"privilegeType":"QUERY","privilege":"INSTALL_QUERY"},{"privilegeType":"QUERY","privilege":"EXECUTE_QUERY"},{"privilegeType":"QUERY","privilege":"OWNER"},{"privilegeType":"GRAPH","privilege":"WRITE_DATASOURCE"},{"privilegeType":"GRAPH","privilege":"READ_ROLE"},{"privilegeType":"GRAPH","privilege":"WRITE_ROLE"},{"privilegeType":"GRAPH","privilege":"READ_USER"},{"privilegeType":"GLOBAL","privilege":"WRITE_USER"},{"privilegeType":"GRAPH","privilege":"READ_PROXYGROUP"},{"privilegeType":"GLOBAL","privilege":"WRITE_PROXYGROUP"},{"privilegeType":"GLOBAL","privilege":"READ_FILE"},{"privilegeType":"GLOBAL","privilege":"WRITE_FILE"},{"privilegeType":"GLOBAL","privilege":"DROP_GRAPH"},{"privilegeType":"GLOBAL","privilege":"EXPORT_GRAPH"},{"privilegeType":"GLOBAL","privilege":"CLEAR_GRAPHSTORE"},{"privilegeType":"GLOBAL","privilege":"DROP_ALL"},{"privilegeType":"GRAPH","privilege":"READ_DATA"},{"privilegeType":"GRAPH","privilege":"CREATE_DATA"},{"privilegeType":"GRAPH","privilege":"UPDATE_DATA"},{"privilegeType":"GRAPH","privilege":"DELETE_DATA"},{"privilegeType":"GRAPH","privilege":"APP_ACCESS_DATA"},{"privilegeType":"GRAPH","privilege":"READ_POLICY"},{"privilegeType":"GRAPH","privilege":"WRITE_POLICY"},{"privilegeType":"PACKAGE","privilege":"USE_FUNCTION"},{"privilegeType":"PACKAGE","privilege":"WRITE_FUNCTION"},{"privilegeType":"GLOBAL","privilege":"READ_WORKLOAD_QUEUE"},{"privilegeType":"GLOBAL","privilege":"WRITE_WORKLOAD_QUEUE"}]}
+----
+--
+====
+
+'''
+
+=== grant privilege(s) to role(s)
+
+`POST /gsql/v1/privileges/grant`
+
+This endpoint is used to grant RABC privileges to specific roles.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the privilege(s) should be granted,
+or grant privilege(s) on global level if the parameter is missing
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/grant?graph=financialGraph" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "Account", "roles":["r1", "r2"]}"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"The privileges \"CREATE, READ, UPDATE\" are successfully granted on \"VERTEX Account\" IN GRAPH recommend to role: r2\nThe privileges \"CREATE, READ, UPDATE\" are successfully granted on \"VERTEX Account\" IN GRAPH recommend to role: r1\n","results":[{"privileges":{"1":{"privileges":[]},"recommend":{"privileges":[],"childPermissions":{"user":{"privileges":["READ_DATA","CREATE_DATA","UPDATE_DATA"]}}}},"role":"r1"},{"privileges":{"recommend":{"privileges":[],"childPermissions":{"user":{"privileges":["READ_DATA","CREATE_DATA","UPDATE_DATA"]}}}},"role":"r2"}]}
+----
+--
+====
+
+'''
+
+=== revoke privilege(s) from role(s)
+
+`POST /gsql/v1/privileges/revoke`
+
+This endpoint is used to revoke RABC privileges from specific roles
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the privilege(s) should be revoked,
+or revoke privilege(s) on global level if the parameter is missing
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/privileges/revoke?graph=financialGraph" -d "{"privileges":["READ_DATA", "CREATE_DATA", "UPDATE_DATA"], "vertexName": "Account", "roles":["r1", "r2"]}"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"The privileges \"CREATE, READ, UPDATE\" are successfully revoked on \"VERTEX Account\" IN GRAPH recommend from role: r2\nThe privileges \"CREATE, READ, UPDATE\" are successfully revoked on \"VERTEX Account\" IN GRAPH recommend from role: r1\n","results":[{"privileges":{"1":{"privileges":[]}},"role":"r1"},{"privileges":{},"role":"r2"}]}
+----
+--
+====
+
+'''
+
+=== show all roles
+
+`GET /gsql/v1/roles`
+
+Call this endpoint to show all roles, including built-in roles and user defined roles.
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/roles"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"builtIn":{"global":["globalobserver","globaldesigner","superuser"],"local":["observer","queryreader","querywriter","designer","admin"]},"userDefinedRoles":{"1":["r1","r2","r3"],"recommend":["r4"]}}}
+----
+--
+====
+
+'''
+
+=== Create roles
+
+`POST /gsql/v1/roles`
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph to create local roles,
+or create global roles if the parameter is missing
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST "http://localhost:14240/gsql/v1/roles?graph=financialGraph" -d "{"roles":["r1", "r2"]}"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully created local roles on graph 'financialGraph': [r1, r2]."}
+----
+--
+====
+
+'''
+
+=== Delete roles
+
+`DELETE /gsql/v1/roles`
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph to delete local roles,
+or delete global roles if the parameter is missing
+
+| `roles`
+| yes
+| roles to delete
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE "http://localhost:14240/gsql/v1/roles?graph=financialGraph&role=r1,r2"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully dropped roles: [r1, r2]."}
+----
+--
+====
+
+'''
+
+=== show one role
+
+`GET /gsql/v1/roles/{roleName}`
+
+Call this endpoint to show the info of a specific role.
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET "http://localhost:14240/gsql/v1/roles/r1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"Graph":"financialGraph","roleName":"r1","isGlobal":false,"rolePrivileges":{"financialGraph":{"privileges":["READ_DATA","CREATE_DATA"]}}}}
+----
+--
+====
+
+'''
+
+=== delete one role
+
+`DELETE /gsql/v1/roles/{roleName}`
+
+Call this endpoint to delete a specific role.
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE "http://localhost:14240/gsql/v1/roles/r1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully dropped roles: [r1]."}
+----
+--
+====
+
+'''
+
+=== grant role(s) to user(s)
+
+`POST /gsql/v1/roles/grant`
+
+This endpoint is used to grant roles to specific users
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the role(s) should be granted,
+or grant role(s) on global level if the parameter is missing
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/grant?graph=financialGraph' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully granted roles [observer, r1] on graph 'financialGraph' to users [user1, user2]."}
+----
+--
+====
+
+'''
+
+=== revoke role(s) from user(s)
+
+`POST /gsql/v1/roles/revoke`
+
+This endpoint is used to revoke roles from specific users
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| in which graph the role(s) should be revoked,
+or revoke role(s) on global level if the parameter is missing
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/roles/revoke?graph=financialGraph' -d '{"roles":["observer", "r1"], "users":["user1", "user2"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":"Successfully revoked roles [observer, r1] on graph 'financialGraph' from users [user1, user2]."}
+----
+--
+====
+
+'''
+
+
+== SCIM APIs for users/groups
+
+=== retrieve a group by id using scim format
+
+`GET /gsql/scim/v2/Groups/{id}`
+
+This endpoint is used to retrieve a group by id response scim format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g2"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"g2","meta":{"location":"/scim/v2/Groups/54ba8a0f-693c-4cf3-9c53-5caaa244049a","resourceType":"Group"},"members":[],"id":"54ba8a0f-693c-4cf3-9c53-5caaa244049a"}
+----
+--
+====
+
+'''
+
+=== retrieve groups using scim format
+
+`GET /gsql/scim/v2/Groups`
+
+This endpoint is used to retrieve groups response scim format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `filter`
+| no
+| The filter format should follow this structure: `displayName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `ne`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`.
+
+| `excludedAttributes`
+| no
+| Specifies attributes to be excluded. Currently supports only `members`.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?excludedAttributes=members&filter=displayName%ne%20'g2'%20and%20displayName%20sw%20'g1'"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"totalResults":1,"startIndex":1,"itemsPerPage":100,"schemas":true,"Resources":[{"displayName":"g1","meta":{"location":"/scim/v2/Groups/0570fc42-79ea-427e-aa2e-2b53a0470163","resourceType":"Group"},"id":"0570fc42-79ea-427e-aa2e-2b53a0470163"}]}
+----
+--
+====
+
+'''
+
+=== create a group using scim format
+
+`POST /gsql/scim/v2/Groups`
+
+This endpoint is used to create a group using scim format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups" -d '{"displayName":"scimG3","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:Group\"]","members":[{"display":"user3"},{"value":"user4"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"scimG3","meta":{"location":"/scim/v2/Groups/706d0ad6-2165-4190-8512-de5abfd06988","resourceType":"Group"},"members":[{"display":"user3","type":"User","value":"16c1e6cc-3b2a-4d57-9a2e-fb55a5d14804"},{"display":"user4","type":"User","value":"457b9982-d5fb-4ad6-b50a-266919bf0c16"}],"id":"706d0ad6-2165-4190-8512-de5abfd06988"}
+----
+--
+====
+
+'''
+
+=== update a group using scim format
+
+`PATCH /gsql/scim/v2/Groups/{id}`
+
+This endpoint is used to update a group.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PATCH "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1" -d '
+{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"displayName":"g1","meta":{"location":"/scim/v2/Groups/0b181bc8-d055-4fcb-af52-20c560324c6f","resourceType":"Group"},"members":[{"display":"user3","type":"User","value":"5cdad092-af32-435e-9865-c2ad06b9d6f8"},{"display":"user4","type":"User","value":"c14765de-ea78-422a-bd87-88f3f7d3ceda"}],"id":"0b181bc8-d055-4fcb-af52-20c560324c6f"}
+----
+--
+====
+
+'''
+
+=== drop one group by name using scim format
+
+`DELETE /gsql/scim/v2/Groups/{id}`
+
+This endpoint is used to drop one group by name.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1" -d '
+{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped group g1"}
+----
+--
+====
+
+'''
+
+=== drop groups using scim format
+
+`POST /gsql/scim/v2/Groups`
+
+This endpoint is used to drop groups.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `action`
+| no
+| The default value is `create`. Possible values are `create` and `delete`. `Delete` indicates dropping groups, while `create`  indicates creating groups.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?action=delete" -d '{"groupNames":["g1"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped groups: [g1]"}
+----
+--
+====
+
+'''
+
+=== retrieve a user by id using scim format
+
+`GET /gsql/scim/v2/Users/{id}`
+
+This endpoint is used to retrieve a user by id respond with scim format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET "http://localhost:14240/gsql/scim/v2/Users/u1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/1e224fd0-54eb-43c3-84d6-455ca3b6339d","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"1e224fd0-54eb-43c3-84d6-455ca3b6339d","userName":"u1"}
+----
+--
+====
+
+'''
+=== update a user using scim format
+
+`PUT /gsql/scim/v2/Users/{id}`
+
+This endpoint is used to update a user.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1"  -d '{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"replace","path":"password","value":"newPassword"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/1e224fd0-54eb-43c3-84d6-455ca3b6339d","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"1e224fd0-54eb-43c3-84d6-455ca3b6339d","userName":"u1"}
+----
+--
+====
+
+'''
+
+=== drop users using scim format
+
+`POST /gsql/scim/v2/Users`
+
+This endpoint is used to drop users.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `action`
+| no
+| default: `create`. Possible values: `create`, `delete`. `delete` indicates to drop users; `create` indicates to create users. Here set the value `delete`.
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?action=delete"  -d ' {"userNames":["u1"]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped users: [u1]"}
+----
+--
+====
+
+'''
+
+=== drop a user using scim format
+
+`DELETE /gsql/scim/v2/Users/{id}`
+
+This endpoint is used to drop a user.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped user u1"}
+----
+--
+====
+
+'''
+
+=== create a user using scim format
+
+`POST /gsql/scim/v2/Users`
+
+This endpoint is used to create a user using scim format.
+
+==== Parameters:
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users" -d '
+{"password":"12345678","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:User\"]","name":{"familyName":"f","givenName":"g"},"externalId":"externalId123","active":false,"userName":"scimUser2"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"meta":{"location":"/scim/v2/Users/d838c224-d1d6-4a07-b6b5-5c0aab43f0a6","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"active":true,"id":"d838c224-d1d6-4a07-b6b5-5c0aab43f0a6","userName":"scimUser2"}
+----
+--
+====
+
+'''
+
+=== retrieve users using scim format
+
+`GET /gsql/scim/v2/Users`
+
+This endpoint is used to retrieve users response scim format.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `excludedAttributes`
+| no
+| `names`, currently only support this value.
+
+| `filter`
+| no
+| The format should follow this pattern: `userName op {value} op2 displayName op {value}`. Here, `op` can be one of `eq`, `ne`, `co`, `sw`, `ew`, and `op2` can be either `and` or `or`. Example: 1. userName eq "user1" 2. userName sw "u" and userName ne "u1"
+|===
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?filter=userName%20ne%20%22tigergraph%22%20and%20userName%20sw%20%22u%22&excludedAttributes=names"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"totalResults":2,"startIndex":1,"itemsPerPage":100,"schemas":true,"Resources":[{"meta":{"location":"/scim/v2/Users/7a004538-8d41-4f85-b5e7-2a26358f0173","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"7a004538-8d41-4f85-b5e7-2a26358f0173","userName":"tigergraph"},{"meta":{"location":"/scim/v2/Users/0a71523d-9623-4b04-908d-395096e288f4","resourceType":"User"},"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"name":{},"active":true,"id":"0a71523d-9623-4b04-908d-395096e288f4","userName":"u1"}]}
+----
+--
+====
+
+'''
+
+== Statistics
+
+=== get cardinality statistics
+
+`GET /gsql/v1/stats/cardinality`
+
+This endpoint is used to fetch cardinality statistics.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Get the cardinality stats of which graph
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"vertex_counts":[{"count":5,"type":"Account"}],"edge_counts":[{"count":5,"type":"isLocatedIn"},{"count":10,"from":"Account","to":"City","type":"isLocatedIn"}]}}
+----
+--
+====
+
+'''
+
+=== post cardinality statistics
+
+`POST /gsql/v1/stats/cardinality`
+
+This endpoint has to usage: 1) Fetch fresh up-to-date cardinality statistics and persist it to storage. 2) Persist user defined cardinality statistics to storage.
+
+==== 1) Fetch fresh up-to-date cardinality statistics and persist it to storage
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Persist the cardinality stats to which graph
+
+| `vertex`
+| no
+| Fetch fresh up-to-date cardinality stats for specific vertex types and persist them to storage
+
+| `edge`
+| no
+| Fetch fresh up-to-date cardinality stats for specific edge types and persist them to storage, if `vertex` is not empty, this parameter will be ignored
+
+| `from`
+| no
+| Fetch fresh up-to-date cardinality stats for not only specific edge types but also from specific vertex, if `edge` is not empty, this parameter will be ignored, this parameter usually used together with `to`.
+
+| `to`
+| no
+| Fetch fresh up-to-date cardinality stats for not only specific edge types but also to specific vertex, if `edge` is not empty, this parameter will be ignored, this parameter usually used together with `from`.
+|===
+
+===== Example:
+
+[,tabs]
+======
+Sample Request 1::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph&vertex=Account'
+----
+--
+Sample Response 1::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message": "successfully persisted statistics"}
+----
+--
+======
+
+[,tabs]
+======
+Sample Request 2::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph&edge=isLocatedIn&from=Account&to=City'
+----
+--
+Sample Response 2::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message": "successfully persisted statistics"}
+----
+--
+======
+
+==== 2) Persist user defined cardinality statistics to storage.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Persist the cardinality stats to which graph
+|===
+
+===== Example:
+
+[,tabs]
+======
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph' -d '{"vertex_counts":[{"type": "Account","count": 5}], "edge_counts":[{"type":"hasPhone","count":5},{"type":"isLocatedIn","from":"Account","to":"City","count":10}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"vertex_counts":[{"count":5,"type":"Account"}],"edge_counts":[{"count":5,"type":"hasPhone"},{"count":10,"from":"Account","to":"City","type":"isLocatedIn"}]}}
+----
+--
+======
+
+'''
+
+=== delete cardinality statistics
+
+`DELETE /gsql/v1/stats/cardinality`
+
+This endpoint is used to remove cardinality statistics from storage.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| Delete the cardinality stats of indicated graph from storage
+|===
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/cardinality?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"successfully deleted statistics"}
+----
+--
+====
+
+'''
+
+=== get histogram statistics
+
+`GET /gsql/v1/stats/histogram`
+
+This endpoint is used to fetch histogram statistics.
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"financialGraph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name", "bucket":10}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+[{"histogram": [{"rowsTotal": 104,"rowsUpper": 1,"upperBound": "2010-05-05 10:44:41"},{"rowsTotal": 12599,"rowsUpper": 1,"upperBound": "2012-06-09 21:24:20"},{"rowsTotal": 15986,"rowsUpper": 1,"upperBound": "2012-09-13 09:27:04"},{"rowsTotal": 1995,"rowsUpper": 1,"upperBound": "2010-11-14 17:07:00"},{"rowsTotal": 3570,"rowsUpper": 1,"upperBound": "2011-02-18 09:33:18"},{"rowsTotal": 4193,"rowsUpper": 1,"upperBound": "2011-05-24 21:54:24"},{"rowsTotal": 5481,"rowsUpper": 1,"upperBound": "2011-08-28 09:45:29"},{"rowsTotal": 752,"rowsUpper": 1,"upperBound": "2010-08-11 07:41:03"},{"rowsTotal": 8665,"rowsUpper": 1,"upperBound": "2012-03-06 08:31:44"},{"rowsTotal": 8880,"rowsUpper": 1,"upperBound": "2011-12-01 21:13:33"}]}]
+----
+--
+====
+
+'''
+
+=== post histogram statistics
+
+`POST /gsql/v1/stats/histogram`
+
+This endpoint is used to persist new histogram statistics to storage.
+
+==== Example:
+
+[,tabs]
+=====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/stats/histogram' -d '{"graph":"financialGraph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"0": {"rowsTotal": 151037,"rowsUpper": 90,"upperBound": 183},"1": {"rowsTotal": 0,"rowsUpper": 0,"upperBound": 399},"2": {"rowsTotal": 0,"rowsUpper": 0,"upperBound": 598},"3": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 710},"4": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 908},"5": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 1119},"6": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 1211},"7": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 1402},"8": {"rowsTotal": 0,"rowsUpper": 0,"upperBound": 1789},"9": {"rowsTotal": 1,"rowsUpper": 1,"upperBound": 1988}}
+----
+--
+=====
+
+'''
+
+=== delete histogram statistics
+
+`DELETE /gsql/v1/stats/histogram`
+
+This endpoint is used to remove histogram statistics from storage.
+
+==== Example:
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/stats/histogram' -d ' {"graph":"financialGraph", "edge":"isLocatedIn", "from":"Account", "to":"City", "attribute":"name"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message": "","results": "Deleting any histogram(s) for G.E1.a"}
+----
+--
+====
+
+'''
+
+
+== User Defined Objects
+
+=== list all tuples
+
+`GET /gsql/v1/udt/tuples`
+
+This endpoint is used to get all tuples.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/udt/tuples'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"name":"TestTup","fields":[{"fieldName":"da","length":8,"fieldType":"UINT"},{"fieldName":"flow","length":8,"fieldType":"STRING"}]}]}
+----
+--
+====
+
+'''
+
+=== list one tuple
+
+`GET /gsql/v1/udt/tuples/{tupleName}`
+
+This endpoint is used to get tuple by its name.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `tupleName`
+| yes
+| the tuple name to get information
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/udt/tuples/TestTup'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"name":"TestTup","fields":[{"fieldName":"da","length":8,"fieldType":"UINT"},{"fieldName":"flow","length":8,"fieldType":"STRING"}]}]}
+----
+--
+====
+
+'''
+
+=== create tuple
+
+`POST /gsql/udt/tuples`
+
+This endpoint is used to create a tuple.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/udt/tuples?gsql=true' -d '{"gsql":"create tuple commands"}'
+or
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/udt/tuples' -d '{"tuples":[{"Name":"tuple1","TupleElements":[{"name":"attr1","AttributeType":"int"}]}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully create tuples: TestTup."}
+----
+--
+====
+
+'''
+
+=== delete multiple tuples
+
+`DELETE /gsql/v1/udt/tuples`
+
+This endpoint is used to delte multiple tuples.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `tupleName`
+| yes
+| the tuple names to be dropped
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/udt/tuples?tupleName=TestTuple'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped userDefinedTuple: [TestTup]."}
+----
+--
+====
+
+'''
+
+=== delete one tuple
+
+`DELETE /gsql/v1/udt/tuples/{tupleName}`
+
+This endpoint is used to delete one tuple by its name.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/udt/tuples/TestTuple'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped userDefinedTuple: [TestTup]."}
+----
+--
+====
+
+'''
+
+=== list all accumulators
+
+`GET /gsql/v1/udt/accum`
+
+This endpoint is used to get all accumulators.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/udt/accum'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"myGroup":"GroupByAccum<int a, SumAccum<int> b> myGroup\n"}]}
+----
+--
+====
+
+'''
+
+=== list one accumulator
+
+`GET /gsql/v1/udt/accum/{accumName}`
+
+This endpoint is used to get one accumulator by its name.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/udt/accum/myGroup'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"myGroup":"GroupByAccum<int a, SumAccum<int> b> myGroup\n"}]}
+----
+--
+====
+
+'''
+
+=== create accumulators
+
+`POST /gsql/v1/udt/accum`
+
+This endpoint is used to create one accumulator.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/udt/accum' -d '{"AccumString":"typedef GroupByAccum or typedef HeapAccum"}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully create accumulator."}
+----
+--
+====
+
+'''
+
+=== delete mulitple accumulators
+
+`DELETE /gsql/v1/udt/accum`
+
+This endpoint is used to delete multiple accumulators.
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `accumName`
+| yes
+| the accumulator names to drop
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/udt/accum?accumName=myGroup'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped accumulator: [myGroup]."}
+----
+--
+====
+
+'''
+
+=== delete one accumulator
+
+`DELETE /gsql/v1/udt/accum/{accumName}`
+
+This endpoint is used to delete one accumulator.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/udt/accum/myGroup'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped accumulator: [myGroup]."}
+----
+--
+====
+
+'''
+
+=== download expr files
+
+`GET /gsql/v1/udt/files/{fileName}`
+
+This endpoint is used to download one file by its name, {fileName} can be one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/udt/files/TokenBank'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"results": {"TokenBank": "<TokenBank File Content>"}}
+----
+--
+====
+
+'''
+
+=== download all files
+
+`GET /gsql/v1/udt/files`
+
+This endpoint is used to get all files.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/udt/files'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"results": {"TokenBank": "TokenBank File Content", "ExprFunctions": "ExprFunctions file content", "ExprUtil": "", "tg_ExprFunctions": "", "tg_ExprUtil": ""}}
+----
+--
+====
+
+'''
+
+=== upload one file
+
+`PUT /gsql/v1/udt/files/{fileName}`
+
+This endpoint is used to upload file.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X PUT 'localhost:14240/gsql/v1/udt/files/' -d '<Token Bank file content>'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message": "Successfully update file: TokenBank"}
+----
+--
+====
+
+'''
+
+=== upload file
+
+`PUT /gsql/v1/udt/files`
+
+This endpoint is used to upload all files.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X PUT 'localhost:14240/gsql/v1/udt/files' -d  '{"files":[{"Name":"ExprUtil","Content":"<file content>"}]}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message": "All files get updated: [TokenBank, ExprFunctions]."}
+----
+--
+====
+
+'''
+
+=== get token bank functions
+
+`GET /gsql/v1/udt/token-functions/{functionName}`
+
+This endpoint is used to get function content by its name.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET 'localhost:14240/gsql/v1/udt/token-functions/_Concat'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"code":"token bank function code","name":"_Concat","returnType":"string"}}
+----
+--
+====
+
+'''
+
+=== get all token bank functions
+
+`GET /gsql/v1/udt/token-functions`
+
+This endpoint is used to get all token bank functions.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET 'localhost:14240/gsql/v1/udt/token-functions'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"code":"token bank function code","name":"_Concat","returnType":"string"}]}
+----
+--
+====
+
+'''
