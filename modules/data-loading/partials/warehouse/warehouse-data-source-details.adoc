@@ -65,10 +65,11 @@ See Snowflake's document for more details on their support for https://docs.snow
 ----
 
 [NOTE]
-We recommend to use this version(OpenSSL 3.0.11 19 Sep 2023) to generate the key.
-When the private key is provided, the `connection.password` is still required and can be set to any non-empty string.
-Passing private key directly or using private key file with password is NOT supported.
-More can be found in https://docs.snowflake.com/en/user-guide/key-pair-auth[Snowflake Docs]
+====
+* We recommend using the latest version of OpenSSL (3.0.11 19 Sep 2023) to generate keys.
+* When a private key is used, `connection.password` is still required, but it can be set to any non-empty string.
+* Passing a private key directly or using a private key file with a password is NOT supported.
+====
 
 [WARNING]
 ====
