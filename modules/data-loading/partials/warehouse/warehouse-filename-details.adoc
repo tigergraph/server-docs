@@ -4,23 +4,23 @@ NOTE: While a loading job may have multiple `FILENAME` variables , they must all
 
 For data warehouses, you run a SQL query to get the data.
 The file descriptor has three valid formats.
-You can simply provide the file URI. Or, you can provide optional configuration details, either in a JSON file or as inline JSON content.
-[source,php,linenum]
+You can simply provide the SQL query statement. Or, you can provide optional configuration details, either in a JSON file or as inline JSON content.
+[source,gsql,linenum]
 DEFINE FILENAME file_name = "$[data source name]:[SQL]";
 DEFINE FILENAME file_name = "$[data source name]:[json config file]";
 DEFINE FILENAME file_name = "$[data source name]:[inline json content]";
 
 For example:
 
-[source,go]
+[source,gsql]
 ----
-// Format 1: URI only
+// Format 1: SQL query statement
 DEFINE FILENAME query_person = "$s1:SELECT id,name,gender FROM ldbc.person";
 
-// Format 2: URI and configuration file
+// Format 2: Configuration file
 DEFINE FILENAME bq_inline_json = """$s1:myfile.json""";
 
-// Format 3: URI and inline JSON
+// Format 3: Inline JSON
 DEFINE FILENAME query_person="""$s1:{
   "query": "SELECT id,name,gender
             FROM ldbc.person where age < 10;
