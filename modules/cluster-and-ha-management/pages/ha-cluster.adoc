@@ -6,20 +6,18 @@
 //:page-aliases: tigergraph-server:ha:index.adoc, tigergraph-server:ha:ha-cluster.adoc
 
 
-TigerGraph HA service provides load balancing when all components are operational, as well as automatic fail over in the event of a service disruption.
+TigerGraph HA service provides load balancing when all components are operational, as well as automatic failover in the event of a service disruption.
 
 The following terms describe the size and dimension of a HA cluster:
 
 replication factor:: Total number of instances of your data.
+Each instance of data may be partitioned across multiple machines.
 partitioning factor:: Number of machines across which one copy of the data is distributed.
 In practice, the partitioning factor of a cluster is decided by dividing the total number of machines in the cluster by the replication factor.
 cluster size:: Total number of machines in the cluster.
 
-If an HA cluster has a replication factor of 2, the cluster maintains two instances of the data, stored on separate machines.
-If an HA cluster has a partitioning factor of 2, each instance of the data is distributed across two machines.
-
-If an HA cluster has both a replication factor of 2 and a partitioning factor of 2, the cluster has a total of four machines.
-With the four machines, the cluster maintains two instances of the data, each distributed across two machines.
+If an HA cluster has both a replication factor of 2 and a partitioning factor of 3, the cluster has a total of six machines.
+With the six machines, the cluster maintains two instances of the data, each distributed across three machines.
 
 Replication and distribution both increase query throughput and improve system resiliency.
 There is no upper limit for either partitioning factor or replication factor.
@@ -30,9 +28,10 @@ For example, the following cluster has a replication factor of 2 and a cluster s
 image::cluster_arch.png[Diagram explaining the mathematical relationship between the partitioning and replication factors and the number of machines in the cluster.]
 
 
-== System Requirements
-* A highly available cluster has a cluster size of at least 4 and a replication factor of at least 2.
-A highly available cluster can withstand the failure of any node in the cluster.
+== System Requirements (Minimal Configurations)
+* To enable HA, the minimum _replication factor_ is 2.
+* HA also requires a minimum _cluster size_ of 3, so the absolute smallest HA cluster would be 1x3 (a single-server database with 3 instances).
+* The smallest HA cluster using partitioning would be 2x2.
 * If you choose to resize a cluster after installation, ensure every node across the cluster is running the same version of TigerGraph.
 
 
