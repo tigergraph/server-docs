@@ -46,8 +46,12 @@ $ grep 'tail -n 50 $(gadmin config get System.LogRoot)/gpe/log.INFO |
 ==== Step by step query memory logging
 
 [NOTE]
+====
 This type of query memory logging may not appear for some queries due to the way GSQL handles querying internally.
+Specifically, it applies for queries run in GPR mode: `DISTRIBUTED` mode queries, queries run with `INTERPRET`, or when the session parameter `single_gpr` is set to `true`.
+
 Furthermore, it only appears at log levels `DEBUG` or `VERBOSE`.
+====
 
 The logs show memory usage by the query at different stages of its execution.
 The number at the end of each line indicates the number of bytes of memory utilized by the query.
