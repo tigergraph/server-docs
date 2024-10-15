@@ -4,18 +4,18 @@
 
 HA (High Availability) is a generic term used to describe a computer system which has been architected to deliver higher levels of operational performance through enhanced uptime and throughput than would be expected from a traditional single server node.
 
-With Continuous Availability, TigerGraph goes beyond the standard scope and definition of High Availability by providing the following functionality:
+With Continuous Availability, TigerGraph goes beyond the basic scope and definition of High Availability by providing the following functionality:
 
 * Fault tolerance against loss of database server(s):
-** Automated recovery of most services in case of intra-cluster failure.
+ ** Automated recovery of most services in case of intra-cluster failure.
+* Failover to the replica node if the primary node is unavailable.
 * Full native HA support for user-facing applications:
 ** Seamless automatic client reconnection to standby GSQL server and GraphStudio servers.
-* Failover to the replica node if the primary node is unavailable.
-* Improve RoI with additional replicas
+* Improved throughput and performance when all systems are operational:
 ** Enhanced query throughput performance.
 ** Increased concurrency for operational workloads.
 
-In short, TigerGraph Continuous Availability not only provides the ability to keep a business application running without any noticeable downtime, but also delivers a higher return on investment.
+In short, TigerGraph Continuous Availability not only provides the ability to keep a business application running without significant downtime, but also delivers a higher return on investment.
 
 == Architecture Design
 
@@ -24,7 +24,7 @@ This is transparent to the user.
 The underlying principles of uniform distribution of data are automatically applied no matter how many replicas are stored.
 Additionally, the placement of replicas is infrastructure-aware to tolerate hardware failures.
 
-*Continuous Availability* is a production configuration that users can pick at cluster installation time.
+*Continuous Availability* is a production configuration that a system adminstrator can choose at cluster installation time.
 Users have flexibility to place replicas in specific availability zones or data centers based on their infrastructure requirements.
 
 TigerGraph Continuous Availability design provides the following:
@@ -41,21 +41,22 @@ All services are distributed uniformly across the cluster.
 This requires data to be distributed across the cluster.
 There are two key concepts in the cluster design:
 
-- *Replication Factor*: Replication factor is a characteristic of the cluster design that determines the number of copies of data that will be stored in the cluster.
+- *Replication Factor*: the number of copies of data that will be stored in the cluster.
+RF=1 means the data is stored once.
 This is configurable at the time of installation.
-- *Partitioning Factor*: Partitioning factor is an internal TigerGraph characteristic of a TigerGraph cluster that determines how the data in the database will be distributed.
+- *Partitioning Factor*: the number of machines across which one copy of the data is distributed.
 Based on the nodes of the cluster size, TigerGraph will automatically pick a partitioning factor, taking into account the replication factor.
 
 image::cluster_arch.png[Diagram showing the mathematical relationship between the partitioning and replication factors in a TigerGraph cluster]
 
-In short, a TigerGraph cluster can be seen as a combination of data spread across _P_ partitions with multiple copies equal to the number of _R_ replicas.
+In short, a TigerGraph cluster can be seen as a two-dimensional array of data spread across _P_ partitions with _R__ copies of the data.
 
 [NOTE]
 ====
 Some key cluster design considerations:
 
-* Any cluster size is allowed, except 1x2
-* Minimum number of servers needed for continuous availability is 3 servers - This is due to Zookeeper quorum dependency.
+* The minimum cluster size for HA (and continuous availability) is 3 servers.
+This is due to Zookeeper's majority quorum policy.
 ====
 
 === Continuous Availability - Data Operations
@@ -69,7 +70,7 @@ This is a key differentiation that ensures that no single node can be Single Poi
 
 *Example*:
 
-In the following example, the data sets in the cluster are spread across 5 partitions with 2 replicas of data sets i.e. Partitioning Factor of 5 and Replication Factor of 2.
+In the following example, the data sets in the cluster are spread across 5 partitions with 2 replicas of the data, i.e., partitioning factor of 5 and replication factor of 2.
 
 image::replication-partitioning-factor.png["Diagram showing a cluster with 10 partitions. The top group of partitions are labeled 1A through 5A, and the replicas are labeled 1B through 5B."]
 
