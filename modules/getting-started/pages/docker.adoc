@@ -102,6 +102,9 @@ If you use Windows and have write permission issues with the above command,  try
 $ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t tigergraph/tigergraph:latest
 ----
 
+[NOTE]
+If you intend to have multiple versions or instances of the same version of TigerGraph in the same Docker environment, make sure that you specify a a different <3> contain name and <6> volume name to avoid collusion and accidental reuse of an earlier volume.
+
 == Connect to your container (via SSH or `docker exec`)
 
 After launching the container, you can use SSH to connect to your container:
