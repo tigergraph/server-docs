@@ -167,12 +167,13 @@ See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privileges-tab
 * Fixed issue where loading jobs with a `WHERE` condition would hang after upgrading from an older version (GLE-7953).
 * Added an error report if a schema check is requested but cannot be performed because the GPE is in warmup status (GLE-7898).
 * Fixed situation where a query containing a `BREAK` or `CONTINUE` statements could produce incorrect results (GLE-7874).
-* Fixed regression problem with installing queries which create lists containing mixed types of numeric data (GLE-7928)
+* Fixed regression problem with installing queries which create lists containing mixed types of numeric data (GLE-7928).
 * Resolved an intermittent deadlock in Informant that caused `gadmin status` to fail (TP-5930).
 * Fixed int64 value underflow error by explicitly type casting uint64 (CORE-4108).
 * Restored the ability to run the TigerGraph `gcollect` command on Kubernetes (TP-6351).
-* >>> Fixed issue with database import hanging caused by the status of a loading job not being received by Kafka streaming library (TP-5772).
-* >>> Allowed installation to continue on Oracle Linux 8 even if the TigerGraph user is not listed in AllowedUsers in /etc/ssh/sshd_config, accommodating advanced authentication configurations in  (TP-5105).
+* Fixed issue with database import hanging caused by the status of a loading job not being received by Kafka streaming library (TP-5772).
+* Allowed installation to continue on Oracle and RedHat Linux, 8 even if the TigerGraph user is not listed in AllowedUsers in /etc/ssh/sshd_config (TP-5105).
+
 
 === Fixed and Improved in 3.10.1
 
