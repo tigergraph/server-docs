@@ -1,0 +1,1452 @@
+  500  cd ../server-docs
+  501  git branch
+  502  git pull
+  503  git checkout 3.9.3
+  504  git checkout 3.10.1
+  505  find . -name "3.10.1"
+  506  grep -R "3.10.1" .
+  507  grep -R "3.10.1" .|grep xref
+  508  grep -R "xref:3.9" .
+  509  grep -R "xref:3.10" .
+  510  cd ../doc-site
+  511  git branch
+  512  git pull
+  513  git checkout main
+  514  grep -R "xref:3.10" .
+  515  cd ../server-docs
+  516  grep -R "xref:3.10" .
+  517  cd ../gsql-docs
+  518  git 
+  519  git branch
+  520  git pull
+  521  git checkout 3.10.1
+  522  git pull
+  523  grep -R "xref:3.10" .
+  524  cd ../gui-docs
+  525  git branch
+  526  git branch --all
+  527   git pull
+  528  git branch --all
+  529  git checkout 3.10.1
+  530  git pull
+  531  grep -R "xref:3.10" .
+  532  cd ../gui-docs
+  533  git branch
+  534  git pull
+  535  grep -R "xref:3.10" .
+  536  cd ../doc-site
+  537  git branch
+  538  git pull
+  539  git branch --all
+  540  git branch
+  541  git checkout -b gsql-reorg-dev
+  542  cd ../gsql-docs
+  543  git branch
+  544  git branch --all
+  545  git checkout  4.1.oMitchellHerbstDraft
+  546  git pull
+  547  git branch
+  548  git status
+  549  git add --all
+  550  git commit -m "create gsql staging branch gsql-reorg-dev"
+  551  git push origin 4.1.oMitchellHerbstDraft
+  552  cd ../doc-site
+  553  git branch
+  554  git checkout main
+  555  git branch -D gsql-reorg-dev
+  556  git checkout staging
+  557  git pull
+  558  git checkout -b gsql-reorg-dev
+  559  git diff
+  560  git add --all
+  561  git commit -m "create dev branch gsql-reorg-dev using gsql version name 4.1-oreg"
+  562  git push origin gsql-reorg-dev
+  563  git pull
+  564  git branch --set-upstream-to=origin/gsql-reorg-dev gsql-reorg-dev
+  565  git pull
+  566  git checkout main 
+  567  git pull
+  568  git branch
+  569  pwd
+  570  cd ../server-docs
+  571  git checkout 3.10.1
+  572  git pull
+  573  git checkout -b DOC-2237-url-version-3.10
+  574  git diff
+  575  git add --all
+  576  git commit -m "DOC-2237-url-version-3.10"
+  577  git push origin DOC-2237-url-version-3.10
+  578  cd ../doc-site
+  579  git branch
+  580  cd ../server-docs
+  581  git checkout 3.10.1
+  582  git branch -D DOC-2237-url-version-3.10
+  583  git checkout -b DOC-2237-url-version-3.10
+  584  git diff
+  585  git status
+  586  git add --all
+  587  git commit -m "DOC-2237-url-version-3.10"
+  588  git push origin DOC-2237-url-version-3.10
+  589  push origin -D DOC-2237-url-version-3.10
+  590  git push origin -d DOC-2237-url-version-3.10
+  591  git push origin DOC-2237-url-version-3.10
+  592  pwd
+  593  git branch
+  594  git checkout 3.10.1
+  595  git pull
+  596  git checkout 3.9.3
+  597  git pull
+  598  git checkout 3.10.1
+  599  cd ../doc-site
+  600  git pull
+  601  cd ../gsql-docs
+  602  git branch
+  603  git checkout 3.10.1
+  604  git pull
+  605  git checkout 4.1.oMitchellHerbstDraft
+  606  cd ../server-docs
+  607  git branch
+  608  git branch
+  609  cd ../cloud-docs
+  610  git branch
+  611  git branch --all
+  612  git status
+  613  git pull
+  614  git checkout victor-test
+  615  git pull
+  616  git checkout -b DOC-2237-url-version-3.10
+  617  git diff
+  618  git add --all
+  619  git branch
+  620  git commit -m "DOC-2237-url-version-3.10"
+  621  git push origin DOC-2237-url-version-3.10
+  622  git log
+  623  git checkout victor-test
+  624  git pull
+  625  git log
+  626  git checkout main
+  627  git pull
+  628  git cherry-pick f000c4f74d21615de0abd3f5141d2bb3f32151b5
+  629  git cherry-pick --reset 
+  630  git cherry-pick --abort f000c4f74d21615de0abd3f5141d2bb3f32151b5 
+  631  git cherry-pick --abort
+  632  git status
+  633  git pull
+  634  git checkout -b DOC-2237-cloud-main
+  635  git diff
+  636  git add --all
+  637  git commit -m "DOC-2237-url-version-3.10"
+  638  git push origin DOC-2237-url-version-3.10
+  639  git push origin DOC-2237-cloud-main
+  640  cd ../doc-site
+  641  git branch
+  642  cd ..
+  643  vi staging-483errors.txt
+  644  pwd
+  645  ls
+  646  gmv mv staging-483errors.txt staging-log-errors.txt
+  647  mv staging-483errors.txt staging-log-errors.txt
+  648  grep ERROR staging-log-errors.txt
+  649  man grep
+  650  grep -c ERROR staging-log-errors.txt
+  651  grep ERROR staging-log-errors.txt |grep -c gsql-ref
+  652  man graph
+  653  man grep
+  654  grep ERROR staging-log-errors.txt |grep -v gsql-ref
+  655  pwd
+  656  cd doc-site
+  657  ls
+  658  git branch
+  659  git pull
+  660  git checkout gsql-reorg-dev
+  661  git status
+  662  diff diff
+  663  git diff
+  664  git status
+  665  git diff
+  666  git diff
+  667  git status
+  668  git branch
+  669  git diff
+  670  git reset --hard
+  671  git pull
+  672  git checkout staging
+  673  git pull
+  674  ls
+  675  git branch
+  676  git checkout gsql-reorg-dev
+  677  git pull
+  678  cd ../gsql-docs
+  679  git docs
+  680  git branch
+  681  cd ../doc-site
+  682  pwd
+  683  git checkout gsql-reorg-dev
+  684  git branch -m gsql-rewrite-dev
+  685  git push origin --delete gsql-reorg-dev
+  686  push -u origin git-rewrite-dev
+  687  git push -u origin git-rewrite-dev
+  688  git branch
+  689  git status
+  690  git push origin git-rewrite-dev
+  691  git push -u origin gsql-rewrite-dev
+  692  git checkout gsql-rewrite-dev
+  693  git pull
+  694  git checkout -b DOC-2236-gsql-rewrite-dev
+  695  git diff
+  696  git add --all
+  697  git commit -m "DOC-2236-gsql-rewrite-dev"
+  698  git push origin DOC-2236-gsql-rewrite-dev
+  699  cd ../gsql-docs
+  700  git branch
+  701  cd ../doc-site
+  702  git branch
+  703  cd ../gsql-docs
+  704  git branch
+  705  git pull
+  706  git checkout -b 4.1-rewrite-dev
+  707  git commit -m "create 4.1-rewrite-dev branch"
+  708  git push origin 4.1-rewrite-dev
+  709  pwd
+  710  git pull
+  711  git checkout
+  712  git branch
+  713  git checkout 3.10.1
+  714  git pull
+  715  git branch --delete 4.1.o
+  716  git checkout -b 4.1.o
+  717  git push origin --delete 4.1.o
+  718  git push origin --delete 4.1.o
+  719  git -u push origin 4.1.o
+  720  git  push origin 4.1.o
+  721  cd ../copilot-docs
+  722  git branch
+  723  git branch --all
+  724  git checkout -b dev
+  725  git commit -m "create dev branch"
+  726  git push origin dev
+  727  cd ../doc-site
+  728  git branch
+  729  git checkout main
+  730  git pull
+  731  git checkout gsql-rewrite-dev
+  732  git pull
+  733  git checkout staging
+  734  pwd
+  735  cd ../cloud-docs
+  736  git branch
+  737  git branch --all
+  738  git status
+  739  git checkout main
+  740  git pull
+  741  git status
+  742  grep -R ":3.10.1@" .
+  743  git checkout dev
+  744  git checkout main
+  745  git branch --all
+  746  git branch --all
+  747  git pull
+  748  grep -R ":3.10.1@" .
+  749  git branch
+  750  git reset --hard
+  751  git checkout -b DOC-2237-cloud-dont-ref-3.10.1
+  752  grep -R ":3.10.1@" .
+  753  git status
+  754  git add --add
+  755  git branch
+  756  git commit -m "DOC-2237-cloud-dont-ref-3.10.1"
+  757  git add --all
+  758  git commit -m "DOC-2237-cloud-dont-ref-3.10.1"
+  759  git push origin DOC-2237-cloud-dont-ref-3.10.1
+  760  git checkout main
+  761  git pull
+  762  git log
+  763  git checkout dev
+  764  git pull
+  765  git cherry-pick a474fbb3cdcb4c44ea6b7eaa07eab864d5df6b02
+  766  git diff
+  767  git push origin dev
+  768  git pull
+  769  grep -R ":3.10.1@" .
+  770  git checkout main
+  771  pwd
+  772  git checkout -b cloud-version-master-to-main
+  773  git status
+  774  git add --all
+  775  git commit -m "cloud-version-master-to-main:
+  776  git commit -m "cloud-version-master-to-main"
+  777  git push origin cloud-version-master-to-main
+  778  history
+  779  git checkout main
+  780  git pull
+  781  git log
+  782  git checkout dev
+  783  git cherry-pick 57fafc082fb2136643a023df84ccda2767d5398d
+  784  git push origin dev
+  785  cd ../doc-site
+  786  git branch
+  787  git checkout cloud-dev
+  788  git pull
+  789  git branch
+  790  git reset --hard
+  791  git pull
+  792  git checkout -b DOC-2236-cloud-dev-playbook
+  793  git status
+  794  git add --all
+  795  git commit -m "DOC-2236-cloud-dev-playbook"
+  796  git push origin DOC-2236-cloud-dev-playbook
+  797  pwd
+  798  git checkout main
+  799  git log
+  800  git pull
+  801  git log
+  802  git reset --hard b7b1ad69df03d7d487d9c1cfd6bbe894fb8028dc
+  803  git pull
+  804  cd ../copilot-docs
+  805  git branch
+  806  git checkout main
+  807  git pull
+  808  grep -R "master@cloud" .
+  809  grep -R -c "master@cloud" .
+  810  grep -R -n "master@cloud" .
+  811  grep -R  "master@cloud" .
+  812  git checkout -b DOC-2239-cloud-main-not-master
+  813  git status
+  814  git add --all
+  815  git commit -m "DOC-2239-cloud-main-not-master"
+  816  git push origin DOC-2239-cloud-main-not-master
+  817  cd ../gui-docs
+  818  git branch
+  819  git pull
+  820  git checkout -b DOC-2239-cloud-main-not-master
+  821  grep -R "master@cloud" .
+  822  git status
+  823  git diff
+  824  git add --all
+  825  git commit -m "DOC-2239-cloud-main-not-master"
+  826  git push origin DOC-2239-cloud-main-not-master
+  827  git checkout 3.10.1
+  828  git pull
+  829  git log
+  830  git checkout 3.9.3
+  831  git pull
+  832  git cherry-pick a93406426e1acae0eaab0a66b7a34f72ce5134cd
+  833  git push origin 3.9.3
+  834  git pull
+  835  git checkout 3.8
+  836  git pull
+  837  git checkout -b DOC-2239-cloud-main-not-master
+  838  git checkout -b DOC-2239-cloud-main-not-master-3.8
+  839  grep -R "master@cloud" .
+  840  git dif
+  841  git diff
+  842  git add --all
+  843  git commit -m "DOC-2239-cloud-main-not-master"
+  844  git push origin DOC-2239-cloud-main-not-master
+  845  git push origin DOC-2239-cloud-main-not-master-3.8
+  846  git checkout 3.8
+  847  git pull
+  848  git log
+  849  git checkout 3.7
+  850  git pull
+  851  git cherry-pick a0bb9d57b1bea6281b7e2b6ffc97f50b3aeea819
+  852  git push origin 3.7
+  853  git checkout 3.6
+  854  git pull
+  855  git cherry-pick a0bb9d57b1bea6281b7e2b6ffc97f50b3aeea819
+  856  git push origin 3.6
+  857  git checkout 3.10.1
+  858  git log
+  859  git checkout 4.1.o
+  860  git pull
+  861  git cherry-pick a93406426e1acae0eaab0a66b7a34f72ce5134cd
+  862  git push origin 4.1.o
+  863  cd ../server-docs
+  864  git checkout 3.10.1
+  865  git pull
+  866  git checkout -b DOC-2239-cloud-main-not-master
+  867  grep -R "master@cloud" .
+  868  git diff
+  869  git add --all
+  870  git commit -m "DOC-2239-cloud-main-not-master"
+  871  git push origin DOC-2239-cloud-main-not-master
+  872  git checkout 3.10.1
+  873  git pull
+  874  git log
+  875  git checkout 3.9.3
+  876  git pull
+  877  grep -R "master@cloud" .
+  878  git checkout 4.1.o
+  879  git pull
+  880  grep -R "master@cloud" .
+  881  git cherry-pick fe5be52bd95b459d49c34bfd478c3aca7e51794f
+  882  git cherry-pick --abort
+  883  cd ../doc-site
+  884  git checkout cloud-dev
+  885  git pull
+  886  pwd
+  887  git checkout staging
+  888  git checkout -b DOC-2237-xref-3.10.1-in-staging
+  889  git status
+  890  git diff
+  891  git add --all 
+  892  git branch
+  893  git commit -m "DOC-2237-xref-3.10.1-in-staging"
+  894  git push origin DOC-2237-xref-3.10.1-in-staging
+  895  git checkout staging
+  896  git pull
+  897  git ../copilot-docs
+  898  git branch --all
+  899  cd ../copilot-docs
+  900  git branch --all
+  901  git checkout main
+  902  git pull
+  903  git checkout dev
+  904  git pull
+  905  pwd
+  906  cd ../doc-site
+  907  git checkout cloud-dev
+  908  git pull
+  909  git checkout -b copilot-dev
+  910  git push origin copilot-dev
+  911  git checkout -b DOC-2236-create-copilot-dev
+  912  git diff
+  913  git add --all
+  914  gir branch
+  915  git branch
+  916  git commit -m "DOC-2236-create-copilot-dev"
+  917  git push origin DOC-2236-create-copilot-dev
+  918  pwd
+  919  git branch
+  920  git checkout copilot-dev
+  921  git pull
+  922  cd ../copilot-docs
+  923  git checkout dev
+  924  grep -R "master@cloud" .
+  925  cd ../gsql-docs
+  926  grep -R "find_degree_of_cats" .
+  927  cd ../server-docs
+  928  git branch
+  929  git pull
+  930  git checkout 3.10.1
+  931  git pull
+  932  git pull
+  933  git log
+  934  git checkout 3.9.3
+  935  git pull
+  936  git cherry-pick 8215a8bd24ec495c87ea7d3d5827a88c91c9e9ed
+  937  git push origin 3.9.3
+  938  git checkout 4.1.o
+  939  git pull
+  940  git cherry-pick 8215a8bd24ec495c87ea7d3d5827a88c91c9e9ed
+  941  git push origin 4.1.o
+  942  cd ../gsql-docs
+  943  git branch
+  944  git pull
+  945  git log
+  946  git pull
+  947  git log
+  948  git branch 4.1.o
+  949  git checkout 4.1.o
+  950  git pull
+  951  git branch --set-upstream-to=origin/4.1.o 4.1.o
+  952  git pull
+  953  git cherry-pick f278de8035e6464903474e3e8508a1dca073ae17
+  954  pwd
+  955  cd ../server-docs
+  956  grep -R xref .|grep "adoc#|more
+  957  grep -R xref .|grep "adoc#"|more
+  958  history
+  959  ls
+  960  cd Documents
+  961  ls
+  962  cd Github
+  963  ls
+  964  cd Documentation
+  965  ls
+  966  cd server-docs
+  967  git branch
+  968  git pull
+  969  cd ../doc-site
+  970  git branch
+  971  git pull
+  972  cd ../gsql-docs
+  973  git branch
+  974  git pull
+  975  cd /Users/victorlee/Documents/Github/Documentation
+  976  ls -al
+  977  ls -ald
+  978  ps -p $$
+  979  ls -F
+  980  ls -G
+  981  ll
+  982  ls
+  983  ls -lG
+  984  nvm --version
+  985  nvm install --lts
+  986  wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash\n
+  987  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash\n
+  988  cd /Users/victorlee/Documents/Github/Documentation/antora-ui
+  989  nvm install --lts
+  990  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash\n
+  991  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash\n
+  992  ls -al
+  993  ls -lG
+  994  cd .nvm
+  995  ls -al
+  996  cd ..
+  997  ls -lG
+  998  pwd
+  999  vi .zshrc
+ 1000  cat .zshrc
+ 1001  cd /Users/victorlee/Documents/Github/Documentation/antora-ui\n
+ 1002  nvm install --lts
+ 1003  nvm alias default 20
+ 1004  npx gulp
+ 1005  npm --version
+ 1006  npm install -g npm@10.8.3
+ 1007  npm fund
+ 1008  npm install -g npm@10.8.3
+ 1009  npx gulp
+ 1010  npm install
+ 1011  npm audit
+ 1012  npm audit fix
+ 1013  npm audit
+ 1014  npm install
+ 1015  npm i
+ 1016  ls
+ 1017  ls -al
+ 1018  npx gulp -v
+ 1019  npx gulp --tasks-simple
+ 1020  cd Downloads
+ 1021  cd ../server-docs
+ 1022  git branch
+ 1023  git pull
+ 1024  git status
+ 1025  git diff
+ 1026  git reset --hard
+ 1027  git diff
+ 1028  git pul
+ 1029  git pull
+ 1030  git checkout -b DOC-2312-fix-broken-link
+ 1031  git checkout 4.1.o
+ 1032  git branch -D DOC-2312-fix-broken-link
+ 1033  git checkout -b DOC-2312-fix-broken-link
+ 1034  grep -R "region-aware" .
+ 1035  grep diff
+ 1036  git diff
+ 1037  git branch
+ 1038  git add --all
+ 1039  git commit -m "DOC-2312-fix-broken-link"
+ 1040  git push origin DOC-2312-fix-broken-link
+ 1041  git checkout 4.1.o
+ 1042  git pull
+ 1043  pwd
+ 1044  git branch
+ 1045  git pull
+ 1046  pwd
+ 1047  git checkout 3.10.1
+ 1048  git pull
+ 1049  git branch
+ 1050  git checkout -b DOC-2120-disabled-quries-udf
+ 1051  git checkout 3.10.1
+ 1052  git branch -D DOC-2120-disabled-quries-udf
+ 1053  git checkout gsql-docs
+ 1054  git checkout gsql-doc
+ 1055  git checkout ../gsql-docs
+ 1056  cd ..
+ 1057  git checkout gsql-docs
+ 1058  cd gsql-docs
+ 1059  ls
+ 1060  git branch
+ 1061  git pull
+ 1062  git checkout 3.10.1
+ 1063  git pull
+ 1064  git checkout -b DOC-2120-disabled-quries-udf
+ 1065  cd ..
+ 1066  grep -R '/ddl' .|grep -Ri header
+ 1067  cd server-docs
+ 1068  grep -Rw "/ddl" .|grep -Ri header
+ 1069  grep -Rw "/ddl" .
+ 1070  clear
+ 1071  clear
+ 1072  grep -Rw "/ddl" .
+ 1073  pwd
+ 1074  git branch
+ 1075  pull
+ 1076  git pull
+ 1077  git log
+ 1078  git checkout 3.11.0
+ 1079  git pull
+ 1080  git cherry-pick 3624b5da9e5d9e6b62c1ec0f5d20ef4c7bffc1b2
+ 1081  git push origin 3.11.0
+ 1082  git check
+ 1083  git log
+ 1084  git checkout 3.11.0
+ 1085  git pull
+ 1086  git cherry-pick f01c835aa60de14719e36e49afcd6b160edd8b8c
+ 1087  git push origin 3.11.0
+ 1088  git checkout 4.1.o
+ 1089  git pull
+ 1090  git checkout DOC-2314-4.1-REST-fixes
+ 1091  git checkout -b DOC-2314-4.1-REST-fixes
+ 1092  grep -R "built-in-endpoints-v3" .
+ 1093  grep -R "built-in-endpoints" .
+ 1094  clear
+ 1095  grep -R "built-in-endpoints-v3" .
+ 1096  grep -R "built-in-endpoints-v3" .
+ 1097  grep diff
+ 1098  git diff
+ 1099  git branch
+ 1100  git branch -m DOC-2314-fix-filename
+ 1101  git add --all
+ 1102  git commit -m "DOC-2314-fix-filename"
+ 1103  git push origin DOC-2314-fix-filename
+ 1104  git pull
+ 1105  git checkout 4.1.o
+ 1106  git pull
+ 1107  cd ../doc-site
+ 1108  git branch
+ 1109  git checkout main
+ 1110  git pull
+ 1111  cd ../server-docs
+ 1112  grep -R "gsql-ref:gsql-endpoints" .
+ 1113  find . -name GSQL.png -print
+ 1114  cd ../gsql-docs
+ 1115  find . -name GSQL.png -print
+ 1116  cd ../server-docs
+ 1117  cd ../doc-site
+ 1118  git branch main
+ 1119  git checkout main
+ 1120  git pull
+ 1121  git branch
+ 1122  git checkout 3-11-0-dev
+ 1123  git pull
+ 1124  git checkout -b 3-10
+ 1125  git diff
+ 1126  git add --all
+ 1127  git commit -m "create staging branch 3-10"
+ 1128  git push origin 3-10
+ 1129  cd ../main
+ 1130  git pull
+ 1131  ls
+ 1132  git branch
+ 1133  git checkout 3-11-0-dev
+ 1134  git pull
+ 1135  git checkout -b ui-dev
+ 1136  cd ../server-docs
+ 1137  cd ..
+ 1138  ls
+ 1139  pwd
+ 1140  history
+ 1141  history 50
+ 1142  cd doc-site
+ 1143  git branch 3-10
+ 1144  git checkout 3-10
+ 1145  git pull
+ 1146  git  branch --set-upstream-to=origin/3-10 3-10
+ 1147  git pull
+ 1148  git checkout -b DOC-2315-fix-3-10-home
+ 1149  git diff
+ 1150  git add --all
+ 1151  git commit -m "DOC-2315-fix-3-10-home"
+ 1152  git push origin DOC-2315-fix-3-10-home
+ 1153  git checkout 3-10
+ 1154  git pull
+ 1155  grep "@3.2"
+ 1156  grep -R "@3.2" .
+ 1157  pwd
+ 1158  git branch
+ 1159  cd ../server-docs
+ 1160  git checkout 3.10.1
+ 1161  git pull
+ 1162  grep -R "@3.2" .
+ 1163  grep -R "3.2@" .
+ 1164  grep -Rn "3.2@" .
+ 1165  grep -Rl "3.2@" .
+ 1166  grep -Rl "3.3@" .
+ 1167  grep -Rl "3.4@" .
+ 1168  grep -Rl "3.5@" .
+ 1169  grep -Rl "3.2@" .
+ 1170  pwd
+ 1171  grep -Rl "3.2@" .
+ 1172  grep -R "3.2@" .
+ 1173  grep -R "3.2@" .
+ 1174  grep -Rl "3.3@" .
+ 1175  grep -R "3.3@" .
+ 1176  grep -Rl "3.4@" .
+ 1177  grep -R "13.2.png" .
+ 1178  grep -R "13.2.png" .adoc
+ 1179  grep -Rl "3.4@" .adoc
+ 1180  grep -Rl "3.5@" .adoc
+ 1181  grep -Rl "3.5@" .
+ 1182  git status
+ 1183  git add --all
+ 1184  git branch
+ 1185  git commit -m "DOC-2317-dont-reference-old-versions"
+ 1186  git push origin DOC-2317
+ 1187  git checkout -b DOC-2317
+ 1188  git push origin DOC-2317
+ 1189  git pull
+ 1190  git checkout 3.10.1
+ 1191  git pull
+ 1192  git checkout DOC-2317
+ 1193  git checkout 3.10.1
+ 1194  git log
+ 1195  git branch
+ 1196  git checkout 3.6
+ 1197  git diff
+ 1198  git diff
+ 1199  git checkout 3.6
+ 1200  git pull
+ 1201  git cherry-pick 7c5f9b8a4e8228e168cde9e72c1aed7719f3491e
+ 1202  git cherry-pick 53827f0cfa80751bc8a3fb66e99d8cebecedc0c0
+ 1203  git cherry-pick --abort
+ 1204  git branch
+ 1205  git diff
+ 1206  git status
+ 1207  git add --all
+ 1208  git commit -m "DOC-2317, 3.6"
+ 1209  git checkout -b DOC-2317-3.6
+ 1210  git push origin DOC-2317-3.6
+ 1211  pwd
+ 1212  git branch
+ 1213  git checkout 3.6
+ 1214  git pull
+ 1215  git diff
+ 1216  grep -Rl "3.2@" .
+ 1217  git branch
+ 1218  git checkout 3.10.1
+ 1219  git pull
+ 1220  cd ../doc-site
+ 1221  git checkout 3-10
+ 1222  git pull
+ 1223  pwd
+ 1224  git status
+ 1225  git diff
+ 1226  git diff
+ 1227  git pull
+ 1228  cd ../antora-ui
+ 1229  git statu
+ 1230  git status
+ 1231  cd ../server-docs
+ 1232  git status
+ 1233  git pull
+ 1234  cd ../gsql-docs
+ 1235  git status
+ 1236  git checkout 3.10.1
+ 1237  git pull
+ 1238  git checkout DOC-2120-disabled-quries-udf
+ 1239  cd ../gui-docs
+ 1240  git status
+ 1241  git checkout 3.10.1
+ 1242  git pull
+ 1243  cd ../insights-docs
+ 1244  git status
+ 1245  git checkout 3.10.1
+ 1246  git pull
+ 1247  cd ..
+ 1248  ls
+ 1249  cd cloud
+ 1250  cd cloud-docs
+ 1251  git status
+ 1252  git pull
+ 1253  cd ../antora-ui
+ 1254  git --version
+ 1255  node --version
+ 1256  npx gulp
+ 1257  npm install -g npm@10.9.0
+ 1258  npx gulp
+ 1259  ls
+ 1260  git branch
+ 1261  git checkout -b nav-with-versions
+ 1262  nvm --version
+ 1263  git checkout main
+ 1264  git diff
+ 1265  git reset --hard
+ 1266  git diff
+ 1267  git branch
+ 1268  git branch -D nav-with-versions
+ 1269  git branch -b nav-with-versions
+ 1270  git checkout -b nav-with-versions
+ 1271  git diff
+ 1272  node --version
+ 1273  nvm --version
+ 1274  nvm uninstall 0.40.1
+ 1275  nvm --version
+ 1276  nvm uninstall --help
+ 1277  nvm --version
+ 1278  pwf
+ 1279  pwd
+ 1280  cd 
+ 1281  ls -al
+ 1282  rm -r .nvm
+ 1283  chmod -R +w ./nvm
+ 1284  chmod -R +w .nvm
+ 1285  rm -r .nvm
+ 1286  cd /Users/victorlee/Documents/Github/Documentation/antora-ui
+ 1287  nvm install --lts
+ 1288  git diff
+ 1289  npx gulp
+ 1290  git diff
+ 1291  node --version
+ 1292  npm i -g gulp-cli
+ 1293  ls -al package-lock.json
+ 1294  ls -al node_modules
+ 1295  rm -r node_modules
+ 1296  rm package-lock.json
+ 1297  node --version
+ 1298  npx gulp
+ 1299  npm install
+ 1300  rm -r node_modules
+ 1301  rm package-lock.json
+ 1302  npm install --lts
+ 1303  npx gulp
+ 1304  node --version
+ 1305  pwd
+ 1306  cd
+ 1307  chmod -R +w .nvm
+ 1308  rm -r .nvm
+ 1309  cd /Users/victorlee/Documents/Github/Documentation/antora-ui
+ 1310  rm -r node_modules
+ 1311  rm package-lock.json
+ 1312  nvm install --help
+ 1313  nvm install 18.20.4
+ 1314  ls -al ~
+ 1315  npx gulp
+ 1316  npm install --lts
+ 1317  npm audit fix
+ 1318  node --version
+ 1319  npx gulp
+ 1320  npm i -g gulp-cli
+ 1321  gulp --version
+ 1322  npx gulp --tasks-simple
+ 1323  npx gulp preview:build
+ 1324  pwd
+ 1325  npx gulp bundle
+ 1326  npx gulp preview:build
+ 1327   npm i -g gulp-cli bundle
+ 1328  pwd
+ 1329  ls
+ 1330  pwd
+ 1331   npm i -g gulp-cli bundle:pack
+ 1332   npm i -g gulp-cli
+ 1333  npx gulp bundle
+ 1334  git status
+ 1335  history 50
+ 1336  rm -r ~/.nvm
+ 1337  chmod -R +w .nvm
+ 1338  chmod -R +w node_modules
+ 1339  rm -r node_modules
+ 1340  rm package-lock.json
+ 1341  nvm install 16.20.2
+ 1342  norm --version
+ 1343  node --version
+ 1344  npm install --lts
+ 1345  npm audit fix
+ 1346  npx gulp
+ 1347  git status
+ 1348  npx gulp
+ 1349  ls -al
+ 1350  git diff
+ 1351  git status
+ 1352  cd ..
+ 1353  ls
+ 1354  cd antora-ui
+ 1355  npx gulp
+ 1356  cd ../doc-site
+ 1357  git checkout main
+ 1358  git pull
+ 1359  git checkout -b ui-dev
+ 1360  cd checkout ui-dev
+ 1361  git checkout ui-dev
+ 1362  cd ../antora-ui
+ 1363  git status
+ 1364  git add --all
+ 1365  git commit -m "1st experiment changing nav"
+ 1366  git push origin -u nav-with-versions
+ 1367  cd ../doc-site
+ 1368  git statut
+ 1369  git status
+ 1370  git add -all
+ 1371  git add --all
+ 1372  git commit -m "ui-dev"
+ 1373  git push origin -u ui-dev
+ 1374  npx gulp preview
+ 1375  cd ../antora-ui
+ 1376  npx gulp preview
+ 1377  cd public
+ 1378  cd partials
+ 1379  ls
+ 1380  cd ..
+ 1381  cd public
+ 1382  cd _
+ 1383  cd partials
+ 1384  ls
+ 1385  git mkdir original
+ 1386  mkdir original
+ 1387  cp -p header* original
+ 1388  cd ../..
+ 1389  ls
+ 1390  cd ..
+ 1391  pwd
+ 1392  cd src
+ 1393  cd partials
+ 1394  ls header*
+ 1395  cd ../
+ 1396  cd ../public/_/partials
+ 1397  ls nav*
+ 1398  cp -p nav* original
+ 1399  cd ../../..
+ 1400  cd src/partials
+ 1401  cp nav* ../../public/_/partials
+ 1402  cd ../..
+ 1403  npx gulp preview
+ 1404  npx gulp preview:build
+ 1405  git status
+ 1406  git add --all
+ 1407  git commit -m "try OLD nav-explore"
+ 1408  git push origin nav-with-versions
+ 1409  npx gulp
+ 1410  git status
+ 1411  git add --all
+ 1412  git commit -m "try OLD nav-explore, with ui-bundle"
+ 1413  git push origin nav-with-versions
+ 1414  git status
+ 1415  npx gulp
+ 1416  git add --all
+ 1417  git commit -m "try OLD nav-explore, with ui-bundle"
+ 1418  git push origin nav-with-versions
+ 1419  git status
+ 1420  git add --all
+ 1421  git commit -m "try OLD nav-explore, with ui-bundle"
+ 1422  git push origin nav-with-versions
+ 1423  git branch
+ 1424  git status
+ 1425  npx gulp
+ 1426  git status
+ 1427  git add --all
+ 1428  git commit -m "use Spring2024 nav, except original page-versions.hbs"
+ 1429  git push origin nav-with-versions
+ 1430  grep -R nav-explore-hidden .
+ 1431  git status
+ 1432  npx gulp
+ 1433  git add --all
+ 1434  git commit -m "nav.css: undo nav-panel-explore display=none; add missing </li> in nat-explore.hbs""
+ 1435  git commit -m "nav.css: undo nav-panel-explore display=none; add missing </li> in nat-explore.hbs"
+ 1436  git push origin nav-with-versions
+ 1437  npx gulp
+ 1438  git add --all
+ 1439  git commit -m "nav-explore.hbs: move old code (version choser) from the bottom to the top"
+ 1440  git push origin nav-with-versions
+ 1441  grep -R "Explore" src/partials/.
+ 1442  grep -R "Explore" .
+ 1443  cd src
+ 1444  grep -R "Explore" .
+ 1445  ls
+ 1446  pwd
+ 1447  cd ..
+ 1448  cd ..
+ 1449  ls
+ 1450  cd antora-ui
+ 1451  git status
+ 1452  npx gulp
+ 1453  git add --all
+ 1454  git commit -m "nav-explore.hbs: comment out spring2024 menu"
+ 1455  git push origin nav-with-versions
+ 1456  npx gulp
+ 1457  git add --all
+ 1458  git commit -m "nav-explore.hbs: remove spring2024 menu"
+ 1459  git push origin nav-with-versions
+ 1460  pwd
+ 1461  cd ../server-docs
+ 1462  grep -R ":kubernetes" .
+ 1463  cd ../doc-site
+ 1464  git branch
+ 1465  cd ../server-docs
+ 1466  grep -R page-aliases .
+ 1467  git status
+ 1468  git status
+ 1469  pwd
+ 1470  cd ../antora-ui
+ 1471  pwd
+ 1472  cd ..
+ 1473  pwd
+ 1474  doc_temp
+ 1475  mkdir doc_temp
+ 1476  cd doc_temp
+ 1477  git clone git@github.com:tigergraph/antora-ui.git
+ 1478  git checkout main
+ 1479  cd antora-ui
+ 1480  git checkout main
+ 1481  git pull
+ 1482  pwd
+ 1483  cd ../
+ 1484  cd ..
+ 1485  ls
+ 1486  mv antori-ui-code antora-ui-code
+ 1487  cd antora-ui
+ 1488  git checkout ui-dev
+ 1489  ls
+ 1490  git branch
+ 1491  git status
+ 1492  git pull
+ 1493  pwd
+ 1494  ls ..
+ 1495  vi ~/.zshrc
+ 1496  source ~/.zshrc
+ 1497  ls
+ 1498  cd ..
+ 1499  diff antora-ui/* doc_temp/antora-ui/*
+ 1500  diff -r antora-ui doc_temp/antora-ui
+ 1501  diff -rq antora-ui doc_temp/antora-ui
+ 1502  diff -rq antora-ui doc_temp/antora-ui|grep diff
+ 1503  clear
+ 1504  diff -rq antora-ui doc_temp/antora-ui|grep diff
+ 1505  diff -rq antora-ui/src/partials/nav.hbs doc_temp/antora-ui/src/partials/nav.hbs
+ 1506  diff  antora-ui/src/partials/nav.hbs doc_temp/antora-ui/src/partials/nav.hbs
+ 1507  cd antora-ui
+ 1508  git branch
+ 1509  pwd
+ 1510  pwd
+ 1511  cd ..
+ 1512  ls
+ 1513  cd antora-ui-code
+ 1514  ls
+ 1515  cd spring2024
+ 1516  ls
+ 1517  cd ..
+ 1518  ls *
+ 1519  clear
+ 1520  ls *
+ 1521  pwd
+ 1522  cd ../antora-ui
+ 1523  git checkout main
+ 1524  ls
+ 1525  cat src/partials/nav.hbs
+ 1526  cp src/partials/nav.hbs ../antora-ui-code/spring2024
+ 1527  pwd
+ 1528  pwd
+ 1529  git checkout nav-with-versions
+ 1530  pwd
+ 1531  cd ../server-docs
+ 1532  git checkout 4.1.o
+ 1533  git pull origin 4.1.o
+ 1534  git pull
+ 1535  git checkout DOC-2210
+ 1536  git merge 4.1.o
+ 1537  git status
+ 1538  git reset --hard
+ 1539  git branch
+ 1540  git checkout 4.1.o
+ 1541  git pull
+ 1542  git checkout DOC-2210-remove-VLAC-redo
+ 1543  git checkout -b DOC-2210-remove-VLAC-redo
+ 1544  grep -Rw 'ACCESS_TAG' .
+ 1545  grep -Rw 'ACCESS_TAG' .|grep -v VLAC.adoc
+ 1546  clear
+ 1547  grep -Rwl 'ACCESS_TAG' .|grep -v VLAC.adoc
+ 1548  grep -Rwl 'ACCESS_TAG' .|grep -v vlac.adoc
+ 1549  grep -Rwl 'ACCESS_TAG' .|grep -v vlac.adoc
+ 1550  grep -Rwl 'ACCESS_TAG' .|grep -v vlac.adoc
+ 1551  grep -Rw 'ACCESS_TAG' .|grep -v vlac.adoc
+ 1552  git status
+ 1553  git diff
+ 1554  git branch
+ 1555  grep -Rw 'ACCESS_TAG' .
+ 1556  git status
+ 1557  git add --all
+ 1558  git branch
+ 1559  git commit -m "DOC-2210-remove-VLAC-redo"
+ 1560  git push origin DOC-2210-remove-VLAC-redo
+ 1561  git checkout 4.1.o
+ 1562  git pull
+ 1563  grep -Rw 'ACCESS_TAG' .
+ 1564  grep -Rw 'VLAC' .
+ 1565  cd ../gsql-docs
+ 1566  git branch
+ 1567  git status
+ 1568  git checkout 4.1.o
+ 1569  git pull
+ 1570  grep -Rwl 'TAGGABLE' .
+ 1571  grep -Rwl 'TAG' .
+ 1572  grep -Rw 'TAG' .
+ 1573  cd ../server-docs
+ 1574  git checkout 3.10.1
+ 1575  git pull
+ 1576  grep -Rw 'vlac.adoc' .
+ 1577  git checkout 4.1.o
+ 1578  git pull
+ 1579  grep -Rw "source,gsql" .
+ 1580  cd ../antora-ui
+ 1581  git branch
+ 1582  git status
+ 1583  git pull
+ 1584  git checkout main
+ 1585  git pull
+ 1586  find . -name highlight -print
+ 1587  grep -Rw "[NOTE]" .
+ 1588  grep -Rw '[NOTE]' .
+ 1589  grep -Rw '\[NOTE\]' .
+ 1590  cd ../server-docs
+ 1591  grep -Rw '\[NOTE\]' .
+ 1592  pwd
+ 1593  git branch
+ 1594  git pull
+ 1595  grep -Rw 'log-path' .
+ 1596  grep -Rw 'log.path' .
+ 1597  pwd
+ 1598  git branch
+ 1599  git pull
+ 1600  fgrep -R "log.file" .
+ 1601  fgrep -R "log.path" .
+ 1602  git pull
+ 1603  fgrep -R "log.path" .
+ 1604  git pull
+ 1605  fgrep -R "log.path" .
+ 1606  fgrep -R "log.file" .
+ 1607  fgrep -Rl "log.file" .
+ 1608  fgrep -Ri "ASK" .
+ 1609  fgrep -R "ASK" .
+ 1610  pwd
+ 1611  git checkout 3.6
+ 1612  git pull
+ 1613  fgrep -R "ASK" .
+ 1614  fgrep -R "AKS" .
+ 1615  git checkout 3.7
+ 1616  git pull
+ 1617  fgrep -R "AKS" .
+ 1618  fgrep -R "ASK" .
+ 1619  git checkout 3.8
+ 1620  git pull
+ 1621  fgrep -R "ASK" .
+ 1622  fgrep -R "AKS" .
+ 1623  git checkout 4.1.o
+ 1624  pwd
+ 1625  git checkout 3.9
+ 1626  git checkout 3.9.3
+ 1627  git pull
+ 1628  git checkout 4.1.o
+ 1629  git checkout -b DOC-1742-memory-tracking-gpr-only
+ 1630  git status
+ 1631  git diff
+ 1632  git branch
+ 1633  git add --all
+ 1634  git commit -m " DOC-1742-memory-tracking-gpr-only"
+ 1635  git push origin  DOC-1742-memory-tracking-gpr-only
+ 1636  cd ../doc-site
+ 1637  git status
+ 1638  git checkout main
+ 1639  git pull
+ 1640  cd ../gsql-docs
+ 1641  git checkout 3.9.3
+ 1642  git pull
+ 1643  git pull
+ 1644  git log
+ 1645  git checkout 3.10.1
+ 1646  git pull
+ 1647  git cherry-pick e21fbaa5f1fa33c0e6087dcd9cce7d24ed5821a1
+ 1648  git status
+ 1649  git cherry-pick --abort
+ 1650  git checkout -b DOC-2206-fix-multiedge-examples
+ 1651  git diff
+ 1652  git add --all
+ 1653  git branch
+ 1654  git commit -m "DOC-2206-fix-multiedge-examples"
+ 1655  git push origin DOC-2206-fix-multiedge-examples
+ 1656  git checkout 3.10.1
+ 1657  git log
+ 1658  git checkout 3.11.0
+ 1659  git pull
+ 1660  git cherry-pick 71f1d3052e4daff8845aab7198249099825b773e
+ 1661  git cherry-pick --abort
+ 1662  git checkout 4.1.o
+ 1663  git pull
+ 1664  git checkout -b DOC-2206-fix-multiedge-examples-4.1
+ 1665  git diff
+ 1666  git add --all
+ 1667  git branch
+ 1668  git commit -m "DOC-2206-fix-multiedge-examples-4.1"
+ 1669  git push origin DOC-2206-fix-multiedge-examples-4.1
+ 1670  git checkout 4.1.o
+ 1671  git pull
+ 1672  git log
+ 1673  git checkout 3.11.0
+ 1674  git pull
+ 1675  git cherry-pick bd6bdc77a1cd200b9d5b7da8882085a27dd4b8ca
+ 1676  git push origin 3.11.0
+ 1677  git branch
+ 1678  git checkout 4.1.o
+ 1679  git pull
+ 1680  cd ../server-docs
+ 1681  git checkout 4.1.o
+ 1682  git pull
+ 1683  git checkout -b DOC-2267-HA-min-size
+ 1684  git status
+ 1685  git diff
+ 1686  git branch
+ 1687  git add --all
+ 1688  git commit -m "DOC-2267-HA-min-size"
+ 1689  git push origin DOC-2267-HA-min-size
+ 1690  git checkout 4.1.o
+ 1691  git pull
+ 1692  git log
+ 1693  git checkout 3.11.0
+ 1694  git pull
+ 1695  git cherry-pick 9b6d8d53a991a0fb4345dcad8cbeb112438fe5e9
+ 1696  git status
+ 1697  git cherry-pick --abort
+ 1698  git pull
+ 1699  git branch
+ 1700  git cherry-pick 9b6d8d53a991a0fb4345dcad8cbeb112438fe5e9
+ 1701  git status
+ 1702  git cherrypick --abort
+ 1703  git cherry-pick --abort
+ 1704  git checkout 3.11.0
+ 1705  git branch
+ 1706  git checkout -b DOC-2267-HA-min-size-3.11
+ 1707  git diff
+ 1708  git diff
+ 1709  git branch
+ 1710  git status
+ 1711  git add --all
+ 1712  git commit -m "DOC-2267-HA-min-size-3.11"
+ 1713  git push origin DOC-2267-HA-min-size-3.11
+ 1714  git checkout 3.11.0
+ 1715  git pull
+ 1716  git log
+ 1717  git checkout 3.10.1
+ 1718  git pull
+ 1719  git cherry-pick e0c2015ee6d5c4299037b99604515ecface5c589
+ 1720  git push origin 3.10.1
+ 1721  git checkout 3.9.3
+ 1722  git pull
+ 1723  git cherry-pick e0c2015ee6d5c4299037b99604515ecface5c589
+ 1724  git status
+ 1725  fgrep -R "<< HEAD" .
+ 1726  fgrep -R ">> HEAD" .
+ 1727  git add --all
+ 1728  git cherry-pick --continue
+ 1729  git push origin 3.9.3
+ 1730  git checkout 3.9.3
+ 1731  git pull
+ 1732  git checkout 3.10.1
+ 1733  git pull
+ 1734  git checkout 3.11.0
+ 1735  git pull
+ 1736  git checkout 4.1.0
+ 1737  git checkout 4.1.o
+ 1738  git pull
+ 1739  fgrep -R "showlicenseinfo" .
+ 1740  git checkout 3.11.0
+ 1741  fgrep -R "showlicenseinfo" .
+ 1742  git checkout 3.10.1
+ 1743  fgrep -R "showlicenseinfo" .
+ 1744  git checkout 3.9.3
+ 1745  fgrep -R "showlicenseinfo" .
+ 1746  git checkout 3.6.3
+ 1747  git checkout 3.6
+ 1748  fgrep -R "showlicenseinfo" .
+ 1749  git checkout 3.7
+ 1750  fgrep -R "showlicenseinfo" .
+ 1751  git checkout 3.5
+ 1752  git checkout 3.8
+ 1753  git pull
+ 1754  git checkout -b DOC-1850-remove-showlicenseinfo
+ 1755  git diff
+ 1756  git add --all
+ 1757  git branch
+ 1758  git add --all
+ 1759  git commit -m "DOC-1850-remove-showlicenseinfo"
+ 1760  git push origin DOC-1850-remove-showlicenseinfo
+ 1761  git checkout 3.8
+ 1762  git pull
+ 1763  git log
+ 1764  git checkout 3.7
+ 1765  git pull
+ 1766  git cherry-pick 091937015f97f2ee438366014ca9a01167f3c30e
+ 1767  git push origin 3.7
+ 1768  git checkout 3.6
+ 1769  git pull
+ 1770  git cherry-pick 091937015f97f2ee438366014ca9a01167f3c30e
+ 1771  git push origin 3.6
+ 1772  git pull
+ 1773  cd ..
+ 1774  ls
+ 1775  git tigdsl-docs
+ 1776  cd tigdsl-docs
+ 1777  git branch
+ 1778  git pull
+ 1779  git checkout -b DOC-1968-fix-param-names
+ 1780  git status
+ 1781  git diff
+ 1782  git add --all
+ 1783  git branch
+ 1784  git commit -m "DOC-1968-fix-param-name"
+ 1785  git push origin DOC-1968-fix-param-name
+ 1786  git push origin DOC-1968-fix-param-names
+ 1787  git add --all
+ 1788  git commit -m "DOC-1968-fix-param-names"
+ 1789  git push origin DOC-1968-fix-param-names
+ 1790  git checkout 3.9.2
+ 1791  git pull
+ 1792  git checkout -b 3.10
+ 1793  git push origin -u 3.10
+ 1794  cd ../gsql-docs
+ 1795  git pull
+ 1796  git branch
+ 1797  git checkout -b DOC-2028-missing-string-funcs
+ 1798  cd ../server-docs
+ 1799  git branch
+ 1800  git checkout 3.11.0
+ 1801  fgrep -R "queires" .
+ 1802  git checkout 4.1.o" .
+ 1803  git checkout 4.1.o 
+ 1804  fgrep -R "queires" .
+ 1805  git pull
+ 1806  fgrep -R "queires" .
+ 1807  pwd
+ 1808  cd ../gsql-docs
+ 1809  git branch
+ 1810  git status
+ 1811  git diff
+ 1812  git branch
+ 1813  git add --all
+ 1814  git commit -m 'DOC-2028-missing-string-funcs'
+ 1815  git push origin DOC-2028-missing-string-funcs
+ 1816  cd ../server-docs
+ 1817  git checkout 4.1.o
+ 1818  git pull
+ 1819  git log
+ 1820  git checkout 3.11.0
+ 1821  git pull
+ 1822  git cherrypick b90d72f4b148db3436d17417b11b0d7199e9e0a4
+ 1823  git cherry-pick b90d72f4b148db3436d17417b11b0d7199e9e0a4
+ 1824  git cherry-pick b90d72f4b148db3436d17417b11b0d7199e9e0a4
+ 1825  git cherry-pick b200c4a505450a8a45b1df9e40fababcf8aac8bf
+ 1826  git checkout 4.1.o
+ 1827  git pull
+ 1828  pef
+ 1829  pwd
+ 1830  cd ../gsql-docs
+ 1831  ls
+ 1832  cd modules
+ 1833  cd ls
+ 1834  ls
+ 1835  ls *
+ 1836  cd ddl-and-loading
+ 1837  ls
+ 1838  cd images
+ 1839  ls
+ 1840  cd ..
+ 1841  cd ..
+ 1842  ls
+ 1843  ls */images
+ 1844  pwd
+ 1845  find . -name creating-a-graph-schema.adoc -print
+ 1846  find . -name creating-a-graph-schema -print
+ 1847  pwd
+ 1848  cd ..
+ 1849  pwd
+ 1850  git branch
+ 1851  git status
+ 1852  git add --all
+ 1853  git commit -m "DOC-2028-missing-string-funcs"
+ 1854  git push origin DOC-2028-missing-string-funcs
+ 1855  git checkout 4.1.o
+ 1856  git pull
+ 1857  git log
+ 1858  git checkout 3.11.0
+ 1859  git pull
+ 1860  git cherry-pick 1314f5dc22ef83c38d8f67e1311066cba683d69b
+ 1861  git status
+ 1862  git checkout 4.1.o
+ 1863  git cherry-pick --abort
+ 1864  git checkout 4.1.o
+ 1865  git checkout 3.11.0
+ 1866  git branch
+ 1867  git checkout -b DOC-2028-missing-string-funcs-3.11
+ 1868  git status
+ 1869  git status
+ 1870  git diff
+ 1871  git diff
+ 1872  git diff
+ 1873  git diff
+ 1874  git add --all
+ 1875  git branch
+ 1876  git commit -m "DOC-2028-missing-string-funcs-3.11"
+ 1877  git push origin DOC-2028-missing-string-funcs-3.11
+ 1878  git checkout 3.11.0
+ 1879  git log
+ 1880  git checkout 3.10.1
+ 1881  git pull
+ 1882  git cherry-pick c4547b977b6e2e8f553be76b766005d2fa56512d
+ 1883  git cherry-pick --abort
+ 1884  git log
+ 1885  git branch
+ 1886  git pull
+ 1887  git cherry-pick 66a2145aaad82b8c2e4624529f79ee97de7f3072
+ 1888  git push origin 3.10.1
+ 1889  git checkout 3.9.3
+ 1890  git pull
+ 1891  git cherry-pick 66a2145aaad82b8c2e4624529f79ee97de7f3072
+ 1892  git push origin 3.9.3
+ 1893  git checkout 3.10.1
+ 1894  git pull
+ 1895  cd ../server-docs
+ 1896  git checkout 3.10.1
+ 1897  git pull
+ 1898  git checkout -b DOC-2257-openmetrics-output
+ 1899  git checkout 3.10.1
+ 1900  git checkout -b DOC-2304-3.10.2-releasenotes
+ 1901  fgrep -R "checkschema" .
+ 1902  git pull
+ 1903  pwd
+ 1904  pwd
+ 1905  git branch
+ 1906  git status
+ 1907  git add --all
+ 1908  git commit -m "DOC-2304-3.10.2-releasenotes"
+ 1909  git push origin DOC-2304-3.10.2-releasenotes
+ 1910  git add --all
+ 1911  git commit -m "DOC-2304-3.10.2-releasenotes"
+ 1912  git push origin DOC-2304-3.10.2-releasenotes
+ 1913  git checkout 3.10.1
+ 1914  git pull
+ 1915  git checkout -b DOC-1302-openmetrics-added-output-3.10
+ 1916  cd ../gsql[-docs
+ 1917  cd ../gsql-docs
+ 1918  git checkout 4.1.o
+ 1919  git pull
+ 1920  find . -name data_types.adoc -print
+ 1921  find . -name data_types.adoc
+ 1922  ls
+ 1923  find . -name antora.yml -print
+ 1924  find . -name antora.yml 
+ 1925  find . -name data-types.adoc
+ 1926  find . -name sample_query.gsql
+ 1927  git checkout -b DOC-2322-broken-link-virtualedge
+ 1928  git status
+ 1929  git diff
+ 1930  git branch
+ 1931  git add --all
+ 1932  git commit -m "DOC-2322-broken-link-virtualedge"
+ 1933  git push origin DOC-2322-broken-link-virtualedge
+ 1934  pwd
+ 1935  git branch
+ 1936  git add --all
+ 1937  git commit -m "DOC-2322-broken-link-virtualedge"
+ 1938  git push origin DOC-2322-broken-link-virtualedge
+ 1939  git checkout 4.1.o
+ 1940  git pull
+ 1941  git branch
+ 1942  cd ../server-docs
+ 1943  git branch
+ 1944  git checkout 4.1.o
+ 1945  git pull
+ 1946  git checkout -b DOC-2327-missing-image
+ 1947  cd modules
+ 1948  cd API
+ 1949  cd images
+ 1950  ls
+ 1951  history 500
