@@ -27,6 +27,8 @@ Here you can find the row policy EBNF examples for reference.
 
 * Currently, we only support row policy on vertices, not on edges.
 
+* Row policy will only regulate the read-related operations for vertices, including read, update and delete.
+
 * A global vertex can only hold one global row policy and cannot apply a local row policy on a global vertex in a graph.
 
 * `LOADACCUM` will be blocked if the vertex type to be loaded has a row policy.
@@ -38,3 +40,9 @@ Here you can find the row policy EBNF examples for reference.
 ** Commands that are related to built-in functions on graph, such as:
 *** `select count(*)` from `vertexType`
 *** xref:tigergraph-server:API:built-in-endpoints.adoc[].
+
+* Upsert-related operations are not regulated by row policies:
+** GSQL Query:  For both installed query and interpret query, top level and dml-level xref:gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO] statement.
+** REST API `POST /graph/{graph_name}` xref:tigergraph-server:API:upsert-rest.adoc[]
+** Loading job: (file loading and kafka loading) loading an existing vertex with new attribute value.
+** REST API `POST /ddl`: (for spark loading job) loading an existing vertex with new attribute value. xref:tigergraph-server:API:built-in-endpoints.adoc#_run_a_loading_job[]
