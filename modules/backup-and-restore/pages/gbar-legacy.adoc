@@ -118,8 +118,6 @@ The full name of the backup archive will be `<backup_tag>-<timestamp>`, which is
 * If `System.Backup.Local.Enable` is set to `true`, the folder is a local folder on every node in a cluster, to avoid massive data moving across nodes in a cluster.
 * If `System.Backup.S3.Enable` is set to `true`, every node will upload data located on the node to the s3 repository. Therefore, every node in a cluster needs access to Amazon S3.
 
-IMPORTANT: If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC.
-
 GBAR Backup performs a live backup, meaning that normal operations may continue while the backup is in progress.
 When GBAR backup starts, GBAR checks if there are running loading jobs.
 If there are, it pauses loading for 1 minute to generate a snapshot and then continue the backup process.
