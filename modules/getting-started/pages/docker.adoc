@@ -103,7 +103,7 @@ $ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulim
 ----
 
 [NOTE]
-If you intend to have multiple versions or instances of the same version of TigerGraph in the same Docker environment, make sure that you specify a a different <3> contain name and <6> volume name to avoid collusion and accidental reuse of an earlier volume.
+If you intend to have multiple instances of TigerGraph in the same Docker environment, whether they are the same version or not, we advise using unique <3> container names and <6> volume names for each one, to avoid accidental reuse or interference between volumes.
 
 == Connect to your container (via SSH or `docker exec`)
 
