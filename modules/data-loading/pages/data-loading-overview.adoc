@@ -38,7 +38,7 @@ TigerGraph uses the same workflow for both local file and Kafka Connect loading:
 . *Specify a graph*.
 Data is always loading to exactly one graph (though that graph could have global vertices and edges which are shared with other graphs). For example:
 +
-[source,php]
+[source,gsql]
 USE GRAPH ldbc_snb
 
 . If you are using Kafka Connect, *define a `DATA_SOURCE` object*.
@@ -64,7 +64,7 @@ image::data-loading:loading_arch_3.9.3.png[Architectural diagram showing support
 == Loading Jobs
 A loading job tells the database how to construct vertices and edges from data sources.
 
-[source,php]
+[source,gsql]
 .CREATE LOADING JOB syntax
 ----
 CREATE LOADING JOB <job_name> FOR GRAPH <graph_name> {

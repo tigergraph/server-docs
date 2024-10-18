@@ -13,8 +13,8 @@ To configure the data source object, the minimum requirement is the address of t
 .Data source configuration for external Kafka
 ----
 {
-"type": "mirrormaker",
-"source.cluster.bootstrap.servers": "<broker_addrs>"
+  "type": "mirrormaker",
+  "source.cluster.bootstrap.servers": "<broker_addrs>"
 }
 ----
 
@@ -25,8 +25,16 @@ If the source cluster is configured for SSL or SASL protocols, you need to provi
 * If the source cluster uses SASL *and* SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster.
 Each file must be at the same absolute path on all nodes.
 
-The following configurations are required for admin, producer and consumer. To supply the configuration for the corresponding component, replace `<prefix>` with `source.admin`, `producer`, or `consumer`.
+The following configurations are required for admin, producer and consumer. Basically Kafka allows SSL settings overriding, it respects security settings in precedence order: generic.ssl.setting < source/target.cluster.ssl.setting < admin/producer/consumer.ssl.setting.
+
+If both source and target clusters are sharing the same SSL settings, user can set generic settings for both source/target clusters and all the rols(admin/producer/consumer). For example, user can set "ssl.keystore.location=/path/to/key/store" instead of "source.cluster.ssl.keystore.location=/path/to/key/store", or "admin.ssl.keystore.location=/path/to/key/store", or even "source.cluster.admin.ssl.keystore.location=/path/to/key/store".
+
+If source and target clusters have different SSL settings, to make things simple, users can simply set cluster wide SSL configs, e.g., "target.cluster.ssl.truststore.password=/password/for/trust/store", instead of "target.cluster.producer.ssl.trust.password=/password/for/trust/store".
+
+To supply the configuration for the corresponding component, replace `<prefix>` with `source(/or target).cluster`, `source(or target).cluster.admin(or producer, consumer)`, `admin`, `producer`, or `consumer`.
 For example, to specify `GSSAPI` as the SASL mechanism for consumer, include `"consumer.sasl.mecahnism": "GSSAPI"` in the data source configuration.
+
+Note: SSL is now well supported by TigerGraph, we recommend users to set up regular SSL rather than SASL + PlainText/SSL.
 
 [%header,cols="1,2"]
 |===
