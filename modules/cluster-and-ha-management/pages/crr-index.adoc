@@ -27,6 +27,7 @@ The following information is automatically synced from the primary cluster to th
 * All schema change jobs
 * All users and roles
 * All queries in every graph. Queries that are installed in the primary cluster are automatically installed in the DR cluster.
+* All loading jobs
 
 == Exclusions
 
@@ -34,9 +35,6 @@ The following information and commands are *not* synced to the DR cluster:
 
 * GraphStudio metadata
 ** This includes graph layout data and user icons for GraphStudio.
-* Loading jobs
-** This refers to the loading job definitions only.
-Data loaded through a loading job is still replicated from the primary to the DR cluster.
 * `gadmin` configurations (e.g. `gadmin config set GSQL.BasicConfig.LogConfig.LogLevel DEBUG`)
 
 The following commands/actions and will *stop* syncing to the DR cluster:
