@@ -64,7 +64,7 @@ Features not yet supported:
 In summary, all necessary operations to set up VLAC graphs and users are supported in GSQL. Due to a known bug, standard users (with `querywriter` and `queryreader` roles) can run some DDL operations which they should not be able to.
 ====
 
-We'll use the graph xref:3.2@gsql-ref:querying:appendix-query/example-graphs.adoc#_socialnet[socialNet] as an example in the following sections.
+We'll use the graph xref:gsql-ref:appendix:example-graphs.adoc#_social_net[socialNet] as an example in the following sections.
 
 == Tag Management
 
@@ -259,10 +259,10 @@ There are three main options for tagging vertices in the base graph.
 
 === Add tags on existing data
 
-In GSQL, special vertex methods are provided to access and modify the tags of a vertex in a DML query (full list available on page xref:3.2@gsql-ref:querying:func/vertex-methods.adoc[]).
+In GSQL, special vertex methods are provided to access and modify the tags of a vertex in a DML query (full list available on page xref:gsql-ref:querying:func/vertex-methods.adoc[]).
 These functions are only available for vertex aliases (defined in the `FROM` clause of a `SELECT` statement); they cannot be applied to vertex variables in other contexts.
 
-There are xref:3.2@gsql-ref:querying:func/vertex-methods.adoc[8 DML-level tag-access functions] in the vertex-query block or edge-query block. Use the xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_addtags[addTags()] function to tag a vertex.
+There are xref:qsql-ref:querying:func/vertex-methods.adoc[8 DML-level tag-access functions] in the vertex-query block or edge-query block. Use the xref:gsql-ref:querying:func/vertex-methods.adoc#_addtags[addTags()] function to tag a vertex.
 
 ==== Required privilege
 
@@ -301,7 +301,7 @@ CREATE QUERY addTagsToPerson() {
 }
 ----
 
-Use xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_removetags[] and xref:3.2@gsql-ref:querying:func/vertex-methods.adoc#_removealltags[] to remove tags from vertices:
+Use xref:gsql-ref:querying:func/vertex-methods.adoc#_removetags[] and xref:gsql-ref:querying:func/vertex-methods.adoc#_removealltags[] to remove tags from vertices:
 
 [source,gsql]
 ----
