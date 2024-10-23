@@ -1223,7 +1223,7 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 
 |System.Backup.CompressProcessNumber |The number of concurrent process
 for compression during backup. Value `0` means the number of processes
-used to compress equals the node CPU’s cores. |`0`
+used to compress equals the node CPU’s cores. |`10`
 
 |System.Backup.DecompressProcessNumber | The number of concurrent processes for decompression during the restore.
 | `8`
@@ -1232,22 +1232,22 @@ used to compress equals the node CPU’s cores. |`0`
 ("BestSpeed", "DefaultCompression", "BestCompression")
 | "DefaultCompression"
 
-|System.Backup.Local.Enable |Backup data to local path *IMPORTANT*: If set to `true`, this also enables a daily full backup at 12:00am UTC. |`false`
+|System.Backup.Local.Enable |Backup data to local path |`false`
 
-|System.Backup.Local.Path |The path to store the backup files |`nan`
-|System.Backup.S3.AWSAccessKeyID |The AWS access key ID for s3 bucket of
-backup |`nan`
+|System.Backup.Local.Path |The path to store the backup files |`null`
+|System.Backup.S3.AWSAccessKeyID |The AWS access key ID used for the S3 backup bucket. It corresponds to the "Access Key" in GCS and the "Account Name" in Azure Blob, respectively. | `null`
 
-|System.Backup.S3.AWSSecretAccessKey |The secret access key for s3
-bucket |`nan`
+|System.Backup.S3.AWSSecretAccessKey |The secret access key used for the AWS S3 bucket. It corresponds to the "Secret" in GCS and the "Account Key" in Azure Blob, respectively.  |`null`
 
-|System.Backup.S3.BucketName |The S3 bucket name |`nan`
+|System.Backup.S3.BucketName |The S3 bucket name. It corresponds to the "Bucket" in GCS and the "Container" in Azure Blob, respectively. | `null`
 
-|System.Backup.S3.Enable |Backup data to S3 path |`false`
+|System.Backup.S3.Enable |Data is backed up to various S3-compatible storage services, including AWS S3, S3-compatible services such as Ceph S3, 
+and specifically supported services like Google Cloud Storage (GCS) and Azure Blob Storage. 
+The specific storage service used for the backup is determined by the `System.Backup.S3.Endpoint` configuration setting. |`false`
 
-|System.Backup.S3.Endpoint | Endpoint to use instead of the S3 default endpoint. Must be a fully qualified URL.
-Typically used when operating in a private network or with a non-AWS S3-compatible endpoint. | null
-
+|System.Backup.S3.Endpoint 
+a| A fully qualified URI, such as https://s3.amazonaws.com/, 
+is used to specify the storage service’s endpoint for the client.| `null`
 
 |System.Backup.TimeoutSec |The backup timeout in seconds |`18000`
 
