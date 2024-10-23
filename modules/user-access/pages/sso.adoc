@@ -344,6 +344,16 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 |Security.SSO.SAML.SignatureAlgorithm |Signature algorithm
 [rsa-sha1/rsa-sha256/rsa-sha384/rsa-sha512]: default rsa-sha256
 |`+rsa-sha256+`
+
+|Security.SSO.SAML.SP.SignonBinding |SAML protocol binding[POST/Redirect]
+to be used when returning the <Response> or sending the <LogoutRequest> message.
+Its value is `+POST+` in the general case, but `+Redirect+` for IDP ADFS.
+|`+POST+`
+
+|Security.SSO.SAML.SP.LogoutBinding |SAML protocol binding[POST/Redirect]
+for the Single Logout Service of the SP.
+|`+Redirect+`
+
 |===
 
 == Create user groups with proxy rules to authorize single sign-on users
