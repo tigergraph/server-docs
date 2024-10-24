@@ -37,13 +37,21 @@ Some commands will call `gadmin reset gpe` implicitly, so the CDC will reset sim
 When GSE is reset (`gadmin reset gse`), the CDC may lose some mapping between vid and uid.
 The "uid" field in generated CDC message results as "UNKNOWN".
 
+== CDC HA
+
+High Availability (HA) support for the CDC service was introduced in version 3.11. Before this version, the CDC service (manager) operated exclusively on replica 1 of each GPE partition.
+
+As of version 3.11, the CDC service operates on the GPE leader within each GPE partition. In each GPE partition, as long as there is at least one live node, a leader will be elected, and the CDC service should function normally.
+
+For instance, in a 2x2 cluster, if only GPE_1#1 and GPE_2#2 are online among all GPE servers, the CDC service should still operate without issues.
+
+Please note that when the GPE leader switches, duplicate CDC messages may be produced and sent to external Kafka. This occurs because the new GPE leader is unaware of how many CDC messages the previous leader has produced. To deduplicate the produced CDC messages, utilize the "mid" field within the messages.
+
+If you wish to disable CDC High Availability (HA) in a multi-replica cluster and keep the CDC service running only on replica 1, you can do so by accessing the GPE feature manager. Use the command `gadmin config entry GPE.BasicConfig.Features` and remove the `"CDC_HA"` entry from the list.
+
 == CDC Limitations
 
 === Limitation on CDC Setup
-==== No HA support
-This CDC feature does not yet support xref:tigergraph-server:cluster-and-ha-management:ha-overview.adoc[High Availability (HA)].
-Additionally, the “CDC service” only runs on Replica 1.
-When Replica 1 is down, the CDC service will also stop working.
 
 ==== Not applicable on DR cluster
 CDC is intended to record changes to a data source.

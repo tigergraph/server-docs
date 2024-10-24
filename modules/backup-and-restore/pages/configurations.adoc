@@ -32,6 +32,12 @@ Required if backup is to be stored on S3.
 *NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.
 |`+nan+`
 
+|System.Backup.S3.RoleARN |The AWS role for accessing s3 buckets.
+S3 Role ARN takes priority over access keys. For more information, see link:https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html[AWS role ARN documentation].
+
+*NOTE*: This is only for AWS S3, and TigerGraph assumes the credentials for using `sts:AssumeRole` have been set up. You can verify the credentials are ready by running link:https://docs.aws.amazon.com/cli/latest/reference/sts/assume-role.html#examples[aws sts assume-role]. One way to set up credentials is to configure access key id, secret access key and region with AWS CLI `aws configure`.
+|`+nan+`
+
 |System.Backup.S3.BucketName |Name of the S3 bucket to store backup files.
 Required if backup is to be stored on S3.|null
 
@@ -64,7 +70,7 @@ IMPORTANT: If `System.Backup.Local.Enable` is set to `true`, this also enables a
 
 Running `gadmin config entry backup` allows you to enter the value for each parameter individually.
 
-Alternatively, you can also use `gadmin config set <parameter>` to change the value of any parameter.
+Alternatively, you can use `gadmin config set <parameter>` to change the value of any parameter.
 
 After configuring the parameters, run `gadmin config apply` to apply the new parameter values.
 
@@ -109,11 +115,8 @@ to configure backup files to an AWS S3 Bucket for an on-premise TigerGraph Serve
 
 . Create an `AccessKeyID` and `SecretAccessKey` for the IAM user
 +
-Long-lived credentials are what TigerGraph clusters use to authenticate to AWS as the IAM user.
-Allowing TigerGraph access to put backup files into the S3 bucket.
-Also, to read/copy the files during the restore process.
-+
-NOTE: TigerGraph does not support short-lived credentials as of TigerGraph 3.9.3.
+TigerGraph clusters use long-lived credentials to authenticate to AWS as the IAM user, allowing TigerGraph access to put backup files into the S3 bucket.
+These credentials are also used to read and copy files during a Restore process.
 
 . Configure each of the following parameters on the linux command line:
 +
@@ -139,6 +142,13 @@ gadmin config set "System.Backup.S3.AWSAccessKeyID" "<access-key-id>"
 [console,]
 ----
 gadmin config set "System.Backup.S3.AWSSecretAccessKey" "<secret-access-key>"
+----
++
+Alternatively, instead of using `AccessKeyID` and `SecretAccessKey`, you may use link:https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-arnsp[AWS Role ARN] for the authentication.
++
+[console,]
+----
+gadmin config set "System.Backup.S3.RoleARN" "arn:aws:iam::account:role/role-name-with-path"
 ----
 +
 .Apply the new parameter values

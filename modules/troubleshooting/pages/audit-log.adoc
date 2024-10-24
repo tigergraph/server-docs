@@ -1,5 +1,6 @@
 = Audit Logs
 :pp: {plus}{plus}
+:page-aliases: troubleshooting:audit-logs.adoc
 
 Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
@@ -136,9 +137,31 @@ There is a “DatabaseName” field appended to the header of each audit log fil
 The value of this field is "TigerGraph" by default.
 
 .You can modify this value by running the following command:
-[console]
+[source, console]
 ----
 $ gadmin config set System.Audit.DataBaseName <database-name>
+----
+
+==== `gadmin` Customizable Configs
+
+You can configure `gadmin` command’s audit logging rotation rules with the following gadmin configs:
+
+.You can modify the lifetime of a file with the following command:
+[source, console]
+----
+gadmin config set Gadmin.BasicConfig.LogConfig.LogFileMaxDurationDay: <lifetime of a file>
+----
+
+.You can modify the file rotation size with the following command:
+[source, console]
+----
+gadmin config set Gadmin.BasicConfig.LogConfig.LogFileMaxSizeMB: <file rotation size>
+----
+
+.You can modify the rotation file number with the following command:
+[source, console]
+----
+gadmin config set Gadmin.BasicConfig.LogConfig.LogRotationFileNumber: <the rotation file number>
 ----
 
 == Consuming Audit Logs
@@ -152,7 +175,7 @@ Audit log files are separated by GSQL service and REST++ API calls. Both having 
 
 * `log.AUDIT-GSQL` for the GSQL service.
 * `log.Audit-RESTPP` for direct REST++ API calls.
-
+* `log.Audit-GADMIN` for `gadmin` command executions.
 ====
 
 .Here is an example of a whole audit log file:
@@ -264,6 +287,26 @@ Values in `requestParams` and `requestBody` will be masked if they contain PII d
   "message": "<success/error message>"
 }
 ----
+
+=== gadmin Audit Logs
+
+Audit logs for gadmin command executions are found in the `log.Audit-GADMIN` file.
+
+Besides the basic information such as `timestamp`, `OS`, `username`, they capture the `gadmin` commands executed on the node and the outcomes:
+
+.Here is an example of the event after running command: `gadmin start all`
+[source, console]
+----
+{
+"timestamp": "2024-05-13 23:45:34.940",
+"session id": 1418,
+"OS username": "tigergraph",
+"host": "10.128.0.48",
+"command": "gadmin start all",
+"status": "SUCCESS"
+}
+----
+
 
 == Known Issues
 

@@ -1,0 +1,80 @@
+= Point-in-Time Restore
+
+Point-in-Time Restore, introduced in version 3.11, enables users to restore the database to a previous time point using previously made backups, even though no backup was conducted at exactly that time point.
+This feature relies on the user having made one or more xref:tigergraph-server:backup-and-restore:differential-backups.adoc[differential backups].
+
+== Usage
+
+To perform point-in-time restore, run the following command.
+The timepoint should be in timestamp format.
+
+[console, gsql]
+----
+$ gadmin backup restore <timepoint_to_restore> --time-point
+----
+
+For example, if you want to restore the cluster to the time `2024-06-01T14:24:31Z` , run `gadmin backup restore 2024-06-01T14:24:31Z --time-point`
+
+NOTE: The restore operation has 1 second granularity.  Fractional sections will be ignored.
+
+Point-in-Time Restore relies on both full and differential backups to restore the database to a specific time. When selecting a time point for restoration, it is crucial to ensure that the chosen time point meets certain conditions. Specifically, the time point must not fall under the following cases:
+
+
+* Time Points Before the First Full Backup or After the Current Time:
+- The selected time point cannot be earlier than the first full backup or later than the current system time. This is because the restore process needs a reference point from an existing full backup, and restoring to a future time is not possible.
+- Example: If the first full backup was made on 2024-06-01T00:00:00Z, you cannot restore to any time before this, such as 2024-05-31T23:59:59Z. Similarly, if the current time is 2024-06-15T12:00:00Z, you cannot restore to a time like 2024-06-16T00:00:00Z.
+* Time Points Not Covered by Existing Backups
+- The selected time point must be within the range of an existing backup’s coverage. A time point is considered "not covered" if it does not fall within the time range defined by any backup's POINT-IN-TIME START TIME and CREATED AT timestamps. You can verify the backup’s time ranges by running the gadmin backup list command. Here is an example:
+
+[console, gsql]
+---
+$ gadmin backup list
+|================================================================================================================================================
+|             TAG              |    TYPE     | VERSION |  SIZE  |             BASE             | POINT-IN-TIME START TIME |      CREATED AT
+| backup-2024-06-13T061939.131 | FULL        | 4.1.0   | 1.5 MB |                              | 2024-06-13T06:19:39Z     | 2024-06-13T06:19:39Z
+| backup-2024-06-13T063915.054 | INCREMENTAL | 4.1.0   | 1.5 MB | backup-2024-06-13T061939.131 | 2024-06-13T06:19:39Z     | 2024-06-13T06:39:15Z
+| backup-2024-06-13T081939.120 | FULL        | 4.1.0   | 1.5 MB |                              | 2024-06-13T08:19:39Z     | 2024-06-13T08:19:39Z
+|================================================================================================================================================
+---
+
+In this example, the time range for backup `backup-2024-06-13T061939.131` is `[2024-06-13T06:19:39Z,2024-06-13T06:19:39Z]`, therefore, for a full backup is just a point. As for the incremental backup `backup-2024-06-13T063915.054`, its range is `[2024-06-13T06:19:39Z , 2024-06-13T06:39:15Z]`. `2024-06-13T06:35:00Z` is supported for it is covered by the time range `[2024-06-13T06:19:39Z , 2024-06-13T06:39:15Z]` of the backup `backup-2024-06-13T063915.054`. While, users can’t restore to the timepoint `2024-06-13T07:00:00Z` directly, for it is not in any backup's time range. However, if no restore was performed since `2024-06-13T07:00:00Z`, users may be able to create a new differential backup at right now and then restore to `2024-06-13T07:00:00Z`.
+
+
+[NOTE]
+====
+because the restore action will make the uncovered timepoint unavailable to restore, if you are not very sure about the time point to restore,  we’d better ensure the possible time points are all covered by existing backups. if there is not this kind of backup, you may create a by `gadmin backup create <backup_tag> --incremental --base <full_backup_tag>`, the new backup will cover the range from the full backup <full_backup_tag>'s create time to the current time.
+====
+
+== Key Benefits
+
+The primary advantage of Point-in-Time Restore is the flexibility it offers, allowing users to restore the database to a specific time point. This feature is particularly useful in scenarios where unwanted changes or data corruption need to be undone without losing other valuable work done after the last backup.
+
+.Key Benefit Scenario
+====
+. A user creates a full backup on __Sunday__.
+
+. During the week, user creates a differential backup on every day 10pm.
+
+. On Thursday, user finds there are unwanted changes made on Wednesday around 2pm.
+
+. User can restore system to 1:55pm of Wednesday instead of the backup made on Tuesday 10pm.
+
+. The changes made between Tuesday 10pm and Wednesday 1:55pm are saved this way.
+====
+
+Summery of key benefits:
+
+* Precise recover time point to save a much as possible correct work made to database.
+
+
+== Limitations and Considerations
+
+Currently, the Point-in-Time Restore feature has these known limitations:
+
+.Point-in-Time Restore examples.
+image::PIT_restore.png[]
+
+* GSQL Content: The GSQL content, such as schemas and RBAC settings, cannot be restored to the exact version at the provided time point. After a Point-in-Time Restore, these elements will reflect the version of the nearest differential backup used.
+* Precision Window: Point-in-Time Restore operates with a precision window of a few minutes. To ensure optimal data consistency, it is recommended to restore to a time point at least 2-3 minutes before the timestamp of any unwanted changes.
+* Coverage: Point-in-Time Restore cannot be performed for timestamps not covered by an existing differential backup. If the desired time point is not covered, a new differential backup must be created before performing the restore.
+** To maximize the potential of Point-in-Time Restore, users are expected to do backups regulary. A good example can be doing weekly full backup and daily differential backup in days between two full backups.

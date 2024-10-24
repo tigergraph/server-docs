@@ -1,9 +1,18 @@
 = Load from Spark Dataframe
+:toc:
 
-The TigerGraph Spark Connector is used with
+The TigerGraph Spark Connector employs
 https://spark.apache.org[Apache Spark] to read data from a Spark DataFrame (or Data Lake) and write to TigerGraph.
+This connector has multiple optimizations for high performance, scalability, and management.
 
-Users can leverage it to connect TigerGraph to the Spark ecosystem and load data from any Spark data sources, e.g.:
+
+== Compatibility
+* TigerGraph 3.6.0 or higher.
+Job level loading statistics are only available for v3.10+.
+* Spark 3.2 or higher with Scala 2.12 and Scala 2.13.
+* JAVA 8 or higher.
+
+Users can leverage it to connect TigerGraph to the Spark ecosystem and load data from any Spark-compatible data sources, such as:
 
 * Distributed file system: HDFS, S3, GCS and ABS
 * Streaming source: Kafka
@@ -17,76 +26,16 @@ xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_fr
 xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_iceberg[Iceberg]
 and xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_load_data_from_hudi[Hudi]
 
-This connector has multiple optimisations and is backward compatible with TigerGraph v3.6.0+. Although, the job level loading statistics is only available for v3.10.0+.
-
 [IMPORTANT]
 ====
-The legacy xref:tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection Via JDBC Driver] will be deprecated. Please migrate to this new connector.
+The legacy xref:tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection Via JDBC Driver] is deprecated. Please migrate to this new connector.
 ====
 
-== Prerequisite
+== Overview
 
+The first step is to read data into a Spark dataframe. Then, using a TigerGraph loading job which maps data fields from the dataframe into graph elements, the connector pulls data from Spark into TigerGraph.
 
-=== Create a Loading Job
-[console, gsql]
-----
-gsql '
-    CREATE VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME, locationIP STRING, browserUsed STRING, content STRING, length UINT) WITH primary_id_as_attribute="TRUE", STATS="outdegree_by_edgetype"
-    CREATE GRAPH demo_graph (*)
-'
-
-gsql -g demo_graph '
-    CREATE LOADING JOB load_Comment FOR GRAPH test_graph {
-        DEFINE FILENAME file_Comment;
-        LOAD file_Comment
-            TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
- }
-'
-----
-
-=== Compatibility
-* TigerGraph 3.6.0 or higher.
-* Spark 3.2 or higher with Scala 2.12 and Scala 2.13.
-* JAVA 8 or higher.
-
-=== Download the JARs
-This connector can be downloaded from maven central repository:
-https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector/overview[Maven Central]
-it has 3 types of release format:
-
-* `tigergraph-spark-connector-<version>.jar`: The `JAR` file containing only the compiled classes of the connector, which does not include any dependencies.
-* `tigergraph-spark-connector-<version>-jar-with-dependencies.jar`: The `JAR` file that includes compiled classes, as well as all the dependencies.
-* `tigergraph-spark-connector-<version>.tar.gz`: The compressed `TAR` archive that includes `tigergraph-spark-connector-<version>.jar` and dependencies in separate `JAR` files.
-
-To use TigerGraph Spark connector in a Spark Shell:
-
-.use the `--jars` option:
-[console]
-----
-spark-shell --jars tigergraph-spark-connector-<version>-jar-with-dependencies.jar
-----
-
-[NOTE]
-====
-If you want to include TigerGraph Spark Connector in your Spark installation, add the `JAR` with dependencies to Spark's `jars` folder.
-====
-
-=== Configure Logging
-
-It’s highly recommended to set log level to info to monitor the loading status.
-Configure a Spark log4j `conf/log4j2.properties` as follows, or other SLF4j bindings if any:
-
-[console]
-----
-logger.tg.name = com.tigergraph
-logger.tg.level = info
-----
-
-=== Overview
-TigerGraph Spark loading is leveraging `/ddl` endpoint.
-It requires a pre-defined loading job, then the dataframe will be processed as follows:
-
-.Spark dataframe:
+.Spark dataframe example:
 [console]
 ----
 +--------------------+-------------+-------------+-----------+--------------------+------+
@@ -120,100 +69,62 @@ the processed data would be:
     - loading.filename = "file_Comment"
 ----
 
-To let TigerGraph parse the data chunk correctly, please make sure you are setting `loading.separator` and `loading.eol` to an unique character.
+To let TigerGraph parse the data chunk correctly, please make sure you are setting `loading.separator` and `loading.eol` to characters which do not appear in your data fields.
 
-=== Batch Write
 
-.Create the variables:
-[source, scala]
-----
-val GRAPH = "demo_graph"
-val URL = "http(s)://hostname:port[,http(s)://hostname:port]*"
-val USERNAME = "tigergraph"
-val PASSWORD = "tigergraph"
-val LOADING_JOB = "load_Comment"
-val FILENAME = "file_Comment"
-val SEPARATOR = "|"
-----
+== Setup
 
-.Read data from any Spark data sources into the dataframe:
-[source, scala]
-----
-val df = spark.read.json("path/to/person.json")
-----
+=== Download the JARs
+This connector can be downloaded from the Maven central repository:
+https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector/overview[Maven Central].
+The connector is available in 3 release formats:
 
-.Batch write the data into TigerGraph:
-[source, scala]
-----
-df.write
-    .format("tigergraph")
-    .mode("append")
-    .options(
-        Map(
-            "graph" -> GRAPH,
-            "url" -> URL,
-            "username" -> USERNAME,
-            "password" -> PASSWORD,
-            "loading.job" -> LOADING_JOB,
-            "loading.filename" -> FILENAME,
-            "loading.separator" -> SEPARATOR
-        )
-    )
-    .save()
-----
+* `tigergraph-spark-connector-<version>.jar`: The `JAR` file containing only the compiled classes of the connector, which does not include any dependencies.
+* `tigergraph-spark-connector-<version>-jar-with-dependencies.jar`: The `JAR` file that includes compiled classes, as well as all the dependencies.
+* `tigergraph-spark-connector-<version>.tar.gz`: The compressed `TAR` archive that includes `tigergraph-spark-connector-<version>.jar` and dependencies in separate `JAR` files.
 
-=== Write with Spark Structured Streaming API
+To use the TigerGraph Spark connector in a Spark shell, use the `--jars` option:
 
-.Create the variables:
-[source, scala]
+[console]
 ----
-val GRAPH = "Social_Net"
-val URL = "http(s)://hostname:port"
-val USERNAME = "tigergraph"
-val PASSWORD = "tigergraph"
-val LOADING_JOB = "load_person"
-val FILENAME = "f1"
-val SEPARATOR = "|"
-----
-
-.Read data from any Spark streaming data sources into the dataframe:
-[source, scala]
-----
-val df = spark.readStream
-    .format("kafka")
-    .option("subscribe", "person")
-    .load()
-    .selectExpr("CAST(value AS STRING)").as[(String)]
-----
-
-.Streaming write data to TigerGraph:
-[source, scala]
-----
-df.writeStream
-    .outputMode("append")
-    .format("tigergraph")
-    .option("checkpointLocation", "/path/to/checkpoint")
-    .options(
-        Map(
-            "graph" -> GRAPH,
-            "url" -> URL,
-            "username" -> USERNAME,
-            "password" -> PASSWORD,
-            "loading.job" -> LOADING_JOB,
-            "loading.filename" -> FILENAME,
-            "loading.separator" -> SEPARATOR
-        )
-    )
-    .start()
-    .awaitTermination()
+spark-shell --jars tigergraph-spark-connector-<version>-jar-with-dependencies.jar
 ----
 
 [NOTE]
 ====
-Authenticate with the username/password or secret to support refreshing the token, otherwise, make sure the lifetime of the token is long enough for your purposes.
+If you want to include the TigerGraph Spark Connector in your Spark installation, add the `JAR` with dependencies to Spark's `jars` folder.
 ====
 
-== Configuration
+
+=== Create a Loading Job
+
+This loading job should map the dataframe's columns to the desired graph element attributes.
+
+[console, gsql]
+.Example of simple graph schema and loading job
+----
+gsql '
+    CREATE VERTEX Comment (PRIMARY_ID id UINT, creationDate DATETIME, locationIP STRING, browserUsed STRING, content STRING, length UINT) WITH primary_id_as_attribute="TRUE", STATS="outdegree_by_edgetype"
+    CREATE GRAPH demo_graph (*)
+'
+
+gsql -g demo_graph '
+    CREATE LOADING JOB load_Comment FOR GRAPH test_graph {
+        DEFINE FILENAME file_Comment;
+        LOAD file_Comment
+            TO VERTEX Comment VALUES ($1, $0, $2, $3, $4, $5) USING header="true", separator="|";
+ }
+'
+----
+
+== Configure the Connector
+
+[IMPORTANT]
+====
+If you are using Spark Connector 0.2.0+, the following configuration parameters are required:
+`version`, `log.level`,`log.path`.
+====
+
 [separator=¦ ]
 |===
 ¦ Key ¦ Default Value ¦  Description ¦ Group
@@ -304,14 +215,14 @@ Only available for TigerGraph version 3.10.0+.
 ¦ The initial retry interval for transient server errors.
 ¦ Loading Job
 
-¦ `loading.max.retry.interval.ms`
-¦ 30000
-¦ The maximum retry interval for transient server errors.
-¦ Loading Job
-
 ¦ `loading.max.retry.attempts`
 ¦ 10
 ¦ The maximum retry attempts for transient server errors.
+¦ Loading Job
+
+¦ `loading.max.retry.interval.ms`
+¦ 30000
+¦ The maximum retry interval for transient server errors.
 ¦ Loading Job
 
 ¦ `ssl.mode`
@@ -364,9 +275,124 @@ Add `--files /path/to/trust.jks` when submitting the Spark job.
 ¦ Transport Timeout
 |===
 
-== Use Cases
+=== Configure Logging
+
+It’s highly recommended to set log level to `info` to monitor the loading status.
+Configure the Spark log4j `conf/log4j2.properties` as follows, or other SLF4j bindings if any:
+
+[console]
+----
+logger.tg.name = com.tigergraph
+logger.tg.level = info
+----
+
+== Use Case Examples
+
+[NOTE]
+====
+It is simpler to authenticate with the username/password or secret because this mode automatically maintains a valid token; otherwise, make sure the lifetime of your token is long enough for the loading job.
+====
+
+=== Batch Write Mode
+
+.Create the variables:
+[source, scala]
+----
+val GRAPH = "demo_graph"
+val URL = "http(s)://hostname:port[,http(s)://hostname:port]*"
+val USERNAME = "tigergraph"
+val PASSWORD = "tigergraph"
+val LOADING_JOB = "load_Comment"
+val FILENAME = "file_Comment"
+val SEPARATOR = "|"
+val VERSION = "3.10.1"
+val LOG_LEVEL = "2"
+val LOG_PATH = "/tmp/tigergraph-spark-connector.log"
+----
+
+.Read data from any Spark data sources into the dataframe:
+[source, scala]
+----
+val df = spark.read.json("path/to/person.json")
+----
+
+.Batch write the data into TigerGraph:
+[source, scala]
+----
+df.write
+    .format("tigergraph")
+    .mode("append")
+    .options(
+        Map(
+            "graph" -> GRAPH,
+            "url" -> URL,
+            "username" -> USERNAME,
+            "password" -> PASSWORD,
+            "loading.job" -> LOADING_JOB,
+            "loading.filename" -> FILENAME,
+            "loading.separator" -> SEPARATOR,
+            "version" -> VERSION,
+            "log.level" -> LOG_LEVEL,
+            "log.path" -> LOG_PATH
+        )
+    )
+    .save()
+----
+
+=== Streaming Mode with Spark Structured Streaming API
+
+.Create the variables:
+[source, scala]
+----
+val GRAPH = "Social_Net"
+val URL = "http(s)://hostname:port"
+val USERNAME = "tigergraph"
+val PASSWORD = "tigergraph"
+val LOADING_JOB = "load_person"
+val FILENAME = "f1"
+val SEPARATOR = "|"
+val VERSION = "3.10.1"
+val LOG_LEVEL = "2"
+val LOG_PATH = "/tmp/tigergraph-spark-connector.log"
+----
+
+.Read data from any Spark streaming data sources into the dataframe:
+[source, scala]
+----
+val df = spark.readStream
+    .format("kafka")
+    .option("subscribe", "person")
+    .load()
+    .selectExpr("CAST(value AS STRING)").as[(String)]
+----
+
+.Streaming write data to TigerGraph:
+[source, scala]
+----
+df.writeStream
+    .outputMode("append")
+    .format("tigergraph")
+    .option("checkpointLocation", "/path/to/checkpoint")
+    .options(
+        Map(
+            "graph" -> GRAPH,
+            "url" -> URL,
+            "username" -> USERNAME,
+            "password" -> PASSWORD,
+            "loading.job" -> LOADING_JOB,
+            "loading.filename" -> FILENAME,
+            "loading.separator" -> SEPARATOR,
+            "version" -> VERSION,
+            "log.level" -> LOG_LEVEL,
+            "log.path" -> LOG_PATH
+        )
+    )
+    .start()
+    .awaitTermination()
+----
 
 === Load Data from Delta Lake
+
 ==== Batch Write
 
 .Load delta table to Spark dataframe:
@@ -398,7 +424,10 @@ df.write
             "password" -> PASSWORD,
             "loading.job" -> LOADING_JOB,
             "loading.filename" -> FILENAME,
-            "loading.separator" -> SEPARATOR
+            "loading.separator" -> SEPARATOR,
+            "version" -> VERSION,
+            "log.level" -> LOG_LEVEL,
+            "log.path" -> LOG_PATH
         )
     )
     .save()
@@ -441,7 +470,10 @@ df.writeStream
             "password" -> PASSWORD,
             "loading.job" -> LOADING_JOB,
             "loading.filename" -> FILENAME,
-            "loading.separator" -> SEPARATOR
+            "loading.separator" -> SEPARATOR,
+            "version" -> VERSION,
+            "log.level" -> LOG_LEVEL,
+            "log.path" -> LOG_PATH
         )
     )
     .start()
@@ -451,6 +483,7 @@ df.writeStream
 For more details on Delta Lake see https://docs.delta.io/latest/index.html[Welcome to the Delta Lake documentation — Delta Lake Documentation].
 
 === Load Data from Iceberg
+
 ==== Batch Write
 
 .Load Iceberg table to Spark dataframe:
@@ -481,7 +514,10 @@ df.write
             "password" -> PASSWORD,
             "loading.job" -> LOADING_JOB,
             "loading.filename" -> FILENAME,
-            "loading.separator" -> SEPARATOR
+            "loading.separator" -> SEPARATOR,
+            "version" -> VERSION,
+            "log.level" -> LOG_LEVEL,
+            "log.path" -> LOG_PATH
         )
     )
     .save()
@@ -521,7 +557,10 @@ df.writeStream
             "password" -> PASSWORD,
             "loading.job" -> LOADING_JOB,
             "loading.filename" -> FILENAME,
-            "loading.separator" -> SEPARATOR
+            "loading.separator" -> SEPARATOR,
+            "version" -> VERSION,
+            "log.level" -> LOG_LEVEL,
+            "log.path" -> LOG_PATH
         )
     )
     .start()
@@ -563,7 +602,10 @@ df.write
             "password" -> PASSWORD,
             "loading.job" -> LOADING_JOB,
             "loading.filename" -> FILENAME,
-            "loading.separator" -> SEPARATOR
+            "loading.separator" -> SEPARATOR,
+            "version" -> VERSION,
+            "log.level" -> LOG_LEVEL,
+            "log.path" -> LOG_PATH
         )
     )
     .save()
@@ -602,7 +644,10 @@ df.writeStream
             "password" -> PASSWORD,
             "loading.job" -> LOADING_JOB,
             "loading.filename" -> FILENAME,
-            "loading.separator" -> SEPARATOR
+            "loading.separator" -> SEPARATOR,
+            "version" -> VERSION,
+            "log.level" -> LOG_LEVEL,
+            "log.path" -> LOG_PATH
         )
     )
     .start()
@@ -611,14 +656,17 @@ df.writeStream
 
 For more details on Hudi see https://hudi.apache.org/docs/quick-start-guide/[Spark Guide | Apache Hudi].
 
-=== Loading Statistics
-When you configure the logging properly and set log level to info, the loading statistics will be logged.
+== Loading Statistics
+When you configure the logging properly and set log level to `info`, the loading statistics will be logged.
 
 There are 3 levels of stats:
 
-* *Batch level*: data will be loaded to TigerGraph by micro batches, malformed or invalid data count of the batch will be logged.
-* *Partition level*: the data source can contain multiple partitions, and the log will show how many rows of the partition has been sent to TigerGraph.
-* *Job Level (only available for TigerGraph 3.10.0 or higher)*: The overall loading statistics of the Spark job aggregated by TigerGraph service KAFKASTRM-LL. It requires providing username and password to query /gsqlserver endpoint.
+* *Batch level*: data will be loaded to TigerGraph in micro batches.
+The counts of malformed or invalid data of the batch will be logged.
+
+* *Partition level*: the data source can contain multiple partitions, and the log will show how many rows of the partition have been sent to TigerGraph.
+
+* *Job Level (available for TigerGraph 3.10+)*: The overall loading statistics of the Spark job aggregated by TigerGraph service KAFKASTRM-LL. This requires providing username and password to the query/gsqlserver endpoint.
 
 .Sample loading statistics:
 [source, scala]
@@ -661,9 +709,9 @@ There are 3 levels of stats:
 } ]
 ----
 
-== Level Statistic Reference
 
 === Row Level Statistics
+
 [separator=¦ ]
 |===
 ¦ Row Level Statistics ¦ Description
@@ -678,6 +726,7 @@ There are 3 levels of stats:
 |===
 
 === Object Level Statistics
+
 [separator=¦ ]
 |===
 ¦ Object Level Statistics ¦ Description

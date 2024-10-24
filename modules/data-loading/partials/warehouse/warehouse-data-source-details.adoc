@@ -7,7 +7,7 @@ More data warehouses will be supported in future releases.
 TigerGraph's BigQuery loader makes use of the https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC connector provided by Google], in collaboration with Simba.
 Use the following configuration for the `DATA_SOURCE`.
 
-[source,php,linenums]
+[source,json,linenums]
 .Data source configuration for BigQuery
 ----
 {
@@ -40,7 +40,7 @@ https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC
 
 === Snowflake
 
-[source,php,linenums]
+[source,json,linenums]
 .Data source configuration for Snowflake:
 ----
 {
@@ -50,6 +50,27 @@ https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers[BigQuery JDBC
     "connection.password": "<password>"
 }
 ----
+
+Alternately, key-pair authentication can be used.
+See Snowflake's document for more details on their support for https://docs.snowflake.com/en/user-guide/key-pair-auth[key-pair authentication and rotation].
+
+[source,json]
+.Data source configuration with key-pair authentication:
+----
+{
+    "type":"snowflake",
+    "connection.url":"jdbc:snowflake://https://<account_id>.snowflakecomputing.com/?db=<db>&schema=<schema>&role=<role>&private_key_file=<key_file>",
+    "connection.user": "<userwithrsa>",
+    "connection.password": "<anystring>"
+}
+----
+
+[NOTE]
+====
+* We recommend using the latest version of OpenSSL (3.0.11 19 Sep 2023) to generate keys.
+* When a private key is used, `connection.password` is still required, but it can be set to any non-empty string.
+* Passing a private key directly or using a private key file with a password is NOT supported.
+====
 
 [WARNING]
 ====
@@ -63,7 +84,7 @@ Use the required fields below for a Snowflake data `DATA_SOURCE`:
 |===
 ¦ Field ¦ Example ¦ Notes
 
-¦ `connection.url`
+¦`connection.url
 ¦ `"jdbc:snowflake://https://
 <account_id>.snowflakecomputing.com/?db=<db>&schema=<schema>&role=<role>",`
 ¦ It should start with `jdbc:snowflake:`
@@ -75,7 +96,7 @@ Use the required fields below for a Snowflake data `DATA_SOURCE`:
 === PostgreSql
 
 .Data source configuration for PostgreSql:
-[source,php,linenums]
+[source,json,linenums]
 ----
 {
     "type":"postgresql",
@@ -94,32 +115,32 @@ These are some required and optional configuration parameters for connection and
 |===
 ¦ Field ¦ Example ¦ Notes
 
-¦ `host`
-¦ `"host":"pg_address"`
+¦ host
+¦ "postgresql_server_address"
 ¦ The PostgreSql server’s address.
 
 This is *required*.
 
-¦ `port`
-¦ `"port": 5432`
+¦ port
+¦ "5432"
 ¦ The port used by the PostgreSql server.
 
 The default is set to `5432`.
 
-¦ `connection.user`
-¦ `"connection.user":"postgres"`
+¦ connection.user
+¦ "DBuser"
 ¦ The user of the PostgreSql server.
 
 This is *required*
 
-¦ `connection.password`
-¦ `"connection.password":"postgres"`
+¦ connection.password
+¦ "MyPassword"
 ¦ The password of the user.
 
 This is *required*
 
-¦ `db.name`
-¦ `"db.name":"postgres"`
+¦ db.name
+¦ "postgres"
 ¦ The database name.
 
 This is *required*
