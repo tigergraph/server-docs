@@ -425,12 +425,34 @@ This interval can be adjusted with the xref:reference:configuration-parameters.a
 
 This endpoint does not require any privileges.
 
-[NOTE]
-====
-As of 3.10.1, the config `System.Metrics.IncludeHostName`, if set to true, the hostname/ip will be included in all metrics output, in OpenMetrics format, as part of the variable labels.
+==== Total and Available Capacity
+
+Beginning with Version 3.10.2, the metrics output will include additional information, about both the total and the available (unallocated) amount of CPU and memory capacity, per node. This is in addition to the information about how much is currently being used.
+
+For example:
+[console,json]
+----
+# HELP tigergraph_cpu_available Percentage of available CPU capacity
+# TYPE tigergraph_cpu_available gauge
+tigergraph_cpu_available{host_id="m1",service_name=""} 98.2397232055664
+# HELP tigergraph_cpu_logical_cores_total Total number of logical CPU cores of a node
+# TYPE tigergraph_cpu_logical_cores_total gauge
+tigergraph_cpu_logical_cores_total{host_id="m1",service_name=""} 8
+# HELP tigergraph_cpu_available Percentage of available CPU capacity
+# TYPE tigergraph_cpu_available gauge
+tigergraph_cpu_available{host_id="m1",service_name=""} 98.2397232055664
+# HELP tigergraph_cpu_logical_cores_total Total number of logical CPU cores of a node
+# TYPE tigergraph_cpu_logical_cores_total gauge
+tigergraph_cpu_logical_cores_total{host_id="m1",service_name=""} 8
+----
+The total number of CPU logical cores and the available memory are included in the summary section.
+
+==== Including the Host Name
+
+As of verison 3.10.1, if the configuration parameter `System.Metrics.IncludeHostName` is set to `true`, the hostname/ip will be included in all metrics output, in OpenMetrics format, as part of the variable labels.
 
 Otherwise, the default is `false` and the response will not include hostname/ip as part of the variable labels.
-====
+
 
 ==== Parameters:
 None
