@@ -54,6 +54,9 @@ The current message is the second message in the third batch of the transaction.
 
 “*Transaction*: epoch time of transaction commit message.”
 
+¦ `graph`
+¦ String: ”GLOBAL", "<local_graph_name>"
+
 ¦ `typename`
 ¦ String: “type name of updated type”.
 
@@ -86,6 +89,19 @@ It can be one of: `"Overwrite"`, `"Add"`, `"Max"`, `"Min"`, `"And"`, `"Or"`, `"I
 }
 ----
 
+[NOTE]
+.Content format change
+====
+Beginning with version 3.11, the format for the value of the `content` message field has been revised to be consistent with the xref:tigergraph-server:API:index.adoc#_formatting_data_in_json[POST request data format].
+For example:
+
+* Updated format: `{ "keylist":["k1", "k2"], "valuelist": [10.5, 24.8] }`
+* Legacy format: `{ "k1": 10.5, "k2": 24.8 }`
+
+The legacy format is still available by setting `CDCLegacyFormat=true;` in `gadmin config entry GPE.BasicConfig.Env`.
+====
+
+
 == Message Examples
 === CDC Message with Type: Vertex
 
@@ -97,17 +113,18 @@ It can be one of: `"Overwrite"`, `"Add"`, `"Max"`, `"Min"`, `"And"`, `"Or"`, `"I
     "operator": "insert",
     "timestamp": 1701548849757,
     "type": "vertex",
+    "graph": "SocialGraph",
     "typename": "Company",
     "vid": 99999999,
     "uid": "comp1",
     "content": {
-        "cid": {
-            "op": "Overwrite",
-            "value": 2345
-        },
-        "startDate": {
-            "op": "Overwrite",
-            "value": "2001-01-01 08:00:00"
+    "cid": {
+        "op": "Overwrite",
+        "value": 2345
+    },
+    "startDate": {
+        "op": "Overwrite",
+        "value": "2001-01-01 08:00:00"
         }
     }
 }
@@ -157,6 +174,7 @@ TigerGraph CDC service will *NOT* produce CDC messages for such “implicit edge
     "operator": "delete",
     "timestamp": 1701548854014,
     "type": "vertex-type",
+    "graph": "SocialGraph",
     "typename": "Person",
     "content": {}
 }
@@ -183,6 +201,7 @@ TigerGraph CDC service will *NOT* produce CDC messages for such “implicit edge
     "operator": "insert",
     "timestamp": 1701569966031,
     "type": "edge",
+    "graph": "SocialGraph",
     "typename": "Creates",
     "hasreverseedge": true,
     "discriminator": "c1:1",
