@@ -15,9 +15,40 @@ See Using IAM Roles for Amazon EC2 for more information.
 
 [source,json]
 {
-"type": "s3",
-"access.key": "<access key>",
-"secret.key": "<secret key>"
+    "type": "s3",
+    "access.key": "<access key>",
+    "secret.key": "<secret key>"
+}
+
+For temporary access to a bucket, we support AWS temporary credential provider. A temporary credential can be generated from AWS console, for example, using cloud shell:
+[source,bash]
+aws sts assume-role --role-arn arn:aws:iam::<account-id>:role/<role> --role-session-name "<session-name>"
+
+For more details on temporary credentials, please check https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html[AWS doc].
+
+To use the temporary credential, add the below configs in the data source definition:
+[source,json]
+{
+    "type": "s3",
+    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider",
+    "file.reader.settings.fs.s3a.access.key": "The <AccessKeyId> in credential",
+    "file.reader.settings.fs.s3a.secret.key": "The <SecretAccessKey> in credential",
+    "file.reader.settings.fs.s3a.session.token": "The <SessionToken> in credential"
+}
+
+Example temporary credential from AWS
+[source,json]
+{
+    "Credentials": {
+        "AccessKeyId": "ASIA...X4M3A",
+        "SecretAccessKey": "/wSVO...WUZYv0",
+        "SessionToken": "IQoJb3J...O1k=",
+        "Expiration": "2024-10-10T23:00:00+00:00"
+    },
+    "AssumedRoleUser": {
+        "AssumedRoleId": "A...1",
+        "Arn": "arn:aws:sts::<acount>:assumed-role/<role-name>/<session-name>"
+    }
 }
 
 === Azure Blob Storage
@@ -31,8 +62,8 @@ TigerGraph can automatically extract the account name from the file URI, so ther
 
 [source,json]
 {
-"type" : "abs",
-"account.key" : "<account key>"
+    "type" : "abs",
+    "account.key" : "<account key>"
 }
 
 image::data-loading:azure-storage-account.png[Azure Access Keys tab]
@@ -43,10 +74,10 @@ To use service principal authentication, you must first register your TigerGraph
 
 [source,json]
 {
-"type" : "abs",
-"client.id" : "<client id>",
-"client.secret" : "<client secrect>",
-"tenant.id" : "<tenant id>"
+    "type" : "abs",
+    "client.id" : "<client id>",
+    "client.secret" : "<client secrect>",
+    "tenant.id" : "<tenant id>"
 }
 
 === Google Cloud Storage
@@ -55,11 +86,11 @@ For GCS, the TigerGraph data source configuration object is based on the _GCS se
 
 [source,json]
 {
-"type": "gcs",
-"project_id": "<project id>",
-"private_key_id": "<private key id>",
-"private_key": "<private key>",
-"client_email": "<email address>"
+    "type": "gcs",
+    "project_id": "<project id>",
+    "private_key_id": "<private key id>",
+    "private_key": "<private key>",
+    "client_email": "<email address>"
 }
 
 You can follow Google Cloud's instructions for creating a service account key, and then replace the `"type"` value with `"gcs"`.
