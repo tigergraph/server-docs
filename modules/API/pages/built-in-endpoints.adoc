@@ -2867,6 +2867,27 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsql/
     PRINT a;
  }'
 ----
+==== Declaring the Workload Queue
+
+The workload queue can be specified in two ways:
+
+* Request Header
+
+[source.wrap,bash]
+----
+curl -s -u tigergraph:tigergraph -H 'Workload-Queue: OLTP' 'localhost:14240/gsqlserver/interpreted_query' \
+-d 'INTERPRET QUERY () FOR GRAPH g { print 2; }'
+----
+
+* GSQL Command
+
+[source.wrap,bash]
+----
+curl -s -H "Authorization: Bearer <USER TOKEN>" -H 'Workload-Queue: OLTP' 'localhost:14240/gsqlserver/interpreted_query' \
+-d 'INTERPRET QUERY -QUEUE OLTP () FOR GRAPH g { print 2; }'
+----
+
+[NOTE]:If both methods are used in a single request, the workload queue specified in the header and the GSQL command must match.
 
 === List running queries of a graph
 
