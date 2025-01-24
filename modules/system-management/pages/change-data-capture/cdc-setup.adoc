@@ -1,47 +1,40 @@
-= CDC Setup
+= Change Data Capture Setup
 
-When using the CDC feature, a “CDC service” running in GPE nodes will process data updates ("deltas") and write CDC messages to the external Kafka maintained by the user.
+The Change Data Capture (CDC) feature in TigerGraph allows you to process data updates ("deltas") and send CDC messages to an external Kafka service managed by the user. This guide will walk you through the setup process in an easy-to-understand way.
 
-[IMPORTANT]
-====
-Users are required to establish and manage an external Kafka service independently from TigerGraph.
-The TigerGraph CDC service will then generate CDC messages directed to the external Kafka service.
-For guidance on setting up the external Kafka service, refer to the https://kafka.apache.org/quickstart[Official Apache Kafka documentation].
-====
+== Important 
+
+* Users must independently set up and manage an external Kafka service.
+* The TigerGraph CDC service generates messages that are directed to this external Kafka service.
+* Refer to the official Apache Kafka documentation for guidance,refer to  https://kafka.apache.org/quickstart[Official Apache Kafka documentation].
 
 == Setup Configuration
-TigerGraph employs librdkafka 1.1.0 for the Kafka producer in the CDC service.
-Refer to the Global configuration properties and the Topic configuration properties sections of the librdkafka documentation for all other properties not mentioned in this guide, noting the applicable ones marked with “P”(Producer) or with “*” for both Producer and Consumer.
+TigerGraph uses librdkafka 1.1.0 to handle Kafka communication in the CDC service.
 
-To configure CDC Producer and Topic settings in TigerGraph, utilize gadmin commands below.
+=== CDC Configuration Parameters
 
-[NOTE]
-====
-If you use `gadmin config` to change any of these parameters, you need to run `gadmin config apply -y` for it to take effect.
-You can change multiple parameters and then run `gadmin config apply` for all of them together
+==== Modify Configurations
 
-.After modifying, run the following command to apply the changes:
+If you change any parameters with gadmin config, apply them using the following commands:
 [source, console]
 ----
 gadmin config apply
 gadmin restart gpe restpp
 ----
-====
+==== System.CDC.Enable
+This configuration enables or disables CDC.
 
-== CDC Configuration Parameters
-=== System.CDC.Enable
+To enable CDC:
 
-.This is the CDC enable config entry:
-[source, console]
-----
-gadmin config entry
-----
-
-=== System.CDC.Enable
-.Set it to true or false, to enable CDC or not as in these examples:
 [source, console]
 ----
 gadmin config set System.CDC.Enable true
+----
+
+To disable CDC:
+
+[source, console]
+----
 gadmin config set System.CDC.Enable false
 ----
 
