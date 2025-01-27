@@ -3134,6 +3134,11 @@ Sample Response::
 
 This endpoint is used to intepret query. Please note that calling this endpont need to set 'Content-Type: text/plain' in header.
 
+For interpret query, we can declare workload queue in 2 ways:
+
+* Request header 
+* GSQL command 
+
 ==== Parameters:
 
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -3144,6 +3149,9 @@ This endpoint is used to intepret query. Please note that calling this endpont n
 | `graph`
 | yes
 | the query interpreted under which graph
+| `queue`
+| optional
+| the workload queue 
 |===
 
 ==== Example
@@ -3166,6 +3174,24 @@ Sample Response::
 {"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"p1":["hello","world"]}]}
 ----
 --
+Sample Request For Interpreting Anonymous Query Using Request Header::
++
+--
+[source,bash]
+----
+curl -s -u tigergraph:tigergraph -H 'Workload-Queue: <Workload Queue Name>' 'localhost:14240/gsqlserver/interpreted_query' \
+-d 'INTERPRET QUERY () FOR GRAPH g { print 2; }'
+----
+
+Sample Request For Interpreting Anonymous Query Using GSQL Command::
++
+--
+[source,bash]
+----
+curl -s -H "Authorization: Bearer <USER TOKEN>" -H 'Workload-Queue: <Workload Queue Name>' 'localhost:14240/gsqlserver/interpreted_query' \
+-d 'INTERPRET QUERY -QUEUE OLTP () FOR GRAPH g { print 2; }'
+----
+
 ====
 
 '''
