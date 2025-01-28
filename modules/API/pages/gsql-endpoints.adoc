@@ -3185,8 +3185,7 @@ Sample Request For Interpreting Anonymous Query Using GSQL Command::
 --
 [source,bash]
 ----
-curl -s -H "Authorization: Bearer <USER TOKEN>" -H 'Workload-Queue: <Workload Queue Name>' 'localhost:14240/gsqlserver/interpreted_query' \
--d 'INTERPRET QUERY -QUEUE OLTP () FOR GRAPH g { print 2; }'
+curl -s -H "Authorization: Bearer <USER TOKEN>" -H 'Workload-Queue: <Workload Queue Name>' 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
 ----
 
 ====
