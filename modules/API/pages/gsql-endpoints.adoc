@@ -3176,8 +3176,9 @@ Sample Request For Interpreting Anonymous Query Using Request Header::
 --
 [source,bash]
 ----
-curl -s -u tigergraph:tigergraph -H 'Workload-Queue: <Workload Queue Name>' 'localhost:14240/gsqlserver/interpreted_query' \
--d 'INTERPRET QUERY () FOR GRAPH g { print 2; }'
+curl -X POST -H "content-type: text/plain" -H 'Workload-Queue: <your_workload-query_name>' 'localhost:14240/gsql/v1/queries/interpret' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
+
+//can add two headers?one for Content-Type: text/plain and one for Workload-Queue: <Workload Queue Name>? 
 ----
 
 Sample Request For Interpreting Anonymous Query Using GSQL Command::
@@ -3185,7 +3186,7 @@ Sample Request For Interpreting Anonymous Query Using GSQL Command::
 --
 [source,bash]
 ----
-curl -s -H "Authorization: Bearer <USER TOKEN>" -H 'Workload-Queue: <Workload Queue Name>' 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
+curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/queries/interpret?gsql=true" -d 'INTERPRET QUERY -QUEUE <your_worload_queue_name> (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }' 
 ----
 
 ====
