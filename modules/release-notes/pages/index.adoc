@@ -165,6 +165,21 @@ See xref:3.10@tigergraph-server:user-access:rbac-row-policy/row-policy-privilege
 
 == Fixed issues
 
+=== Fixed and Improved in 3.10.3
+
+==== Functionality
+
+* Fixed issue where query installation failed for single-node queries that initialize vertex set variables in conditional branches (e.g., if-else or case-when statements) (GLE-8845).
+* Fixed query compilation error when iterating through a `FOREACH` statement to retrieve an accum type attribute in a query compiled with the `-single` or `distributed` keyword. Ensured operations between two different `GroupByAccums` hold the same data types and field names (GLE-9053).
+* Fixed a parsing issue with loading job creation when using double quotes inside a string literal (GLE-8696).
+* Fixed an issue where schema changes could fail to occur during the loading process due to a lock not being removed (GLE-7572).
+* Fixed disk critical issue caused by the rebuilder getting stuck in a partitioned cluster after dropping vertex or edge attributes (CORE-4356).
+* Fixed an issue where failed backups in rare cases could cause the engine to pause for a long time, leading to query timeouts (CORE-4499).
+
+==== Improvements
+
+* Improved the performance of GSQL queries containing delete statements intended for deleting all vertices of a given type (GLE-8930).
+
 === Fixed and Improved in 3.10.2
 
 * Fixed issue where local accumulators defined across multiple lines in a query were misinterpreted in the GSQL client (GLE-8259).

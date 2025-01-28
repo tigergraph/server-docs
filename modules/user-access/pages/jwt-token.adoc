@@ -4,6 +4,15 @@ OpenID Connect (OIDC) token-based authentication in JSON web token (JWT) format,
 Helping to secure users and their data.
 
 == OIDC JWT Authentication in TigerGraph
+
+[NOTE]
+====
+* In versions 3.10 and 3.11, JWT token support is limited to RESTPP endpoints and only for third-party JWT tokens.
+* GSQL server endpoints do not support JWT tokens in these versions.
+* Internally generated JWT tokens are also not supported in these versions.
+* Version 4.1.2 adds support for internally-generated JWT tokens and use with GSQL server endpoints, removing these limitations.
+====
+
 Some basic understanding of TigerGraph’s user access through xref:tigergraph-server:user-access:enabling-user-authentication.adoc[] and xref:tigergraph-server:API:built-in-endpoints.adoc#_authentication[Built-in API Endpoints] is recommended before continuing.
 
 === What is OIDC?
@@ -390,9 +399,14 @@ For testing purposes, we recommend using a tool such as https://dinochiesa.githu
 Here is an example of the generated token from the payload data.
 
 === Use JWT Token
-Now that the JWT token is generated, its usage is the same as using a GSQL plain text token, allowing access to RESTPP endpoints.
+Now that the JWT token is generated, its usage is the same as using a GSQL plain text token, allowing access to *RESTPP endpoints*.
 
-For example, this is used to run the query {queryName} on the graph {graphName}:
+For versions 3.10 and 3.11, please note:
+
+* JWT tokens are *supported only on RESTPP endpoints*.
+* *GSQL endpoints do not support JWT tokens*, regardless of whether they are third-party or internally generated.
+
+For example, this is used to run the query `{queryName}` on the graph `{graphName}`:
 [console]
 ----
 curl -s -H "Authorization: Bearer <JWT-TOKEN>" -X GET http://127.0.0.1:9000/query/{graphName}/{queryName}
