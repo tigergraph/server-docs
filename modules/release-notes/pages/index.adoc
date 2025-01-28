@@ -72,8 +72,7 @@ Previously, Replica 1 needed to remain operational.
 * [4.1.1] **xref:cluster-and-ha-management:crr-index.adoc[Cross-Region Replication]** now includes loading jobs.
 
 * **Backup HA**:
-Backups remain available even if a node fails.
-Previously, backups were unavailable if a node failed.
+Ensures backup processes can continue even during service failures, such as GPE or GSE downtime. However, backups may still be impacted if an entire node fails. Tolerating node failures will be addressed in the 4.2 release.
 
 === Data Streaming/Connector Enhancements
 
