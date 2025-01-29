@@ -3151,6 +3151,18 @@ For interpret query, we can declare workload queue in 2 ways:
 | the query interpreted under which graph
 |===
 
+==== Headers:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `workload_queue_name`
+| optional
+| the workload queue name
+|===
+
 ==== Example
 
 [,tabs]
@@ -3178,7 +3190,7 @@ Sample Request For Interpreting Anonymous Query Using Request Header::
 ----
 curl -X POST -H 'Workload-Queue: <workload_queue_name>' 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
 ----
-
+--
 Sample Request For Interpreting Anonymous Query Using GSQL Command::
 +
 --
