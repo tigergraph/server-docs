@@ -1478,13 +1478,13 @@ a|
 || `FieldSizeLimit`, GPE.BasicConfig.Env
 a|
 * Specifies the size threshold for a single FIELD in a data record 
-* The default value is 100MB. 
+* The value must be uint64_t type and in unit: Byte.The default value is 104,857,600 bytes i.e. 100MB and maximum value is 18446744073709551615 bytes i.e. 17,179,869,184 MB. 
 | `FieldSizeLimit=20000`
 
 || `ContainerLengthLimit`, GPE.BasicConfig.Env
 a|
-* Specifies the threshold for the maximum number of entries allowed in a container
-* The default value is 1M
+* Specifies the threshold for number of entries allowed in a container
+* The value must be uint64_t type and in unit: Byte.The default value is 1,048,576 bytes i.e. 1MB and maximum value is 18446744073709551615 bytes i.e. 17,179,869,184 MB. 
 | `ContainerLengthLimit=10000`
 
 |GSE
