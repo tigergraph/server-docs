@@ -269,19 +269,20 @@ In such cases, TigerGraph CDC will generate an additional CDC message for the co
 ¦ Case ¦ Description
 
 ¦ For directed edge without reverse edge type ("Simple Edge Type")
-¦ For insertion on directed edge type without a reverse edge type, TigerGraph CDC will generate extra CDC messages with a field `"operator": "insert-only"` on the source and target vertex with different conditions:
+¦ When you insert a directed edge without a reverse edge type, TigerGraph automatically creates the source and/or target vertex if they don’t exist.
 
-- Source vertex: must be new and corresponding vertex type has `primary_id_as_attribute="true"`.
+Extra CDC messages are generated:
 
-- Target vertex: as long as it's new.
+- For the source vertex: Only if it is new and has `primary_id_as_attribute="true"`.
+
+- For the target vertex: Always if it is new.
 
 ¦ For undirected edge, and directed edge with reverse edge type ("Complex Edge Type")
-¦ For insertion/modification/deletion on an undirected edge, or directed edge with a reverse edge type, TigerGraph will update 2 edges simultaneously:
+¦For insertion/modification/deletion on an undirected edge, or directed edge with a reverse edge type, TigerGraph will update 2 edges simultaneously:
 the “origin” edge and the “extra” edge with switched source and target vertex.
 
-Also, TigerGraph will generate extra CDC messages on the source and target vertex for insertion of such edge, with same condition:
+When Undirected Edge or Directed Edge With a Reverse Edge Type, TigerGraph automatically creates the source and/or target vertex if they don’t exist:
 
-- Source/Target vertex: must be new and corresponding vertex type has `primary_id_as_attribute="true"`.
-
+- **Extra CDC messages** are generated for both source and target vertices only if they are new and have `primary_id_as_attribute="true"`.
 
 |===
