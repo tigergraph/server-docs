@@ -1,0 +1,60 @@
+= Gathering Log Information with gcollect
+
+Admin users can use the `gcollect` utility to search through and retreive selected information from the log files. This is very handy because the log files can be very large and users may not know the exact pattern to look for.
+ `gcollect` is included when the TigerGraph database is installed.
+
+[source]
+----
+Usage:  gcollect [Options] COMMAND
+12345678901234567890123456789012345678901234567890123456789012345678901234567890
+Options:
+-h, --help                        show this help message and exit
+-A num, --after-context num       print num lines of trailing context after each match.
+-B num, --before-context num      print num lines of leading context before each match.
+-c, --components gpe,gse,rest     only collect information related to the specified component(s).
+                                    All by default. Supported components: gpe,gse,gsql,dict,
+                                    tsar,kafka,zk,rest,nginx,admin,fileLoader,kafkaLoader,
+                                    kafka-stream,kafka-connect,gui
+-n, --nodes m1,m2                 only search patterns for specified nodes.
+                                    (only works in together with command "grep")
+-s, --start DateTime              logs older than this DateTime will be ignored.
+                                    Format: 2006-01-02,15:04:05
+-e, --end DateTime                logs newer than this DateTime will be ignored.
+                                    Format: 2006-01-02,15:04:05
+-t, --tminus num                  only search for logs that are generated in the past num seconds.
+-r, --request_id id               only collect information related to the specified request id.
+                                    Lines match "pattern" will also be printed.
+-b, --before num                  how long before the query should we start collecting.
+                                    (in seconds, can ONLY be used with [--reqest_id] option).
+-d, --duration num                how long after the query should we stop collecting.
+                                     (in seconds, can ONLY be used with [--reqest_id] option).
+-o, --output_dir dir              specify the output directory, "./output" by default. (ALERT: files in this folder will be DELETED.)
+-p, --pattern regex               collect lines from logs which match the regular expression.                                    (Can have more than one regex, lines that match any of
+                                     the regular expressions will be printed.)
+-i, --ignore-case                 ignore case distinctions in both the PATTERN and the input files.
+-D, --display                     print to screen.
+-g                                for GraphStudio to collect logs.
+-v                                verbose mode.
+
+COMMANDS:
+grep            search patterns from logs files that have been collected before.
+show            show all the requests during the specified time window.
+collect         collect all the debugging information which satisfy all the requirements specified by Options.
+----
+
+Examples:
+
+[source]
+----
+# show all requests during the last hour
+gcollect -t 3600 show
+
+# collect debug info for a specific request
+gcollect -r RESTPP_2_1.1559075028795 -b 60 -d 120 -p "error" collect
+
+# collect debug info for all components
+gcollect -i -p "error" -p "FAILED" -s "2019-05-22,18:00:00"-e "2019-05-22,19:00:00" collect
+
+# Search from log files that have been collected before
+gcollect -i -p "unknown" -c admin,gpe -D -A 1 -B 2 grep
+----
