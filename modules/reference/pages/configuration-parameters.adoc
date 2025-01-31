@@ -1477,8 +1477,8 @@ a|
 
 || `FieldSizeLimit`, GPE.BasicConfig.Env
 a|
-* Specifies the size threshold for a single FIELD in a data record 
-* The value must be uint64_t type and in unit: Byte.The default value is 104,857,600 bytes i.e. 100MB and maximum value is 18446744073709551615 bytes i.e. 17,179,869,184 MB. 
+* Specifies the maximum number of bytes (as an unsigned integer `UINT`) for a single field in a data record
+* The default is 104,857,600 = 100 MB. The maximum is 2^64 -1 = 16 exabytes
 | `FieldSizeLimit=20000`
 
 || `ContainerLengthLimit`, GPE.BasicConfig.Env
