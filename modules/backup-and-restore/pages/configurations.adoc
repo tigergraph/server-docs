@@ -10,7 +10,7 @@ All commands must be run from the TigerGraph Linux user.
 
 The following is a list of configurations available for backup and restore.
 
-[NOTE]: For `System.Backup.Local.Enable`, `System.Backup.S3.Enable`, `System.Backup.ABS.Enable`, and `System.Backup.GCS.Enable`, only one can be enabled at a time.
+NOTE: For `System.Backup.Local.Enable`, `System.Backup.S3.Enable`, `System.Backup.ABS.Enable`, and `System.Backup.GCS.Enable`, only one can be enabled at a time.
 
 |===
 |Configuration parameter |Description |Default
@@ -23,18 +23,18 @@ Required if backup is to be stored locally. |null
 
 |System.Backup.S3.Enable |Enables or disables backup to AWS S3 or S3-compatible services such as Ceph S3.|`false`
 
-|System.Backup.S3.AWSAccessKeyID |AWS Access Key ID for authentication (deprecated, use System.Backup.S3.AccessKeyID instead, which has a higher priority.) |`+nan+`
+|System.Backup.S3.AWSAccessKeyID |AWS Access Key ID for authentication (deprecated, use `System.Backup.S3.AccessKeyID` instead, which has a higher priority.) |`+nan+`
 
-|System.Backup.S3.AWSSecretAccessKey |AWS Secret Access Key for authentication (deprecated, use System.Backup.S3.SecretAccessKey instead, which has a higher priority.)
+|System.Backup.S3.AWSSecretAccessKey |AWS Secret Access Key for authentication (deprecated, use `System.Backup.S3.SecretAccessKey` instead, which has a higher priority.)
 
-[NOTE]: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.
+*NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.
 |`+nan+`
 
 |System.Backup.S3.AccessKeyID |Access key ID for authentication for AWS S3 or S3-compatible services.| `+nan+`
 |System.Backup.S3.SecretAccessKey |
 Secret Access Key for authentication for AWS S3 or S3-compatible services.
 
-[NOTE]: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.|`+nan+`
+*NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.|`+nan+`
 
 |System.Backup.S3.RoleARN |The AWS role for accessing s3 buckets.
 S3 Role ARN takes priority over access keys. For more information, see link:https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html[AWS role ARN documentation].
@@ -50,7 +50,7 @@ S3 Role ARN takes priority over access keys. For more information, see link:http
 |System.Backup.ABS.ContainerName |Azure storage account container|`+nan+`
 |System.Backup.ABS.AccountName |Azure storage account name for authentication.
 
-[NOTE]: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_key`.
+*NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_key`.
 | `+nan+`
 |System.Backup.ABS.AccountKey |Account key for the Azure storage account.| `+nan+`
 |System.Backup.ABS.Endpoint|Optional Blob service endpoint; if not given, the default endpoint https://<account-name>.blob.core.windows.net will be used.|`+nan+`
@@ -59,7 +59,7 @@ S3 Role ARN takes priority over access keys. For more information, see link:http
 |System.Backup.GCS.AccessKeyID |Access Key for a GCS HMAC Key.| `+nan+`
 |System.Backup.GCS.Secret |Secret for a GCS HMAC Key.
 
-[NOTE]: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.
+*NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.
 | `+nan+`
 |System.Backup.GCS.Endpoint|GCS Storage URI.|`https://storage.googleapis.com`
 
@@ -78,7 +78,6 @@ It's recommended to keep the default value `10`, which means the number of proce
 | "DefaultCompression"
 |===
 
-IMPORTANT: If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC.
 
 == Configure backup and restore
 
