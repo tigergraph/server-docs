@@ -57,9 +57,10 @@ However, the `"content"` will only contain the field for the modified attribute.
 When a vertex is deleted, any edge that uses the vertex as source or target will be implicitly deleted.
 However, TigerGraph CDC currently does not generate a CDC message for such “implicit edge deletion”.
 
-==== No CDC message for implicit source vertex insertion
-For insertion/modification on undirected edge, or directed edge with reverse edge type, the TigerGraph database will implicitly insert source and target vertex if it does not exist (This behavior can be configured via `VERTEX_MUST_EXIST` in a loading job and `POST` data api).
-In this scenario, TigerGraph CDC will generate a CDC message with `"operator": "insert-only"` for target vertex (See the section “Extra CDC message for Edge Update“ ), however there is no CDC message for source vertex.
+==== No CDC message for implicit vertex insertion without `primary_id_as_attribute="true"`
+For insertion on undirected edge, or directed edge with reverse edge type, the TigerGraph database will implicitly insert source and target vertex if it does not exist (This behavior can be configured via `VERTEX_MUST_EXIST` in a loading job and `POST` data api).
+
+In this scenario, TigerGraph CDC will generate CDC messages with `"operator": "insert-only"` for new source and new target vertex, unless the corresponding vertex type does not have `primary_id_as_attribute="true"` (See the section “Extra CDC message for Edge Update“ ).
 
 ==== Stuck at special uid “UNKNOWN”
 If the uid is `"UNKNOWN"` for either insertion or deletion delta messages, TigerGraph CDC will get stuck at that message.
