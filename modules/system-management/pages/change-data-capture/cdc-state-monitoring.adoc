@@ -38,7 +38,7 @@ For a transaction, it’s the tid of the last delta batch for the transaction (m
 ¦ The `safe_persistent_tid` is the tid of the earliest delta batch among all open transactions that are not committed/rolled-back in CDC.
 If there’s no open transactions, this is the same as tid.
 
-All delta batches with tid `<safe_persistent_tid>` must have been written to external kafka.
+All delta batches with `tid < safe_persistent_tid` must have been written to external kafka.
 
 ¦ `split_index`
 ¦ For non-transaction, it’s always 0. For transactions, the split_index is the index of the delta batch that was most recently written to external kafka among all delta batches for the same transaction.
