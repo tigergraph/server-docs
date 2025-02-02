@@ -1794,6 +1794,105 @@ Sample Response::
 
 == Loading Jobs
 
+=== Get loading job names
+
+`GET /gsql/v1/loading-jobs`
+
+Get the names of all loading jobs in the given graph.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| name of the graph that these jobs belong to
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET
+'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","jobNames":["incidents_fraud_report_company_csv"]}
+----
+--
+====
+
+'''
+
+=== Get loading job information
+
+`GET /gsql/v1/loading-jobs/{jobName}`
+
+Get information about a specific loading job.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| name of the graph that this job belongs to
+
+| `verbose`
+| no
+| If `true`: show more details.
+
+  If `false` (default): show fewer details.
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: applicaiton/json' -X GET
+'http://localhost:14240/gsql/v1/loading-jobs/incidents_fraud_report_company_csv?graph=financialGraph&json=[true/false]'
+----
+--
+Sample Response::
++
+--
+json=false:
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"jobName":"incidents_fraud_report_company_csv","jobContent":"this is jobContent"}}
+----
+
+json=true:
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"Filters":[],"GraphName":"g","Headers":{"f1_header":["report_id","report_updated_at","report_status","report_type","report_source","report_data_source","fraud_type","tax_id"],"f1_header_company":["tax_id","report_updated_at","tax_status"]},"JobName":"incidents_fraud_report_company_csv","FileNames":{"f1":""},"LoadingStatements":[{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"report_status"},{"Type":"SrcColName","Value":"report_type"},{"Type":"SrcColName","Value":"report_source"},{"Type":"SrcColName","Value":"report_data_source"},{"Type":"SrcColName","Value":"fraud_type"}],"TargetName":"FraudReport","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header_company"},"Mappings":[{"Type":"SrcColName","Value":"tax_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"tax_status"}],"TargetName":"Company","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Edge","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"tax_id"}],"TargetName":"HasIncident","FromVertexType":"FraudReport","ToVertexType":"Company","DataSource":{"Type":"FileVar","Value":"f1"}}]}}
+----
+--
+====
+
+'''
+
 === Create a loading job
 
 `POST /gsql/v1/loading-jobs`
@@ -1993,106 +2092,7 @@ Sample Response::
 
 '''
 
-=== Get loading job names
-
-`GET /gsql/v1/loading-jobs`
-
-Get the names of all loading jobs in the given graph.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| name of the graph that these jobs belong to
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET
-'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"","jobNames":["incidents_fraud_report_company_csv"]}
-----
---
-====
-
-'''
-
-=== Get loading job information
-
-`GET /gsql/v1/loading-jobs/{jobName}`
-
-Get information about a specific loading job.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| name of the graph that this job belongs to
-
-| `verbose`
-| no
-| If `true`: show more details.
-
-  If `false` (default): show fewer details.
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: applicaiton/json' -X GET
-'http://localhost:14240/gsql/v1/loading-jobs/incidents_fraud_report_company_csv?graph=financialGraph&json=[true/false]'
-----
---
-Sample Response::
-+
---
-json=false:
-[source.wrap,console]
-----
-{"error":false,"message":"","results":{"jobName":"incidents_fraud_report_company_csv","jobContent":"this is jobContent"}}
-----
-
-json=true:
-[source.wrap,console]
-----
-{"error":false,"message":"","results":{"Filters":[],"GraphName":"g","Headers":{"f1_header":["report_id","report_updated_at","report_status","report_type","report_source","report_data_source","fraud_type","tax_id"],"f1_header_company":["tax_id","report_updated_at","tax_status"]},"JobName":"incidents_fraud_report_company_csv","FileNames":{"f1":""},"LoadingStatements":[{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"report_status"},{"Type":"SrcColName","Value":"report_type"},{"Type":"SrcColName","Value":"report_source"},{"Type":"SrcColName","Value":"report_data_source"},{"Type":"SrcColName","Value":"fraud_type"}],"TargetName":"FraudReport","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header_company"},"Mappings":[{"Type":"SrcColName","Value":"tax_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"tax_status"}],"TargetName":"Company","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Edge","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"tax_id"}],"TargetName":"HasIncident","FromVertexType":"FraudReport","ToVertexType":"Company","DataSource":{"Type":"FileVar","Value":"f1"}}]}}
-----
---
-====
-
-'''
-
-=== Get loading job status (multiple jobs)
+=== Get loading job run status (multiple jobs)
 
 `GET /gsql/v1/loading-jobs/status`
 
@@ -2136,7 +2136,7 @@ Sample Response::
 
 '''
 
-=== Get loading job status (one job)
+=== Get loading job run status (one job)
 
 `GET /gsql/v1/loading-jobs/status/{jobId}`
 
