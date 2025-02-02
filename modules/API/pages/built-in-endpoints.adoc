@@ -2,6 +2,7 @@
 :pp: {plus}{plus}
 :description: All built-in REST API endpoints in TigerGraph server.
 :toc:
+:toclevels: 1
 
 This page describes the REST API endpoints accessible on a TigerGraph server.
 
@@ -1589,6 +1590,78 @@ curl -X POST --data-binary @./work_at.csv "http://localhost:9000/ddl/poc_graph?t
 If there are special characters in your parameter values, the special characters should use https://www.w3schools.com/tags/ref_urlencode.asp[URL encoding]. To avoid confusion about whether you should you one or two backslashes, we do not support backslash escapes for the `eol` or `sep` parameter.
 
 The maximum size of data you can upload via this endpoint is controlled by the xref:API:index.adoc#_request_body_size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
+
+=== Get loading job status
+
+`GET /gsql/loading-jobs?action=getprogress`
+
+Get the status of one loading job.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| name of the graph that this job belongs to
+
+| `jobId`
+| yes
+| ID of the loading job
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET
+'http://localhost:14240/gsql/loading-jobs?action=getprogress&graph=financialGraph&jobId=financialGraph_m1.1519111662589'
+----
+--
+Sample Response::
++
+--
+[source.wrap,json]
+----
+{
+	"error": false,
+	"message": "",
+	"results": {
+		"financialGraph_m1.1519111662589": [{
+			"machine": "RESTPP-LOADER_1_1",
+			"error": false,
+			"results": [
+				{
+					"duration": 0.1,
+					"oversizeTokenLines": 0,
+					"rejectedLines": 0,
+					"percentage": 100,
+					"startTime": 1670573173768,
+					"averageSpeed": 50,
+					"loadedLines": 5,
+					"currentSpeed": 50,
+					"uri": "/home/tigergraph/demo/financialGraph",
+					"notEnoughTokenLines": 0,
+					"status": "FINISHED"
+				}
+			]},
+			...
+		]
+	},
+	"failedJobId": []
+}
+----
+--
+====
+
 
 == Graphs
 
