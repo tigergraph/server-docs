@@ -1990,6 +1990,50 @@ Sample Response::
 
 '''
 
+=== Drop a loading job
+
+`DELETE /gsql/v1/loading-jobs/{jobName}`
+
+Drop a loading job, equivalent to GSQL
+xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_drop_job_statement[DROP JOB].
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| name of the graph that this job belongs to
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE
+'http://localhost:14240/gsql/v1/loading-jobs/load_kafka?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully drop loading job 'load_kafka'."}
+----
+--
+====
+
+'''
+
 === Run a loading job
 
 `POST /gsql/v1/loading-jobs/run`
@@ -2048,55 +2092,11 @@ Sample Response::
 
 '''
 
-=== Drop a loading job
-
-`DELETE /gsql/v1/loading-jobs/{jobName}`
-
-Drop a loading job, equivalent to GSQL
-xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_drop_job_statement[DROP JOB].
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| name of the graph that this job belongs to
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X DELETE
-'http://localhost:14240/gsql/v1/loading-jobs/load_kafka?graph=financialGraph'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error": false,"message":"Successfully drop loading job 'load_kafka'."}
-----
---
-====
-
-'''
-
-=== Get loading job run status (multiple jobs)
+=== Get loading job run statuses (multiple jobs)
 
 `GET /gsql/v1/loading-jobs/status`
 
-Get the status of one or more loading jobs, equivalent to GSQL
+Get the status of one or more loading jobs that have been started, equivalent to GSQL
 xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_status[SHOW LOADING STATUS].
 
 ==== Parameters:
@@ -2140,7 +2140,8 @@ Sample Response::
 
 `GET /gsql/v1/loading-jobs/status/{jobId}`
 
-Get the status of one loading job.
+Get the status of one loading job that has been started.
+The behavior of this endpoint is the same as that of `GET /gsql/v1/loading-jobs/status/` when only one `jobIds` parameter is used.
 
 ==== Parameters:
 
