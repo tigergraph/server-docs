@@ -1,6 +1,7 @@
-
 = GSQL Endpoints
 :pp: {plus}{plus}
+:toc:
+:toclevels: 1
 :description: A set of GSQL REST API endpoints about vertex in TigerGraph server.
 //:page-aliases: built-in-endpoints.adoc
 
@@ -25,7 +26,7 @@ image::financialGraph_schema.png[]
 
 `GET /gsql/v1/schema/vertices`
 
-This endpoint is used to show all the local vertices on a graph or show all the global vertices
+Show all the local vertices on a graph or show all the global vertices
 
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -65,7 +66,7 @@ Sample Response::
 
 `GET /gsql/v1/schema/vertices/{vertexName}`
 
-This endpoint is used to show a local/global vertex.
+Show a local/global vertex.
 
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -106,7 +107,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/vertices`
 
-This endpoint is used to create global vertices using json contains gsql command
+Create global vertices using json contains gsql command
 
 ==== Parameters:
 
@@ -149,7 +150,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/vertices`
 
-This endpoint is used to add existing global vertices to a local graph
+Add existing global vertices to a local graph
 
 ==== Parameters:
 
@@ -267,7 +268,7 @@ Sample Response::
 
 `DELETE /gsql/v1/schema/vertices`
 
-This endpoint is used to drop local vertices on specific graph or drop global vertices.
+Drop local vertices on specific graph or drop global vertices.
 
 ==== Parameters:
 
@@ -314,7 +315,7 @@ Sample Response::
 
 `DELETE /gsql/v1/schema/vertices/{vertexName}`
 
-This endpoint is used to drop a local/global vertex.
+Drop a local/global vertex.
 
 ==== Parameters:
 
@@ -357,7 +358,7 @@ Sample Response::
 
 `PUT /gsql/v1/schema/vertices/{vertexName}`
 
-This endpoint is used to update a vertex attributes.
+Update a vertex attributes.
 
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
@@ -398,7 +399,7 @@ Sample Response::
 === show all indexes
 `GET /gsql/v1/schema/indexes`
 
-This endpoint is used to display all indexes within a specific graph or across all global vertices.
+Display all indexes within a specific graph or across all global vertices.
 
 ==== Parameters:
 
@@ -478,7 +479,7 @@ Sample Response::
 === create indexes
 `POST /gsql/v1/schema/indexes`
 
-This endpoint is used to create indexes.
+Create indexes.
 
 ==== Parameters:
 
@@ -518,7 +519,7 @@ Sample Response::
 === drop an index
 `DELETE /gsql/v1/schema/indexes/{indexName}`
 
-This endpoint is used to drop an index.
+Drop an index.
 
 ==== Parameters:
 
@@ -562,7 +563,7 @@ Sample Response::
 === drop indexes
 `DELETE /gsql/v1/schema/indexes`
 
-This endpoint is used to drop indexes.
+Drop indexes.
 
 ==== Parameters:
 
@@ -611,7 +612,7 @@ Sample Response::
 
 `GET /gsql/v1/schema/edges`
 
-This endpoint is used to retrieve all local edges within a specific graph or retrieve all global edges.
+Retrieve all local edges within a specific graph or retrieve all global edges.
 
 ==== Parameters:
 
@@ -651,7 +652,7 @@ Sample Response::
 
 `GET /gsql/v1/schema/edges/{edgeName}`
 
-This endpoint is used to retrieve information about a specific edge type within a local graph, or retrieve information about a specific global edge type.
+Retrieve information about a specific edge type within a local graph, or retrieve information about a specific global edge type.
 
 ==== Parameters:
 
@@ -693,7 +694,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/edges`
 
-This endpoint is used to create global edges using gsql command statement.
+Create global edges using gsql command statement.
 
 ==== Parameters:
 
@@ -735,7 +736,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/edges`
 
-This endpoint is used to add global edges to graph using json format.
+Add global edges to graph using json format.
 
 ==== Parameters:
 
@@ -775,7 +776,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/edges`
 
-This endpoint is used to create global edges using json format.
+Create global edges using json format.
 
 ==== Parameters:
 
@@ -809,7 +810,7 @@ Sample Response::
 
 `DELETE /gsql/v1/schema/edges`
 
-This endpoint is used to drop edges from a graph or drop global edges.
+Drop edges from a graph or drop global edges.
 
 ==== Parameters:
 
@@ -854,7 +855,7 @@ Sample Response::
 
 `DELETE /gsql/v1/schema/edges/{edgeName}`
 
-This endpoint is used to drop a local/global edge.
+Drop a local/global edge.
 
 ==== Parameters:
 
@@ -894,7 +895,7 @@ Sample Response::
 
 `PUT /gsql/v1/schema/edges/{edgeName}`
 
-This endpoint is used to update attributes in edge.
+Update attributes in edge.
 
 ==== Parameters:
 
@@ -935,7 +936,7 @@ Sample Response::
 
 `GET /gsql/v1/schema/graphs`
 
-This endpoint is used to show all graphs info only containing names of vertices and edges.
+Show all graphs info only containing names of vertices and edges.
 
 ==== Parameters:
 
@@ -968,7 +969,7 @@ Sample Response::
 
 `GET /gsql/v1/schema/graphs/{graph}`
 
-This endpoint is used to show one graph detailed info with given graph name.
+Show one graph detailed info with given graph name.
 
 ==== Parameters:
 
@@ -1004,7 +1005,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/graphs`
 
-This endpoint is used to create one graph using gsql command.
+Create one graph using gsql command.
 
 ==== Parameters:
 
@@ -1049,7 +1050,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/graphs`
 
-This endpoint is used to create one graph using JSON format.
+Create one graph using JSON format.
 
 ==== Parameters:
 
@@ -1095,7 +1096,7 @@ Sample Response::
 
 `DELETE /gsql/v1/schema/graphs/{graphName}`
 
-This endpoint is used to drop one graph.
+Drop one graph.
 
 ==== Parameters:
 
@@ -1136,7 +1137,7 @@ Sample Response::
 
 `DELETE /gsql/v1/schema/graphs`
 
-This endpoint is used to drop graphs with given names.
+Drop graphs with given names.
 
 ==== Parameters:
 
@@ -1176,7 +1177,7 @@ Sample Response::
 
 `DELETE /gsql/v1/schema/jobs`
 
-This endpoint is used to drop local/global schema change jobs.
+Drop local/global schema change jobs.
 
 ==== Parameters:
 
@@ -1221,7 +1222,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to create local/global schema change job using gsql command.
+Create local/global schema change job using gsql command.
 
 ==== Parameters:
 
@@ -1270,7 +1271,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to create global schema change job using json.
+Create global schema change job using json.
 
 ==== Parameters:
 
@@ -1303,7 +1304,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to create local schema change job using json.
+Create local schema change job using json.
 
 ==== Parameters:
 
@@ -1486,7 +1487,7 @@ Sample Response::
 
 `GET /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to retrieve a specific local/global schema change job.
+Retrieve a specific local/global schema change job.
 
 ==== Parameters:
 
@@ -1530,7 +1531,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/change`
 
-This endpoint is used to run global schema change job directly.
+Run global schema change job directly.
 
 ==== Parameters:
 
@@ -1565,7 +1566,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/change`
 
-This endpoint is used to run the schema change job directly.
+Run the schema change job directly.
 
 ==== Parameters:
 
@@ -1710,7 +1711,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/jobs/{jobName}`
 
-This endpoint is used to run an existing schema change job.
+Run an existing schema change job.
 
 ==== Parameters:
 
@@ -1750,7 +1751,7 @@ Sample Response::
 
 `GET /gsql/v1/schema/jobs`
 
-This endpoint is used to get all local/global schema change jobs.
+Get all local/global schema change jobs.
 
 ==== Parameters:
 
@@ -1791,13 +1792,13 @@ Sample Response::
 
 '''
 
-== Loading job
+== Loading Jobs
 
-=== get loading job names
+=== Get loading job names
 
 `GET /gsql/v1/loading-jobs`
 
-This endpoint is used to get all loading job names in a graph.
+Get the names of all loading jobs in the given graph.
 
 ==== Parameters:
 
@@ -1808,7 +1809,7 @@ This endpoint is used to get all loading job names in a graph.
 
 | `graph`
 | yes
-| the loading job names of which graph
+| name of the graph that these jobs belong to
 |===
 
 ==== Example
@@ -1820,7 +1821,8 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph'
+curl -H 'Content-Type: application/json' -X GET
+'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph'
 ----
 --
 Sample Response::
@@ -1835,95 +1837,11 @@ Sample Response::
 
 '''
 
-=== create a loading job
-
-`POST /gsql/v1/loading-jobs`
-
-This endpoint is used to create a new loading job
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| create loading job of which graph
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph' -d '<loading job statement>'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Successfully created loading job: <jobName>"}
-----
---
-====
-
-'''
-
-=== upload a loading job
-
-`PUT /gsql/v1/loading-jobs`
-
-This endpoint is used to update an existing loading job.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| update loading job of which graph
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: text/plain' -X PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph' -d '<loading job statement>'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Successfully created loading job: <jobName>"}
-----
---
-====
-
-'''
-
-=== get loading job info
+=== Get loading job information
 
 `GET /gsql/v1/loading-jobs/{jobName}`
 
-This endpoint is used to get a specific loading job's information.
+Get information about a specific loading job.
 
 ==== Parameters:
 
@@ -1934,11 +1852,13 @@ This endpoint is used to get a specific loading job's information.
 
 | `graph`
 | yes
-| get the loading job information under which graph
+| name of the graph that this job belongs to
 
 | `verbose`
 | no
-| default: false, true means show verbose version, true means show concise version.
+| If `true`: show more details.
+
+  If `false` (default): show fewer details.
 |===
 
 ==== Example
@@ -1950,7 +1870,64 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: applicaiton/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/incidents_fraud_report_company_csv?graph=financialGraph&json=[true/false]'
+curl -H 'Content-Type: applicaiton/json' -X GET
+'http://localhost:14240/gsql/v1/loading-jobs/incidents_fraud_report_company_csv?graph=financialGraph&json=[true/false]'
+----
+--
+Sample Response::
++
+--
+json=false:
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"jobName":"incidents_fraud_report_company_csv","jobContent":"this is jobContent"}}
+----
+
+json=true:
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"Filters":[],"GraphName":"g","Headers":{"f1_header":["report_id","report_updated_at","report_status","report_type","report_source","report_data_source","fraud_type","tax_id"],"f1_header_company":["tax_id","report_updated_at","tax_status"]},"JobName":"incidents_fraud_report_company_csv","FileNames":{"f1":""},"LoadingStatements":[{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"report_status"},{"Type":"SrcColName","Value":"report_type"},{"Type":"SrcColName","Value":"report_source"},{"Type":"SrcColName","Value":"report_data_source"},{"Type":"SrcColName","Value":"fraud_type"}],"TargetName":"FraudReport","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header_company"},"Mappings":[{"Type":"SrcColName","Value":"tax_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"tax_status"}],"TargetName":"Company","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Edge","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"tax_id"}],"TargetName":"HasIncident","FromVertexType":"FraudReport","ToVertexType":"Company","DataSource":{"Type":"FileVar","Value":"f1"}}]}}
+----
+--
+====
+
+'''
+
+=== Create a loading job
+
+`POST /gsql/v1/loading-jobs`
+
+Create a new loading job, equivalent to GSQL
+xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_create_loading_job[CREATE LOADING JOB].
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| name of the graph that this job will belong to
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph'
+-d 'CREATE LOADING JOB load_kafka {
+  DEFINE FILENAME f1 = "$ka:/tmp/kafka_topic.json";
+  LOAD f1
+    TO VERTEX company VALUES($0, $1, "2")
+    USING SEPARATOR=",";
+}'
 ----
 --
 Sample Response::
@@ -1958,22 +1935,18 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-Default behavior:
-json=false:
-{"error":false,"message":"","results":{"jobName":"incidents_fraud_report_company_csv","jobContent":"this is jobContent"}}
-
-json=true: {"error":false,"message":"","results":{"Filters":[],"GraphName":"g","Headers":{"f1_header":["report_id","report_updated_at","report_status","report_type","report_source","report_data_source","fraud_type","tax_id"],"f1_header_company":["tax_id","report_updated_at","tax_status"]},"JobName":"incidents_fraud_report_company_csv","FileNames":{"f1":""},"LoadingStatements":[{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"report_status"},{"Type":"SrcColName","Value":"report_type"},{"Type":"SrcColName","Value":"report_source"},{"Type":"SrcColName","Value":"report_data_source"},{"Type":"SrcColName","Value":"fraud_type"}],"TargetName":"FraudReport","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Vertex","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header_company"},"Mappings":[{"Type":"SrcColName","Value":"tax_id"},{"Type":"SrcColName","Value":"report_updated_at"},{"Type":"SrcColName","Value":"tax_status"}],"TargetName":"Company","DataSource":{"Type":"FileVar","Value":"f1"}},{"Type":"Edge","UsingClauses":{"QUOTE":"double","EOL":"\\n","SEPARATOR":",","HEADER":"true","USER_DEFINED_HEADER":"f1_header"},"Mappings":[{"Type":"SrcColName","Value":"report_id"},{"Type":"SrcColName","Value":"tax_id"}],"TargetName":"HasIncident","FromVertexType":"FraudReport","ToVertexType":"Company","DataSource":{"Type":"FileVar","Value":"f1"}}]}}
+{"error":false,"message":"Successfully created loading job: load_kafka"}
 ----
 --
 ====
 
 '''
 
-=== run loading job
+=== Update a loading job
 
-`POST /gsql/v1/loading-jobs/run`
+`PUT /gsql/v1/loading-jobs`
 
-This endpoint is used to run a loading job.
+Update an existing loading job.
 
 ==== Parameters:
 
@@ -1984,7 +1957,7 @@ This endpoint is used to run a loading job.
 
 | `graph`
 | yes
-| run the loading job under which graph
+| name of the graph that this job belongs to
 |===
 
 ==== Example
@@ -1996,13 +1969,116 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/loading-jobs/run?graph=financialGraph'
-payload could be one of these:
-kafka loading: [{"name":"load_kafka","dataSources":[{"filename":"f1","name":"k1","path":"","config":{"topic":"regress7715","partition_list":[{"start_offset":-2,"partition":0}]}}],"streaming":false}]
-s3: [{"name":"load_comment","streaming":true,"dataSources":[{"filename":"file_Comment","name":"s1","path":"s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment"}]}]
-file loading: [{"name":"load_job","sys.data_root":"/tmp","dataSources":[{"filename":"f","path":"./data","name":"file"}]}]
-full parameters: [{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1,"dataSources":[{"filename":"f","path":"./data","name":"file"}]}]
+curl -H 'Content-Type: text/plain' -X PUT 'http://localhost:14240/gsql/v1/loading-jobs?graph=financialGraph'
+-d 'CREATE LOADING JOB load_kafka {
+  DEFINE FILENAME f1 = "$ka:/tmp/kafka_topic.json";
+  LOAD f1
+    TO VERTEX company VALUES($0, $1, "3")
+    USING SEPARATOR=",";
+}'
 ----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully created loading job: load_kafka"}
+----
+--
+====
+
+'''
+
+=== Drop a loading job
+
+`DELETE /gsql/v1/loading-jobs/{jobName}`
+
+Drop a loading job, equivalent to GSQL
+xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_drop_job_statement[DROP JOB].
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| name of the graph that this job belongs to
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X DELETE
+'http://localhost:14240/gsql/v1/loading-jobs/load_kafka?graph=financialGraph'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully drop loading job 'load_kafka'."}
+----
+--
+====
+
+'''
+
+=== Run a loading job
+
+`POST /gsql/v1/loading-jobs/run`
+
+Run a loading job, equivalent to GSQL
+xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_run_loading_job[RUN LOADING JOB].
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| name of the graph that this job belongs to
+|===
+
+The details of the loading job should be specified in the payload.
+They include the job name, the path to the data sources, and any desired options for running the loading job.
+There may also be parameters specify to the data source.
+Below are some examples:
+
+* *Kafka*: `[{"name":"load_kafka", "streaming":false}, "dataSources":[{"filename":"f1","name":"k1","path":"","config":{"topic":"regress7715","partition_list":[{"start_offset":-2,"partition":0}]}}]]`
+
+* *S3*: `[{"name":"load_comment","streaming":true,"dataSources":[{"filename":"file_Comment","name":"s1","path":"s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment"}]}]`
+
+* *Local files*: `[{"name":"load_job","sys.data_root":"/tmp","dataSources":[{"filename":"f","path":"./data","name":"file"}]}]`
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X POST -d @header.json
+'http://localhost:14240/gsql/v1/loading-jobs/run?graph=financialGraph'
+----
+where the file `header.json` contains
+
+`[{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1 "dataSources":[{"filename":"f","path":"./data","name":"file"}]}]`
 --
 Sample Response::
 +
@@ -2016,53 +2092,12 @@ Sample Response::
 
 '''
 
-=== drop a loading job
+=== Get loading job run statuses (multiple jobs)
 
-`DELETE /gsql/v1/loading-jobs/{jobName}`
+`GET /gsql/v1/loading-jobs/status`
 
-This endpoint is used to drop a loading job by name.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `graph`
-| yes
-| drop the loading job under which graph
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X DELETE 'http://localhost:14240/gsql/v1/loading-jobs/jobName?graph=financialGraph'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error": false,"message":"Successfully drop loading job 'jobName'."}
-----
---
-====
-
-'''
-
-=== abort loading job(s)
-
-`GET /gsql/v1/loading-jobs/abort`
-
-This endpoint is used to abort mutilple running loading jobs.
+Get the status of one or more loading jobs that have been started, equivalent to GSQL
+xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_status[SHOW LOADING STATUS].
 
 ==== Parameters:
 
@@ -2070,14 +2105,10 @@ This endpoint is used to abort mutilple running loading jobs.
 [%autowidth]
 |===
 | Name | Required | Description
-
-| `graph`
-| yes
-| abort the loading job under which graph
 
 | `jobIds`
 | yes
-| the loading job Ids
+| ID of the loading job
 |===
 
 ==== Example
@@ -2089,8 +2120,8 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financialGraph&jobIds=jobId1'
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financialGraph&jobIds=jobId1&isPause=true'
+curl -H 'Content-Type: application/json' -X GET
+'http://localhost:14240/gsql/v1/loading-jobs/status/jobIds=financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
 ----
 --
 Sample Response::
@@ -2098,19 +2129,64 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-default behavior: {"error": false,"message":"Successfully dropped loading job(s): [jobId1]."}
-{"error": false,"message":"Successfully paused loading job(s): [jobId1]."}
+{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financialGraph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
 ----
 --
 ====
 
 '''
 
-=== abort one loading job
+=== Get loading job run status (one job)
 
-`GET /gsql/v1/loading-jobs/abort/{jobId}`
+`GET /gsql/v1/loading-jobs/status/{jobId}`
 
-This endpoint is used to abort a one loading job by job Id.
+Get the status of one loading job that has been started.
+The behavior of this endpoint is the same as that of `GET /gsql/v1/loading-jobs/status/` when only one `jobIds` parameter is used.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `jobId`
+| yes
+| ID of the loading job
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET
+'http://localhost:14240/gsql/v1/loading-jobs/status/financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financialGraph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
+----
+--
+====
+
+'''
+
+
+=== Abort loading job(s)
+
+`GET /gsql/v1/loading-jobs/abort`
+
+Abort one or more loading jobs, equivalent to GSQL
+xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_abort_loading_job[ABORT LOADING JOB].
 
 ==== Parameters:
 
@@ -2121,11 +2197,65 @@ This endpoint is used to abort a one loading job by job Id.
 
 | `graph`
 | yes
-| abort the loading job under which graph
+| name of the graph that this job belongs to
+
+| `jobIds`
+| yes
+| ID of one of the loading jobs
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -H 'Content-Type: application/json' -X GET
+'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financialGraph&jobIds=jobId1'
+
+curl -H 'Content-Type: application/json' -X GET
+'http://localhost:14240/gsql/v1/loading-jobs/abort?graph=financialGraph&jobIds=jobId2&isPause=true'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error": false,"message":"Successfully aborted loading job(s): [jobId1]."}
+
+{"error": false,"message":"Successfully paused loading job(s): [jobId2]."}
+----
+--
+====
+
+'''
+
+=== Abort one loading job
+
+`GET /gsql/v1/loading-jobs/abort/{jobId}`
+
+Abort one loading job, equivalent to GSQL
+xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_abort_loading_job[ABORT LOADING JOB].
+The behavior of this endpoint is the same as that of `GET /gsql/v1/loading-jobs/abort/` when only one `jobIds` parameter is used.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| name of the graph that this job belongs to
 
 | `jobId`
 | yes
-| the loading job Id
+| ID of the loading job
 |===
 
 
@@ -2146,19 +2276,19 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-default behavior: {"error": false,"message":"Successfully dropped loading job(s): [jobId1]."}
-{"error": false,"message":"Successfully paused loading job(s): [jobId1]."}
+{"error": false,"message":"Successfully aborted loading job(s): [jobId1]."}
 ----
 --
 ====
 
 '''
 
-=== resume loading job
+=== Resume loading job
 
 `GET /gsql/v1/loading-jobs/resume/{jobId}`
 
-This endpoint is used to resume a paused loading job by job Id.
+Resume a paused/aborted loading job, equivalent to GSQL
+xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_resume_loading_job[RESUME LOADING JOB].
 
 ==== Parameters:
 
@@ -2169,7 +2299,7 @@ This endpoint is used to resume a paused loading job by job Id.
 
 | `jobId`
 | yes
-| the loading job Id
+| ID of the loading job
 |===
 
 ==== Example
@@ -2196,98 +2326,13 @@ Sample Response::
 
 '''
 
-=== get loading job status
-
-`GET /gsql/v1/loading-jobs/status`
-
-This endpoint is used to get multiple loading jobs status.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `jobIds`
-| yes
-| the loading job Ids
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/jobIds=financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financialGraph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
-----
---
-====
-
-'''
-
-=== get one loading job status
-
-`GET /gsql/v1/loading-jobs/status/{jobId}`
-
-This endpoint is used to get a loading job's status by job Id.
-
-==== Parameters:
-
-//[width="100%",cols="25%,25%,50%",options="header",]
-[%autowidth]
-|===
-| Name | Required | Description
-
-| `jobId`
-| yes
-| the loading job Id
-|===
-
-==== Example
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -H 'Content-Type: application/json' -X GET 'http://localhost:14240/gsql/v1/loading-jobs/status/financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"","results":[{"overall":{"averageSpeed":66666,"currentSpeed":55555,"duration":12345,"endTime":1111111123456,"id":"financialGraph.load_ldbc_snb.jdbc.all.1111111111121","progress":0,"size":1236,"startTime":1111111111111,"statistics":{"fileLevel":{"validLine":8},"objectLevel":{"vertex":[{"invalidAttribute":1,"noIdFound":1,"typeName":"Post","validObject":6}]}}},"workers":[{"tasks":[{"filename":"f1"}]}]}]}
-----
---
-====
-
-'''
-
-
 == Data source
 
 === get a data source
 
 `GET /gsql/v1/data-sources/{dsName}`
 
-This endpoint is used to get a data source.
+Get a data source.
 
 ==== Parameters:
 
@@ -2320,7 +2365,7 @@ Sample Response::
 
 `GET /gsql/v1/data-sources`
 
-This endpoint is used to get all data sources.
+Get all data sources.
 
 ==== Parameters:
 
@@ -2353,7 +2398,7 @@ Sample Response::
 
 `PUT /gsql/v1/data-sources`
 
-This endpoint is used to update a data source .
+Update a data source .
 
 ==== Parameters:
 
@@ -2393,7 +2438,7 @@ Sample Response::
 
 `POST /gsql/v1/data-sources`
 
-This endpoint is used to create a data source.
+Create a data source.
 
 ==== Parameters:
 
@@ -2433,7 +2478,7 @@ Sample Response::
 
 `DELETE /gsql/v1/data-sources/{dsName}`
 
-This endpoint is used to drop one data source.
+Drop one data source.
 
 ==== Parameters:
 
@@ -2473,7 +2518,7 @@ Sample Response::
 
 `POST /gsql/v1/data-sources/grant`
 
-This endpoint is used to grant one data source.
+Grant one data source.
 
 ==== Parameters:
 
@@ -2505,7 +2550,7 @@ Sample Response::
 
 `POST /gsql/v1/data-sources/revoke`
 
-This endpoint is used to revoke data source.
+Revoke data source.
 
 ==== Parameters:
 
@@ -2537,7 +2582,7 @@ Sample Response::
 
 `DELETE /gsql/v1/data-sources/dropAll`
 
-This endpoint is used to drop all data source.
+Drop all data source.
 
 ==== Parameters:
 
@@ -2578,7 +2623,7 @@ Sample Response::
 
 `POST /gsql/v1/sample-data`
 
-This endpoint is used to get the sample data of S3 file.uris or local files.
+Get the sample data of S3 file.uris or local files.
 
 ==== Parameters:
 
@@ -2706,7 +2751,7 @@ Sample Response::
 
 `GET /gsql/v1/list-buckets/{s3Name}`
 
-This endpoint is used to get all buckets of given S3 data source.
+Get all buckets of given S3 data source.
 
 ==== Parameters:
 
@@ -2738,7 +2783,7 @@ Sample Response::
 
 `GET /gsql/v1/list-files/{s3Name}`
 
-This endpoint is used to get all files and directories under given S3 bucket path.
+Get all files and directories under given S3 bucket path.
 
 ==== Parameters:
 
@@ -2874,7 +2919,7 @@ Sample Response::
 
 `GET /gsql/v1/queries`
 
-This endpoint is used to get all query names of a graph.
+Get all query names of a graph.
 
 ==== Example
 
@@ -2904,7 +2949,7 @@ Sample Response::
 
 `POST /gsql/v1/queries`
 
-This endpoint is used to create a query.
+Create a query.
 
 ==== Parameters:
 
@@ -2946,7 +2991,7 @@ Sample Response::
 
 `DELETE /gsql/v1/queries`
 
-This endpoint is used to drop quries.
+Drop quries.
 
 ==== Parameters:
 
@@ -3090,7 +3135,7 @@ Sample Response::
 
 `DELETE /gsql/v1/queries/{queryName}`
 
-This endpoint is used to drop a query by its name.
+Drop a query by its name.
 
 ==== Parameters:
 
@@ -3132,7 +3177,12 @@ Sample Response::
 
 `POST /gsql/v1/queries/interpret`
 
-This endpoint is used to intepret query. Please note that calling this endpont need to set 'Content-Type: text/plain' in header.
+Intepret query. Please note that calling this endpont need to set 'Content-Type: text/plain' in header.
+
+For interpret query, we can declare workload queue in 2 ways:
+
+* In the request header 
+* In the GSQL query definition
 
 ==== Parameters:
 
@@ -3144,6 +3194,18 @@ This endpoint is used to intepret query. Please note that calling this endpont n
 | `graph`
 | yes
 | the query interpreted under which graph
+|===
+
+==== Headers:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `workload_queue_name`
+| optional
+| the workload queue name
 |===
 
 ==== Example
@@ -3166,6 +3228,22 @@ Sample Response::
 {"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"p1":["hello","world"]}]}
 ----
 --
+Sample Request For Interpreting Anonymous Query Using Request Header::
++
+--
+[source,bash]
+----
+curl -X POST -H 'Workload-Queue: <workload_queue_name>' 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
+----
+--
+Sample Request For Interpreting Anonymous Query Using GSQL Command::
++
+--
+[source,bash]
+----
+curl -X POST 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY -QUEUE <workload_queue_name> (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
+----
+
 ====
 
 '''
@@ -3174,7 +3252,7 @@ Sample Response::
 
 `GET /gsql/v1/queries/info`
 
-This endpoint is used to get the query's information.
+Get the query's information.
 
 ==== Parameters:
 
@@ -3224,7 +3302,7 @@ Sample Response::
 
 `GET /gsql/v1/queries/signature`
 
-This endpoint is used to get query's signature by its name.
+Get query's signature by its name.
 
 ==== Parameters:
 
@@ -3275,7 +3353,7 @@ Sample Response::
 
 `POST /gsql/v1/internal/check/query`
 
-This endpoint is used to query semantic check.
+Perform a semantic check of a query.
 
 ==== Example
 
@@ -3307,7 +3385,7 @@ Sample Response::
 
 `GET /gsql/v1/packages`
 
-This endpoint is used to get all package names.
+Get all package names.
 
 ==== Example
 
@@ -3337,7 +3415,7 @@ Sample Response::
 
 `GET /gsql/v1/package/{packageName}`
 
-This endpoint is used to get package by its name.
+Get package by its name.
 
 ==== Example
 
@@ -3367,7 +3445,7 @@ Sample Response::
 
 `POST /gsql/v1/package/{packageName}`
 
-This endpoint is used to create package.
+Create package.
 
 ==== Example
 
@@ -3397,7 +3475,7 @@ Sample Response::
 
 `DELETE /gsql/v1/package/{packageName}`
 
-This endpoint is used to drop package by its name.
+Drop package by its name.
 
 ==== Example
 
@@ -3427,7 +3505,7 @@ Sample Response::
 
 `POST /gsql/v1/package/function`
 
-This endpoint is used to create function
+Create function
 
 ==== Example
 
@@ -3457,7 +3535,7 @@ Sample Response::
 
 `DELETE /gsql/v1/package/{functionName}`
 
-This endpoint is used to delete function by its name.
+Delete function by its name.
 
 ==== Example
 
@@ -3487,7 +3565,7 @@ Sample Response::
 
 `POST /gsql/v1/package/template`
 
-This endpoint is used to create template query.
+Create template query.
 
 ==== Example
 
@@ -3517,7 +3595,7 @@ Sample Response::
 
 `DELETE /gsql/v1/package/template/{queryName}`
 
-This endpoint is used to drop template query.
+Drop template query.
 
 ==== Example
 
@@ -3547,7 +3625,7 @@ Sample Response::
 
 `POST /gsql/v1/package/import/{packageName}`
 
-This endpoint is used to import package.
+Import package.
 
 ==== Example
 
@@ -3577,7 +3655,7 @@ Sample Response::
 
 `POST /gsql/v1/library/{functionName}`
 
-This endpoint is used to call template query.
+Call template query.
 
 ==== Parameters:
 
@@ -3623,7 +3701,7 @@ Sample Response::
 
 `GET /gsql/v1/library/{functionName}`
 
-This endpoint is used to get template query's information.
+Get template query's information.
 
 ==== Parameters:
 
@@ -3671,7 +3749,7 @@ Sample Response::
 
 `POST /gsql/v1/statements`
 
-This endpoint is used to execute any GSQL command asynchronously or synchronously.
+Execute any GSQL command asynchronously or synchronously.
 
 ==== Parameters:
 
@@ -3724,7 +3802,7 @@ Syntax version: v2
 
 `GET /gsql/v1/statements/{requestId}`
 
-This endpoint is used to check status of asynchronous request with requestId.
+Check status of asynchronous request with requestId.
 
 ==== Parameters:
 
@@ -3762,7 +3840,7 @@ Sample Response::
 
 `PUT /gsql/v1/statements/{requestId}/cancel`
 
-This endpoint is used to cancel an asynchronous request with requestId.
+Cancel an asynchronous request with requestId.
 
 ==== Parameters:
 
@@ -3798,7 +3876,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/recover`
 
-This endpoint is used to recover catalog.
+Recover catalog.
 
 ==== Parameters:
 
@@ -3830,7 +3908,7 @@ Sample Response::
 
 `POST /gsql/v1/schema/check`
 
-This endpoint is used to validate graph schema.
+Check that a schema is valid.
 
 ==== Parameters:
 
@@ -3946,7 +4024,7 @@ This product is protected by U.S. and international copyright and intellectual p
 
 `GET /gsql/v1/drop-all`
 
-This endpoint is used to drop all.
+Drop all.
 
 [WARNING]
 ====
@@ -3982,7 +4060,7 @@ Sample Response::
 
 `POST /gsql/v1/db-export`
 
-This endpoint is used to export database.
+Export database.
 
 ==== Example
 
@@ -4012,7 +4090,7 @@ Sample Response::
 
 `POST /gsql/v1/db-import`
 
-This endpoint is used to import database.
+Import database.
 
 ==== Example
 
@@ -4044,7 +4122,7 @@ Sample Response::
 
 `POST /gsql/v1/tokens`
 
-This endpoint is used to create a new JWT token.
+Create a new JWT token.
 
 ==== Payload:
 
@@ -4094,7 +4172,7 @@ Sample Response::
 
 `DELETE /gsql/v1/tokens`
 
-This endpoint is used to drop specific a list of tokens.
+Drop specific a list of tokens.
 
 ==== Parameters:
 
@@ -4136,7 +4214,7 @@ Sample Response::
 
 `POST /gsql/v1/tokens/check`
 
-This endpoint is used to check JWT token is valid or not.
+Check JWT token is valid or not.
 
 ==== Example
 
@@ -4166,7 +4244,7 @@ Sample Response::
 
 `POST /gsql/v1/secrets`
 
-This endpoint is used to create a secret.
+Create a secret.
 
 ==== Parameters:
 
@@ -4212,7 +4290,7 @@ Sample Response::
 
 `GET /gsql/v1/secrets`
 
-This endpoint is used to show secrets for the user.
+Show secrets for the user.
 
 ==== Parameters:
 
@@ -4254,7 +4332,7 @@ Sample Response::
 
 `DELETE /gsql/v1/secrets`
 
-This endpoint is used to delete the secrets of the user.
+Delete the secrets of the user.
 
 ==== Parameters:
 
@@ -4295,7 +4373,7 @@ Sample Response::
 
 `GET /gsql/v1/secrets/{alias}`
 
-This endpoint is used to get the secrets by its alias name.
+Get the secrets by its alias name.
 
 ==== Parameters:
 
@@ -4336,7 +4414,7 @@ Sample Response::
 
 `DELETE /gsql/v1/secrets/{alias}`
 
-This endpoint is used to delete the secret of the user by its alias name.
+Delete the secret of the user by its alias name.
 
 ==== Parameters:
 
@@ -4377,7 +4455,7 @@ Sample Response::
 
 `GET /gsql/v1/groups/{id}`
 
-This endpoint is used to retrieve a group by id response scim format or gsql format JSON.
+Retrieve a group by id response scim format or gsql format JSON.
 
 ==== Parameters:
 
@@ -4410,7 +4488,7 @@ Sample Response::
 
 `GET /gsql/v1/groups`
 
-This endpoint is used to retrieve groups response gsql format JSON.
+Retrieve groups response gsql format JSON.
 
 ==== Parameters:
 
@@ -4452,7 +4530,7 @@ Sample Response::
 
 `POST /gsql/v1/groups`
 
-This endpoint is used to create a group using gsql format.
+Create a group using gsql format.
 
 ==== Parameters:
 
@@ -4484,7 +4562,7 @@ Sample Response::
 
 `PUT /gsql/v1/groups`
 
-This endpoint is used to update a group.
+Update a group.
 
 ==== Parameters:
 
@@ -4517,7 +4595,7 @@ Sample Response::
 
 `DELETE /gsql/v1/groups/{id}`
 
-This endpoint is used to drop one group by name.
+Drop one group by name.
 
 ==== Parameters:
 
@@ -4550,7 +4628,7 @@ Sample Response::
 
 `POST /gsql/v1/groups`
 
-This endpoint is used to drop groups.
+Drop groups.
 
 ==== Parameters:
 
@@ -4591,7 +4669,7 @@ Sample Response::
 
 `GET /gsql/v1/users/{id}`
 
-This endpoint is used to retrieve a user by id respond gsql format.
+Retrieve a user by id respond gsql format.
 
 ==== Parameters:
 
@@ -4623,7 +4701,7 @@ Sample Response::
 
 `PUT /gsql/v1/users`
 
-This endpoint is used to update a user.
+Update a user.
 
 ==== Parameters:
 
@@ -4656,7 +4734,7 @@ Sample Response::
 
 `POST /gsql/v1/users`
 
-This endpoint is used to drop users.
+Drop users.
 
 ==== Parameters:
 
@@ -4697,7 +4775,7 @@ Sample Response::
 
 `DELETE /gsql/v1/users/{id}`
 
-This endpoint is used to drop a user.
+Drop a user.
 
 ==== Parameters:
 
@@ -4730,7 +4808,7 @@ Sample Response::
 
 `POST /gsql/v1/users`
 
-This endpoint is used to create a user using gsql format.
+Create a user using gsql format.
 
 ==== Parameters:
 
@@ -4763,7 +4841,7 @@ Sample Response::
 
 `GET /gsql/v1/users`
 
-This endpoint is used to retrieve users response gsql format JSON.
+Retrieve users response gsql format JSON.
 
 ==== Parameters:
 
@@ -4804,7 +4882,7 @@ Sample Response::
 
 `GET /gsql/v1/privileges`
 
-This endpoint is used to list all built-in privileges.
+List all built-in privileges.
 
 ==== Example:
 
@@ -4834,7 +4912,7 @@ Sample Response::
 
 `POST /gsql/v1/privileges/grant`
 
-This endpoint is used to grant RABC privileges to specific roles.
+Grant RABC privileges to specific roles.
 
 ==== Parameters:
 
@@ -4877,7 +4955,7 @@ Sample Response::
 
 `POST /gsql/v1/privileges/revoke`
 
-This endpoint is used to revoke RABC privileges from specific roles
+Revoke RABC privileges from specific roles
 
 ==== Parameters:
 
@@ -5096,7 +5174,7 @@ Sample Response::
 
 `POST /gsql/v1/roles/grant`
 
-This endpoint is used to grant roles to specific users
+Grant roles to specific users
 
 ==== Parameters:
 
@@ -5139,7 +5217,7 @@ Sample Response::
 
 `POST /gsql/v1/roles/revoke`
 
-This endpoint is used to revoke roles from specific users
+Revoke roles from specific users
 
 ==== Parameters:
 
@@ -5185,7 +5263,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Groups/{id}`
 
-This endpoint is used to retrieve a group by id response scim format.
+Retrieve a group by id response scim format.
 
 ==== Parameters:
 
@@ -5218,7 +5296,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Groups`
 
-This endpoint is used to retrieve groups response scim format.
+Retrieve groups response scim format.
 
 ==== Parameters:
 
@@ -5263,7 +5341,7 @@ Sample Response::
 
 `POST /gsql/scim/v2/Groups`
 
-This endpoint is used to create a group using scim format.
+Create a group using scim format.
 
 ==== Parameters:
 
@@ -5296,7 +5374,7 @@ Sample Response::
 
 `PATCH /gsql/scim/v2/Groups/{id}`
 
-This endpoint is used to update a group.
+Update a group.
 
 ==== Parameters:
 
@@ -5330,7 +5408,7 @@ Sample Response::
 
 `DELETE /gsql/scim/v2/Groups/{id}`
 
-This endpoint is used to drop one group by name.
+Drop one group by name.
 
 ==== Parameters:
 
@@ -5364,7 +5442,7 @@ Sample Response::
 
 `POST /gsql/scim/v2/Groups`
 
-This endpoint is used to drop groups.
+Drop groups.
 
 ==== Parameters:
 
@@ -5405,7 +5483,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Users/{id}`
 
-This endpoint is used to retrieve a user by id respond with scim format.
+Retrieve a user by id respond with scim format.
 
 ==== Parameters:
 
@@ -5437,7 +5515,7 @@ Sample Response::
 
 `PUT /gsql/scim/v2/Users/{id}`
 
-This endpoint is used to update a user.
+Update a user.
 
 ==== Parameters:
 
@@ -5470,7 +5548,7 @@ Sample Response::
 
 `POST /gsql/scim/v2/Users`
 
-This endpoint is used to drop users.
+Drop users.
 
 ==== Parameters:
 
@@ -5511,7 +5589,7 @@ Sample Response::
 
 `DELETE /gsql/scim/v2/Users/{id}`
 
-This endpoint is used to drop a user.
+Drop a user.
 
 ==== Parameters:
 
@@ -5544,7 +5622,7 @@ Sample Response::
 
 `POST /gsql/scim/v2/Users`
 
-This endpoint is used to create a user using scim format.
+Create a user using scim format.
 
 ==== Parameters:
 
@@ -5578,7 +5656,7 @@ Sample Response::
 
 `GET /gsql/scim/v2/Users`
 
-This endpoint is used to retrieve users response scim format.
+Retrieve users response scim format.
 
 ==== Parameters:
 
@@ -5625,7 +5703,7 @@ Sample Response::
 
 `GET /gsql/v1/stats/cardinality`
 
-This endpoint is used to fetch cardinality statistics.
+Fetch cardinality statistics.
 
 ==== Parameters:
 
@@ -5783,7 +5861,7 @@ Sample Response::
 
 `DELETE /gsql/v1/stats/cardinality`
 
-This endpoint is used to remove cardinality statistics from storage.
+Remove cardinality statistics from storage.
 
 ==== Parameters:
 
@@ -5825,7 +5903,7 @@ Sample Response::
 
 `GET /gsql/v1/stats/histogram`
 
-This endpoint is used to fetch histogram statistics.
+Fetch histogram statistics.
 
 ==== Example:
 
@@ -5855,7 +5933,7 @@ Sample Response::
 
 `POST /gsql/v1/stats/histogram`
 
-This endpoint is used to persist new histogram statistics to storage.
+Persist new histogram statistics to storage.
 
 ==== Example:
 
@@ -5885,7 +5963,7 @@ Sample Response::
 
 `DELETE /gsql/v1/stats/histogram`
 
-This endpoint is used to remove histogram statistics from storage.
+Remove histogram statistics from storage.
 
 ==== Example:
 
@@ -5918,7 +5996,7 @@ Sample Response::
 
 `GET /gsql/v1/udt/tuples`
 
-This endpoint is used to get all tuples.
+Get all tuples.
 
 ==== Example
 
@@ -5948,7 +6026,7 @@ Sample Response::
 
 `GET /gsql/v1/udt/tuples/{tupleName}`
 
-This endpoint is used to get tuple by its name.
+Get tuple by its name.
 
 ==== Parameters:
 
@@ -5989,7 +6067,7 @@ Sample Response::
 
 `POST /gsql/udt/tuples`
 
-This endpoint is used to create a tuple.
+Create a tuple.
 
 ==== Example
 
@@ -6021,7 +6099,7 @@ Sample Response::
 
 `DELETE /gsql/v1/udt/tuples`
 
-This endpoint is used to delte multiple tuples.
+Delte multiple tuples.
 
 ==== Parameters:
 
@@ -6062,7 +6140,7 @@ Sample Response::
 
 `DELETE /gsql/v1/udt/tuples/{tupleName}`
 
-This endpoint is used to delete one tuple by its name.
+Delete one tuple by its name.
 
 ==== Example
 
@@ -6092,7 +6170,7 @@ Sample Response::
 
 `GET /gsql/v1/udt/accum`
 
-This endpoint is used to get all accumulators.
+Get all accumulators.
 
 ==== Example
 
@@ -6122,7 +6200,7 @@ Sample Response::
 
 `GET /gsql/v1/udt/accum/{accumName}`
 
-This endpoint is used to get one accumulator by its name.
+Get one accumulator by its name.
 
 ==== Example
 
@@ -6152,7 +6230,7 @@ Sample Response::
 
 `POST /gsql/v1/udt/accum`
 
-This endpoint is used to create one accumulator.
+Create one accumulator.
 
 ==== Example
 
@@ -6182,7 +6260,7 @@ Sample Response::
 
 `DELETE /gsql/v1/udt/accum`
 
-This endpoint is used to delete multiple accumulators.
+Delete multiple accumulators.
 
 ==== Parameters:
 
@@ -6223,7 +6301,7 @@ Sample Response::
 
 `DELETE /gsql/v1/udt/accum/{accumName}`
 
-This endpoint is used to delete one accumulator.
+Delete one accumulator.
 
 ==== Example
 
@@ -6253,7 +6331,7 @@ Sample Response::
 
 `GET /gsql/v1/udt/files/{fileName}`
 
-This endpoint is used to download one file by its name, {fileName} can be one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank.
+Download one file by its name, {fileName} can be one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank.
 
 ==== Example
 
@@ -6283,7 +6361,7 @@ Sample Response::
 
 `GET /gsql/v1/udt/files`
 
-This endpoint is used to get all files.
+Get all files.
 
 ==== Example
 
@@ -6313,7 +6391,7 @@ Sample Response::
 
 `PUT /gsql/v1/udt/files/{fileName}`
 
-This endpoint is used to upload file.
+Upload file.
 
 ==== Example
 
@@ -6343,7 +6421,7 @@ Sample Response::
 
 `PUT /gsql/v1/udt/files`
 
-This endpoint is used to upload all files.
+Upload all files.
 
 ==== Example
 
@@ -6373,7 +6451,7 @@ Sample Response::
 
 `GET /gsql/v1/udt/token-functions/{functionName}`
 
-This endpoint is used to get function content by its name.
+Get function content by its name.
 
 ==== Example
 
@@ -6403,7 +6481,7 @@ Sample Response::
 
 `GET /gsql/v1/udt/token-functions`
 
-This endpoint is used to get all token bank functions.
+Get all token bank functions.
 
 ==== Example
 
