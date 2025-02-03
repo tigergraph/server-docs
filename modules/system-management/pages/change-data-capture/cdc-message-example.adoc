@@ -286,3 +286,5 @@ When Undirected Edge or Directed Edge is inserted With a Reverse Edge Type, Tige
 - **CDC messages** are generated for both source and target vertices only if they are new and have `primary_id_as_attribute="true"`.
 
 |===
+
+*NOTE*:Starting from version 3.10.3, CDC produces the source vertex with "insert-only" for edge insertion in **Single-partition clusters** when the source/target vertex is new (doesn't exist before) and uses `primary_id_as_attribute="true"`.
