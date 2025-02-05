@@ -2,15 +2,16 @@
 
 The TigerGraph database captures key information on activities occurring across its different components through log functions that output to log files.
 These log files are not only helpful in xref:troubleshooting-guide.adoc[troubleshooting] but also serve as a resource for auditing.
+Logs may contain sensitive information, so direct access is restricted.
 
 This page provides a general overview of the way log files are stored in TigerGraph.
 
-Logs may contain sensitive information, so direct access is restricted.
-The TigerGraph Linux server admin user may use the xref:gcollect.adoc[gcollect] utility to search for and gather selected information from the logs.
+
+xref:audit-log.adoc[Audit logs] are structured in JSON, ensuring machine-readability and facilitating easy integration with third-party tools.
+The TigerGraph Linux server admin user may also use the xref:gcollect.adoc[gcollect] utility to search for and gather selected information from the logs.
 We also provide instructions on how to
 xref:elk-filebeat.adoc[set up log viewing with Elasticsearch, Kibana, or Filebeat].
 
-For information and examples specific to logging of RESTPP requests, queries, and user management tasks, see xref:service-log-tracking.adoc[].
 
 == TigerGraph log structure
 
