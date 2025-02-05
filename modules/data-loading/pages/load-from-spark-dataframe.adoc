@@ -288,10 +288,16 @@ logger.tg.level = info
 
 == Use Case Examples
 
-[NOTE]
-====
+=== Some Helpful tips 
+
+* **Authentication methods**
+
 It is simpler to authenticate with the username/password or secret because this mode automatically maintains a valid token; otherwise, make sure the lifetime of your token is long enough for the loading job.
-====
+
+* **High Availabilty** 
+
+To support fault tolerance and failover, please provide the URL of all nodes in the option `url`, e.g.,
+"url" -> "https://m1:14240,https://m2:14240,https://m3:14240,https://m4:14240",
 
 === Batch Write Mode
 
