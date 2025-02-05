@@ -177,6 +177,11 @@ See xref:3.10@tigergraph-server:user-access:rbac-row-policy/row-policy-privilege
 * Fixed an issue where schema changes could fail to occur during the loading process due to a lock not being removed (GLE-7572).
 * Fixed disk critical issue caused by the rebuilder getting stuck in a partitioned cluster after dropping vertex or edge attributes (CORE-4356).
 * Fixed an issue where failed backups in rare cases could cause the engine to pause for a long time, leading to query timeouts (CORE-4499).
+* Fixed issue where CDC EDGE messages with "UNKNOWN" ID were not removed when a query deleted a vertex and its associated edge (CORE-4491).
+* Resolved "UNKNOWN" ID issue in CDC messages under heavy load conditions on GSE (CORE-4443).
+* Fixed issue preventing downloading of GSQL output files larger than 3GB in the AdminPortal, impacting the GUS component (APPS-3277).
+* Fixed issue preventing downloading of GSQL output files larger than 3GB in the AdminPortal, impacting the EXE component (TP-6745).
+* Ensured GSQL and the GUI are online before importing data during the restore process (TP-6947).
 
 ==== Improvements
 
