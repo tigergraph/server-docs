@@ -369,7 +369,10 @@ Some files, including the data files, are exported to each server, while some fi
 
 The following are the steps to import an export file to a cluster.
 
-You may only import to a cluster that has the same number and configuration of servers as the data from which the export originated.
+If you're exporting from a single-node cluster, the `ExportedGraph.zip` can be directly imported, so you don't need the source and target clusters to have the same number of servers. 
+If you're exporting from a smaller cluster to a larger one, you must transfer the dataset files along with the zip file to the appropriate nodes in the target cluster. 
+
+For importing from a larger cluster to a smaller one, you’ll need to combine the dataset files, which can be easily done using GraphStudio. If you're using the `gsql CLI`, remember to combine all exported data from each node and transfer them to the new cluster before importing.
 
 ==== 1. Transfer files to new cluster
 
