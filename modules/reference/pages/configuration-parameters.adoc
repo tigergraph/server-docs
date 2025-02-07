@@ -1475,6 +1475,18 @@ a|
 * The default value is 0. When the value is 0, the threshold is dynamically decided by TigerGraph, based on current memory usage statistics.
 | `TransactionSizeLimit=1073741824`
 
+|| `FieldSizeLimit`, GPE.BasicConfig.Env
+a|
+* Specifies the maximum number of bytes (as an unsigned integer `UINT`) for a single field in a data record
+* The default is 104,857,600 = 100 MB. The maximum is 2^64 -1 = 16 exabytes
+| `FieldSizeLimit=20000`
+
+|| `ContainerLengthLimit`, GPE.BasicConfig.Env
+a|
+* Specifies the maximum number of entries allowed in a container
+* The default value is 1,048,576 bytes = 1MB .The maximum is 2^64 -1 = 16 exabytes
+| `ContainerLengthLimit=10000`
+
 |GSE
 | `ServFromDisk`,
 GSE.BasicConfig.Env
