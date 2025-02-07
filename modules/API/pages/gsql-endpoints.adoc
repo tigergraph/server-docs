@@ -4195,7 +4195,6 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/tokens' -d {"tokens": "$token1,$token2"}
 curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/tokens' -d '{"tokens": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg"}'
 ----
 --
@@ -4234,10 +4233,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{
-  "error": false,
-  "message": "The token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg verification succeed."
-}
+{"error":false,"message":"The token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg verification succeed."}
 ----
 --
 ====
