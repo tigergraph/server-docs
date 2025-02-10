@@ -766,7 +766,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":true,"message":"Failed to create edges [has_account]. Semantic Check Fails: The schema change job tries to add edge has_account to graph financialGraph, but the FROM vertex type user does not exist on the graph.\n"}
+{"error":false,"message":"Successfully added edges [has_account] to graph financialGraph."}
 ----
 --
 ====
@@ -4153,7 +4153,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens'
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens' -d "{\"secret\": \"j2qho3smncbk4g5cg4airige8up5bqn2\"}"
 ----
 --
 Sample Response::
@@ -4161,7 +4161,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"expiration":"Wed Jul 10 06:12:47 UTC 2024","error":false,"message":"Generate new JWT token successfully.","token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzE5OTg3MTYyLCJleHAiOjE3MjA1OTE5NjcsImlzcyI6IlRpZ2VyR3JhcGgiLCJncmFwaCI6InBvY19ncmFwaCJ9.w4ms-si5egtbhI2Cms7uL1qUU8oG0S08KIiaG_VL3Fs"}
+{"expiration":"Fri Dec 20 09:07:39 UTC 2024","error":false,"message":"Generate new JWT token successfully.","token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg"}
 ----
 --
 ====
@@ -4195,7 +4195,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/tokens' -d {"tokens": "$token1,$token2"}
+curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/tokens' -d '{"tokens": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg"}'
 ----
 --
 Sample Response::
@@ -4203,7 +4203,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"Successfully dropped the specified JWT tokens"}
+{"error": false, "message": "Successfully dropped the specified JWT tokens"}
 ----
 --
 ====
@@ -4225,7 +4225,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens/check' -d {"token": "$token1"}
+curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens/check' -d '{"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg"}'
 ----
 --
 Sample Response::
@@ -4233,7 +4233,7 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"The token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzE5OTg3MTYyLCJleHAiOjE3MjA1OTE5NjcsImlzcyI6IlRpZ2VyR3JhcGgiLCJncmFwaCI6InBvY19ncmFwaCJ9.w4ms-si5egtbhI2Cms7uL1qUU8oG0S08KIiaG_VL3Fs verification succeed."}
+{"error":false,"message":"The token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg verification succeed."}
 ----
 --
 ====

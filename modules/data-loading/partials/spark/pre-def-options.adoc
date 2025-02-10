@@ -1,12 +1,5 @@
 === Database Connection
 
-[TIP]
-.Connection options object
-====
-You may find it convenient to bundle the options related to making a database connection in a data object (e.g., `tgOptions`) and then use `.options(tgOptions)` when running the connector.
-Moreover, placing the user credentials in a data object keeps them separate from the connection commands.
-====
-
 .Predefined connection options:
 [source, scala]
 ----
@@ -19,10 +12,18 @@ val tgOptions = Map(
 )
 ----
 
-[TIP]
-.Authentication methods
-====
-Using username/password has the advantage that this authentication method will automatically refresh an access token as needed.
+==== Some Helpful tips 
 
-If you choose to use a token, please make sure the lifetime of the token is long enough for the loading job.
-====
+* **Connection options object** 
+
+You may find it convenient to bundle the options related to making a database connection in a data object (e.g., `tgOptions`) and then use `.options(tgOptions)` when running the connector.
+Moreover, placing the user credentials in a data object keeps them separate from the connection commands.
+
+* **Authentication methods**
+
+Using username/password has the advantage that this authentication method will automatically refresh an access token as needed.If you choose to use a token, please make sure the lifetime of the token is long enough for the loading job.
+
+* **High Availabilty** 
+
+To support fault tolerance and failover, please provide the URL of all nodes in the option `url`, e.g.,
+"url" -> "https://m1:14240,https://m2:14240,https://m3:14240,https://m4:14240",
