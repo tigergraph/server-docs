@@ -4,7 +4,7 @@
 
 This guide assumes some basic understanding of xref:rbac-row-policy/rbac-row-policy.adoc[].
 
-Additionally, before going through the examples below it's a good idea to read through creating a user and assigning roles in our current documentation on xref:tigergraph-server:user-access:user-management.adoc[] and xref:tigergraph-server:user-access:role-management.adoc[].
+Additionally, before going through the examples below it's a good idea to read through creating a user and assigning roles in our current documentation on xref:user-access:user-management.adoc[] and xref:user-access:role-management.adoc[].
 
 Lastly, it helps to create users or have users ahead of time, one with the role of `superuser` and with a role other than `superuser`, to switch between and see the row policies take effect.
 
@@ -20,9 +20,7 @@ Here's what you need to know:
 === Creating Row Policies
 This guide will give an example of how to set a new row policy for graph `Social_Net`.
 
-For the schema and data of graph `Social_Net`, refer to xref:gsql-ref:appendix:example-graphs.adoc[] and for more information on loading data and defining a schema in GSQL.
-
-See our documentation on xref:gsql-ref:tutorials:gsql-101/load-data-gsql-101.adoc[Load Data] and xref:gsql-ref:tutorials:gsql-101/define-a-schema.adoc[Define a Schema] in the xref:gsql-ref:tutorials:gsql-101/index.adoc[] tutorial.
+For the schema and data of graph `Social_Net`, refer to xref:{page-component-version}@gsql-ref:appendix:example-graphs.adoc[] and for more information on loading data and defining a schema in GSQL.
 
 In this example, a row policy will be applied on the vertex `Person`, only the users who have the role, `superuser`, can see all vertices of type `Person`, other users can only access the vertices whose attribute `gender` is `Male`.
 
@@ -219,10 +217,108 @@ Used a generic vertex v1 blocked by a row policy.
 In this case, "person1" has the attribute `gender` of `Male`, but "person2" has the attribute `gender` of `Female`.
 Hence, when using "person2" as the parameter, this query will raise an exception, informing the user that this query is blocked by a row policy.
 
+6. When trying to retrieve a vertex using xref:{page-component-version}@gsql-ref:querying:func/vertex-methods.adoc#_to_vertex[to_vertex()], it will be regulated by row policies.
+To specify a row policy which is used as a vertex expression, block the query with an exception, if this expression is blocked by a row policy.
++
+.Ex. Create another simple query:
+[console,gsql]
+----
+GSQL > use graph Social_Net
+GSQL > create query myTest3(String vId, String vType) for graph Social_Net {
+print to_vertex(vId, vType);
+}
+GSQL > install query myTest3
+----
++
+This query will retrieve a vertex by the defined `vId` and `vType`, and print it.
+As well, users can verify if this row policy works for this query,
++
+.Ex. Run the query using "person1" on `Person`:
+[console,gsql]
+----
+GSQL > run query myTest3("person1" ,"Person")
+{
+"version": {
+"edition": "enterprise",
+"api": "v2",
+"schema": 0
+},
+"error": false,
+"message": "",
+"results": [
+{
+"to_vertex(vId, vType)": "person1"
+}
+]
+}
+----
++
+But, if a user, which is not granted the role of `superuser`, they will only see an exception message
++
+.Ex. Result:
+[console,gsql]
+----
+GSQL > run query myTest3(("person2" ,"Person"))
+Used a vertex in expression 'to_vertex(vId, vType)' blocked by a row policy.
+----
++
+In this case, "person1" has the attribute `gender` of `Male`, but "person2" has the attribute `gender` of `Female`.
+Hence, when using "person2" as the parameter, this query will raise an exception, informing the user that this query is blocked by a row policy.
+
+7. When trying to retrieve a vertex set using xref:{page-component-version}@gsql-ref:querying:func/vertex-methods.adoc#_to_vertex_set[to_vertex_set()], it will be regulated by row policies. 
+To specify a row policy which is used as a vertex set expression, block the query with an exception, if this expression is blocked by a row policy.
++
+.Ex. Create another simple query:
+[console,gsql]
+----
+GSQL > use graph Social_Net
+GSQL > create query myTest4(Set<String> vIds, String vType) for graph Social_Net {
+print to_vertex_set(vIds, vType);
+}
+GSQL > install query myTest4
+----
++
+This query will retrieve a vertex set by the defined `vIds` and `vType`, and print it.
+As well, users can verify if this row policy works for this query,
++
+.Ex. Run the query using "person1" on `Person`:
+[console,gsql]
+----
+GSQL > run query myTest4(["person1"] ,"Person")
+{
+"version": {
+"edition": "enterprise",
+"api": "v2",
+"schema": 0
+},
+"error": false,
+"message": "",
+"results": [
+{
+  "to_vertex_set(vIds, vType)": [
+    "person1"
+  ]
+}
+]
+}
+----
++
+But, if a user, which is not granted the role of `superuser`, they will only see an exception message.
++
+.Ex. Result:
+[console,gsql]
+----
+GSQL > run query myTest4((["person2"] ,"Person"))
+Used a vertex in expression 'to_vertex_set(vIds, vType)' blocked by a row policy.
+----
++
+In this case, "person1" has the attribute `gender` of `Male`, but "person2" has the attribute `gender` of `Female`.
+Hence, when using "person2" as the parameter, this query will raise an exception, informing the user that this query is blocked by a row policy.
+
 === Applying Row Policies Beyond Queries
 Row policies also influence built-in functions and REST API endpoints.
 The behavior of these functions and endpoints depends on whether the user is authorized to access certain vertices.
-For more information on REST API and REST API endpoints see the documentation on xref:tigergraph-server:API:index.adoc[] and xref:tigergraph-server:API:built-in-endpoints.adoc[].
+For more information on REST API and REST API endpoints see the documentation on xref:API:index.adoc[] and xref:API:built-in-endpoints.adoc[].
 
 .Row polices can be applied to these endpoints:
 [cols="1", separator=¦ ]
@@ -251,7 +347,7 @@ Similar to the previous example above, to print the vertex "person2" using a bui
 
 [console]
 ----
-curl -w "\n" -H "Authorization: Bearer {your_token}" -s -X GET 'http://127.0.0.1:9000/graph/socialNet/vertices/person/person2'
+curl -w "\n" -H "Authorization: Bearer {your_token}" -s -X GET 'http://127.0.0.1:14240/restpp/graph/socialNet/vertices/person/person2'
 ----
 
 If you are using a user that does not hold the role of `superuser`, you will get the following:
@@ -276,7 +372,7 @@ For example, the batch retrieve methods for vertex type of `Person`, will only g
 
 [conosole]
 ----
-curl -w "\n" -H "Authorization: Bearer {your_token}" -s -X GET 'http://127.0.0.1:9000/graph/socialNet/vertices/person/'
+curl -w "\n" -H "Authorization: Bearer {your_token}" -s -X GET 'http://127.0.0.1:14240/restpp/graph/socialNet/vertices/person/'
 ----
 
 .Ex. Result:

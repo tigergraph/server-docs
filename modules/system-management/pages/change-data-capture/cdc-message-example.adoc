@@ -39,75 +39,81 @@ The current message is the second message in the third batch of the transaction.
 .Other message fields are outlined in the table below:
 [cols="2", separator=¦ ]
 |===
-¦ Field ¦ Value Type: “Possible Values”
+¦ Field ¦ Value Type: Description of values
 
 ¦ `type`
-¦ String: “vertex” / ”vertex-type” / ”edge”
+¦ String: `“vertex”`, `”vertex-type”`, `”edge”`
 
 ¦ `operator`
-¦ String: ”insert” / ”insert-only” / ”delete”
+¦ String: `”insert”`, `”insert-only”`, `”delete”`
 
 ¦ `timestamp`
 ¦ UINT64:
 
-“*Non-transaction*: birth epoch time.” /
+*Non-transaction*: start epoch time /
 
-“*Transaction*: epoch time of transaction commit message.”
+*Transaction*: epoch time of transaction commit message
+
+¦ `graph` [added in 4.1.1]
+¦ String: name of updated graph
 
 ¦ `typename`
-¦ String: “type name of updated type”.
+¦ String: name of updated object type
 
 ¦ `content`
-¦ See xref:#_content_field_value_types_and_possible_values[] below.
+¦ See xref:#_content_field_value_types_and_possible_values[] below
 |===
 
 ==== Content Field Value Types and "Possible Values"
 
 * *Key* is the affected attribute name.
 
-* *Value* is json object with *2* fields:
+* *Value* is a JSON object with *2* fields:
 
 . “*op*”: This defines how to apply the value to existing attribute value.
 It can be one of: `"Overwrite"`, `"Add"`, `"Max"`, `"Min"`, `"And"`, `"Or"`, `"IgnoreIfExisted"`, `"Minus"`, `"ReplaceOrAdd"`.
 
-. “Value”: As in this example below:
+. “*value*”: As in this example below:
 +
 [console]
 ----
-`"content": {
-"actors": {
-"op": "Add",
-"value": [
-"i1",
-"m2"
-]
-},
-...
-}`
+"content": {
+    "actors": {
+        "op": "Add",
+        "value": [
+            "i1",
+            "m2"
+        ]
+    },
+    ...
+}
 ----
 
 == Message Examples
 === CDC Message with Type: Vertex
 
-.This CDC message example indicates insertion, modification, or deletion of a vertex entity:
-[console]
+A CDC message for a vertex entity can describe an insertion, modification, or deletion.
+
+.Example: Update two attributes of the Company vertex comp1.
+[console, json]
 ----
 {
-"mid": "1|1701548849757|1|0",
-"operator": "insert",
-"timestamp": 1701548849757,
-"type": "vertex",
-"typename": "Company",
-"vid": 99999999,
-"uid": "comp1",
-"content": {
-    "cid": {
-        "op": "Overwrite",
-        "value": 2345
-    },
-    "startDate": {
-        "op": "Overwrite",
-        "value": "2001-01-01 08:00:00"
+    "mid": "1|1701548849757|1|0",
+    "operator": "insert",
+    "timestamp": 1701548849757,
+    "type": "vertex",
+    "graph": "SocialGraph",
+    "typename": "Company",
+    "vid": 99999999,
+    "uid": "comp1",
+    "content": {
+        "cid": {
+            "op": "Overwrite",
+            "value": 2345
+        },
+        "startDate": {
+            "op": "Overwrite",
+            "value": "2001-01-01 08:00:00"
         }
     }
 }
@@ -149,21 +155,29 @@ TigerGraph CDC service will *NOT* produce CDC messages for such “implicit edge
 
 === CDC Message with Type: Vertex-Type
 
-.This CDC message example indicates operations on all existing entities of a specific *vertex-type*:
-[console]
+A CDC message for a vertex type corresponds to a change of all instances of the given type.
+This is not a schema change.
+
+NOTE: The only CDC message type supported currently is for deletion operations.
+Other changes to all instances of a vertex type are not yet supported by CDC.
+
+.Example: Delete all instances of the vertex type Person.
+[console, json]
 ----
 {
-"mid": "1|1701548854014|2|0",
-"operator": "delete",
-"timestamp": 1701548854014,
-"type": "vertex-type",
-"typename": "Person",
-"content": {}
+    "mid": "1|1701548854014|2|0",
+    "operator": "delete",
+    "timestamp": 1701548854014,
+    "type": "vertex-type",
+    "graph": "SocialGraph",
+    "typename": "Person",
+    "content": {}
 }
 ----
 
 ==== Possible operators for CDC Message with type vertex-type
-.The "operator" can only be "deleted":
+The "operator" can only be "deleted":
+
 [cols="2", separator=¦ ]
 |===
 ¦ “operator”¦ Note
@@ -175,44 +189,96 @@ TigerGraph CDC service will *NOT* produce CDC messages for such “implicit edge
 |===
 
 === CDC Message with Type: Edge
-.This CDC message example indicate insertion, modification, or deletion of a edge entity:
-[console]
+
+A CDC message for an edge entity can describe an insertion, modification, or deletion.
+
+The following example also illustrates updates to list, map, and tuple attibute types.
+
+[IMPORTANT]
+====
+1. The CDC format for a map  has changed in v4.1.1.
+The previous format was
+[.json]
+----
+{ "A":1, "B":2, "C":3, "D":5 }
+----
+The new format is
+[.json]
+----
+{ "keylist":["A","B","C","D"], "valuelist":[1,2,3,5] }
+
+2. The CDC format for a tuple is deprecated and will change in v4.2.
+The new format is expected to separate the field names and their values into two lists, similar to how maps are now structured as two lists.
+----
+
+====
+
+.Example: Insert an edge betwen Person person2 and Company comp2.
+[console, json]
 ----
 {
-"mid": "1|1701569966031|3|0",
-"operator": "insert",
-"timestamp": 1701569966031,
-"type": "edge",
-"typename": "Creates",
-"hasreverseedge": true,
-"discriminator": "c1:1",
-"from": {
-    "type": "Person",
-    "vid": 12345678,
-    "uid": "person2"
-},
-"to": {
-    "type": "Company",
-    "vid": 87654321,
-    "uid": "comp2"
-},
-"content": {
-    "attr_list_tuple": {
-        "op": "Add",
-        "value": [
-            "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
+    "mid": "1|1701569966031|3|0",
+    "operator": "insert",
+    "timestamp": 1701569966031,
+    "type": "edge",
+    "graph": "SocialGraph",
+    "typename": "Creates",
+    "hasreverseedge": true,
+    "discriminator": "c1:1",
+    "from": {
+        "type": "Person",
+        "vid": 12345678,
+        "uid": "person2"
+    },
+    "to": {
+        "type": "Company",
+        "vid": 87654321,
+        "uid": "comp2"
+    },
+    "content": {
+        "attr_list": {
+            "op": "Add",
+            "value": [
+                2,
+                3,
+                1222819200
             ]
         },
-    "attr_map_tuple": {
-        "op": "ReplaceOrAdd",
-        "value": {
-            "2011-10-20": "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
+        "attr_map": {
+            "op": "Add",
+            "value": {
+                "keylist":["i", "f", "b"],
+                "valuelist": [2, 3 ,122281920]
             }
+        }
+        "attr_tuple": {
+            "op": "Add",
+            "value": [
+                "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
+            ]
         }
     }
 }
 ----
 
+.Example: Delete all edges from Person 'John', including multi-edges.
+[console, json]
+----
+{
+    "mid": "1|1701548849757|1|0",
+    "operator": "delete-all",
+    "timestamp": 1701548849757,
+    "type": "edge",
+    "graph": "SocialGraph",
+    "typename": "Transfer",
+    "hasreverseedge": true,
+    "from": {
+        "type": "Person",
+        "vid": 999999999,
+        "uid": "John"
+    }
+}
+----
 ==== Fields for CDC Message with Type: Edge
 [cols="3", separator=¦ ]
 |===
@@ -220,7 +286,7 @@ TigerGraph CDC service will *NOT* produce CDC messages for such “implicit edge
 
 ¦ `from` ¦ No
 
-¦ Json object with 3 fields:
+¦ JSON object with 3 fields:
 *type*: vertex type name of source vertex
 *vid*: internal vertex id of source vertex
 *uid*: external vertex id of source vertex.
@@ -256,22 +322,50 @@ If source vertex is missing when inserting edge, TigerGraph will implicitly inse
 For now, TigerGraph CDC Service will *NOT* produce CDC messages for such “implicit source vertex insertion”.
 
 ¦`delete`
-¦ Deletion of an edge
+¦ Delete an edge
+
+¦`delete-all`
+¦ Delete all edges from the given source vertex.
+Currently, the use of `delete-all` is quite restricted. See note below.
+
 |===
+
+[NOTE]
+.Restrictions for `delete-all`
+====
+A `delete-all` message must satisfy all of the following constraints:
+
+* The edge type being deleted:
+**  must have only one target vertex type
+** may not be a multi-edge type
+** may not have a reverse edge type
+* The CDC messsage may not specify edge type or the target vertex.
+====
 
 ==== Extra CDC message for Edge Update
 Edge updates may include additional information in specific scenarios.
 
-.In such cases, TigerGraph CDC will generate an additional CDC message for the corresponding "extra" edge.
+In such cases, TigerGraph CDC will generate an additional CDC message for the corresponding "extra" edge.
+
 [cols="2", separator=¦ ]
 |===
 ¦ Case ¦ Description
 
-¦ For directed edge without reverse edge type
-¦ For insertion or modification on directed edge type without a reverse edge type, TigerGraph CDC will generate an extra CDC message with a field "operator": "insert-only" for a target vertex, however, there is no CDC message for source vertex.
+¦ For directed edge without reverse edge type ("Simple Edge Type")
+¦ When a directed edge is inserted without a reverse edge type, TigerGraph automatically creates the source and/or target vertex if they do not exist.
 
-¦ For undirected edge, and directed edge with reverse edge type
-¦ For insertion/modification/deletion on an undirected edge, or directed edge with a reverse edge type, TigerGraph will update 2 edges simultaneously.
+CDC messages are generated:
 
-The “origin” edge and the “extra” edge with switched source and target vertex.
+- For the source vertex: Only if it is new and has `primary_id_as_attribute="true"`.
 
+- For the target vertex: Always if it is new.
+
+¦ For undirected edge, and directed edge with reverse edge type ("Complex Edge Type")
+¦For insertion/modification/deletion on an undirected edge, or directed edge with a reverse edge type, TigerGraph will update 2 edges simultaneously:
+the “origin” edge and the “extra” edge with switched source and target vertex.
+
+When Undirected Edge or Directed Edge is inserted With a Reverse Edge Type, TigerGraph automatically creates the source and/or target vertex if they don’t exist:
+
+- **CDC messages** are generated for both source and target vertices only if they are new and have `primary_id_as_attribute="true"`.
+
+|===

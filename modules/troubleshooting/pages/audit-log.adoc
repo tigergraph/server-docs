@@ -1,5 +1,6 @@
 = Audit Logs
 :pp: {plus}{plus}
+:page-aliases: troubleshooting:audit-logs.adoc, service-log-tracking.adoc
 
 Audit logs maintain a historical record of activity events, noting the time, responsible user or service, and affected entity.
 
@@ -205,14 +206,30 @@ Audit log files are separated by GSQL service and REST++ API calls. Both having 
 }
 ----
 
-The audit log will record any user-triggered activity, such as:
+The GSQL audit log will record any user-triggered activity handled by the GSQL server, whether initiated by a GSQL shell command or sent as a REST request to the GSQL server.
+This includes operations such as:
 
-* login,
-* Password change,
-* grant role,
-* create a query,
-* etc...
+* Log in
+* Change password
+* Create or drop a user
+* Grant/drop a role (the role and target username are logged)
+* Create a secret (the secret alias is logged)
+* Create a query
+* Run/interpret a query
+* Create a loading job
+* Run a loading job
 
+In general, the log entry include the timestamp, the user id, the action type, and the object being acted on.
+The graph name is logged for queries and loading jobs.
+
+[NOTE]
+====
+The following information is masked (excluded from the audit logs) by default, but it will be included if the system configuration parameter `System.Audit.MaskPII` is set to `false`:
+
+* The body of a query, when creating a query
+* Input argument values, when running or interpreting a query
+* Filename(s) of the data source, when running a loading job
+====
 [NOTE]
 ====
 Each activity will have its own audit log entry and fields.
@@ -309,11 +326,13 @@ Besides the basic information such as `timestamp`, `OS`, `username`, they captur
 
 == Known Issues
 
-* The real client IP address could be removed or masked by a firewall or another intermediate redirect layer before arriving at the TigerGraph service.
-** Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.
 
 * Even when REST++ authentication is enabled and when a request that failed due to an invalid request parameter, the username in the corresponding audit log will be marked as `unknown` instead of the actual username.
 ** This is because request parameter validation happens before token validation. Thus, REST++ calls do not know the username before it gets printed in the audit log.
 
 * If the user logs into TG Cloud using SSO, they will not be required to provide credentials again when opening GraphStudio.
 ** Therefore, the login event would not be reflected in the audit log, but the user’s subsequent operations (`create query`, `install query`, etc.) will be recorded in the audit log as normal.
+
+
+* [Fixed in 3.10.2 and 4.1.1] The real client IP address could be removed or masked by a firewall or another intermediate redirect layer before arriving at the TigerGraph service.
+** Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.

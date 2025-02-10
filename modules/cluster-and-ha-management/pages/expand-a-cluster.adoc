@@ -4,7 +4,7 @@
 
 Expanding a cluster adds more nodes to the cluster.
 During the expansion, the cluster's data is redistributed across the expanded cluster.
-You can also change replication factor during an expansion.
+You can also change replication factor or enable  xref:region-aware.adoc[region-awareness] during an expansion.
 
 Expanding a cluster may make sense for several reasons:
 
@@ -93,6 +93,32 @@ If you choose to supply a staging location, make sure that the TigerGraph Linux 
 
 For example, assume you are expanding from a 6-node cluster with a replication factor of 2 and a partitioning factor of 3, to a 10-node cluster with a replication factor of 2 and a partitioning factor of 5, and the size of the data root folder on a node is 50GB.
 You would need more than `(1 + ceiling(3/5)) * 50) = 100 GB` of free space on the staging path.
+
+==== Configure region awareness
+
+If you need to enable xref:region-aware.adoc[region-aware], the format of `node_ip_list` needs to include region information.
+
+[tabs]
+====
+Enable Region Aware::
++
+--
+[source,console]
+----
+$ gadmin cluster expand us-east-1:m3:192.168.1.3,us-east-2:m4:192.168.1.4 --region-aware
+----
+--
+Disable Region Aware::
++
+--
+[source,console]
+----
+$ gadmin cluster expand m3:192.168.1.3,m4:192.168.1.4 --region-aware=false
+----
+--
+====
+
+If you do not need to configure region aware, you do not need to specify `region-aware` option, and the option will be consistent with the current cluster.
 
 
 === Verify success and delete temporary files

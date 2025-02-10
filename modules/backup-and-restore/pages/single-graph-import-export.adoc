@@ -6,6 +6,11 @@ This data can be subsequently imported in order to recreate the same graph data,
 
 To see how to Export/Inport all graphs in a database at once refer to xref:database-import-export.adoc[].
 
+[NOTE]
+====
+Beginning with version 4.1, a full export package now includes access policies and template queries.
+====
+
 [IMPORTANT]
 ====
 Import/export is a complement to xref:tigergraph-server:backup-and-restore:index.adoc[], but not a substitute.
@@ -34,8 +39,6 @@ It inherits  xref:database-import-export.adoc#_export_all_options[Export All opt
 
 .*It will NOT export:*
 * Packages
-* ACL privileges (If queries or users/roles are *NOT* exported.)
-** In this case, the queries in charge of ACL privileges will *NOT* be exported.
 * Additionally, by default, it will *NOT* export, unless specified option `--user`:
 ** Users
 ** Roles
@@ -94,8 +97,6 @@ EXPORT GRAPH (ALL|GraphNameList) to "/path/to/export"
 ¦ All tuples & typedef accumulators
 ¦ ALWAYS export all
 
-¦ ACL privileges
-¦ only export when both users and queries are exported
 |===
 ////
 
@@ -137,15 +138,7 @@ data.
 * Copies of the database's queries, loading jobs, and user-defined
 functions.
 * GSQL command files used to recreate the users and their privileges.
-* An encrypted file containing the Access Control List (ACL) privilege catalog. *(If queries or users/roles are NOT exported.)*
-+
-[NOTE]
-====
-When exporting graphs, ACLs are only exported when both queries and users are exported.
 
-* If you use the `-U` option without using the `-T` option, there is no ACL on the exported graphs because there are no queries.
-* If you use the `-T` option without using the `-U` option, the ACL entries on the exported are reset to the _unspecified_ status.
-====
 
 The following files are created in the specified directory when
 exporting and are then zipped into a single file named
@@ -166,8 +159,9 @@ The security features prevent users from directly unzipping it.
 For each vertex or edge type called `<type>`, there is one of the following two data files:
 ** `vertex_<type>.csv`
 ** `edge_<type>.csv`
-* `global.gsql` - DDL job to create all global vertex and edge types, and data sources.
+* `global.gsql` - DDL job to create all global vertex and edge types, data sources, packages, template queries and functions.
 * `tuple.gsql` - DDL job to create all User Defined Tuples.
+* `policies.gsql` - DDL job to create policies.
 * Exported data and jobs used to restore the data:
 ** `GlobalTypes/` - folder containing data for global vertex/edge types
 *** `vertex_name.csv`
@@ -185,9 +179,6 @@ For each vertex or edge type called `<type>`, there is one of the following two 
 ** `ExprUtil.hpp` - copy of `<tigergraph.root.dir>/app/<VERSION_NUM>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp`
 * Users (Only if specified with `--users`):
 ** `users.gsql`  - DDL to create all exported users, import Secrets and Tokens and grant permissions.
-* ACL privilege catalog *(If queries or users/roles are NOT exported.)*:
-** `ACLDict/1/ACLPrivilegeCatalog.json`.
-An encrypted file containing the ACL privilege catalog.
 
 === Insufficient disk space
 
@@ -249,7 +240,7 @@ Please refer to the section on xref:gsql-ref:querying:func/query-user-defined-fu
 ====
 
 === Required privileges
-`WRITE_SCHEMA`, `WRITE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USERS`
+`WRITE_SCHEMA`, `CREATE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USERS`
 
 === Example
 [source, gsql]

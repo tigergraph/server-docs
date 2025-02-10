@@ -17,8 +17,8 @@ Older versions of TigerGraph required a keyword after `DATA_SOURCE` such as `STR
 [source,gsql]
 .Inline JSON data format when creating a data source
 CREATE DATA_SOURCE s1 = "{
-type: <type>,
-key: <value>
+  type: <type>,
+  key: <value>
 }" FOR GRAPH ldbc_snb
 
 String literals can be enclosed with a double quote `"`, triple double quotes `"""`, or triple single quotes `'''`.
@@ -27,8 +27,8 @@ Double quotes `"` in the JSON can be omitted if the key name does not contain a 
 [source,gsql]
 .Alternate quote syntax for inline JSON data
 CREATE DATA_SOURCE s1 = """{
-"type": "<type>",
-"key": "<value>"
+  "type": "<type>",
+  "key": "<value>"
 }""" FOR GRAPH ldbc_snb
 
 Key names accept a separator of either a period `.` or underscore `_`, so for example, `key_name` and `key.name` are both valid key names.

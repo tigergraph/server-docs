@@ -5,7 +5,7 @@
 
 This page documents the _status codes_ and _exit codes_ on the TigerGraph platform. Each status code follows the format: `<component>-<code>` , while exit codes are numeric values between 0 - 255.
 
-If the system was handling a user request, the status code and message will be in the JSON response (see xref:3.2@gsql-ref:querying:query-operations.adoc#_gsql_query_output_format[GSQL Query Output Format] ). For internal errors, the error information may be in a log file.
+If the system was handling a user request, the status code and message will be in the JSON response (see xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_gsql_query_output_format[GSQL Query Output Format] ). For internal errors, the error information may be in a log file.
 
 The GSQL Client will exit with a non-zero code if there's an error while handling a user request. To view the exit code of the GSQL client, run the command `echo $?` and the exit code of the most recent command will be printed to the terminal.
 
@@ -186,6 +186,9 @@ Query parameter errors.
 | `GSQL-1002`
 | General parameter error.
 
+| `GSQL-1015`
+| Invalid parameter type.
+
 | `GSQL-1020`
 | Invalid parameters.
 |===
@@ -202,6 +205,9 @@ JSON string related errors.
 
 | `GSQL-2011`
 | JSON array format error.
+
+| `GSQL-2012`
+| JSON object is missing a field.
 |===
 
 ==== 2500 - 2999
@@ -231,6 +237,12 @@ Operator errors.
 
 | `GSQL-2621`
 | The query contains an out-of-bounds array index.
+
+| `GSQL-2700`
+| Global variable not found.
+
+| `GSQL-2701`
+| ValuePtr holds null pointer.
 |===
 
 ==== 3000 - 3999
@@ -284,19 +296,31 @@ Vertex type, edge type, and ID translation errors
 
 ==== 5000 - 5499
 
-Print errors.
+Print, I/O, or file system errors.
 
 |===
 | Code | Description
 
+| `GSQL-5001`
+| File does not exist.
+
 | `GSQL-5101`
 | A file referenced in the query cannot be opened.
+
+| `GSQL-5102`
+| File is not a regular file.
 
 | `GSQL-5105`
 | GSQL was denied access to a file referenced in the query.
 
 | `GSQL-5111`
 | A file referenced in the query cannot be read.
+
+| `GSQL-5201`
+| File input policy violation.
+
+| `GSQL-5301`
+| Connection error writing to S3.
 |===
 
 ==== 6000 - 6499
@@ -311,6 +335,9 @@ Errors related to updating the graph.
 
 | `GSQL-6001`
 | Unsupported type of attribute update.
+
+| `GSQL-6003`
+| Graph update aborted.
 |===
 
 ==== 6500 - 6999
@@ -320,6 +347,9 @@ Errors related to updating the graph.
 
 | `GSQL-6500`
 | The query was aborted by the user.
+
+| `GSQL-6510`
+| The query was aborted due to its memory usage exceeds the specified limit.
 |===
 
 ==== 7000 - 7999
@@ -328,6 +358,9 @@ Built-in query errors.
 
 |===
 | Code | Description
+
+| `GSQL-7001`
+| API not supported.
 
 | `GSQL-7002`
 | The query timed out.

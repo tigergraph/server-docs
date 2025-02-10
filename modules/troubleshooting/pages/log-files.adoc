@@ -2,10 +2,16 @@
 
 The TigerGraph database captures key information on activities occurring across its different components through log functions that output to log files.
 These log files are not only helpful in xref:troubleshooting-guide.adoc[troubleshooting] but also serve as a resource for auditing.
+Logs may contain sensitive information, so direct access is restricted.
 
 This page provides a general overview of the way log files are stored in TigerGraph.
 
-For information and examples specific to logging of RESTPP requests, queries, and user management tasks, see xref:service-log-tracking.adoc[].
+
+xref:audit-log.adoc[Audit logs] are structured in JSON, ensuring machine-readability and facilitating easy integration with third-party tools.
+The TigerGraph Linux server admin user may also use the xref:gcollect.adoc[gcollect] utility to search for and gather selected information from the logs.
+We also provide instructions on how to
+xref:elk-filebeat.adoc[set up log viewing with Elasticsearch, Kibana, or Filebeat].
+
 
 == TigerGraph log structure
 
@@ -17,8 +23,8 @@ Within this directory are separate directories for the various TigerGraph servic
 [source,console]
 ----
 $ ls /home/tigergraph/tigergraph/log
-admin       dict  executor    gpe  gsql  informant  kafkaconn     nginx   ts3      zk
-controller  etcd  fileLoader  gse  gui   kafka      kafkastrm-ll  restpp  ts3serv
+admin       dict  executor    gpe  gsql  informant  kafkaconn     nginx       zk
+controller  etcd  fileLoader  gse  gui   kafka      kafkastrm-ll  restpp 
 ----
 
 You can also use the `gadmin log` command to list log files:
@@ -31,9 +37,6 @@ ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN.INFO
 CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.log
 CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.out
 ...
-TS3    : /home/tigergraph/tigergraph/log/ts3/TS3_1.log
-TS3    : /home/tigergraph/tigergraph/log/ts3/TS3_1.out
-TS3SERV: /home/tigergraph/tigergraph/log/ts3serv/TS3SERV#1.out
 ZK     : /home/tigergraph/tigergraph/log/zk/ZK#1.out
 ZK     : /home/tigergraph/tigergraph/log/zk/zookeeper.log
 ----

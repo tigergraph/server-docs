@@ -70,6 +70,33 @@ If you choose to supply a staging location, make sure that the TigerGraph Linux 
 For example, assume you are shrinking from a 10-node cluster with a replication factor of 2 and a partitioning factor of 5, to a 6-node cluster with a replication factor of 2 and a partitioning factor of 3, and the size of the data root folder on a node is 50GB.
 You would need more than `(1 + ceiling(5/3)) * 50) = 150 GB` of free space on the staging path.
 
+==== Config region aware
+
+If you need to enable xref:region-aware.adoc[region-aware], the format of `node_ip_list` needs to include region information.
+
+[tabs]
+====
+Enable Region Aware::
++
+--
+[source,console]
+----
+$ gadmin cluster shrink us-east-1:m3:192.168.1.3,us-east-2:m4:192.168.1.4 --region-aware
+----
+--
+Disable Region Aware::
++
+--
+[source,console]
+----
+$ gadmin cluster shrink m3:192.168.1.3,m4:192.168.1.4 --region-aware=false
+----
+--
+====
+
+If you do not need to configure region aware, you do not need to specify `region-aware` option, and the option will be consistent with the current cluster.
+
+
 === Verify success and delete temporary files
 
 When shrinking completes, you should see a message confirming the completion of the cluster change. The message will also include the location of the temporary files created during the operation.

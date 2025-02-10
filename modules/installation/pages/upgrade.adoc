@@ -71,8 +71,8 @@ Call the xref:tigergraph-server:API:built-in-endpoints.adoc#_rebuild_graph_engin
 == Upgrading a CRR system
 To upgrade the TigerGraph software on a CRR system, follow this sequence of steps.
 
-1. Disable CRR on your DR cluster.
-
+. Disable CRR on your DR cluster.
++
 [source.wrap,console]
 ----
 $ gadmin config set System.CrossRegionReplication.Enabled false
@@ -80,9 +80,9 @@ $ gadmin config apply -y
 $ gadmin restart all -y
 ----
 
-2. Upgrade both the primary cluster and DR cluster, according to the instructions on this page.
+. Upgrade both the primary cluster and DR cluster, according to the instructions on this page.
 
-3. Enable CRR on the DR cluster.
+. Enable CRR on the DR cluster.
 
 [[upgrading-from-v3x]]
 == Upgrading from v3.x

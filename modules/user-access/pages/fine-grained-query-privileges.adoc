@@ -1,0 +1,197 @@
+= Fine-Grained Query Privileges
+
+== Summary
+
+In earlier versions of TigerGraph prior to 4.1, query privileges in TigerGraph are managed at the global and graph level with `READ_QUERY` and `WRITE_QUERY` privileges. For example, if a user has `READ_QUERY` privilege on graph `g1`, then the user can read any queries under graph `g1`. If a user has `WRITE_QUERY` privilege on global, then the user can create or replace any query under any graph in TigerGraph.
+
+With fine-grained query privileges, the following changes will take effect:
+
+* `WRITE_QUERY` privilege is deprecated. It has been split into privileges such as `CREATE_QUERY`, `UPDATE_QUERY` and `DROP_QUERY`.
+
+* New privileges `INSTALL_QUERY`, `EXECUTE_QUERY` and `OWNERSHIP` are added.
+
+[NOTE]
+====
+`OWNERSHIP` is a special privilege introduced in version 4.1.
+It is granted automatically to the user who creates a query.
+
+The entity (a user or a role) who owns a query holds all privileges on a query. That means this entity can read, update, drop, install, and execute this query.
+
+An entity with `OWNERSHIP` privilege (e.g., the creator) on a query can grant privileges to other entities, including the `OWNERSHIP` privilege. Once the `OWNERSHIP` privilege is granted to another entity, the previous owner loses `OWNERSHIP` privilege on this query.
+
+Each object can have only one explicit owner entity.  
+
+Users with the `superuser` role hold the `OWNERSHIP` privilege on all queries in all graphs implicitly.
+
+Users with the `admin` role in one graph hold the `OWNERSHIP` privilege on all queries in this graph implicitly.
+====
+
+* Query privilege scope changes:
+** `CREATE_QUERY` privilege can only be granted/revoked at global and graph level.
+** `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY` and `EXECUTE_QUERY` privileges can only be granted/revoked at individual query level.
+** `OWNERSHIP` privilege can only be granted at the individual query level and only to one entity, e.g.: a user or a user-defined role.
+
+With above changes, corresponding grant/revoke commands and query related operations are also changed. Details of such changes will be displayed in the following sections.
+
+== Usage Examples 
+
+[NOTE]
+====
+We strongly recommend using object-based syntax for granting/revoking fine-grained query privileges.
+====
+
+Below are several commands for common use cases of granting/revoking fine-grained query privileges.
+
+.Example: Grant `CREATE` privilege at global level to role `r1`:
+[console, gsql]
+----
+GSQL > GRANT CREATE ON ALL QUERIES IN GLOBAL to r1
+The privilege "CREATE" is successfully granted on "ALL QUERIES" IN GLOBAL to role: r1
+----
+
+
+Note that `UPDATE` privilege depends on `READ` privilege.
+You need to grant `READ` before `UPDATE`, and revoke `UPDATE` before `READ`.
+
+.Example: Grant `READ` and `UDPATE` privileges on existing specific query objects `q1`, `q2` in graph `g1` to user `u1`:
+[console, gsql]
+----
+GSQL > GRANT READ, UPDATE ON QUERY q1, q2 IN GRAPH g1 to u1
+The privileges "READ, UPDATE" are successfully granted on "QUERY q1, q2" IN GRAPH g1 to user: u1
+----
+
+.Example: Revoke `INSTALL` and  `EXECUTE` privileges on all existing queries at global level from user `u1`:
+[console, gsql]
+----
+GSQL > REVOKE INSTALL, EXECUTE ON ALL QUERIES IN GLOBAL FROM u1
+The privileges "EXECUTE, INSTALL" are successfully revoked on "ALL QUERIES" IN GLOBAL from user: u1
+----
+
+If you want to revoke query privileges on specific existing query objects from a user or a role, make sure the user or role has the query privileges on all involved query objects.
+
+.Ex. Revoke `DROP` privileges on existing specific query objects `q1`, `q2` in graph `g1` from role `r1`:
+[console, gsql]
+----
+// role r1 must already have DROP privilege on query q1, q2.
+GSQL > REVOKE DROP ON QUERY q1, q2 IN GRAPH g1 FROM r1
+The privilege "DROP" is successfully revoked on "QUERY q1, q2" IN GRAPH g1 from role: r1
+----
+
+[NOTE]
+====
+For individual query level privileges, you can only grant/revoke on existing query objects.
+====
+
+.Example: Grant `READ` and `UDPATE` privileges on existing queries `q1`, `q2` in graph `g1` to user `u1`, then create new query `q3`:
+----
+GSQL > use graph g1
+GSQL > GRANT READ, UPDATE ON ALL QUERIES IN GRAPH g1 to u1
+GSQL > show privilege on user u1
+User: "u1"
+  - Graph 'g1' Privileges:
+      - Query 'q1' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+      - Query 'q2' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+GSQL > create query q3() for graph g1 {print "q3";}
+GSQL > show privilege on user u1
+User: "u1"
+  - Graph 'g1' Privileges:
+      - Query 'q1' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+      - Query 'q2' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+----
+
+.Example: Grant `OWNERSHIP` privilege on existing query q3 in graph `g1` to user `u1`:
+[console, gsql]
+----
+GSQL > use graph g1
+GSQL > GRANT OWNERSHIP ON QUERY q3 IN GRAPH g1 TO u1
+Transfer the ownership of query q3 in graph g1 from entity tigergraph to entity u1
+The privilege "OWNERSHIP" is successfully granted on "QUERY q3" IN GRAPH g1 to user: u1
+GSQL > show privilege on user u1
+User: "u1"
+  - Graph 'g1' Privileges:
+      - Query 'q1' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+      - Query 'q2' Privileges:
+        READ_QUERY
+        UPDATE_QUERY
+      - Query 'q3' Privileges:
+        OWNER
+----
+
+[NOTE]
+====
+After this step, `u1` becomes the owner of `q3` and owns all privileges on `q3`. `u1` can read, update, drop, install, and execute query `q3`. At the same time, `u1` can grant the query privileges to other entities, including the `OWNERSHIP` privilege.
+====
+[#_legacy_rbac_privilege_syntax_usage]
+== Legacy RBAC Privilege Syntax Usage
+
+With the introduction of new fine-grained query privileges, there are certain query privilege syntax usages become deprecated.
+If you still want to use them, you can control via adding/removing `ALLOW_LEGACY_RBAC_SYNTAX=true` in `GSQL.BasicConfig.Env`.
+
+=== Turn On/Off Legacy RBAC Syntax Usage
+
+.Ex. Adding `ALLOW_LEGACY_RBAC_SYNTAX=true`
+[console, gsql]
+----
+$ gadmin config get GSQL.BasicConfig.Env
+CPATH=$CPATH; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; 
+$ gadmin config set 'GSQL.BasicConfig.Env CPATH=$CPATH; LD_LIBRARY_PATH=$LD_LIBRARY_PATH;ALLOW_LEGACY_RBAC_SYNTAX=true;'
+$ gadmin config apply -y
+$ gadmin restart gsql -y
+----
+
+.Ex. Removing `ALLOW_LEGACY_RBAC_SYNTAX=true`
+[console, gsql]
+----
+$ gadmin config get GSQL.BasicConfig.Env
+CPATH=$CPATH; LD_LIBRARY_PATH=$LD_LIBRARY_PATH; ALLOW_LEGACY_RBAC_SYNTAX=true;
+$ gadmin config set 'GSQL.BasicConfig.Env CPATH=$CPATH; LD_LIBRARY_PATH=$LD_LIBRARY_PATH;'
+$ gadmin config apply -y
+$ gadmin restart gsql -y
+----
+
+=== Behaviour Changes In Legacy RBAC Privilege Syntax Related With Query Privileges
+
+Certain legacy privilege commands related with query privileges will change its behavior starting in 4.1.
+
+* `GRANT PRIVILEDGE WRITE_QUERY ON GLOBAL TO r1`
+
+** `CREATE_QUERY` privilege will be granted on all existing graphs to role `r1`.
+** `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY` privileges will be granted on all existing queries in each of existing graphs.
+
+* `GRANT PRIVILEDGE READ_QUERY ON GRAPH g1 TO r1`
+
+** `READ_QUERY` privilege will be granted on all existing queries in graph `g1` to role `r1`.
+
+* `GRANT WRITE ON ALL QUERIES IN GRAPH g1 TO r1`
+
+** `CREATE_QUERY` privilege will be granted on graph `g1` to role `r1`
+** `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, `EXECUTE_QUERY` privileges will be granted on all existing queries in graph `g1` to role `r1`.
+
+=== Forbidden Legacy RBAC Privilege Syntax Related With Query Privileges
+
+[NOTE]
+====
+Forbidden legacy RBAC privilege syntax usages are no longer supported even if `ALLOW_LEGACY_RBAC_SYNTAX=true` is set.
+====
+
+* `REVOKE PRIVILEGE WRITE_QUERY ON [GRAPH <graph_name> | GLOBAL ] FROM <role_name>` 
+
+** Directly revoking `WRITE_QUERY` privilege in a graph or in global is no longer supported.
+
+* `REVOKE PRIVILEGE READ_QUERY ON [GRAPH <graph_name> | GLOBAL ] FROM <role_name>`
+
+** Directly revoking `READ_QUERY` privilege in a graph or in global is no longer supported.
+
+* `REVOKE WRITE ON ALL QUERIES IN [GRAPH <graph_name> | GLOBAL] FROM <role_name>`
+
+** Directly revoking `WRITE` on all existing query objects in a graph or in all graphs is no longer supported.
