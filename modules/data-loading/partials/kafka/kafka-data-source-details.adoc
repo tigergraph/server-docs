@@ -18,139 +18,7 @@ To configure the data source object, the minimum requirement is the address of t
 }
 ----
 
-==== Supported configurations
-===== PLAINTEXT
-[source,json,linenum]
-----
-{
-  "type": "mirrormaker",
-  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>"
-}
-----
-===== SSL
-Need to configure:
-* `<prefix>.security.protocol` 
-* `<prefix>.ssl.<field>`
-[source,json,linenum]
-----
-{
-  "type": "mirrormaker",
-  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
-
-  "consumer.security.protocol": "SSL",
-  "consumer.ssl.endpoint.identification.algorithm": "none",
-  "consumer.ssl.keystore.location": "/path/to/client.keystore.jks",
-  "consumer.ssl.keystore.password": "******",
-  "consumer.ssl.key.password": "******",
-  "consumer.ssl.truststore.location": "/path/to/client.truststore.jks",
-  "consumer.ssl.truststore.password": "******",
-
-  "source.admin.security.protocol": "SSL",
-  "source.admin.ssl.endpoint.identification.algorithm": "none",
-  "source.admin.ssl.keystore.location": "/path/to/client.keystore.jks",
-  "source.admin.ssl.keystore.password": "******",
-  "source.admin.ssl.key.password": "******",
-  "source.admin.ssl.truststore.location": "/path/to/client.truststore.jks",
-  "source.admin.ssl.truststore.password": "******",
-
-  "producer.security.protocol": "SSL",
-  "producer.ssl.endpoint.identification.algorithm": "none",
-  "producer.ssl.keystore.location": "/path/to/client.keystore.jks",
-  "producer.ssl.keystore.password": "******",
-  "producer.ssl.key.password": "******",
-  "producer.ssl.truststore.location": "/path/to/client.truststore.jks",
-  "producer.ssl.truststore.password": "******"
-}
-----
-===== SASL_PLAINTEXT
-Need to configure:
-* `<prefix>.security.protocol`
-* `<prefix>.sasl.<field>`
-[source,json,linenum]
-----
-{
-  "type": "mirrormaker",
-  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
-
-  "consumer.security.protocol": "SASL_PLAINTEXT",
-  "consumer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "consumer.sasl.jaas.config": "<jaas_conf_content>",
-  "consumer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
-
-  "source.admin.security.protocol": "SASL_PLAINTEXT",
-  "source.admin.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
-  "source.admin.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
-
-  "producer.security.protocol": "SASL_PLAINTEXT",
-  "producer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "producer.sasl.jaas.config": "<jaas_conf_content>",
-  "producer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`"
-}
-----
-===== SASL_SSL
-Need to configure:
-* `<prefix>.security.protocol`
-* `<prefix>.sasl.<field>`
-* `<prefix>.ssl.<field>`
-[source,json,linenum]
-----
-{
-  "type": "mirrormaker",
-  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
-
-  "consumer.security.protocol": "SASL_SSL",
-  "consumer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "consumer.sasl.jaas.config": "<jaas_conf_content>",
-  "consumer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
-  "consumer.ssl.endpoint.identification.algorithm": "none",
-  "consumer.ssl.keystore.location": "/path/to/client.keystore.jks",
-  "consumer.ssl.keystore.password": "******",
-  "consumer.ssl.key.password": "******",
-  "consumer.ssl.truststore.location": "/path/to/client.truststore.jks",
-  "consumer.ssl.truststore.password": "******",
-
-  "source.admin.security.protocol": "SASL_PLAINTEXT",
-  "source.admin.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
-  "source.admin.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
-  "source.admin.ssl.endpoint.identification.algorithm": "none",
-  "source.admin.ssl.keystore.location": "/path/to/client.keystore.jks",
-  "source.admin.ssl.keystore.password": "******",
-  "source.admin.ssl.key.password": "******",
-  "source.admin.ssl.truststore.location": "/path/to/client.truststore.jks",
-  "source.admin.ssl.truststore.password": "******",
-
-  "producer.security.protocol": "SASL_PLAINTEXT",
-  "producer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "producer.sasl.jaas.config": "<jaas_conf_content>",
-  "producer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
-  "producer.ssl.endpoint.identification.algorithm": "none",
-  "producer.ssl.keystore.location": "/path/to/client.keystore.jks",
-  "producer.ssl.keystore.password": "******",
-  "producer.ssl.key.password": "******",
-  "producer.ssl.truststore.location": "/path/to/client.truststore.jks",
-  "producer.ssl.truststore.password": "******"
-}
-----
-
-If the source cluster is configured for SSL or SASL protocols, you need to provide the following SSL/SASL credentials in order to communicate with the source cluster.
-
-* If the source cluster uses SASL, you need to upload the keytab of each Kerberos principal to every node of your TigerGraph cluster at the same absolute path.
-* If the source cluster uses SSL, see our documentation xref:tigergraph-server:data-loading:kafka-ssl-security-guide.adoc[]
-* If the source cluster uses SASL *and* SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster.
-Each file must be at the same absolute path on all nodes.
-
-The following configurations are required for admin, producer and consumer. Basically Kafka allows SSL settings overriding, it respects security settings in precedence order: generic.ssl.setting < source/target.cluster.ssl.setting < admin/producer/consumer.ssl.setting.
-
-If both source and target clusters are sharing the same SSL settings, user can set generic settings for both source/target clusters and all the rols(admin/producer/consumer). For example, user can set "ssl.keystore.location=/path/to/key/store" instead of "source.cluster.ssl.keystore.location=/path/to/key/store", or "admin.ssl.keystore.location=/path/to/key/store", or even "source.cluster.admin.ssl.keystore.location=/path/to/key/store".
-
-If source and target clusters have different SSL settings, to make things simple, users can simply set cluster wide SSL configs, e.g., "target.cluster.ssl.truststore.password=/password/for/trust/store", instead of "target.cluster.producer.ssl.trust.password=/password/for/trust/store".
-
-To supply the configuration for the corresponding component, replace `<prefix>` with `source(/or target).cluster`, `source(or target).cluster.admin(or producer, consumer)`, `admin`, `producer`, or `consumer`.
-For example, to specify `GSSAPI` as the SASL mechanism for consumer, include `"consumer.sasl.mechanism": "GSSAPI"` in the data source configuration.
-
-Note: SSL is now well supported by TigerGraph, we recommend users to set up regular SSL rather than SASL + PlainText/SSL.
+==== Configuration Settings
 
 [%header,cols="1,2"]
 |===
@@ -198,6 +66,159 @@ If the value is set to an empty string, this will disable server host name verif
 | `<prefix>.ssl.truststore.password`
 | The password for the trust store file.
 |===
+
+===== Component <prefix>
+* `[admin | producer | consumer]`
+* `[source | target].cluster`
+* `[source | target].cluster.[admin | producer | consumer]`
+
+===== Security Protocols
+
+If the source cluster is configured for SSL or SASL protocols, you need to provide the following SSL/SASL credentials in order to communicate with the source cluster.
+
+* If the source cluster uses SASL, you need to upload the keytab of each Kerberos principal to every node of your TigerGraph cluster at the same absolute path.
+* If the source cluster uses SSL, see our documentation xref:tigergraph-server:data-loading:kafka-ssl-security-guide.adoc[]
+* If the source cluster uses SASL *and* SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster.
+Each file must be at the same absolute path on all nodes.
+
+The following configurations are required for admin, producer and consumer. Kafka allows SSL settings overriding, respecting security settings in precedence order:
+
+* `generic.ssl.setting` < `source/target.cluster.ssl.setting` < `admin/producer/consumer.ssl.setting`.
+
+If both source and target clusters are sharing the same SSL settings, user can set generic settings for both source/target clusters and all the rols(admin/producer/consumer). For example, user can set `ssl.keystore.location="/path/to/key/store"` instead of:
+
+* `source.cluster.ssl.keystore.location="/path/to/key/store"`
+* `admin.ssl.keystore.location="/path/to/key/store"`
+* `source.cluster.admin.ssl.keystore.location="/path/to/key/store"`.
+
+If source and target clusters have different SSL settings, it is possible to set cluster wide SSL configs. For example: `target.cluster.ssl.truststore.password="/password/for/trust/store"`, instead of `target.cluster.producer.ssl.trust.password="/password/for/trust/store"`.
+
+Note: SSL is now well supported by TigerGraph, we recommend users to set up regular SSL rather than SASL + PlainText/SSL.
+
+==== Supported Configuration Examples
+===== PLAINTEXT
+[source,json,linenum]
+----
+{
+  "type": "mirrormaker",
+  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>"
+}
+----
+
+===== SSL
+Need to configure:
+
+* `<prefix>.security.protocol` 
+* `<prefix>.ssl.<field>`
+
+[source,json,linenum]
+----
+{
+  "type": "mirrormaker",
+  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
+
+  "consumer.security.protocol": "SSL",
+  "consumer.ssl.endpoint.identification.algorithm": "none",
+  "consumer.ssl.keystore.location": "/path/to/client.keystore.jks",
+  "consumer.ssl.keystore.password": "******",
+  "consumer.ssl.key.password": "******",
+  "consumer.ssl.truststore.location": "/path/to/client.truststore.jks",
+  "consumer.ssl.truststore.password": "******",
+
+  "source.admin.security.protocol": "SSL",
+  "source.admin.ssl.endpoint.identification.algorithm": "none",
+  "source.admin.ssl.keystore.location": "/path/to/client.keystore.jks",
+  "source.admin.ssl.keystore.password": "******",
+  "source.admin.ssl.key.password": "******",
+  "source.admin.ssl.truststore.location": "/path/to/client.truststore.jks",
+  "source.admin.ssl.truststore.password": "******",
+
+  "producer.security.protocol": "SSL",
+  "producer.ssl.endpoint.identification.algorithm": "none",
+  "producer.ssl.keystore.location": "/path/to/client.keystore.jks",
+  "producer.ssl.keystore.password": "******",
+  "producer.ssl.key.password": "******",
+  "producer.ssl.truststore.location": "/path/to/client.truststore.jks",
+  "producer.ssl.truststore.password": "******"
+}
+----
+
+===== SASL_PLAINTEXT
+Need to configure:
+
+* `<prefix>.security.protocol`
+* `<prefix>.sasl.<field>`
+
+[source,json,linenum]
+----
+{
+  "type": "mirrormaker",
+  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
+
+  "consumer.security.protocol": "SASL_PLAINTEXT",
+  "consumer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
+  "consumer.sasl.jaas.config": "<jaas_conf_content>",
+  "consumer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+
+  "source.admin.security.protocol": "SASL_PLAINTEXT",
+  "source.admin.sasl.mechanism": "GSSAPI/PLAIN/etc.",
+  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
+  "source.admin.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+
+  "producer.security.protocol": "SASL_PLAINTEXT",
+  "producer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
+  "producer.sasl.jaas.config": "<jaas_conf_content>",
+  "producer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`"
+}
+----
+
+===== SASL_SSL
+Need to configure:
+
+* `<prefix>.security.protocol`
+* `<prefix>.sasl.<field>`
+* `<prefix>.ssl.<field>`
+
+[source,json,linenum]
+----
+{
+  "type": "mirrormaker",
+  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
+
+  "consumer.security.protocol": "SASL_SSL",
+  "consumer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
+  "consumer.sasl.jaas.config": "<jaas_conf_content>",
+  "consumer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+  "consumer.ssl.endpoint.identification.algorithm": "none",
+  "consumer.ssl.keystore.location": "/path/to/client.keystore.jks",
+  "consumer.ssl.keystore.password": "******",
+  "consumer.ssl.key.password": "******",
+  "consumer.ssl.truststore.location": "/path/to/client.truststore.jks",
+  "consumer.ssl.truststore.password": "******",
+
+  "source.admin.security.protocol": "SASL_PLAINTEXT",
+  "source.admin.sasl.mechanism": "GSSAPI/PLAIN/etc.",
+  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
+  "source.admin.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+  "source.admin.ssl.endpoint.identification.algorithm": "none",
+  "source.admin.ssl.keystore.location": "/path/to/client.keystore.jks",
+  "source.admin.ssl.keystore.password": "******",
+  "source.admin.ssl.key.password": "******",
+  "source.admin.ssl.truststore.location": "/path/to/client.truststore.jks",
+  "source.admin.ssl.truststore.password": "******",
+
+  "producer.security.protocol": "SASL_PLAINTEXT",
+  "producer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
+  "producer.sasl.jaas.config": "<jaas_conf_content>",
+  "producer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+  "producer.ssl.endpoint.identification.algorithm": "none",
+  "producer.ssl.keystore.location": "/path/to/client.keystore.jks",
+  "producer.ssl.keystore.password": "******",
+  "producer.ssl.key.password": "******",
+  "producer.ssl.truststore.location": "/path/to/client.truststore.jks",
+  "producer.ssl.truststore.password": "******"
+}
+----
 
 ==== Schema Registry Service
 If there is a https://docs.confluent.io/platform/current/schema-registry/index.html[schema registry service] containing the record schema of the source topic, please add it to the data source configuration:
