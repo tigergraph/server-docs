@@ -68,6 +68,7 @@ If the value is set to an empty string, this will disable server host name verif
 |===
 
 ===== Component <prefix>
+
 * `[admin | producer | consumer]`
 * `[source | target].cluster`
 * `[source | target].cluster.[admin | producer | consumer]`
@@ -81,17 +82,23 @@ If the source cluster is configured for SSL or SASL protocols, you need to provi
 * If the source cluster uses SASL *and* SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster.
 Each file must be at the same absolute path on all nodes.
 
-The following configurations are required for admin, producer and consumer. Kafka allows SSL settings overriding, respecting security settings in precedence order:
+The following configurations are required for admin, producer and consumer. Kafka allows SSL settings overriding, respecting security settings with the following precedence:
 
 * `generic.ssl.setting` < `source/target.cluster.ssl.setting` < `admin/producer/consumer.ssl.setting`.
 
-If both source and target clusters are sharing the same SSL settings, user can set generic settings for both source/target clusters and all the rols(admin/producer/consumer). For example, user can set `ssl.keystore.location="/path/to/key/store"` instead of:
+If both source and target clusters are sharing the same SSL settings, user can set generic settings for both source/target clusters and all the rols(admin/producer/consumer). 
+
+For example, user can set `ssl.keystore.location="/path/to/key/store"` instead of:
 
 * `source.cluster.ssl.keystore.location="/path/to/key/store"`
 * `admin.ssl.keystore.location="/path/to/key/store"`
 * `source.cluster.admin.ssl.keystore.location="/path/to/key/store"`.
 
-If source and target clusters have different SSL settings, it is possible to set cluster wide SSL configs. For example: `target.cluster.ssl.truststore.password="/password/for/trust/store"`, instead of `target.cluster.producer.ssl.trust.password="/password/for/trust/store"`.
+If source and target clusters have different SSL settings, it is possible to set cluster wide SSL configs. 
+
+For example, user can set: `target.cluster.ssl.truststore.password="/password/for/trust/store"` instead of:
+
+* `target.cluster.producer.ssl.trust.password="/password/for/trust/store"`.
 
 Note: SSL is now well supported by TigerGraph, we recommend users to set up regular SSL rather than SASL + PlainText/SSL.
 
