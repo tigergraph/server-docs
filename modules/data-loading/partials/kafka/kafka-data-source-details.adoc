@@ -163,19 +163,13 @@ Need to configure:
   "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
 
   "consumer.security.protocol": "SASL_PLAINTEXT",
-  "consumer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "consumer.sasl.jaas.config": "<jaas_conf_content>",
-  "consumer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+  "consumer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
 
   "source.admin.security.protocol": "SASL_PLAINTEXT",
-  "source.admin.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
-  "source.admin.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+  "source.admin.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
 
   "producer.security.protocol": "SASL_PLAINTEXT",
-  "producer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "producer.sasl.jaas.config": "<jaas_conf_content>",
-  "producer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`"
+  "producer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
 }
 ----
 
@@ -193,9 +187,7 @@ Need to configure:
   "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
 
   "consumer.security.protocol": "SASL_SSL",
-  "consumer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "consumer.sasl.jaas.config": "<jaas_conf_content>",
-  "consumer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+  "consumer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
   "consumer.ssl.endpoint.identification.algorithm": "none",
   "consumer.ssl.keystore.location": "/path/to/client.keystore.jks",
   "consumer.ssl.keystore.password": "******",
@@ -204,9 +196,7 @@ Need to configure:
   "consumer.ssl.truststore.password": "******",
 
   "source.admin.security.protocol": "SASL_PLAINTEXT",
-  "source.admin.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
-  "source.admin.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+  "source.admin.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
   "source.admin.ssl.endpoint.identification.algorithm": "none",
   "source.admin.ssl.keystore.location": "/path/to/client.keystore.jks",
   "source.admin.ssl.keystore.password": "******",
@@ -215,15 +205,43 @@ Need to configure:
   "source.admin.ssl.truststore.password": "******",
 
   "producer.security.protocol": "SASL_PLAINTEXT",
-  "producer.sasl.mechanism": "GSSAPI/PLAIN/etc.",
-  "producer.sasl.jaas.config": "<jaas_conf_content>",
-  "producer.sasl.client.callback.handler.class": "optional, need to put third party jar under `$(gadmin config get System.Approot)/kafka/libs/`",
+  "producer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
   "producer.ssl.endpoint.identification.algorithm": "none",
   "producer.ssl.keystore.location": "/path/to/client.keystore.jks",
   "producer.ssl.keystore.password": "******",
   "producer.ssl.key.password": "******",
   "producer.ssl.truststore.location": "/path/to/client.truststore.jks",
   "producer.ssl.truststore.password": "******"
+}
+----
+
+===== Third Party SASL Mechanism
+For both `SASL` and `SASL_SSL` when a third party mechanism it is necessary to:
+
+* Include the `<prefix>.sasl.jaas.config` in addition to the `<prefix>.sasl.client.callback.handler.class` in the configuration
+* Place the third party jar under `$(gadmin config get System.Approot)/kafka/libs/`
+
+[source,json,linenum]
+.Example SASL Configuration with third party mechanism
+----
+{
+  "type": "mirrormaker",
+  "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
+
+  "consumer.security.protocol": "SASL_PLAINTEXT",
+  "consumer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "consumer.sasl.jaas.config": "<jaas_conf_content>",
+  "consumer.sasl.client.callback.handler.class": "<handler class name for third party>",
+
+  "source.admin.security.protocol": "SASL_PLAINTEXT",
+  "source.admin.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
+  "source.admin.sasl.client.callback.handler.class": "<handler class name for third party>",
+
+  "producer.security.protocol": "SASL_PLAINTEXT",
+  "producer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "producer.sasl.jaas.config": "<jaas_conf_content>",
+  "producer.sasl.client.callback.handler.class": "<handler class name for third party>"
 }
 ----
 
