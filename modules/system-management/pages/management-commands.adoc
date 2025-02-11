@@ -593,10 +593,10 @@ Usage:
   gadmin connector [command]
 
 Description:
-  You can manage the creation, deletion, and update for the Kafka connector. Starting from version 4.0, the `gadmin connector create` command uses the `--config/-c` argument instead of `--c` for specifying the configuration file.
+  You can manage the creation, deletion, and update for the Kafka connector. Starting from version 4.0, the `gadmin connector create` command accepts either `--config` or `-c` for specifying the configuration file.
 
 Available Commands:
-  create      Create connectors with a configuration file using the `--config/-c` argument
+  create      Create connectors with a configuration file using either the `--config` or `-c` argument.
   delete      Delete the corresponding connector
   list        List the information of the specific connector or list all available connector
   pause       Pause the corresponding connector
@@ -614,7 +614,11 @@ Use "gadmin connector [command] --help" for more information about a command.
 
 Example:  
 To create a connector with a configuration file:  
-`gadmin connector create --config/-c /path/to/config-file`
+`gadmin connector create --config /path/to/config-file`
+
+or
+
+`gadmin connector create -c /path/to/config-file`
 ----
 
 
