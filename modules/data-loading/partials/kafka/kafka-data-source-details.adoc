@@ -41,8 +41,7 @@ This could be defined in either JAAS configuration or Kafka’s configuration.
 
 | `<prefix>.sasl.jaas.config`
 | JAAS login context parameters for SASL connections in the format used by JAAS configuration files.
-See https://docs.oracle.com/javase/8/docs/technotes/guides/security/jgss/tutorials/LoginConfigFile.html[JAAS Login Configuration File] for details. 
-Required for third party `<prefix>.sasl.mechanism` configurations.
+See https://docs.oracle.com/javase/8/docs/technotes/guides/security/jgss/tutorials/LoginConfigFile.html[JAAS Login Configuration File] for details.
 
 | `<prefix>.sasl.client.callback.handler.class`
 | Name of java handler class required for third party `<prefix>.sasl.mechanism` which must be placed under `$(gadmin config get System.Approot)/kafka/libs/`.
@@ -163,13 +162,16 @@ Need to configure:
   "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
 
   "consumer.security.protocol": "SASL_PLAINTEXT",
-  "consumer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "consumer.sasl.mechanism": "<GSSAPI | PLAIN | etc>",
+  "consumer.sasl.jaas.config": "<jaas_conf_content>",
 
   "source.admin.security.protocol": "SASL_PLAINTEXT",
-  "source.admin.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "source.admin.sasl.mechanism": "<GSSAPI | PLAIN | etc>",
+  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
 
   "producer.security.protocol": "SASL_PLAINTEXT",
-  "producer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "producer.sasl.mechanism": "<GSSAPI | PLAIN | etc>",
+  "producer.sasl.jaas.config": "<jaas_conf_content>",
 }
 ----
 
@@ -187,7 +189,8 @@ Need to configure:
   "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
 
   "consumer.security.protocol": "SASL_SSL",
-  "consumer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "consumer.sasl.mechanism": "<GSSAPI | PLAIN | etc>",
+  "consumer.sasl.jaas.config": "<jaas_conf_content>",
   "consumer.ssl.endpoint.identification.algorithm": "none",
   "consumer.ssl.keystore.location": "/path/to/client.keystore.jks",
   "consumer.ssl.keystore.password": "******",
@@ -196,7 +199,8 @@ Need to configure:
   "consumer.ssl.truststore.password": "******",
 
   "source.admin.security.protocol": "SASL_PLAINTEXT",
-  "source.admin.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "source.admin.sasl.mechanism": "<GSSAPI | PLAIN | etc>",
+  "source.admin.sasl.jaas.config": "<jaas_conf_content>",
   "source.admin.ssl.endpoint.identification.algorithm": "none",
   "source.admin.ssl.keystore.location": "/path/to/client.keystore.jks",
   "source.admin.ssl.keystore.password": "******",
@@ -205,7 +209,8 @@ Need to configure:
   "source.admin.ssl.truststore.password": "******",
 
   "producer.security.protocol": "SASL_PLAINTEXT",
-  "producer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "producer.sasl.mechanism": "<GSSAPI | PLAIN | etc>",
+  "producer.sasl.jaas.config": "<jaas_conf_content>",
   "producer.ssl.endpoint.identification.algorithm": "none",
   "producer.ssl.keystore.location": "/path/to/client.keystore.jks",
   "producer.ssl.keystore.password": "******",
@@ -229,17 +234,17 @@ For both `SASL` and `SASL_SSL` when a third party mechanism it is necessary to:
   "source.cluster.bootstrap.servers": "<KAFKAURL>:<PORT>",
 
   "consumer.security.protocol": "SASL_PLAINTEXT",
-  "consumer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "consumer.sasl.mechanism": "<AWS_MSK_IAM | OAUTHBEARER | etc>",
   "consumer.sasl.jaas.config": "<jaas_conf_content>",
   "consumer.sasl.client.callback.handler.class": "<handler class name for third party>",
 
   "source.admin.security.protocol": "SASL_PLAINTEXT",
-  "source.admin.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "source.admin.sasl.mechanism": "<AWS_MSK_IAM | OAUTHBEARER | etc>",
   "source.admin.sasl.jaas.config": "<jaas_conf_content>",
   "source.admin.sasl.client.callback.handler.class": "<handler class name for third party>",
 
   "producer.security.protocol": "SASL_PLAINTEXT",
-  "producer.sasl.mechanism": "<GSSAPI/PLAIN/etc>",
+  "producer.sasl.mechanism": "<AWS_MSK_IAM | OAUTHBEARER | etc>",
   "producer.sasl.jaas.config": "<jaas_conf_content>",
   "producer.sasl.client.callback.handler.class": "<handler class name for third party>"
 }
