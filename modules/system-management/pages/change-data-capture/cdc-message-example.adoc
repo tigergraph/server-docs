@@ -196,21 +196,34 @@ The following example also illustrates updates to list, map, and tuple attibute 
 
 [IMPORTANT]
 ====
-1. The CDC format for a map  has changed in v4.1.1.
-The previous format was
+1. The CDC format for a map attribute has changed in v4.1.1. The previous format was
++
 [.json]
 ----
 { "A":1, "B":2, "C":3, "D":5 }
 ----
++
 The new format is
++
 [.json]
 ----
 { "keylist":["A","B","C","D"], "valuelist":[1,2,3,5] }
-
-2. The CDC format for a tuple is deprecated and will change in v4.2.
-The new format is expected to separate the field names and their values into two lists, similar to how maps are now structured as two lists.
 ----
 
+2. The CDC format for a tuple attribute has also changed in v4.2.0. The previous format was
++
+[.json]
+----
+"i: -2, u: 0, f: 3.1, d: 4.56, dt: 1217764800, b: 1, s: ABCDEFGHI"
+----
++
+The new format is
++
+[.json]
+----
+{ "keylist":["i","u","f","d","dt","b","s"],
+"valuelist":[-2, 0, 3.1, 4.56, "2008-08-03 12:00:00", true, "ABCDEFGHI"] }
+----
 ====
 
 .Example: Insert an edge betwen Person person2 and Company comp2.
@@ -253,9 +266,10 @@ The new format is expected to separate the field names and their values into two
         }
         "attr_tuple": {
             "op": "Add",
-            "value": [
-                "i: 2, u: 0, f: 3, d: 3, dt: 1222819200, b: 0, s: m2"
-            ]
+            "value": {
+                "keylist":["i","u","f","d","dt","b","s"],
+                "valuelist":[-2, 0, 3.1, 4.56, "2008-08-03 12:00:00", true, "ABCDEFGHI"]
+            }
         }
     }
 }
