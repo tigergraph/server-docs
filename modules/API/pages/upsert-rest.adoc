@@ -316,14 +316,11 @@ curl -X POST "localhost:14240/restpp/graph/Person_Movie" -d '
 '
 ----
 
-== Upserting regular edges 
+== Upserting simple edges 
 
-In 4.2, we’ve introduced support for a standard JSON array format for upserting multiple edges with different discriminators in a single request. 
-Previously, the JSON format required non-standard practices (e.g., reusing the same key for multiple values), which has now been replaced with the array format for greater flexibility and ease of use.
+Simple edges are edges that do not have any discriminator attributes. These edges are uniquely defined by their source and target vertex IDs.
 
-Regular edges do not have discriminators and are uniquely defined by their source and target vertex IDs. The format for upserting regular edges remains unchanged.
-
-To upsert a regular edge, use the following JSON format:
+To upsert a simple edge, use the following JSON format:
 
 [source,json]
 ----
@@ -371,13 +368,13 @@ Upserting a `Liked` edge from a `User` vertex (`id1`) to another `User` vertex (
 }
 ----
 
-== Upserting edges with discriminators
+== Upserting discriminated edges
 
 Edges with xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminators] allow multiple instances of the same edge type between two vertices, each distinguished by a unique discriminator attribute.
 
-=== Standard JSON Array Format for Multi-Edges with Discriminators
+=== Upserting Multi-Edges with Discriminators
 
-To insert multiple edges with discriminators between the same source and target vertices, use the *standard JSON array format*. This format supports inserting multiple edges in a single operation.
+Previously, users could only insert one discriminated edge at a time between two vertices. With the new update in 4.2, users can insert multiple discriminated edges in a single API request.
 
 *Example: Edge type definition*
 
@@ -391,7 +388,7 @@ CREATE DIRECTED EDGE Liked (
 );  
 ----
 
-To upsert multiple edges with discriminators using the JSON array format, use the following structure:
+The following JSON array format allows for the insertion of multiple edges with different discriminator values between the same source and target vertices in a single operation:
 
 [source,json]
 ----
@@ -427,14 +424,14 @@ To upsert multiple edges with discriminators using the JSON array format, use th
 }
 ----
 
-* *actionId* is the discriminator: It uniquely identifies each edge between `id1` (source) and `id6` (target) vertices.
+* *actionId* is the discriminator. It uniquely identifies each edge between `id1` (source) and `id6` (target) vertices.
 * The *weight* attribute is not part of the discriminator and can be modified during upserts.
-* The *JSON array* format enables the insertion of multiple edges with different discriminators (e.g., `uuid-1`, `uuid-2`) in a single operation.
+* The *JSON array format* enables the insertion of multiple edges with different discriminators (e.g., `uuid-1`, `uuid-2`) in a single operation.
 
-=== JSON Format for Edges with Discriminators
+=== JSON Format for Upserting Discriminated Edges
 
-This original format for upserting multi-edges with discriminators is still supported for backward compatibility. 
-You can continue using this format if preferred, but the standard array format offers greater flexibility.
+This format for upserting multi-edges with discriminators is still supported for backward compatibility. 
+You can continue using this format if preferred, however the JSON array format offers greater flexibility for inserting multiple edges with different discriminators in a single API request.
 
 To upsert edges with discriminators, use the following JSON format:
 
@@ -471,13 +468,13 @@ To upsert edges with discriminators, use the following JSON format:
 * Once an edge is created with a discriminator, its discriminator values cannot be changed.
 
 3. *Support for multi-edges with JSON arrays:*
-* The standard JSON array format enables the insertion of multiple edges with discriminators in a single operation.
+* The JSON array format enables the insertion of multiple edges with with different discriminators in a single operation.
 
 [NOTE]
 ====
 * The *actionId* uniquely identifies each instance of the `Liked` edge type.
 * Attributes like *weight* are not part of the discriminator and can be updated during upserts.
-* The *JSON array format* is now the recommended way to handle multi-edges in *4.2*.
+* The *JSON array format* supports the insertion of multiple discriminated edges in a single operation.
 ====
 
 == General rules for JSON formatting
