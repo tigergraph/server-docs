@@ -428,37 +428,6 @@ The following JSON array format allows for the insertion of multiple edges with 
 * The *weight* attribute is not part of the discriminator and can be modified during upserts.
 * The *JSON array format* enables the insertion of multiple edges with different discriminators (e.g., `uuid-1`, `uuid-2`) in a single operation.
 
-=== JSON Format for Upserting Discriminated Edges
-
-This format for upserting multi-edges with discriminators is still supported for backward compatibility. 
-You can continue using this format if preferred, however the JSON array format offers greater flexibility for inserting multiple edges with different discriminators in a single API request.
-
-To upsert edges with discriminators, use the following JSON format:
-
-[source,json]
-----
-{
-  "edges": {
-    "User": {
-      "id1": {
-        "Liked": {
-          "User": {
-            "id6": {
-              "actionId": {
-                "value": "uuid-1"
-              },
-              "weight": {
-                "value": 5.0
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-----
-
 === Rules for upserting edges with discriminators
 
 1. *Discriminator attributes are required:*
