@@ -316,10 +316,11 @@ curl -X POST "localhost:14240/restpp/graph/Person_Movie" -d '
 '
 ----
 
-== Upserting regular edges 
+== Upserting simple edges 
 
-Regular edges do not have discriminators and must be uniquely defined by their source and target vertex IDs.
-To upsert a regular edge, use the following JSON format:
+Simple edges are edges that do not have any discriminator attributes. These edges are uniquely defined by their source and target vertex IDs.
+
+To upsert a simple edge, use the following JSON format:
 
 [source,json]
 ----
@@ -367,22 +368,15 @@ Upserting a `Liked` edge from a `User` vertex (`id1`) to another `User` vertex (
 }
 ----
 
-== Upserting edges with discriminators
+== Upserting discriminated edges
 
-Some edge types are defined with xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminators], which allow multiple instances of the same edge type between two vertices. 
+Edges with xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminators] allow multiple instances of the same edge type between two vertices, each distinguished by a unique discriminator attribute.
 
-=== Rules for upserting edges with discriminators
+=== Upserting Multi-Edges with Discriminators
 
-1. *Discriminator attributes are required:*
-* You must include all attributes defined in the discriminator when inserting an edge.
+Previously, users could only insert one discriminated edge at a time between two vertices. With the new update in 4.2, users can insert multiple discriminated edges in a single API request.
 
-2. *Discriminator attributes cannot be updated:*
-* Discriminator attributes are immutable and cannot be changed once the edge is created.
-
-3. *Support for multi-edges with JSON arrays:*
-* When upserting multiple edges with discriminators between the same source and target vertices, you can use a JSON array format..
-
-=== Example: Edge type definition
+*Example: Edge type definition*
 
 [source.wrap,console]
 ----
@@ -394,9 +388,7 @@ CREATE DIRECTED EDGE Liked (
 );  
 ----
 
-==== JSON Format for Edges with Discriminators
-
-To upsert edges with discriminators, use the following JSON format:
+The following JSON array format allows for the insertion of multiple edges with different discriminator values between the same source and target vertices in a single operation:
 
 [source,json]
 ----
@@ -406,14 +398,24 @@ To upsert edges with discriminators, use the following JSON format:
       "id1": {
         "Liked": {
           "User": {
-            "id6": {
-              "actionId": {
-                "value": "uuid-1"
+            "id6": [
+              {
+                "actionId": {
+                  "value": "uuid-1"
+                },
+                "weight": {
+                  "value": 5.0
+                }
               },
-              "weight": {
-                "value": 5.0
+              {
+                "actionId": {
+                  "value": "uuid-2"
+                },
+                "weight": {
+                  "value": 3.0
+                }
               }
-            }
+            ]
           }
         }
       }
@@ -422,29 +424,32 @@ To upsert edges with discriminators, use the following JSON format:
 }
 ----
 
-1. *"actionId" is the discriminator:*
-* The `actionId` uniquely identifies each edge instance of type `Liked` between the same source (id1) and target (id6) vertices.
-* Discriminators are required when upserting edges of this type and must be included in the JSON payload.
+* *actionId* is the discriminator. It uniquely identifies each edge between `id1` (source) and `id6` (target) vertices.
+* The *weight* attribute is not part of the discriminator and can be modified during upserts.
+* The *JSON array format* enables the insertion of multiple edges with different discriminators (e.g., `uuid-1`, `uuid-2`) in a single operation.
 
-2. *Other attributes, like "weight":*
-* Attributes not part of the discriminator (e.g., `weight`) can be updated when upserting.
+=== Rules for upserting edges with discriminators
 
-3. *Nested Structure:*
-* The JSON groups the edge by source vertex type (User) and source vertex ID (id1).
-* Inside, the edge type (Liked) connects the source to the target vertex type (User) and target vertex ID (id6).
-* The `value` field holds the attribute value for each edge attribute.
+1. *Discriminator attributes are required:*
+* You must include all attributes defined in the discriminator when inserting or upserting an edge.
+
+2. *Discriminator attributes cannot be updated:*
+* Once an edge is created with a discriminator, its discriminator values cannot be changed.
+
+3. *Support for multi-edges with JSON arrays:*
+* The JSON array format enables the insertion of multiple edges with with different discriminators in a single operation.
 
 [NOTE]
 ====
-* This format is the only supported way to upsert edges with discriminators in the current version.
-* Discriminator attributes are required for creating edges and cannot be updated after the edge is created.
-* A future version will introduce support for upserting multiple edges with discriminators using JSON arrays.
+* The *actionId* uniquely identifies each instance of the `Liked` edge type.
+* Attributes like *weight* are not part of the discriminator and can be updated during upserts.
+* The *JSON array format* supports the insertion of multiple discriminated edges in a single operation.
 ====
 
 == General rules for JSON formatting
 
 1. *Escaped quotes:*
-* If the payload is enclosed in double quotes (`"`), internal double quotes must be replaced with escaped single quotes (`\'`).
+* If the payload is enclosed in double quotes *"*, internal double quotes must be replaced with escaped single quotes *'*.
 * Example:
 
 [source,json]
