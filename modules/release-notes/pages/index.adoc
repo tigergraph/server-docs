@@ -185,7 +185,9 @@ for more context-aware and interactive dashboard displays
 * Fixed situation where a query containing a `BREAK` or `CONTINUE` statements could produce incorrect results (GLE-7874).
 * Fixed regression problem with installing queries which create lists containing mixed types of numeric data (GLE-7928).
 * Fixed int64 value underflow error by explicitly type casting uint64 (CORE-4108).
+* Fixed issue where When using IMPORT ALL if a users schema size in the .zip file is exceedingly large, the import fails with an error message:Large catalog file key: /1/ReplicaList.json(GLE-6505).
 * Restored the ability to run the TigerGraph `gcollect` command on Kubernetes (TP-6351).
+
 
 //==== Security
 
@@ -216,16 +218,6 @@ for more context-aware and interactive dashboard displays
 ¦3.2
 ¦
 ¦TBD
-
-¦When using xref:{page-component-version}@tigergraph-server:backup-and-restore:database-import-export.adoc[IMPORT ALL] if a users schema size in the `.zip` file is exceedingly large, the import may fail with an error messages like this:
-
-`Large catalog file key: /1/ReplicaList.json`
-
-¦ 3.2
-a¦
-* 3.9 and below users need to run the import process manually by executing the GSQL scripts in the `.zip`.
-* 3.10.0 and above users should xref:{page-component-version}@tigergraph-server:backup-and-restore:single-graph-import-export.adoc[import single or smaller batches of multiple graphs].
-¦ TBD
 
 a¦ If importing a role, policy, or function that has a different signature or content from the existing one, the one being imported will be skipped and not aborted.
 
