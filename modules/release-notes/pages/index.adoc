@@ -475,6 +475,14 @@ Then the global loading process will exit and fail the local job after timeout w
 ¦ Check the case of the keywords for `memberOf`. This has been fixed in versions 3.10.1 and above.
 ¦ 3.10.1
 
+¦ After performing a backup and restoring it, all vertex IDs (v_ids) may become "UNKNOWN." This occurs when the local schema is deleted before restoring the backup. This issue results in a mismatch between the Graph Processing Engine (GPE) and the Graph Schema Engine (GSE), which causes data inconsistency.
+¦ 3.10.1
+a¦ To fix this issue, users can do one of the following:
+
+* Run the `gsql drop all` command before restoring the backup.
+* Alternatively, run the backup restore again.
+¦ 3.10.2 and 4.1.0 and later.
+
 |===
 
 === Compatibility Issues
