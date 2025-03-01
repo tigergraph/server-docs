@@ -3,150 +3,198 @@
 This document compares what is included in the Enterprise Edition vs. TigerGraph Cloud of the TigerGraph platform.
 
 == Overview
-[width="100%",cols="<34%,<33%,<33%",options="header",]
+[width="100%",cols="1h,3*^2",options="header",]
 |===
-| |TigerGraph Cloud |Enterprise Edition
-|*Licensing* |Pay as you go by the minute; Annual contracts available |A
-free license is available with up to 50 GB storage after compression -
-https://info.tigergraph.com/pricing[contact us] for a paid version
-without storage limitations
+| |Savanna Cloud Server |Enterprise Edition |Community Edition
 
-|*Includes* a|
-The power of TigerGraph, as a service
+| Deployment
+| Full-Managed Cloud SaaS
+| Self-Managed, on Linux servers
+| Self-Managed, on Linux servers or in Docker
 
-+ Instant Deployment
+| Licensing
+| Pay as you go by the minute; Free credits to get started
+| Annual license priced by data capacity
+| Free, even for production use
 
-+ Automatic backups
+| Included
+| Fully-Managed Cloud-Native Service * Security * Separation of Storage and Compute * Unlimited Scale out * Solution Kits
+| All TigerGraph features * Distributed Graph+Vector DB * Security & RBAC * Multiple query languages & APIs * UI tools
+| TigerGraph Graph + Vector DB on single server * built-in roles * Multiple query languages & APIs * UI tools
 
-+ Scaling out & Replication
+| Support
+^|✅
 
-+ Security
+27/4
+^|✅
 
-+ Pay for what you use
+Standard and Premier tiers of support available
+| https://community.tigergraph.com/[Community Forum] support.
 
-|All TigerGraph Database and Enterprise features, including +
-+
-+ Distributed Graph +
-+
-+ MultiGraph +
-+
-+ Security +
-+
-+ User Management
+| How to Get It
+| https://www.tigergraph.com/cloud[Start Free Now]
+| https://info.tigergraph.com/enterprise-free[Request a 30-day free trial]
+| https://dl.tigergraph.[Download now]
 
-|*Support* |✅ |Free version includes support from the
-https://community.tigergraph.com/[Community Forum]. Contact us to get
-professional support.
-
-|*How to Get It*
-|https://www.tigergraph.com/cloud[www.tigergraph.com/cloud]
-|https://info.tigergraph.com/enterprise-free[www.tigergraph.com/free-trial]
 |===
+
 == Database Features
 
-[cols="<,^,^"]
+[cols="<h,3*^"]
 |===
-| Feature | TigerGraph Cloud | Enterprise Edition
+| Feature |Savanna Cloud Server |Enterprise Edition |Community Edition
 
 | *Native MPP Graph*
+| ✅
 | ✅
 | ✅
 
 | *Real-Time Deep Link Analytics*
 | ✅
 | ✅
+| ✅
 
 | *Ultra-Fast Loading and Updates*
 | ✅
-| ✅
-
-| *GSQL Query and Loading Language*  SQL-like syntax and built-in parallelism
-| ✅
-| ✅
-
-| *Graph Size*
-| Unlimited
-| Unlimited
-
-| *Compressed Data Store*
-| ✅
-| ✅
-
-| *In-Memory Processing;  ACID Transactions*
 | ✅
 | ✅
 
 | *Distributed, Auto-Partitioned Graph*
 | ✅
 | ✅
+| Single Server only
 
-| *MultiGraph*
+| *Compressed Data Store*
+| ✅
+| ✅
+| ✅
+
+| *Graph Data Size*
+| Unlimited
+| Unlimited
+| up to 200 GB
+
+| *Vector Data Size*
+| Unlimited
+| Unlimited
+| up to 100 GB
+
+| *In-Memory Processing;  ACID Transactions*
+| ✅
+| ✅
+| ✅
+
+| *Graph query languages*
+| GSQL, OpenCypher, GSQL pattern matching
+| GSQL, OpenCypher, GSQL pattern matching
+| GSQL, OpenCypher, GSQL pattern matching
+
+| *Vector Similarity Search, Hybrid Search*
+| ✅
 | ✅
 | ✅
 
 | *Dynamic Schema Change*
 | ✅
 | ✅
-
-| *GraphStudio Visual SDK and UI*
-
-Design, Load, Explore, Query, Visualize
-| ✅
 | ✅
 
-| *Admin Portal*
+| *Graphical User Interface*
+| All roles: Deploy, Design, Manage
+| GraphStudio
+| GraphStudio
+
+| *GraphStudio Visual SDK: Design, Load, Explore, Query, Visualize*
+| ✅
+| ✅
+| ✅
+
+| *Admin Portal: monitor/manage system operation, manage users*
+| ✅
 | ✅
 | ✅
 |===
 
-== Enterprise Features
+== Enterprise/DevOps Features
 
-[cols="<,^,^"]
+[cols="<h,3*^"]
 |===
-| *Feature* | TigerGraph Cloud | Enterprise Edition
+| Feature |Savanna Cloud Server |Enterprise Edition |Community Edition
 
 | *Automated Deployment*
 | ✅
+| No
 | No
 
 | *Automated Backups*
 | ✅
 | No
+| No
 
 | *Backup and Restore*
-| ✅ built-in cloud feature
+| ✅
+| ✅
+| Export/Import only
+
+| *Multiple Users per Database*
+| ✅
+| ✅
 | ✅
 
-| *Multiple Users*
+| *Multiple Databases per Organization*
 | ✅
-| ✅
-
-| *Continuous Availability*
-| ✅
-| ✅
+| No
+| No
 
 | *HA Replication*
 | ✅
 | ✅
+| No
+
+| *Cross-Region Replication*
+| Coming soon
+| ✅
+| No
 |===
 
 == Security Features
 
-[width="100%",cols="<34%,^33%,<33%",options="header",]
+[cols="<h,3*^"]
 |===
-|Feature |TigerGraph Cloud |Enterprise Edition
-|*Data Encryption* +
-+
-At Rest and In Motion |✅ |✅
-|*Enterprise User Management* +
-+
-LDAP and SSO |✅through GSQL web shell |✅
-|*Role-Based Access Control* |✅ |✅
-|*Audit Compliance* |✅SOC 2 type 1 and type 2 |Coming soon
-a|
-*Cloud Security:*
+| Feature |Savanna Cloud Server |Enterprise Edition |Community Edition
 
-VPC for each account
+| *Data Encryption in Motion and at Rest*
+| ✅
+| ✅
+| Encryption at rest
 
-|✅ |N/A
+| *Role-Based Access Control*
+| ✅
+| ✅
+| Built-in roles only
+
+| *LDAP and SSO*
+| ✅
+| ✅
+| No
+
+| *Identity Provider (PDP) integration with SSO
+| ✅
+| ✅
+| No
+
+| *Audited Compliance*
+| SOC 2 Type 2
+| PCI-DSS
+| No
+
+| *VPC Peering*
+| ✅
+| N/A
+| N/A
+
+| *Private Network*
+| ✅
+| N/A
+| N/A
 |===
