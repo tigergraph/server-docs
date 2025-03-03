@@ -1,0 +1,226 @@
+= Region Awareness
+//:page-aliases: tigergraph-server:region-aware:region-aware.adoc, tigergraph-server:region-aware:index.adoc
+:description: Overview of region awareness for TigerGraph servers.
+
+Region awareness represents a more sophisticated High Availability (HA) configuration within TigerGraph servers. In contrast to standard xref:ha-overview.adoc[High Availability] clusters, region-aware clusters offer HA at the **region/zone level** rather than the **individual node level**.
+
+Enabling region awareness involves deploying TigerGraph services based on distinct regions/zones. For instance, consider a 10-node cluster with 2 replicas spanning 3 regions/zones:
+
+|===
+| Host ID |   Hostname   | Region
+|   m1    | 192.168.0.1  | us-east-1
+|   m2    | 192.168.0.2  | us-east-1
+|   m3    | 192.168.0.3  | us-east-2
+|   m4    | 192.168.0.4  | us-east-2
+|   m5    | 192.168.0.5  | us-east-2
+|   m6    | 192.168.0.6  | us-east-1
+|   m7    | 192.168.0.7  | us-east-1
+|   m8    | 192.168.0.8  | us-east-3
+|   m9    | 192.168.0.9  | us-east-3
+|   m10   | 192.168.0.10 | us-east-3
+|===
+
+Without region awareness enabled, the service deployments would be as follows:
+
+.Example, Service deployments without region-aware
+|===
+| Service |   Nodes
+|  CTRL   | us-east-1:[m1,m2], us-east-2:[m3]
+|  GSQL   | us-east-1:[m1,m2], us-east-2:[m3,m4,m5]
+|   ZK    | us-east-1:[m1,m2], us-east-2:[m3,m4,m5]
+|  ETCD   | us-east-1:[m1,m2], us-east-2:[m3,m4,m5]
+|  GPE_1  | us-east-1:[m1,m6]
+|  GPE_2  | us-east-1:[m2,m7]
+|  GPE_3  | us-east-2:[m3], us-east-3:[m8]
+|  GPE_4  | us-east-2:[m4], us-east-3:[m9]
+|  GPE_5  | us-east-2:[m5], us-east-3:[m10]
+|===
+
+In this scenario, a failure in the region `us-east-1`  would result in GPE_1, and GPE_2 losing all replicas, while a failure in `us-east-2` would cause ZK and ETCD to lose the majority of replicas.
+
+[NOTE]
+====
+ZK and ETCD require at least more than half of the nodes to provide services
+====
+
+By enabling region awareness, the service deployments would be structured as follows:
+
+.Example, Service deployments with region-aware
+|===
+| Service |   Nodes
+|  CTRL   | us-east-1:[m1], us-east-2:[m3], us-east-3:[m8]
+|  GSQL   | us-east-1:[m1,m2], us-east-2:[m3,m4], us-east-3:[m8]
+|   ZK    | us-east-1:[m1,m2], us-east-2:[m3,m4], us-east-3:[m8]
+|  ETCD   | us-east-1:[m1,m2], us-east-2:[m3,m4], us-east-3:[m8]
+|  GPE_1  | us-east-1:[m1], us-east-2:[m3]
+|  GPE_2  | us-east-3:[m8], us-east-1:[m2]
+|  GPE_3  | us-east-2:[m4], us-east-3:[m9]
+|  GPE_4  | us-east-1:[m6], us-east-2:[m5]
+|  GPE_5  | us-east-3:[m10], us-east-1:[m7]
+|===
+
+In this setup, a failure in any region/zone would retain at least one replica of GPE for each partition and the majority count of ZK/ETCD replicas.
+
+== Compare to CRR
+
+Region-Awareness **is not**  xref:crr-index.adoc[Cross-Region Replication].
+
+Both Region-Aware and CRR can increase your system availability, but they are designed for different purpose.
+
+.Differences between Region-Aware and CRR
+|===
+|             | **Region-Aware**     |   **CRR**
+|Cluster Setup| 1 read-write   cluster  | 1 read-write cluster, other read-only cluster
+|Minimum nodes|  3                   | 2
+|Fail over    | Auto recover         | Manual switch
+|Query latency| Higher               | Lower
+|===
+
+[WARNING ]
+====
+Enabling region-awareness enhances the deployment of cluster nodes across different regions, potentially resulting in increased query latency.
+====
+
+
+For seamless region failure tolerance without downtime, opt for region-awareness. For compliance with data residency regulations and Blue/Green deployments, consider utilizing CRR.
+
+This is not an either/or situation, you can enable region-awareness and CRR at the same time.
+
+
+== System Requirements
+[NOTE]
+====
+To enable region-aware, the following conditions must be met
+====
+
+* Eligible for xref:ha-cluster.adoc#_system_requirements[High Availability Cluster]
+* All nodes contain region information
+* At least 3 regions/zones
+* Nodes are uniformly distributed in the region/zone. That is, the difference in the number of nodes in all regions/zones does not exceed 1
+
+== Enable Region Aware
+
+
+
+
+There are two ways to enable region-aware cluster:
+
+* Configure HA settings xref:installation:bare-metal-install.adoc#_step_2_configure_installation_settings[during installation].
+
+* xref:expand-a-cluster.adoc[Expand] or xref:shrink-a-cluster.adoc[Shrink a Cluster] after installation.
+
+
+
+=== During installation
+Configuring a region-aware cluster is part of platform xref:installation:bare-metal-install.adoc[installation].
+
+This is an example `install.conf` that enables region-awareness for non-interactive installation.
+
+[#_install_conf_example]
+[,javascript]
+----
+{
+  "BasicConfig": {
+    "TigerGraph": {
+      "Username": "mark",
+      "Password": "markpassword",
+      "SSHPort": 22,
+      "PrivateKeyFile": "",
+      "PublicKeyFile": ""
+    },
+    "RootDir": {
+      "AppRoot": "/home/tigergraph/tigergraph/app",
+      "DataRoot": "/home/tigergraph/tigergraph/data",
+      "LogRoot": "/home/tigergraph/tigergraph/log",
+      "TempRoot": "/home/tigergraph/tigergraph/tmp"
+    },
+    "License": "<license>",
+    "RegionAware" : true,
+    "NodeList": [
+      "us-east-1: m1: 123.456.78.99",
+      "us-east-2: m2: 123.456.78.98",
+      "us-east-3: m3: 123.456.78.97",
+      "us-east-3: m4: 123.456.78.96"
+    ]
+  },
+  "AdvancedConfig": {
+    "ClusterConfig": {
+      "LoginConfig": {
+        "SudoUser": "tom",
+        "Method": "K",
+        "P": "<sudo_user_password>",
+        "K": "/home/tom/mykey.pem"
+      },
+      "ReplicationFactor": 2
+    }
+  }
+}
+----
+
+The configuration items that need to meet the conditions are
+
+* **RegionAware** should be `true`
+* **NodeList**
+** The number of nodes is more than 3
+** The format of all nodes is `Region:HostID:IP/HostName`
+* **ReplicationFactor** is greater than 1
+
+
+=== After installation
+
+To enable region-awareness in an existing cluster, you can use xref:expand-a-cluster.adoc[Cluster Expand].
+
+[TIP]
+====
+You can check whether the node information meets the requirements according to the output of the following command:
+[source, console]
+----
+$ gadmin config get System.HostList
+----
+
+Legal::
+[source,javascript]
+----
+[{"Hostname":"192.168.0.1","ID":"m1","Region":"us-east-1"}, {"Hostname":"192.168.0.2","ID":"m2","Region":"us-east-2"}, {"Hostname":"192.168.0.3","ID":"m3","Region":"us-east-3"}]
+----
+
+Illegal::
+[source,javascript]
+----
+[{"Hostname":"192.168.0.1","ID":"m1","Region":""}, {"Hostname":"192.168.0.2","ID":"m2","Region":""}, {"Hostname":"192.168.0.3","ID":"m3","Region":""}]
+----
+If any host does not contain region information, use the following command to add it:
+
+[source,console]
+----
+$ gadmin config entry System.HostList
+$ gadmin config apply -y
+----
+
+====
+
+If you just want to enable region-aware without any other change, use the command following:
+
+[source,console]
+----
+$ gadmin cluster expand --region-aware
+----
+
+If the existing cluster does not meet the prerequisites, you can also add nodes and modify replication factor with one command, example:
+
+[source,console]
+----
+$ gadmin cluster expand us-east-3:m3:192.168.0.3,us-east-4:m4:192.168.0.4 --ha 2 --region-aware
+----
+
+== Disable Region Aware
+
+Disable region-awareness via xref:expand-a-cluster.adoc[Cluster Expand]
+
+[source,console]
+----
+$ gadmin cluster expand --region-aware=false
+----
+
+
+

@@ -1,0 +1,100 @@
+= Installing TigerGraph Kubernetes Operator
+:description: Instructions on how to install TigerGraph Kubernetes Operator.
+:sectnums:
+
+This page describes the steps to install and uninstall the TigerGraph Kubernetes Operator on your Kubernetes cluster.
+
+IMPORTANT: Kubernetes Operator support is currently a Preview Feature. Preview Features give users an early look at future production-level features. Preview Features should not be used for production deployments.
+
+NOTE: The Operator only needs to be installed once for each cluster.
+If you run into errors saying that Custom Resource Definition (CRD) already exists, it is likely that someone else who has access to your cluster has already installed the operator.
+Therefore, you can safely ignore the error and skip installation.
+
+== Prerequisites
+* The following software must be installed on your computer:
+** helm v3.7.0 or above
+** kubectl v1.22 or above
+** jq v1.6 or above
+** yq v4.18.1 or above
+* You have configured the `kubectl` command-line tool for access to your running Kubernetes cluster.
+* https://cert-manager.io/docs/installation/kubectl/[cert-manager is installed on your Kubernetes cluster].
+
+== Procedure
+
+[#_install_the_tigergraph_kubectl_plugin]
+=== Install the TigerGraph `kubectl` plugin
+Run the command below to install the TigerGraph plugin for the `kubectl` command-line tool:
+
+[.wrap,console]
+----
+curl https://dl.tigergraph.com/k8s/latest/kubectl-tg  -o kubectl-tg
+sudo install kubectl-tg /usr/local/bin/
+----
+
+The plugin is installed on your local machine.
+You do not need to install the plugin for each cluster you operate on.
+
+
+=== Initialize TigerGraph Kubernetes Operator
+Run the command below to initialize the TigerGraph Kubernetes Operator.
+
+[.wrap,console]
+----
+$ kubectl tg init
+----
+
+Add the `-n` flag with your namespace to use a custom namespace. The full options for the `init` command are listed here:
+
+[source, console]
+----
+kubectl tg init --help
+Install the operator
+
+Examples:
+  # install the operator in the current namespace
+  kubectl tg init
+  # install the operator in the specified namespace
+  kubectl tg init --namespace tg-tenant1
+  # install the operator in the specified namespace, with specified helm repo and image pull secret
+  kubectl tg init --namespace tg-tenant1 --helm-repo https://yourhelprepo.com --image-pull-secret yoursecret
+  # install the operator in the specified namespace, with specified operator version, watch name namespace, cpu and memory
+  kubectl tg init --cluster-scope false --version OPERATOR_VERSION --operator-size 3 --operator-watch-namespace tigergraph --operator-cpu 1000m  --operator-memory 1024Mi --namespace tigergraph
+
+Options:
+  -n, --namespace : set namespace to deploy TG cluster, default as default
+  --helm-repo : set the specified helm repo to install operator, default as https://dl.tigergraph.com/charts
+  --docker-registry : set docker registry to download tigergraph image, default as docker.io
+  --docker-image-repo : set docker image repo for image name, default as tigergraph.
+  -p, --image-pull-secret :   set imagePullSecret of docker registry, default as tigergraph-operator-image-pull-secrets-default
+  --image-pull-policy: set pull policy of image, available policy: IfNotPresent, Always, and Never, default is IfNotPresent
+  --operator-version: set TG K8S operator version
+  --operator-size :   set the replicas of operator's deployment for high availability, default is 3
+  --operator-cpu :    set request cpu of operator, default as 1000m
+  --operator-memory : set request memory of operator, default as 1024Mi
+  --operator-watch-namespace : set watch namespaces of operator, blank string as default indicate all namespace, multiple namespaces are separated by commas, as ns1\,ns2
+  --cluster-scope :   set true to deploy operator with ClusterRole, set false to deploy with Role,
+                      so that you can deploy mutiple operators in one cluster, default as true
+----
+
+The `--cluster-scope` option during creation allows you to specify whether to manage resources across the whole cluster (cluster scoped, the default option) or across only a namespace (namespace scoped).
+
+In this example, resources will only be managed in the `tigergraph` namespace.
+[source, console]
+----
+kubectl tg init --cluster-scope false --namespace tigergraph
+
+----
+
+
+== Uninstalling the Kubernetes Operator
+
+
+Run the following command to uninstall the Operator:
+
+[.wrap,console]
+----
+$ kubectl tg uninstall
+----
+
+This command only uninstalls the Operator.
+The clusters created by the Operator and the Custom Resource Definitions (CRD) defined when you first installed the Operator are not deleted by this command.

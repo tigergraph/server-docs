@@ -1,0 +1,45 @@
+[#_create_data_source]
+=== Create data source
+Now that the connector has started loading data into TigerGraph's internal Kafka cluster, you can create a data source and point it to the Kafka cluster:
+
+. Check that you have permission to xref:data-loading:manage-data-source.adoc[create a data source] object.
+. Create a data source configuration file.
+The only required field is the address of the broker.
+The broker's IP and hostname is the private IP of your TigerGraph server and port of TigerGraph's internal Kafka server:
++
+--
+* If you don't know your private IP, you can retrieve it by running `gmyip` in the bash terminal.
+* To retrieve the port of your Kafka cluster, run `gadmin config get Kafka.Port` to retrieve the port number.
+The default port is `30002`.
+--
++
+In the `kafka.config` field, you can provide additional configurations from https://docs.confluent.io/3.1.1/clients/librdkafka/CONFIGURATION_8md.html[librdkafka Global Configurations].
+
+For example, you can specify `group.id` to be `tigergraph` to specify the group that this consumer belongs to:
+
++
+[.wrap,json]
+----
+{
+    "broker":"10.128.0.240:30002", <1>
+    "kafka_config":
+        {
+            "session.timeout.ms":"20000"
+        }
+}
+----
+<1> Make sure to use the internal ID of the machine instead of `localhost` for the hostname of the broker.
+`localhost` only works for single-server instances. 
+. Run `CREATE DATA SOURCE` to create the data source and assign the configuration file to the data source you just created:
++
+[.wrap,gsql]
+----
+CREATE DATA_SOURCE KAFKA <datasource_name> FOR GRAPH <graph_name>
+SET <datasource_name> = <path_to_datasource_config>
+----
+For example:
++
+----
+CREATE DATA_SOURCE KAFKA k1 FOR GRAPH Social
+SET k1 = "/home/tigergraph/social/k1.config"
+----

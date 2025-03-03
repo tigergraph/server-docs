@@ -1,7 +1,7 @@
 = Configuration Parameters
 
 This page provides a comprehensive list of system configuration parameters.
-See xref:manage:gadmin.adoc[] for how to use `gadmin config` to set configuration parameters.
+See xref:system-management:management-with-gadmin.adoc[] for how to use `gadmin config` to set configuration parameters.
 
 The parameters are organized by TigerGraph internal component, listed here in alphabetical order: `Admin`, `Controller`, `Dict`, etc.
 
@@ -512,7 +512,7 @@ in seconds |`10800`
 |GSQL.UDF.EnablePutExpr |Whether to enable the `PUT` command to upload an ExprFunction file.
 |`false`
 
-|GSQL.UDF.Policy.Enable | Whether to enforce a policy on the contents of UDF files (see xref:manage:security/index.adoc#_udf_file_scanning[UDF file scanning]).
+|GSQL.UDF.Policy.Enable | Whether to enforce a policy on the contents of UDF files (see xref:security:index.adoc#_udf_file_scanning[UDF file scanning]).
 |`true`
 
 |GSQL.UDF.Policy.HeaderAllowlist | A default set of C{plus}{plus} headers that are allowed to be included in a UDF file.
@@ -1025,19 +1025,19 @@ concurrent queries in the delay queue |`20`
 |Name |Description |Example
 
 | Security.JWT.RSA.PublicKey
-| Configure a RSA public key for xref:manage:access/jwt-token.adoc[].
+| Configure a RSA public key for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.RSA.PublicKey <public-key content or URL or @filepath>`
 
 | Security.JWT.HMAC.Secret
-| Configure a HMAC Secret for xref:manage:access/jwt-token.adoc[].
+| Configure a HMAC Secret for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>`
 
 | Security.JWT.Issuer
-| Configure the `iss` claim that will be verified against this configured value for xref:manage:access/jwt-token.adoc[].
+| Configure the `iss` claim that will be verified against this configured value for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.Issuer "<issuer-name>"`
 
 | Security.JWT.Audience
-| Configure this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not for xref:manage:access/jwt-token.adoc[].
+| Configure this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not for xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.Audience "<audience-name>"`
 
 |Security.LDAP.AdminDN |Configure the DN of LDAP user who has read
@@ -1291,7 +1291,7 @@ primary cluster’s IPs, separator by `,' |`nan`
 primary cluster’s KafkaPort |`30002`
 
 |System.CrossRegionReplication.TopicPrefix |The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
-For details of what it does and how it is used, please refer to xref:cluster:set-up-crr.adoc[].|`nan`
+For details of what it does and how it is used, please refer to xref:cluster-and-ha-management:set-up-crr.adoc[].|`nan`
 
 |System.DataRoot |The root directory for data
 |`/home/tigergraph/tigergraph/data`
@@ -1413,7 +1413,7 @@ If you use `gadmin config set GPE.BasicConfig.Env` or `gadmin config entry GPE.B
 
 |RESPP
 | `SSL_CA_CERT`, RESETPP.BasicConfig.Env
-| Set the CA certificate `SSL_CA_CERT` to establish the connection with the URL being set with xref:manage:access/jwt-token.adoc[].
+| Set the CA certificate `SSL_CA_CERT` to establish the connection with the URL being set with xref:tigergraph-server:user-access:jwt-token.adoc[].
 | `SSL_CA_CERT=/home/tigergraph/cacertificate/example/;`
 
 |GPE

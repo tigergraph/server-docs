@@ -1,0 +1,82 @@
+= Differential Backup
+
+== Terminology Definition
+Full backups comprise entire data backup sets, regardless of already existing backups or data change circumstances.
+
+* Differential backups backup Kafka messages that have changed since the most recently completed or most recently restored full backup.
+
+For example, a full backup happened at `tid:100`, a schema change happened at `tid:150` and a differential backup happened at `tid:200`.
+
+Additionally, for example, if you have _full backup A_ and _full backup B_, _full backup A_ happened before _full backup B_.
+If you restore _full backup A_, then the next differential backup is based on _full backup A_, instead of _full backup B_, although _full backup B_ was completed more recently.
+
+== How Differential Backup works
+
+To illustrate how differential backup works, take into account the user scenario below.
+
+.User Scenario
+====
+. A user creates a full backup every __Sunday__ (Or Day `N`).
+
+. During the week, between the two full backup days (__Sunday__ and __Next Sunday__) TigerGraph provides differential backups for every change since that first full backup.
+
+. A differential backup is taken until the backup data is as large as the backup on __Sunday__
+. Another full backup is taken on __Next Sunday__ and the circle repeats steps 2-4.
+====
+
+=== Enable Differential Backup
+
+If a user wants to make differential backups based on a full backup they have made, they should run:
+`gadmin backup create <tag>` with the `--incremental` flag.
+
+.Ex.
+[console, gsql]
+----
+gadmin backup create <tag> --incremental
+----
+
+[NOTE]
+====
+For more details on `gadmin backup create` see xref:tigergraph-server:backup-and-restore:backup-cluster.adoc#_procedure[Back up a Database Cluster Procedure].
+====
+
+To restore a differential backup, users need to find the correct `<tag>` from the backup list.
+To see the list of backups, run:
+
+.Ex.
+[console, gsql]
+----
+gadmin backup list
+----
+
+.`gadmin backup list` example result.
+image::backup_list.png[]
+
+This will list all the backup tags. Notice the type column in the result. This is how users can identify which backups are `FULL` or not.
+To restore the specific backup, run:
+
+.Ex.
+[console, gsql]
+----
+gadmin backup restore <specifc backup tag>
+----
+
+=== Disable Differential Backup
+
+If a user wants to make a full backup _**WITHOUT**_ differential backup enabled, they can do so by excluding the `--incremental` flag in `gadmin backup create`.
+
+.Ex.
+[console, gsql]
+----
+gadmin backup create <tag>
+----
+
+== Limitations
+
+Differential backup does have some know limitations:
+
+* Kafka reset or Kafka purging of large amounts of Kafka message data is not yet supported by differential backups.
+
+* Differential Backup must based on last full snapshot backup and cannot be based on a previous days differential backup.
+** For example: If a user did a full backup on _Sunday_ and then one differential backup on _Monday_. Then, if the user wants to run a differential backup on _Tuesday_, they will have to base it on _Sunday's_ full backup and save all changes since then.
+So part of your__ Tuesday__ differential backup is actually the same as _Monday's_.
