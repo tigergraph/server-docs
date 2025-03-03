@@ -1,0 +1,39 @@
+= Guide to management with gadmin
+:description: Managing TigerGraph Servers with gadmin
+:page-aliases: management-with-gadmin.adoc
+
+TigerGraph Graph Administrator (gadmin) is a tool for managing TigerGraph servers.
+
+To see a listing of all the options or commands available for gadmin, see the xref:gadmin-commands.adoc[] page.
+
+* xref:system/manage-services.adoc[TigerGraph service management]
+* xref:system/memory-management.adoc[Memory Management]
+
+== Manage licenses
+
+To add a new license key, use the command `gadmin license set`. You can either paste the license key in the terminal directly, or use the `@` symbol to point to a specific file path.
+
+* `gadmin license set <new_license_key>`
+* `gadmin license set @<path_to_license_file>`
+
+To simply check the status of the license on the current solution, use the command `gadmin license status`.
+
+See xref:get-started:install/license.adoc[] for a complete guide to activating or renewing a TigerGraph license.
+
+== Manage system configurations
+
+In addition to the environment variables controlling memory thresholds, TigerGraph has many other environment variables that can be used to configure system parameters.
+
+Examples of parameters that can be changed with these commands include:
+
+* Size and number of log files kept
+* System root directory
+* Timeout length
+* Port numbers
+* xref:cluster:crr-index.adoc[Replica numbers]
+
+See xref:tigergraph-server:reference:configuration-parameters.adoc[] for a full list of these parameters. All of them can be accessed with the `gadmin config` command.
+
+== Nginx configuration
+
+Follow the steps documented in https://kb.tigergraph.com/knowledge_base/v3/how_to_articles/how_to_create_an_nginx_configuration_template[this support article] to update the Nginx configurations of your TigerGraph instance.

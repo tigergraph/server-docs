@@ -1,0 +1,337 @@
+= Access Control Model in TigerGraph
+:description: A brief explanation of TigerGraph's access control model.
+:page-aliases: roles-and-privileges.adoc
+
+TigerGraph supports role-based access control (RBAC).
+RBAC lets you grant access to different actions on *all* of a certain type of objects on a graph, such as allowing a role to read or write all queries.
+
+CAUTION: All access control is only in effect when user authentication is enabled.
+Authentication is not enabled by default and xref:access/enabling-user-authentication.adoc[must be enabled manually].
+
+
+[#_role_based_access_control]
+== Role-based access control
+TigerGraph uses role-based access control (RBAC) to manage authorization.
+On every graph, privileges to perform actions are assigned to roles, and roles are granted to users.
+Outside the permissions granted by their roles, a user has no access to the system.
+
+
+[#_privileges]
+=== Privileges
+
+A privilege is permission to perform an action in a given scope.
+When a privilege is assigned to a role, it allows users with the role to perform the specified action in the specified scope.
+For example, the privilege `READ_SCHEMA` on graph `social` gives a user read permission to the schema of the graph `social`.
+This allows the user to run commands such as `ls` and `SHOW VERTEX` on the graph.
+
+To view a complete list of privileges available in TigerGraph and the commands they enable a user to run, see xref:reference:list-of-privileges.adoc[List of Privileges].
+
+=== Privilege scopes
+
+There are four different scopes for a privilege:
+
+* Global
+* Graph-level
+* Type-level (Only applicable to <<_data_crud_privileges>>)
+* Attribute-level (Only applicable to <<_data_crud_privileges>>)
+
+Global privileges apply to all graphs and global objects.
+Graph-level privileges only apply on the graph they belong to.
+Type-level privileges only apply to specific vertex or edge types on a graph.
+Attribute-level privileges only apply to specific attributes of a vertex or edge type.
+
+A privilege on a large scope applies to the entire scope, including all lower scopes encompassed by that scope.
+If you have a privilege on the graph level, you also have that privilege on the type level and attribute level for all types and attributes in that graph.
+If you have a privilege on the global scope, you have that privilege across all graphs, types and attributes.
+
+Most privileges are global or graph-level.
+Only privileges pertaining to graph data (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) can be granted on the type level or attribute level.
+
+
+For example:
+
+* A role with `CREATE_QUERY` on graph `Social` can only create queries on graph `social`, but not on other graphs.
+In contrast, a role with `CREATE_QUERY` on the global scope can create queries on all graphs.
+* A role with `UPDATE_DATA` on the `age` attribute of the `Person` vertex on graph `Social` are allowed to run queries that update the value of the `age` attribute of `Person` vertices.
+* A role with `READ_DATA` on the global scope can run queries that read graph data on any graph, any type, or any attribute.
+They do not need to have privileges specifically for those graphs, types, or attributes.
+
+[#_data_crud_privileges]
+=== Data CRUD privileges
+
+Data CRUD privileges (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) are special in that they can be granted on the type level and attribute level.
+
+NOTE: Data CRUD privileges only govern data access through queries and REST endpoints.
+Users with the `EXECUTE_LOADINGJOB` privilege do not need additional privileges in order to run a loading job that inserts or deletes vertices and edges.
+
+The privileges govern specific ways in which a user can access and modify data.
+Even regarding a single REST endpoint, whether a request is authorized depends on the information that the request is accessing or modifying.
+
+[.test-class]
+|===
+|Privilege |Type level |Attribute level
+
+|`CREATE_DATA`
+|Permission to create vertices and edges, and specify values for all attributes for the type where the privilege is granted.
+a|* If granted on a vertex type attribute, it gives permission to create vertices, but only specify values for attributes where the user has `CREATE_DATA` privilege if the user also has `UPDATE_DATA` privilege on all attributes of that type.
+** The user must have `CREATE_DATA` privilege on the primary ID of the vertex type to be able to create vertices.
+* If granted on an edge type attribute, it gives permission to create edges, but only specify values for attributes where the user has `CREATE_DATA` privilege if the user also has `UPDATE_DATA` privilege on all attributes of that type.
+* For attributes where the user doesn't have privilege, they must use wildcards(`_`) to use the default value for vertices/edges created by the xref:gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT INTO` statements].
+
+|`READ_DATA`
+|Permission to access all data of the type where the privilege is granted.
+|Permission to access the attribute value where the privilege is granted.
+
+To grant  `READ_DATA` to a specific attribute of a type, you must grant `READ_DATA` to the primary key of the type first or in the same command.
+
+For edges, you must grant `READ_DATA` to the primary key of the `FROM` and `TO`
+vertex types before granting `READ_DATA` to other attributes of the edge type.
+|`UPDATE_DATA`
+|Permission to update all data of the type where the privilege is granted.
+|Permission to update the attribute value where the privilege is granted.
+`UPDATE_DATA` on all attributes is also required for creating new vertices and edges.
+
+|`DELETE_DATA`
+|Permission to delete data of the type where the privilege is granted.
+|N/A.
+This privilege is not applicable on the attribute level.
+|===
+
+==== Examples
+
+Suppose we have a graph with schema as below:
+
+[.wrap,gsql]
+----
+CREATE VERTEX Person(id UINT PRIMARY KEY, name STRING, INT age)
+CREATE VERTEX City(id UINT PRIMARY KEY, name STRING)
+CREATE GRAPH Example_Graph(Person, City)
+----
+
+If a user were to run the following query:
+
+[.wrap,gsql]
+----
+CREATE QUERY example_query() {
+  Seed = {City.*}; <1>
+  vSet = SELECT s FROM Seed:s
+         POST-ACCUM
+            s.name = s.name + ".post"; <2>
+  INSERT INTO Person VALUES ("id3", "Tom", _) <3>
+}
+----
+<1> This action requires `READ_DATA` on type `City`.
+<2> This action requires `UPDATE_DATA` on attribute `name` of type `City`.
+<3> This action requires `UPDATE_DATA` on all attributes of type `Person` and `CREATE_DATA` on attribute `id` and `name`.
+
+Running the query would at a minimum require `READ_DATA` on type `City` and `UPDATE_DATA` on attribute `name` of type `City`.
+
+// Two requests from a single REST endpoint
+
+If a user were to make the following REST request:
+
+[source.wrap,console]
+$ curl -X GET "http://localhost:14240/restpp/graph/Example_Graph/vertices/Person/id1"
+
+The request requires that the user has at least `READ_DATA` on type `Person`, or all attributes of type `Person`.
+However, if the user specify the attributes for the request to return:
+
+[source.wrap,console]
+$ curl -X GET "http://localhost:14240/restpp/graph/Example_Graph/vertices/Person/id1?select=age"
+
+The request would no longer require `READ_DATA` on the attribute `name` and only require `READ_DATA` on `id` and `age`.
+
+=== Fine-grained query privileges
+
+Fine-grained query privileges `CREATE_QUERY`, `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, and `EXECUTE_QUERY` are also special in terms of their scopes.
+
+`CREATE_QUERY` can only be granted/revoked at global and graph level. `READ_QUERY`, `UPDATE_QUERY`, `DROP_QUERY`, `INSTALL_QUERY`, and `EXECUTE_QUERY` can only be granted/revoked at existing individual query objects.
+
+These privileges govern how a user interact with specific query objects. 
+
+NOTE: Built-in role `superuser` has all fine-grained query privileges on all existing queries in global. Built-in role `admin` has all fine-grained query privileges on all existing queries in the graph where `admin` is granted on. 
+
+
+[.test-class]
+|===
+|Privilege |Global/Graph level |Query level
+
+|`CREATE_QUERY`
+|Permission to create query in global or specific graph where the privilege is granted.
+|N/A.
+This privilege is not applicable on the query level.
+
+
+|`READ_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to read query content on the specific query object where the privilege is granted.
+
+|`UPDATE_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to replace query content on the specific query object where the privilege is granted.
+
+|`DROP_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to drop query on the specific query object where the privilege is granted.
+
+|`INSTALL_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to install query on the specific query object where the privilege is granted.
+
+|`EXECUTE_QUERY`
+|N/A.
+This privilege is not applicable on the global or graph level.
+|Permission to run or interpret query on the specific query object where the privilege is granted.
+
+|===
+
+==== Examples
+
+Assume we created a graph `g1` and assume user does not hold special built-in roles such as `superuser` and `admin`.
+[.wrap,gsql]
+----
+GSQL > CREATE GRAPH g1(*)
+----
+
+To create a query `q1`, `CREATE` privilege on query objects in global or graph `g1` is required.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > create query q1() {print "q1";}
+----
+
+To update a query `q1`, `UPDATE` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > create or replace query q1() {print "new q1";}
+----
+
+To drop a query `q1`, `DROP` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > drop query q1
+----
+
+To install a query `q1`, `INSTALL` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > install query q1
+----
+
+To run/interpret a query `q1`, `EXECUTE` privilege on query object `q1` is required unless the current user owns the query object.
+[.wrap,gsql]
+----
+GSQL > use graph g1
+GSQL > run query q1()
+GSQL > interpret query q1()
+----
+
+
+=== Roles
+
+A role is a collection of privileges you can assign to users to grant them permission to perform actions on specific resources.
+
+=== Global vs local roles
+
+WARNING: Local roles are deprecated, and will be dropped in a future version.
+
+Roles can be global or local.
+Local roles can only be granted graph-level privileges, while global roles can be granted privileges at every level.
+
+For example, if a user creates a role `manager` on the graph `social`:
+
+[source,text]
+----
+GSQL > CREATE ROLE manager ON GRAPH social
+Successfully created roles: [manager].
+----
+
+This role can only be granted privileges on the graph `social`.
+It cannot be granted global privileges.
+
+=== Built-in roles
+
+GSQL offers five built-in local roles and two built-in global roles.
+The built-in roles cannot be dropped.
+The following table details the built-in roles and their corresponding set of privileges.
+
+|===
+| *Name* | *Global or Local* | *Privilege List*
+
+| `observer`
+| Local
+| `READ_SCHEMA`, `READ_LOADINGJOB`
+
+| `queryreader`
+| Local
+| `READ_SCHEMA`, `READ_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `READ_DATA`
+
+| `querywriter`
+| Local
+| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `CREATE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`
+
+| `designer`
+| Local
+| `READ_SCHEMA`, `READ_LOADINGJOB`,`READ_QUERY`, `EXECUTE_LOADINGJOB`, `READ_DATA`, `CREATE_QUERY`, `CREATE_DATA`, `UPDATE_DATA`, `DELETE_DATA`,  `WRITE_SCHEMA`, `WRITE_LOADINGJOB`
+
+| `admin`
+| Local
+| `READ_SCHEMA`,
+`READ_LOADINGJOB`,
+`READ_QUERY`,
+`EXECUTE_LOADINGJOB`,
+`READ_DATA`,
+`CREATE_QUERY`,
+`CREATE_DATA`,
+`UPDATE_DATA`,
+`DELETE_DATA`,
+`WRITE_SCHEMA`,
+`WRITE_LOADINGJOB`,
+`WRITE_ROLE`,
+`WRITE_DATASOURCE`,
+`READ_ROLE`,
+`READ_USER`,
+`READ_PROXYGROUP`,
+`READ_POLICY`,
+`WRITE_POLICY`,
+`OWNERSHIP` on ALL QUERIES
+
+| `globalobserver`
+| Global
+| `READ_SCHEMA`, `READ_LOADINGJOB` at the global scope
+
+| `globaldesigner`
+| Global
+| Designer's privileges on the global scope, `DROP_GRAPH` for graphs created by the same user
+
+| `superuser`
+| Global
+| All supported RBAC privileges, ,
+`OWNERSHIP` on ALL QUERIES
+|===
+
+[NOTE]
+====
+For Row Policy related Built-in roles see xref:access/rbac-row-policy/row-policy-concepts.adoc#_built-in-roles[Row Policy built-in role changes]
+====
+
+=== User-defined roles
+
+Users can define roles with their own list of privileges they want to grant to the role.
+To learn how to create/drop user-defined roles and manage privileges for the roles, see xref:access/role-management.adoc[Role Management].
+
+
+== Importing and exporting
+
+When exporting and importing graphs, query-level privileges may be affected under the following circumstances:
+
+* *Exporting graphs without queries (`-S, --SCHEMA`)*: No query-level privileges are granted in the exported graphs since there are no queries included.
+* *Exporting graphs with queries but without users (`-T, --TEMPLATE`)*: The `OWNERSHIP` privileges for all queries will be automatically transferred to the user performing the import graph operation.
+* *LDAP users*: LDAP users are not included during the export of graphs, so any query `OWNERSHIP` privileges previously granted to LDAP users will be automatically transferred to the user performing the import graph operation.

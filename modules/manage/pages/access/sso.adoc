@@ -1,0 +1,518 @@
+= Single Sign-On
+:description: Instructions to set up single sign-on for TigerGraph with verified identity providers. 
+:experimental:
+:sectnums:
+
+Single sign-on (SSO) enables you to use your organization's identity provider (IDP) to authenticate users to access TigerGraph GraphStudio and Admin Portal UI.
+
+We have verified the following IDPs that support SAML 2.0 protocol:
+
+* https://www.okta.com/[Okta]
+* https://auth0.com/[Auth0]
+* https://docs.microsoft.com/en-us/azure/active-directory/[Azure Active Directory (Azure AD)]
+* https://docs.pingidentity.com/bundle/pingfederate-110/page/ikr1564002999528.html[PingFederate]
+* https://learn.microsoft.com/en-us/windows-server/identity/active-directory-federation-services[Active Directory Federation Services (AD FS)]
+
+For supporting additional IDPs, please contact sales@tigergraph.com and submit a feature request.
+
+To set up single sign-on, you need to perform three steps :
+
+. Configure your identity provider to create a TigerGraph application.
+. Provide information from your identity provider to enable TigerGraph single sign-on.
+. Create user groups with proxy rules to authorize single sign-on users.
+
+:sectnums!:
+== Before you begin
+* Ensure that you can access GraphStudio UI through a web browser using the URL: \http://tigergraph-machine-hostname:14240
+** If you enabled SSL connection, change `http` to `https`.
+If you changed the Nginx port of the TigerGraph system, replace 14240 with the port you have set.
+* Ensure that you have xref:access/enabling-user-authentication.adoc#_enable_gsql_authentication[enabled GSQL authentication by changing the password of the default user].
+If you don't enable GSQL authentication, SSO configuration will not work and any user will be logged in automatically.
+
+WARNING: During the SSO authentication process, TigerGraph sends a response with a large header to confirm the result of the authentication request.
+If you use any middleware such as an Nginx load balancer between TigerGraph and your IDP, make sure that your middleware is able to handle the size of the responses.
+For example, if using Nginx, make sure proxy buffering is turned on.
+
+:sectnums:
+== Configure Identity Provider
+:sectnums!:
+
+Below are detailed instructions for identity providers that we have verified.
+Please consult your IT or security department for how to configure the identity provider for your organization if it is not listed here.
+
+After you finish configuring your identity provider, you will get the following:
+
+* An Identity Provider single sign-on URL
+* An Identity Provider Entity ID
+* an X.509 certificate file `idp.cert`. You need these 3 things to configure TigerGraph next.
+
+[#_okta]
+=== Okta
+
+https://developer.okta.com/docs/guides/build-sso-integration/saml2/create-your-app/[Create an Application Integration in Okta] for your TigerGraph application.
+Below are the Assertion Consumer Service URL / Single sign on URL , and SP Entity ID required for this process:
+
+* Assertion Consumer Service URL/Single sign on URL:
+[literal]
+http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs
+* SP Entity ID URL:
+[literal]
+http://<tigergraph-machine-hostname>:14240/gsql/v1/saml/meta
+
+
+[#_auth0]
+=== Auth0
+
+. https://auth0.com/docs/get-started/create-apps/single-page-web-apps[Register TigerGraph as a Single-Page web application in Auth0].
+. https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider#configure-saml-sso-in-auth0[Configure Auth0 as SAML Identity provider].
+You will need to enter the following information when following Auth0's guide:
+* Application Callback URL:
+\http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
+* When downloading the certificate from Auth0, choose *`.cer`* format instead of `.pem` format.
+
+[#_azure_ad]
+=== Azure AD
+
+. Log in to https://aad.portal.azure.com/[Azure Active Directory Admin Center] as an Admin user.
+In the left menu, select menu:Enterprise applications[New Application].
++
+image::azure-new-application.png[Screenshot of Azure Active Directory with the New Application option highlighted]
+. In the top left corner, click btn:[Create your own application].
++
+image::azure-create-app.png[Screenshot of the Create your own application button in Azure]
++
+In the form that appears on the right side of the page, fill in the name of your application and choose btn:[Integrate any other application you don't find in the gallery (Non-gallery)].
+This creates the application and takes you to the application page.
+. Click btn:[Users and groups] on the left pane, add the users or groups you want to give access to TigerGraph, choose the appropriate role, and click btn:[Assign].
++
+image::azure-sso-user-group.png[Screenshot highlighting the Add user/group option]
+. After adding users and groups, click btn:[Single sign-on] and choose btn:[SAML].
++
+image::azure-saml.png[Screenshot highlighting the SAML option]
+This takes you to a page titled "Set up single sign-on with SAML".
+. Fill in *Identifier (Entity ID)* and *Reply URL* with the information below.
+Replace `<tigergraph-machine-hostname>` with the host name of your TigerGraph instance:
+* Identifier (Entity ID): `\https://<tigergraph-machine-hostname>:14240/gsql/v1/saml/meta`
+* Reply URL: `\https://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`
+. After filling in the Entity ID and Reply URL, click btn:[Edit] for *SAML Signing Certificate*, and choose btn:[Sign SAML Assertion and Response].
+Click btn:[Save] and download certificate (base64).
+* We recommend signing both assertion and response for maximum security.
+However, you may choose to only sign one of them, but you need to match this with your SSO settings in TigerGraph.
+. Under "Set up <Application name>", Azure AD provides a login URL, an Azure AD identifier, and a logout URL.
+These items are used in the next steps to configure single sign-on in TigerGraph.
+
+[#_pingfederate]
+=== PingFederate
+
+==== Prerequisites
+* You have a running PingFederate server with the https://docs.pingidentity.com/bundle/pingfederate-110/page/rnm1564002959599.html[required ports] available.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/uwm1564002973007.html[created users within PingFederate] for those who are using PingFederate to sign on to TigerGraph.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/uci1564002984974.html/#qnu1585865179023[created and exported a certificate] from on PingFederate.
+** The certificate's common name must be the IP of your PingFederate server.
+* You have created a Password Credential Validator (PCV) instance.
+* You have https://docs.pingidentity.com/bundle/pingfederate-110/page/nxg1564002998160.html[created an HTML Form IdP Adaptor instance] and https://docs.pingidentity.com/bundle/pingfederate-110/page/rpb1564002998288.html[configured] the adaptor instance to use your PCV.
+
+==== Procedure
+Go to the btn:[APPLICATIONS] page in PingFederate, open menu:Integration[ SP Connections], then click btn:[Create Connection] to add a Service Provider (SP) connection to TigerGraph.
+Follow the instructions in the product and enter the additional information as required.
+There are many configuration options available in PingFederate.
+This guide provides an example setup.
+To learn about each of the available options, see https://docs.pingidentity.com/bundle/pingfederate-110/page/ikr1564002999528.html[SP Connection Management].
+
+. In this guide, we do not use a connection template for this SP connection.
+. Choose the Browser SSO Profiles connection type on the btn:[Connection Type] page.
+. Check the Browser SSO option on the btn:[Connection Options] page and choose the SAML 2.0 protocol.
+. Skip the btn:[Import Metadata] step.
+. For btn:[General Info], choose a name to name your connection.
+Refer to the following for Partner's Entity ID and Base URL:
+* Partner's Entity ID (Connection ID): `\http://<tigergraph-machine-hostname>:14240/gsql/v1/saml/meta`
+* Base URL:
+`\http://<tigergraph-machine-hostname>:14240`
+. Click btn:[Configure Browser SSO] on the Browser SSO page to configure browser SSO.
+* Check btn:[IdP-Initiated SSO] and btn:[SP-Initiated SSO] on the btn:[SAML Profiles] page.
+* Choose btn:[Standard Identity Mapping] option for configuring assertion creation.
+** Change the Subject Name Format for the SAML_SUBJECT field to `urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified` or `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`
+** In btn:[Authentication Source Mapping], click btn:[Map New Adaptor Instance] and choose an adaptor instance.
+Follow the in-product instructions to finish configuring the adaptor instance.
+* Configure btn:[Protocol Settings].
+** For menu:Protocol Settings[Assertion Consumer Service URL], set Binding to "POST".
+For Endpoint URL, fill in `\http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`.
+** For btn:[Allowable SAML Bindings], check `POST` and `REDIRECT`.
+** Configure signature policy and encryption policy tp suit your needs.
+. Configure credentials.
+On the btn:[Credentials] page, click btn:[Configure Credentials], and choose a certificate to be the signing certificate.
+This must be the same certificate that you upload to TigerGraph later.
+. Verify the details of your SP connection and click btn:[Save].
+
+After setting up the SP connection, return to the btn:[SP Connections] page, find the connection and click menu:Action[Export Metadata].
+The exported XML file provides the information you need to configure single sign-on in TigerGraph.
+
+* IDP's SSO URL: `Location attribute` of the md:SingleSignOnService` element in the XML file.
+* Entity ID: `entityID` attribute of the `md:EntityDescriptor` element field in the XML file.
+* Identity Provider’s X509 certificate: `ds:X509Certificate` element in the XML file.
+You can also export the certificate directly in PingFederate.
+* Authentication context: `md:NameIDFormat` element in the XML file.
+
+=== Active Directory Federation Services (AD FS)
+
+==== Prerequisites
+
+* A Windows Server which has AD FS Server configured.
+If this is not set up, follow these instructions to configure it: link:https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/deployment/deploying-a-federation-server-farm[Deploying a federation server farm]
+
+[NOTE]
+A configured AD FS server should belong to an AD DS (Domain Service) and have an available certificate service.
+
+* Ensure that you have domain administrator permissions or have domain administrator credentials available before you perform this procedure.
+
+==== Configure AD FS
+
+. Create a  link:https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/operations/create-a-relying-party-trust[relying party trust] in AD FS.
+. Under "Relying party identifiers", use this format, where `host` is replaced by your TigerGraph Server public IP address:
+[source, console]
+----
+https://host:14240/gsql/v1/saml/meta
+----
+
+image::sso-config-with-adfs.png[]
+
+[start=3]
+. In the Endpoints tab, your URL appears under SAML Assertion Consumer Endpoints. The Trusted URL is in this format:
+[source, console]
+----
+https://host:14240/api/auth/saml/acs
+----
+image::adfs-sso-step-3.png[]
+
+[start=4]
+. Export the public certificate of the AD FS server for TigerGraph use. Open the AD FS Management dialog and export the Token-signing certificate
+.. Right-click the certificate -> View certificate
+.. Details -> Copy to file
+.. Base64 encoded X.509
+
+image::adfs-sso-step-4.png[]
+
+[start=5]
+. Run the following command to make the AD FS server sign SAML responses.
+In this example, <display name> takes the place of your actual Display Name in the Relying Party Trusts list.
+[source, console]
+----
+Set-AdfsRelyingPartyTrust  -TargetName <display name> -SamlResponseSignature "MessageAndAssertion"
+----
+
+[start=6]
+. TigerGraph needs a required Claim Name ID to know which user is logging in successfully.
+Following these instructions, create a transform claim rule: link:https://learn.microsoft.com/en-us/windows-server/identity/ad-fs/operations/create-a-rule-to-transform-an-incoming-claim[Create a rule to transform an incoming claim]
+
+image::adfs-sso-step-6.png[]
+
+==== Configure TigerGraph
+
+After configuring AD FS as described previously, you must now configure TigerGraph to accept the connection.
+This is handled in Admin Portal on the SSO page. xref:gui:admin-portal:security/sso.adoc[]
+
+* In the field btn:[Identity Provider's X509 certificate], use the certificate exported in Step #4 above.
+
+* For the btn:[Identity Provider's entity ID], use a value in this format: (adfs.company.com means the URL of the AD FS server)
+[source, console]
+----
+http://adfs.company.com/adfs/services/trust
+----
+
+* For the btn:[Identity Provider's SSO URL], use the AD FS SSO URL.
+In general, it uses a value in this format:
+[source, console]
+----
+https://adfs.company.com/adfs/ls/
+----
+
+* For btn:[IDP SignonBinding], check btn:[Redirect].
+
+The final configuration should appear similar to this screenshot:
+
+image::adfs-sso-graphstudio-example.png[]
+
+:sectnums:
+
+== Enable single sign-on in TigerGraph
+
+Having configured the identity provider and obtained the identity provider's SSO URL, entity ID and certificate, the next step is to provide the information to TigerGraph to enable single sign-on.
+
+=== Navigate to SSO page
+From GraphStudio home page, click btn:[Admin Portal] in the upper right corner.
+In the left pane, click menu:Management[Security > SSO].
+At the top of the SSO page, click the toggle to btn:[Enable SAML-based SSO].
+
+=== Update service provider URL
+The service provider (in this case - TigerGraph) URL is the same URL that you use to access GraphStudio.
+
+=== Prepare service provider certificate and private key
+Under SAML, the service provider can optionally sign the SAML requests made to the identity provider.
+This step configures the certificate and private key used for the signature.
+
+According to the SAML standard trust model, a self-signed certificate is acceptable.
+This is different from configuring an SSL connection, where a CA-authorized certificate is considered mandatory if the system goes to production.
+
+You can generate a self-signed private key and x-509 certificate from GraphStudio.
+Click the button next to the Service Provider's private key field: menu:Upload file[Self Signed], and fill in your information to generate a self-signed private key and x-509 certificate.
+
+=== Provide IDP certificate, entity ID, and URLs
+Upload the certificate you downloaded from the identity provider in the previous step, and provide the identity provider's entity ID and single sign-on URL in the corresponding fields.
+
+
+=== Configure security options
+At the bottom of the SSO page are a list of security options you can configure for SSO:
+
+* Sign authentication requests before sending to Identity Provider
+* Require Identity Provider to sign link:https://www.samltool.com/generic_sso_res.php[responses]
+* Require Identity Provider to sign link:https://en.wikipedia.org/wiki/SAML_2.0#SAML_2.0_assertions[assertions]
+* Require Identity Provider to sign link:https://en.wikipedia.org/wiki/SAML_metadata[metadata]
+* link:https://en.wikipedia.org/wiki/Digital_Signature_Algorithm[Signature algorithm]
+* link:http://docs.oasis-open.org/security/saml/v2.0/saml-authn-context-2.0-os.pdf[Authentication context]
+** An attribute that defines how a user must log in.
+This is an optional configuration.
+You can leave it blank if you do not want to restrict how users must log in or if you are not sure what value to provide for this field.
+** Example value: `urn:oasis:names:tc:SAML:2.0:ac:classes:Password`
+
+[WARNING]
+====
+Known issue: Authentication context is a required field in Admin Portal.
+To set this configuration to blank, log in to the server as the TigerGraph Linux user and run the following command:
+
+[,console]
+----
+$ gadmin config set Security.SSO.SAML.RequestedAuthnContext ""
+----
+====
+
+It is recommended that you enable as many of the options as possible for maximum security.
+However, some identity providers do not support enabling certain options at the same time.
+Refer to your identity provider's documentation to determine which options to use.
+
+
+
+=== Command-line options
+Besides providing the SSO information in the UI, you also have the option of providing the information using `gadmin config` through the command-line.
+
+Below is the list of parameters you need to configure.
+You can run xref:gadmin-commands.adoc#_gadmin_config_set[`gadmin config set`] to configure their value non-interactively, or run `gadmin config entry Security.SSO.SAML` to configure their values interactively in the terminal.
+
+|===
+|Name | Description | Example
+
+|Security.SSO.SAML.AssertionSigned |Require Identity Provider to sign
+assertions: default true |`+true+`
+
+|Security.SSO.SAML.AuthnRequestSigned |Sign AuthnRequests before sending
+to Identity Provider: default true |`+true+`
+
+|Security.SSO.SAML.BuiltinUser |The builtin user for SAML
+|`+__GSQL__saml+`
+
+|Security.SSO.SAML.Enable |Enable SAML2-based SSO: default false
+|`+false+`
+
+|Security.SSO.SAML.IDP.EntityId |Identity Provider Entity ID: default
+http://idp.example.com |`+http://idp.example.com+`
+
+|Security.SSO.SAML.IDP.SSOUrl |single sign-on URL: default
+http://idp.example.com/sso/saml |`+http://idp.example.com/sso/saml+`
+
+|Security.SSO.SAML.IDP.X509Cert |Identity Provider’s x509 Certificate
+filepath: default empty. You can use @/cert/file/path to pass the
+certificate from a file. |`+nan+`
+
+|Security.SSO.SAML.MetadataSigned |Sign Metadata: default true |`+true+`
+
+|Security.SSO.SAML.RequestedAuthnContext |Authentication context (comma
+separate multiple values) |`+nan+`
+
+|Security.SSO.SAML.ResponseSigned |Require Identity Provider to sign
+SAML responses: default true |`+true+`
+
+|Security.SSO.SAML.SP.Hostname |TigerGraph Service Provider URL: default
+http://127.0.0.1:14240 |`+http://127.0.0.1:14240+`
+
+|Security.SSO.SAML.SP.PrivateKey |Content of the host machine’s private
+key. Require PKCS#8 format (start with "`BEGIN PRIVATE KEY`"). You can
+use @/privatekey/file/path to pass the certificate from a file. |`+nan+`
+
+|Security.SSO.SAML.SP.X509Cert |Content of the x509 Certificate: default
+empty. You can use @/cert/file/path to pass the certificate from a file.
+|`+nan+`
+
+|Security.SSO.SAML.SignatureAlgorithm |Signature algorithm
+[rsa-sha1/rsa-sha256/rsa-sha384/rsa-sha512]: default rsa-sha256
+|`+rsa-sha256+`
+|===
+
+== Create user groups with proxy rules to authorize single sign-on users
+
+In order to authorize single sign-on users, you need create user groups with proxy rules and grant roles on graphs for the user groups.
+Proxy rules assign users who log in through SSO into proxy groups based on the attributes of the user from the identity provider's response.
+
+=== Required privilege
+
+* `WRITE_PROXYGROUP` for creating proxy groups.
+* `WRITE_ROLE` for granting roles to users
+
+==== Create proxy groups in Admin Portal
+
+You can create proxy groups in Admin Portal:
+
+. From Admin Portal, navigate to menu:Management[Users > Proxy Group].
+. Click btn:[Add Group], and give the group a name.
+. Provide the attribute equation for the proxy group.
+If a user's specified attribute matches the value in the equation, they will be assigned to this proxy group.
+
+After creating the proxy group, you can start granting roles to the proxy group.
+All users matching the proxy rule will be granted all the privileges of that role.
+To learn how to grant roles, see xref:access/role-management.adoc[].
+
+==== Create proxy groups in GSQL shell
+You can create proxy groups with GSQL commands.
+
+===== Single User Proxy
+
+For example, if you want to create a user group `SuperUserGroup` that contains the user with nameid `admin@your.company.com` only, and grant `superuser` role to that user, you can do so with the following command:
+
+[.wrap,gsql]
+----
+GSQL > CREATE GROUP SuperUserGroup PROXY "nameid=admin@your.company.com"
+GSQL > GRANT ROLE superuser TO SuperUserGroup
+Role "superuser" is successfully granted to user(s): SuperUserGroup
+----
+
+===== User Group Proxy
+
+Suppose you want to create a user group `HrDepartment` which corresponds to the identity provider single sign-on users having the group attribute value `hr-department`, and want to grant the queryreader role to that group on the graph HrGraph:
+
+[.wrap,gsql]
+----
+GSQL > CREATE GROUP HrDepartment PROXY "group=hr-department"
+GSQL > GRANT ROLE queryreader ON GRAPH HrGraph TO HrDepartment
+Role "queryreader" is successfully granted to user(s): HrDepartment
+----
+
+=== Match Strategy Extensions
+
+As of 3.10.1, the match strategy has been extended to allow matches via regular expression.
+
+[NOTE]
+====
+The original match strategy has not changed.
+====
+
+For a regular expression match users need to add a prefix `regex:`
+a space after the `:` is allowed. (Ex. `regex:nameid=abc, regex:   nameid=abc`)
+
+[NOTE]
+====
+The prefix is case-sensitive.
+====
+
+Below are some examples of regular expression match strategies:
+
+.Ex: If a users `nameid` contains `abc` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g1 PROXY "regex: nameid=abc"
+----
+* *Match:* abc, aabc
+* *Mismatch:* abdc, abbc
+
+.Ex: If a users `nameid` contains `abc` they will also match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g1 PROXY "regex: nameid=^abc$"
+----
+* *Match:* abc
+* *Mismatch:* abcc, abdc, aabc
+
+.Ex: If a users `nameid` contains `ab` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g2 PROXY "regex: nameid=ab.*"
+----
+* *Match:* abc,  aabc, ccab
+* *Mismatch:* acb, cab
+
+.Ex: If a users `nameid`  starts with `ab` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g3 PROXY "regex:nameid=^ab.*"
+----
+* *Match:* abc, abc123, abddd
+* *Mismatch:*  acc, bca, aab
+
+.Ex: If a users `nameid` starts with `ab` and ends with `c` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g4 PROXY "regex: nameid=^ab.*c$"
+----
+* *Match:* abc, abdddc
+* *Mismatch:* abcd, abdcd
+
+.Ex: `\b` is the word boundary used in regular expressions. So, if a user's `nameid` contains `abc` they will match this group.
+[source, console]
+----
+GSQL > CREATE GROUP g5 PROXY "regex: group=\babc\b"
+----
+////
+* *Match:*
+** abc, def,
+** def, abc, hij
+
+* *Mismatch:*
+** abcd, ef,
+** ef, abcd, hi
+////
+== Test single sign-on
+
+To test if single sign-on is working, visit the GraphStudio UI in your browser.
+You should see a btn:[Login with SSO] button:
+
+image::11.25.png[GraphStudio login web page with a button reading 'Login with SSO'.]
+
+Click the button to navigate to your identity provider's login portal:
+
+* If you are already logged in with your identity provider, you will be redirected back to GraphStudio immediately.
+After about 10 seconds, the verification should finish, and you are authorized to use GraphStudio.
+* If you aren't logged in at your identity provider, you will need to log in.
+
+After logging in successfully, you will see your single sign-on username when you click the User icon  image:11.1 (1).png[,35]  at the upper right of the GraphStudio UI.
+
+:sectnums!:
+== Common errors
+
+Below are a few common SSO errors and how to resolve them.
+
+=== User has no access to any graph
+* If you return to the login page and see the error message saying you do not have access to any graph, check your user group proxy rules, and roles you have granted to the groups.
+
+=== "Login failed. Please contact system admin."
+
+* If your single sign-on fails with the above error message, it usually means the configuration are inconsistent between TigerGraph and your identity provider.
+
+
+You can check your GSQL log to investigate.
+First, find your GSQL log file with the following:
+
+[source,console]
+----
+$ gadmin log gsql
+GSQL   : /home/tigergraph/tigergraph/log/gsql/log.INFO
+----
+
+Then, grep the SAML authentication-related logs:
+
+[source,console]
+----
+cat /home/tigergraph/tigergraph/log/gsql/log.INFO | grep SAMLAuth
+----
+
+Focus on the latest errors.
+Usually the text is self-descriptive.
+Follow the error message and try to fix TigerGraph or your identity provider's configuration.
+
+If the problem persists or if you encounter any errors that are not clear, please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].

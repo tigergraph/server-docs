@@ -1,0 +1,80 @@
+= Change Data Capture (CDC)
+:page-aliases: cdc-overview.adoc
+:description: Change Data Capture
+
+btn:[ENTERPRISE Feature]
+
+The Change Data Capture (CDC) equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems.
+
+== Key Features
+* Captures and publishes change log data to external Kafka topics.
+* Pauses the publication process during external Kafka downtime and upon recovery the system resumes publishing from the last successfully published point.
+* Maintains sequence of changes to facilitate reproduction of data updates for debugging.
+* Structured in JSON format, promoting readability and compatibility with third-party tools.
+
+== xref:cdc/cdc-setup.adoc
+Learn about xref:cdc/cdc-setup.adoc#_setup_configuration[setup configurations] and get started with the xref:cdc/cdc-setup.adoc[setup tutorial].
+
+== xref:cdc/cdc-message-example.adoc[]
+Deep dive into the xref:cdc/cdc-message-example.adoc#_message_format_fields[CDC messages format] and showcased xref:manage:cdc/cdc-message-example.adoc#_message_examples[message examples].
+
+== xref:cdc/cdc-state-monitoring.adoc[]
+Here users can delve into xref:cdc/cdc-state-monitoring.adoc#_state_monitoring[state monitoring], including xref:cdc/cdc-state-monitoring.adoc#_state_of_dim_service[DIM state monitoring] with the CDC service.
+
+== CDC Reaction to Other Features
+
+=== When GPE is reset
+
+When the GPE is reset (`gadmin reset gpe`), all deltas that have not been rebuilt to the snapshot are lost.
+The TigerGraph CDC is also reset at the same time.
+When that happens, TigerGraph CDC will skip all historical data updates.
+Some commands will call `gadmin reset gpe` implicitly, so the CDC will reset simultaneously with these commands:
+
+* `gadmin backup` and `gadmin restore`
+* node xref:cluster:expand-a-cluster.adoc[expansion] and xref:cluster:shrink-a-cluster.adoc[shrink].
+* gsql command: `clear graph store`
+* gsql command: `drop all`
+* gsql command: `import graph all`
+
+=== When GSE is reset
+
+When GSE is reset (`gadmin reset gse`), the CDC may lose some mapping between vid and uid.
+The "uid" field in generated CDC message results as "UNKNOWN".
+
+== CDC HA
+
+High Availability (HA) support for the CDC service was introduced in version 4.1.0. Before this version, the CDC service (manager) operated exclusively on replica 1 of each GPE partition.
+
+As of version 4.1.0, the CDC service operates on the GPE leader within each GPE partition. In each GPE partition, as long as there is at least one live node, a leader will be elected, and the CDC service should function normally.
+
+For instance, in a 2x2 cluster, if only GPE_1#1 and GPE_2#2 are online among all GPE servers, the CDC service should still operate without issues.
+
+Please note that when the GPE leader switches, duplicate CDC messages may be produced and sent to external Kafka. This occurs because the new GPE leader is unaware of how many CDC messages the previous leader has produced. To deduplicate the produced CDC messages, utilize the "mid" field within the messages.
+
+If you wish to disable CDC High Availability (HA) in a multi-replica cluster and keep the CDC service running only on replica 1, you can do so by accessing the GPE feature manager. Use the command `gadmin config entry GPE.BasicConfig.Features` and remove the `"CDC_HA"` entry from the list.
+
+== CDC Limitations
+
+=== Limitation on CDC Setup
+
+==== Not applicable on DR cluster
+CDC is intended to record changes to a data source.
+DR clusters are replicas, not sources.
+
+=== Limitation on CDC Message
+When distinguishing between modification and insertion for vertex/edge attribute modification, the TigerGraph CDC message will have the `"operator": "insert"` key value pair, same as vertex/edge insertion.
+However, the `"content"` will only contain the field for the modified attribute.
+
+==== No CDC message for implicit edge deletion
+When a vertex is deleted, any edge that uses the vertex as source or target will be implicitly deleted.
+However, TigerGraph CDC currently does not generate a CDC message for such “implicit edge deletion”.
+
+==== No CDC message for implicit vertex insertion without `primary_id_as_attribute="true"`
+For insertion on undirected edge, or directed edge with reverse edge type, the TigerGraph database will implicitly insert source and target vertex if it does not exist (This behavior can be configured via `VERTEX_MUST_EXIST` in a loading job and `POST` data api).
+
+In this scenario, TigerGraph CDC will generate CDC messages with `"operator": "insert-only"` for new source and new target vertex, unless the corresponding vertex type does not have `primary_id_as_attribute="true"` (See the section “Extra CDC message for Edge Update“ ).
+
+==== Stuck at special uid “UNKNOWN”
+If the uid is `"UNKNOWN"` for either insertion or deletion delta messages, TigerGraph CDC will get stuck at that message.
+TigerGraph CDC will resume once it receives another vertex deletion message with a uid that is not `"UNKNOWN"`.
+
