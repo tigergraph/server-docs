@@ -1,0 +1,83 @@
+= Restore by Combining Backup and CDC messages
+
+TigerGraph CDC messages and TigerGraph Backup (either Full Backup or Incremental Backup) can be combined to restore the system to a previous state.
+
+== Steps
+
+The steps are:
+
+. Setup a backup.
+. Restore a backup.
++
+(See the documentation xref:tigergraph-server:backup-and-restore:index.adoc[] for more details.)
+. Users will need to write their own script to replay TigerGraph CDC messages.
+
+To determine whether a CDC message needs to be replayed or not. Please check for the TigerGraph backup (`gadmin backup create`), find a file metadata in the generated backup folder, such as `/tmp/backup/backup-2024-01-04T231921`:
+[console]
+----
+In /tmp/backup/backup-2024-01-04T231921
+>> cat metadata
+{
+"Tag": "backup-2024-01-04T231921",
+"Version": "3.10.0",
+"Type": "FULL",
+"FullBackup": "",
+"Time": "2024-01-04T23:19:21.514061123Z",
+"Files": [
+    {
+    "Instance": {
+    "ServiceName": "GPE",
+    "Replica": 0,
+    "Partition": 1
+    },
+    "Name": "GPE_1_1.tgdat",
+    "Checksum": "bb39e545e75c9571",
+    "RawSize": 2490368,
+    "Size": 7274,
+    "WaterMarks": [
+        {
+        "Key": "1",
+        "WaterMarkTid": "89",
+        "WaterMarkContent": "1704410362453",
+        "LastTid": "86",
+        "LeaderTerm": "18446744073709551615",
+        "MaxNoTransPos": "86"
+        }
+    ],
+"SchemaVersion": 2
+},
+...
+]
+}
+----
+
+To locate the relevant information, navigate to the JSON object `WaterMarks` for a specific instance of a GPE.
+
+In the provided example, within the `WaterMarks` find the value associated with `LastTid`, such as `86`.
+
+This indicates that delta records with tid equal-to-or-less-than `86`, have been processed and are included in this backup.
+
+When dealing with CDC messages, users should focus on `tid` (found in the `mid` of each CDC message) greater-than the `LastTid` specific to the corresponding GPE partition.
+
+Keep in mind that different GPE partitions will have distinct `LastTid` values.
+
+In transactions, the original delta messages may be split before and after a backup within TigerGraph's internal delta queue.
+However, the CDC messages generated for one transaction on a GPE partition share the same `tid` (the last COMMIT message).
+Therefore, users can use the `LastTid` to ensure that a transaction is included either in the backup with a `LastTid` or in CDC messages with a `tid` larger-than the `LastTid`.
+
+== CDC Message Examples
+
+The examples below show how to determine whether a CDC message needs to be replayed or not by looking at the CDC message mid.
+
+.For instance, if a user has `LastTid` values for GPE partitions 1 and 2 in the backup metadata:
+[cols="2", separator=¦ ]
+|===
+¦ GPE Partition ¦ LastTid
+
+¦ 1 ¦ 86
+¦ 2 ¦ 47
+|===
+
+*"mid":"2|1704407469727|47|5|4"*: is a transaction CDC message from GPE Partition 2, tid 47. Thus, it is already included in the backup. The user can skip replaying it.
+
+*"mid":"1|1704407469844|87|0"*: is a non-transaction CDC message from GPE Partition 1, tid 87. Thus,  it is not included in backup, and the user will need to replay it.

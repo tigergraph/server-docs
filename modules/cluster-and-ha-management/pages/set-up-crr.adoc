@@ -1,0 +1,208 @@
+= Set Up Cross-Region Replication
+//:page-aliases: tigergraph-server:crr:set-up-crr.adoc
+:description: Instruction on how to set up the DR cluster for cross-region replication.
+:sectnums:
+
+To set up cross-region replication (CRR), you set up Disaster Recovery (DR) clusters that sync with the primary cluster.
+Changes on the primary cluster are copied over to the DR cluster.
+
+When necessary, you can fail over to a DR cluster, making it the new primary cluster.
+
+
+== Before you begin
+
+* Install TigerGraph 3.10.0 or higher on both the primary cluster and the DR cluster *in the same version*.
+* Make sure that your DR cluster has the same number of partitions as the primary cluster.
+* Make sure the username and password of the TigerGraph database user created on the DR cluster during installation matches one of the users on the primary cluster who have the `superuser` role.
+* If you choose to enable CRR and your DR cluster is in a different Virtual Private Cloud (VPC) than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
+** If you xref:installation:bare-metal-install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
+** If you xref:installation:bare-metal-install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
+
+[WARNING]
+====
+Make sure TigerGraph is *not* installed with a local loopback IP such as 127.0.0.1. You can verify if you are using loopback IP with `gadmin config get System.HostList` if this returns 127.0.0.1 then it means you have installed TigerGraph with loopback IP
+====
+
+== Procedure
+
+The following setup is needed in order to enable Cross Region Replication.
+
+=== Obtain the latest Backup of the primary data
+
+Retrieve the latest backup, for instance, `pr_latest_backup` from the Primary Cluster. How recent the backup is will determine how much the DR cluster lags behind and how long it will take to catch up with the Primary cluster.
+
+If there is no suitable backup, use `gadmin backup create <pr_latest_backup>` to create one.
+For more details refer to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[].
+
+For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
+
+=== Enable CRR on the DR cluster
+
+Run the following commands on the DR cluster to enable CRR on the DR cluster.
+
+. Set Kafka Primary IP(s), Primary Port, and TopicPrefix.
++
+.Set Kafka MirrorMaker primary cluster's IPs, with the separator of ( `,` ):
+[source.wrap,console]
+----
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs <PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3>
+----
++
+.Set Kafka MirrorMaker primary cluster's KafkaPort:
+[source.wrap,console]
+----
+$ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
+----
++
+.The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+[source.wrap,console]
+----
+$ gadmin config set System.CrossRegionReplication.TopicPrefix Primary
+----
++
+.Apply the changes.
++
+[source.wrap,console]
+----
+$ gadmin config apply -y
+----
++
+[NOTE]
+====
+These steps above can be skipped if these settings are already configured properly.
+====
+
+. Enable the CRR setup.
++
+.Run with the latest backup from its primary cluster.
+[source.wrap,console]
+----
+gadmin backup restore pr_latest_backup --dr
+----
++
+Adding `--dr` to `gadmin backup restore <backup tag>` enables CRR in a regular restore. 
+
+Enabling Cross-Region Replication (CRR) with a backup is always recommended, as the Disaster Recovery (DR) cluster will be restored to the state of the backup. This can help avoid data inconsistency problems caused by unexpected operations or requests before the cluster becomes a DR.
+
+For special cases, such as enabling Cross-Region Replication (CRR) for a new cluster or switching between PR and DR, backup can be omitted.
+
+However, note that these operations should be performed when there is no traffic, because `gadmin backup restore --dr` won't overwrite the data of the cluster before it is set to be a DR.
++
+.Instead, simply run:
+[source.wrap,console]
+----
+gadmin backup restore --dr
+----
+
+Specifically, when switching between PR and DR, before the switch, it is necessary to xref:tigergraph-server:crr:troubleshooting.adoc#_check_data_consistency_between_primary_and_dr[check data consistency between primary and DR]
+
+[NOTE]
+====
+Starting from version 3.10, setting System.CrossRegionReplication.Enabled to true is no longer permitted.
+
+.However, setting it to `false` is still permissible.
+[source,console]
+----
+$ gadmin config set System.CrossRegionReplication.Enabled true
+[  Error] ParameterErr (to enable 'System.CrossRegionReplication.Enabled', please use `gadmin restore --dr xxx` to do it instead)
+
+$ gadmin config set System.CrossRegionReplication.Enabled false
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+----
+
+The default value of `System.CrossRegionReplication.Enabled` is `false`.  User can set it back with `gadmin backup restore <latest-backup> --dr`.
+====
+
+=== Force install queries on primary
+
+Run the `INSTALL QUERY -force ALL` command on the primary cluster. After the command is finished, all other metadata operations on the primary cluster will start syncing to the DR cluster.
+
+== Restrictions on the DR cluster
+
+After being set up, the DR cluster will be read-only and all data update operations will be blocked. This includes the following operations:
+
+* All metadata operations
+** Schema changes
+** User access management operations
+** Query creation, installation, and dropping
+** User-defined function operations
+* Data-loading operations
+** Loading job operations
+** RESTPP calls that modify graph data
+* Queries that modify the graph
+
+== Sync an outdated DR cluster
+
+When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE` GSQL command, or the `gsql --reset` bash command, the services on the DR cluster will stop syncing with the primary and become outdated.
+
+To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the setup steps detailed on this page again.
+
+The simply run:
+[source.wrap]
+----
+gadmin backup restore <latest-backup> --dr
+----
+
+== Advanced settings for CRR
+
+=== Retrieve the current configuration of CRR
+
+Run the `gadmin crr config` to view the current configuration of CRR. You can save it to a file with the extension "cfg" for easy reference and future adjustments.
+
+=== Setting up and updating the configuration
+
+Any configuration parameters supported by Mirror-Source-Connector can be set in the configuration file, by running `gadmin crr update -c <your_crr.cfg>` to update the settings.
+[source]
+----
+heartbeats.topic.replication.factor=1
+replication.factor=1
+sync.topic.acls.enabled=false
+key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+offset-syncs.topic.replication.factor=1
+secondary.scheduled.rebalance.max.delay.ms=35000
+status.storage.replication.factor=1
+topics=deltaQ.* ,Metadata.* ,GSE_journal_.*
+config.storage.replication.factor=1
+source.cluster.alias=Primary
+target.cluster.alias=Secondary
+checkpoints.topic.replication.factor=1
+connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector
+emit.heartbeats.interval.seconds=5
+header.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+offset.storage.replication.factor=1
+source->target.enabled=true
+value.converter=org.apache.kafka.connect.converters.ByteArrayConverter
+
+
+[connector_mm]
+name=infr_mm
+# Setting Example
+# We can improve throughput by adjusting the maximum parallelism.
+tasks.max=4
+----
+
+[WARNING]
+====
+Do not change the values of `name`, `topics`, as this will cause the CRR to work abnormally.
+====
+
+== Updating a CRR system
+
+From time to time, you may want to update the TigerGraph software on a CRR system.
+To perform this correctly, follow this sequence of steps.
+
+1. Stop CRR on your DR cluster.
++
+[source.wrap,console]
+----
+$ gadmin crr stop -y
+----
++
+2. xref:tigergraph-server:installation:upgrade.adoc[Upgrade] both the primary cluster and DR cluster.
+
+3. Start CRR on the DR cluster(From TigerGraph 3.10.0, no additional restart is required to start CRR).
++
+[source.wrap,console]
+----
+$ gadmin crr start
+----
