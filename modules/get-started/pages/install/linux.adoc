@@ -1,0 +1,29 @@
+= Install TigerGraph on Linux
+:page-aliases: getting-started:linux.adoc
+
+You can install TigerGraph on a Linux machine that meets the xref:install/hw-and-sw-requirements.adoc[Hardware and Software Requirements].
+For a step-by-step guide on installing TigerGraph on your Linux machine, please visit xref:install/bare-metal-install.adoc[].
+
+== Quickstart guide for New Users
+
+=== Installation Checklist
+
+. *Check* xref:install/hw-and-sw-requirements.adoc[Hardware and Software Requirements]
+. *Download* the TigerGraph platform: https://dl.tigergraph.com/
+. *Install* the platform
+ .. For simple single-server installation: +
+Assuming your downloaded file is called <your_tigergraph_package>:
++
+[,console]
+----
+tar xzf <your_tigergraph_package>.tar.gz
+cd tigergraph*/
+
+# to install license in interactive mode
+sudo ./install.sh
+
+# to install license in non-interactive mode
+sudo ./install.sh -n
+----
+
+ .. For additional options, see xref:install/bare-metal-install.adoc[].

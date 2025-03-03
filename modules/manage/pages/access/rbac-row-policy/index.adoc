@@ -1,0 +1,43 @@
+= RBAC Row Policy
+:page-aliases: row-policy-overview.adoc
+
+Role-Based Access Control (RBAC) row policy is used to control access to specific rows (or for vertex level access control) of data in TigerGraph based on user roles and attribute values.
+
+
+==  User Guide
+The  row policy user guide has two parts:
+
+. xref:access/rbac-row-policy/row-policy-concepts.adoc[] - Learn the key concepts and features that make up row policy.
+. xref:access/rbac-row-policy/setup-row-policy.adoc[] - Learn how to setup a basic row policy using an example dataset.
+
+== xref:row-policy-privileges-table.adoc[]
+Here you can find the Object-Based privilege tables for reference.
+
+== xref:row-policy-ebnf.adoc[Row Policy EBNF]
+Here you can find the row policy EBNF examples for reference.
+
+== Row Policy Limitations
+* Because exception statements are not supported for `INTERPRET` mode, if a query is affected by a row policy, ensure to always install it before running it.
+
+* Currently, we only support row policy on vertices, not on edges.
+
+* Row policy will only regulate the read-related operations for vertices, including read, update, and delete.
+
+* A global vertex can only hold one global row policy and cannot apply a local row policy on a global vertex in a graph.
+
+* `LOADACCUM` will be blocked if the vertex type to be loaded has a row policy.
+
+* `SelectVertex` should always have a `vSet` assignment, if there are any row policies in the graph.
+
+* Statistics data will not be affected by row policies:
+** Blueprint function `outdegree()`
+** Commands that are related to built-in functions on graph, such as:
+*** `select count(*)` from `vertexType`
+*** xref:reference:REST/built-in-endpoints.adoc[].
+
+* Upsert-related operations are not regulated by row policies:
+** GSQL Query:  For both installed query and interpret query, top level and dml-level xref:{page-component-version}@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[INSERT INTO] statement.
+** REST API `POST /graph/{graph_name}` xref:reference:REST/upsert-rest.adoc[]
+** Loading job: (file loading and kafka loading) loading an existing vertex with new attribute value.
+** REST API `POST /ddl`: (for spark loading job) loading an existing vertex with new attribute value. xref:reference:REST/built-in-endpoints.adoc#_run_a_loading_job[]
+
