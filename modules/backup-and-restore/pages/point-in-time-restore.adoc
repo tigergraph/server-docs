@@ -1,0 +1,80 @@
+= Point-in-Time Restore
+
+Point-in-time restore, introduced in version 4.1, enables users to restore their database to a specific time using backups made at earlier points, even if a backup was not created exactly at the desired time. This is particularly helpful when recovering from unwanted changes or data corruption, allowing users to restore the database without losing other work done after the last backup.
+This feature relies on the user having made one or more xref:tigergraph-server:backup-and-restore:differential-backups.adoc[differential backups].
+Point-in-Time Restore relies on having full and differential backups in place.
+
+To understand the mechanism behind point-in-time restore (PITR), it’s vital to know how backups work:
+
+  - Full Backup: A comprehensive snapshot of the entire database at a specific time, serving as the baseline for all future recovery operations.
+  - Differential Backup: A snapshot that captures changes made since the last full backup.
+
+== Use Cases
+* Recovering from Data Corruption: If a database becomes corrupted due to hardware failures or software issues, PITR allows recovery to a state before the corruption.
+* Undoing Accidental Changes: If a user accidentally deletes or modifies important data, PITR can revert the database to a point just before the error occurred.
+* Maintaining Data Consistency During Testing: In testing environments, PITR allows reverting to a clean state after running tests that modify the database, ensuring a fresh starting point for future tests.
+* Preserving Data State for Compliance and Audits: PITR helps maintain compliance with legal or regulatory requirements by allowing restoration of a previous database state to verify data, transactions, or records.
+
+== Usage
+
+To perform a point-in-time restore, use the following command:
+
+[console, gsql]
+----
+$ gadmin backup restore <timepoint_to_restore> --time-point
+----
+
+[NOTE]:The <timepoint_to_restore> should be provided in timestamp format (e.g., 2024-06-01T14:24:31Z). The restore operation accepts timestamps with 1-second granularity, so any fractional seconds will be ignored.
+
+For example, to restore the cluster to the time 2024-06-01T14:24:31Z, run:
+
+[console, gsql]
+----
+$ gadmin backup restore 2024-06-01T14:24:31Z --time-point
+----
+
+== Key Considerations
+
+Point-in-time restore relies on both full and differential backups to restore the database to a specific time. When selecting a time point for restoration, it is crucial to ensure that the chosen time point meets certain conditions. Specifically, the time point must not fall under the following cases:
+
+* Time Points Before the First Full Backup or After the Current Time:
+
+- The selected time point must be between the first full backup and the current system time. You cannot restore to a time point earlier than the first full backup or later than the current system time.
+- Example:
+If the first full backup was taken on 2024-06-01T00:00:00Z, you cannot restore to a time before this, such as 2024-05-31T23:59:59Z. Similarly, if the current time is 2024-06-15T12:00:00Z, you cannot restore to a future time like 2024-06-16T00:00:00Z.
+
+* Time Points Not Covered by Existing Backups:
+- The selected time point must be within the coverage of an existing backup. If the time point falls outside the range of any backup's coverage (defined by the POINT-IN-TIME START TIME and CREATED AT timestamps), it is considered "not covered.".You can verify the backup’s time ranges by running the gadmin backup list command
+- Example:
+[console, gsql]
+---
+$ gadmin backup list
+|================================================================================================================================================
+|             TAG              |    TYPE     | VERSION |  SIZE  |             BASE             | POINT-IN-TIME START TIME |      CREATED AT      
+| backup-2024-06-13T061939.131 | FULL        | 4.1.0   | 1.5 MB |                              | 2024-06-13T06:19:39Z     | 2024-06-13T06:19:39Z 
+| backup-2024-06-13T063915.054 | INCREMENTAL | 4.1.0   | 1.5 MB | backup-2024-06-13T061939.131 | 2024-06-13T06:19:39Z     | 2024-06-13T06:39:15Z 
+| backup-2024-06-13T081939.120 | FULL        | 4.1.0   | 1.5 MB |                              | 2024-06-13T08:19:39Z     | 2024-06-13T08:19:39Z 
+|================================================================================================================================================
+---
+
+In this example, the time range for backup `backup-2024-06-13T061939.131` is `[2024-06-13T06:19:39Z,2024-06-13T06:19:39Z]`, therefore, for a full backup is just a point. As for the incremental backup `backup-2024-06-13T063915.054`, its range is `[2024-06-13T06:19:39Z , 2024-06-13T06:39:15Z]`. `2024-06-13T06:35:00Z` is supported for it is covered by the time range `[2024-06-13T06:19:39Z , 2024-06-13T06:39:15Z]` of the backup `backup-2024-06-13T063915.054`. While, users can’t restore to the timepoint `2024-06-13T07:00:00Z` directly, for it is not in any backup's time range. However, if no restore was performed since `2024-06-13T07:00:00Z`, users may be able to create a new differential backup at right now and then restore to `2024-06-13T07:00:00Z`. 
+
+[NOTE]: Since the restore action will make any uncovered timepoints unavailable for restoration, it is recommended to ensure that all potential timepoints are covered by existing backups. If there is no backup available for the required timepoints, you can create one using the following command:
+[console, gsql]
+----
+gadmin backup create <backup_tag> --incremental --base <full_backup_tag>
+----
+This new backup will cover the time range from the creation time of the specified full backup <full_backup_tag> to the current time.
+
+== Limitations
+
+.Point-in-time restore examples.
+image::PIT_restore.png[]
+
+* GSQL Content: Point-in-time restore is designed primarily to restore data. Other stateful information, including schemas and RBAC settings, cannot be restored to the exact version at the provided time point. After a Point-in-time restore, these elements will reflect the version of the nearest differential backup used before the target restore time.
+* Precision Window: Point-in-time restore operates with a precision window of a few minutes. To ensure optimal data consistency, it is recommended to restore to a time point at least 2-3 minutes before the timestamp of any unwanted changes.
+* Coverage: Point-in-time restore cannot be performed for timestamps not covered by an existing differential backup. If the desired time point is not covered, a new differential backup must be created before performing the restore.
+
+
+
+

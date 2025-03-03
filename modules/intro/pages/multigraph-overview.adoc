@@ -17,7 +17,7 @@ image::image (16).png["Diagram of the MultiGraph architecture in the shape of a 
 == Graphs
 
 A graph is defined as all the vertices and edges of a set of vertex types and edge types.
-Access to each graph is xref:manage:access/index.adoc[managed independently].
+Access to each graph is xref:user-access:index.adoc[managed independently].
 However, if two graphs share a global type, the data in the shared type are shared between graphs.
 Each graph contains its own data loading jobs and queries, which do not affect and are not visible to other graphs.
 
@@ -30,7 +30,7 @@ In order to access a graph, a user must be granted a role on that graph.
 Without a role, a user has no meaningful access.
 
 
-For details about managing users, privileges, and roles, see xref:manage:access/index.adoc[].
+For details about managing users, privileges, and roles, see xref:user-access:index.adoc[].
 
 == Setting a working graph
 
@@ -54,4 +54,4 @@ This provides an interesting way to describe a data partitioning or parent-child
 == Effect on other specifications
 
 * RESTPP Endpoints: Endpoints that pertain to the graph data must include the name of the graph in the request URL.  See xref:API:index.adoc[RESTPP API User Guide.]
-* User Authentication secrets and tokens: Our commands and procedures follow OAuth standards.  See xref:manage:access/index.adoc[].
+* User Authentication secrets and tokens: Our commands and procedures follow OAuth standards.  See xref:user-access:index.adoc[].
