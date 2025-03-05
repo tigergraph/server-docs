@@ -259,6 +259,28 @@ For now, TigerGraph CDC Service will *NOT* produce CDC messages for such “impl
 ¦ Deletion of an edge
 |===
 
+In TigerGraph version 3.10, using the CDC feature with multi-edge types can cause a *GPE crash* when a `DELETE` operation is performed without specifying a discriminator. 
+This issue occurs if no `filter` or `limit` parameter is provided when deleting the multi-edge type.
+
+For example, the `Transfer` edge is a multi-edge type that connects `Person` vertices. A multi-edge requires a discriminator to distinguish between different edge instances. 
+The `Transfer` edge could be defined as follows:
+
+[source,bash]
+----
+CREATE DIRECTED EDGE Transfer(From Person, To Person, DISCRIMINATOR(id UINT))
+----
+
+This edge definition allows multiple `Transfer` edges between `Person` vertices, with the `id` discriminator used to differentiate them.
+
+For instance, the following `DELETE` request on the multi-edge `Transfer` will cause a GPE crash if no discriminator is specified:
+
+[source,bash]
+----
+curl -X DELETE /graph/multiedge/edges/Person/John
+----
+
+In this case, the `Person` vertex `John` is connected by several `Transfer` edges. However, since no `filter` or `limit` is applied to constrain the operation and no discriminator is provided, this results in a crash of the Graph Processing Engine (GPE).
+
 ==== Extra CDC message for Edge Update
 Edge updates may include additional information in specific scenarios.
 
@@ -287,4 +309,7 @@ When Undirected Edge or Directed Edge is inserted With a Reverse Edge Type, Tige
 
 |===
 
-*NOTE*:Starting from version 3.10.3, CDC produces the source vertex with "insert-only" for edge insertion in **Single-partition clusters** when the source/target vertex is new (doesn't exist before) and uses `primary_id_as_attribute="true"`.
+[NOTE]
+====
+Starting from version 3.10.3, CDC produces the source vertex with "insert-only" for edge insertion in *single-partition clusters* when the source/target vertex is new (doesn't exist before) and uses `primary_id_as_attribute="true"`.
+====
