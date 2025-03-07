@@ -483,6 +483,11 @@ a¦ To fix this issue, users can do one of the following:
 * Alternatively, run the backup restore again.
 ¦ 3.10.2 and 4.1.0 and later.
 
+¦ A GPE crash occurs when a `DELETE` operation is performed on multi-edge types without specifying a discriminator.
+¦ 3.10.0
+¦ Use the `delete-all` operator introduced in 4.1.1 to delete multi-edges without causing a GPE crash. This operator ensures that a GPE crash does not occur when no discriminator is specified. For more details, refer to the @tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_possible_operators_for_cdc_message_with_type_edge[CDC documentation] for the `delete-all` operator.
+¦ 4.1.1
+
 |===
 
 === Compatibility Issues
