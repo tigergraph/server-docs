@@ -51,6 +51,16 @@ If you wish to disable CDC High Availability (HA) in a multi-replica cluster and
 
 == CDC Limitations
 
+[WARNING]
+====
+The current version of CDC is unstable when:
+
+* The schema has edges with discriminators AND
+* A DELETE operation is performed on edges without specifying a discriminator.
+
+If CDC is being used, avoid performing this type of unrestricted deletion.
+====
+
 === Limitation on CDC Setup
 
 ==== Not applicable on DR cluster
