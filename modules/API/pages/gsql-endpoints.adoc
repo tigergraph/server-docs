@@ -16,6 +16,16 @@ You can refer to the xref:built-in-endpoints.adoc[REST endpoints for TigerGraph 
 
 NOTE: As of version 4.1.2, JWT tokens can be used for authentication with GSQL server REST endpoints.
 
+[NOTE]
+====
+For requests that are sent to the GSQL server, the sender needs to provide TigerGraph user credentials for the request to be accepted.
+User credentials can be provided in 3 ways:
+
+* `-u <user:password>`: pass the specified user name and password with curl option
+* `-H 'Authorization: Bearer <JWT-token>'`: pass JWT token via header, note that JWT token was requested on graph level, so user will only has the access to the specific graph with JWT token
+* `-H 'Authorization: GSQL-Secret <gsql-secret>'`: pass gsql secret via header
+====
+
 .Sample schema
 image::financialGraph_schema.png[]
 
@@ -48,7 +58,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -88,7 +98,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph"
+curl -X GET -u tigergraph:tigergraph -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -130,7 +140,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
 ----
 --
 Sample Response::
@@ -173,7 +183,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph" -d '{"addVertices":["UserA","UserB"]}'
+curl -X POST -u tigergraph:tigergraph -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph" -d '{"addVertices":["UserA","UserB"]}'
 ----
 --
 Sample Response::
@@ -206,7 +216,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices" -d '{
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/vertices" -d '{
     "createVertices": [
         {
             "Config": {
@@ -295,7 +305,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?vertex=user5,user4"
+curl -X DELETE -u tigergraph:tigergraph -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices?vertex=user5,user4"
 ----
 --
 Sample Response::
@@ -338,7 +348,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/userB?graph=financialGraph"
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/vertices/userB?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -380,7 +390,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph" -d '{"dropAttributes":["isBlocked"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
+curl -X PUT -u tigergraph:tigergraph -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph" -d '{"dropAttributes":["isBlocked"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
 ----
 --
 Sample Response::
@@ -421,7 +431,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain"  "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -461,7 +471,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/index_type_name?graph=financialGraph"
+curl -X GET -u tigergraph:tigergraph -H "content-type: text/plain"  "http://localhost:14240/gsql/v1/schema/indexes/index_type_name?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -501,7 +511,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph" -d '{"vertex":"Account","addIndexAttributes":[{"indexName":"nameIndex","attributeName":"name"}]}'
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain"  "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph" -d '{"vertex":"Account","addIndexAttributes":[{"indexName":"nameIndex","attributeName":"name"}]}'
 ----
 --
 Sample Response::
@@ -545,7 +555,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/nameIndex"
+curl -X DELETE -u tigergraph:tigergraph -H "content-type: text/plain"  "http://localhost:14240/gsql/v1/schema/indexes/nameIndex"
 ----
 --
 Sample Response::
@@ -593,7 +603,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph&vertex=Account&index=nameIndex"
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain"  "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph&vertex=Account&index=nameIndex"
 ----
 --
 Sample Response::
@@ -634,7 +644,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph"
+curl -X GET -u tigergraph:tigergraph -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -674,7 +684,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/isLocatedIn?graph=financialGraph"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/edges/isLocatedIn?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -716,7 +726,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from Account, to City, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from Account, to Phone, attr2 float)"]}'
+curl -X POST -u tigergraph:tigergraph -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from Account, to City, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from Account, to Phone, attr2 float)"]}'
 ----
 --
 Sample Response::
@@ -758,7 +768,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph" -d '{"addEdges":["has_account"]}'
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "content-type: application/json" -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph" -d '{"addEdges":["has_account"]}'
 ----
 --
 Sample Response::
@@ -791,7 +801,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges" -d ' {"createEdges":["IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}]}'
+curl -X POST -u tigergraph:tigergraph -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/edges" -d ' {"createEdges":["IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}]}'
 ----
 --
 Sample Response::
@@ -837,7 +847,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?edge=hasPhone&graph=financialGraph"
+curl -X DELETE -u tigergraph:tigergraph -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/edges?edge=hasPhone&graph=financialGraph"
 ----
 --
 Sample Response::
@@ -877,7 +887,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/hasPhone?graph=financialGraph"
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain"  "http://localhost:14240/gsql/v1/schema/edges/hasPhone?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -917,7 +927,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/Transfer?graph=financialGraph" -d '{"dropAttributes":["date"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr"}]}'
+curl -X PUT -u tigergraph:tigergraph -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/edges/Transfer?graph=financialGraph" -d '{"dropAttributes":["date"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr"}]}'
 ----
 --
 Sample Response::
@@ -950,7 +960,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/graphs"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H 'Content-Type: application/json' "http://localhost:14240/gsql/v1/schema/graphs"
 ----
 --
 Sample Response::
@@ -983,7 +993,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/graphs/financialGraph"
+curl -X GET -u tigergraph:tigergraph -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs/financialGraph"
 ----
 --
 Sample Response::
@@ -1031,7 +1041,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?gsql=true" -d '{"gsql": "create graph g(*)"}'
+curl -X POST -u tigergraph:tigergraph -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?gsql=true" -d '{"gsql": "create graph g(*)"}'
 ----
 --
 Sample Response::
@@ -1076,7 +1086,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?graphName=gtest&gsql=false
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/graphs?graphName=gtest&gsql=false
 " -d '{"VertexTypes":["Account","Phone"], "EdgeTypes":["hasPhone"]}'
 ----
 --
@@ -1118,7 +1128,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/financialGraph?cascade=true"
+curl -X DELETE -u tigergraph:tigergraph -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs/financialGraph?cascade=true"
 ----
 --
 Sample Response::
@@ -1159,7 +1169,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs?graphNames=financialGraph,recommend"
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/graphs?graphNames=financialGraph,recommend"
 ----
 --
 Sample Response::
@@ -1203,7 +1213,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs?jobName=test1,test2&graph=financialGraph"
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs?jobName=test1,test2&graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1252,7 +1262,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs/test3?gsql=true&type=global" -d ' {"gsql" : "create global schema_change job test3 {add vertex website to graph financialGraph;}"}'
+curl -X POST -u tigergraph:tigergraph -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/jobs/test3?gsql=true&type=global" -d ' {"gsql" : "create global schema_change job test3 {add vertex website to graph financialGraph;}"}'
 ----
 --
 Sample Response::
@@ -1285,7 +1295,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4" -d '{"graphs": [{"graphName":"financialGraph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test4" -d '{"graphs": [{"graphName":"financialGraph","addVertexTypes":["user","website"],"dropVertexTypes":[], "dropEdgeTypes":[],"addEdgeTypes":[]}]}'
 ----
 --
 Sample Response::
@@ -1362,7 +1372,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph" -d '
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph" -d '
 {
     "dropVertexTypes": [
         "LocalPhone"
@@ -1513,7 +1523,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/job12?json=true&graph=financialGraph"
+curl -X GET -u tigergraph:tigergraph -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/job12?json=true&graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1545,7 +1555,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/change" -d '
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change" -d '
  {"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User5"},
 {"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User4"}
 ]}'
@@ -1588,7 +1598,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=financialGraph" -d '
+curl -X POST -u tigergraph:tigergraph -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=financialGraph" -d '
 {
     "dropVertexTypes": [],
     "alterVertexTypes": [
@@ -1733,7 +1743,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph"
+curl -X POST -u tigergraph:tigergraph -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -1777,7 +1787,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/jobs?graph=financialGraph"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/jobs?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -2346,7 +2356,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/data-sources/k1"
+curl -X GET -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/data-sources/k1"
 ----
 --
 Sample Response::
@@ -2379,7 +2389,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/data-sources"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' "http://localhost:14240/gsql/v1/data-sources"
 ----
 --
 Sample Response::
@@ -2420,7 +2430,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/s5?graph=financialGraph" -d '{"name":"s5","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
+curl -X PUT -u tigergraph:tigergraph -H 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/s5?graph=financialGraph" -d '{"name":"s5","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
 ----
 --
 Sample Response::
@@ -2460,7 +2470,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources?graph=financialGraph" -d '{"name":"s4","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
+curl -X POST -H 'Authorization: Bearer <JWT-token>' 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources?graph=financialGraph" -d '{"name":"s4","config":{"type":"s3","access.key":"AKIA6B6T6R52UU7XJ2NL","secret.key":""}}'
 ----
 --
 Sample Response::
@@ -2500,7 +2510,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/k1?graph=financialGraph" -d '{"error":false,"message":"Data source k1 is dropped."}'
+curl -X DELETE -u tigergraph:tigergraph -H 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/k1?graph=financialGraph" -d '{"error":false,"message":"Data source k1 is dropped."}'
 ----
 --
 Sample Response::
@@ -2532,7 +2542,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/grant" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H 'Content-type: application/json' "http://localhost:14240/gsql/v1/data-sources/grant" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
 ----
 --
 Sample Response::
@@ -2564,7 +2574,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/revoke" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
+curl -X POST -u tigergraph:tigergraph -H 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/revoke" -d '{"graphs":["empty_graph","person_movie"],"datasource":"k1"}'
 ----
 --
 Sample Response::
@@ -2605,7 +2615,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/dropAll"
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H 'Content-type: text/plain' "http://localhost:14240/gsql/v1/data-sources/dropAll"
 ----
 --
 Sample Response::
@@ -2637,7 +2647,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST 'Content-type: application/json' "http://localhost:14240/gsql/v1/sample-data" -d '
+curl -X POST -u tigergraph:tigergraph -H 'Content-type: application/json' "http://localhost:14240/gsql/v1/sample-data" -d '
  {
   "graphName": "ldbc_snb",
   "dataSource": "adsafsfsfsfds",
@@ -2765,7 +2775,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-buckets/abcd"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-buckets/abcd"
 ----
 --
 Sample Response::
@@ -2805,7 +2815,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-files/fl2323?path=s3a://import-test"
+curl -X GET -u tigergraph:tigergraph -H 'Content-type: text/plain' "http://localhost:14240/gsql/v1/list-files/fl2323?path=s3a://import-test"
 ----
 --
 Sample Response::
@@ -2862,7 +2872,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=financialGraph1&queries=q1,q2&flag=-single"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install?graph=financialGraph1&queries=q1,q2&flag=-single"
 ----
 --
 Sample Response::
@@ -2895,7 +2905,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install/121212121331"
+curl -X GET -u tigergraph:tigergraph -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/queries/install/121212121331"
 ----
 --
 Sample Response::
@@ -3233,7 +3243,7 @@ Sample Request For Interpreting Anonymous Query Using Request Header::
 --
 [source,bash]
 ----
-curl -X POST -H 'Workload-Queue: <workload_queue_name>' 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
+curl -X POST -u tigergraph:tigergraph -H 'Workload-Queue: <workload_queue_name>' 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
 ----
 --
 Sample Request For Interpreting Anonymous Query Using GSQL Command::
@@ -3241,7 +3251,7 @@ Sample Request For Interpreting Anonymous Query Using GSQL Command::
 --
 [source,bash]
 ----
-curl -X POST 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY -QUEUE <workload_queue_name> (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
+curl -X POST -u tigergraph:tigergraph 'localhost:14240/gsql/v1/queries/interpret?p1=hello&p1=world' -d 'INTERPRET QUERY -QUEUE <workload_queue_name> (SET<STRING> p1) FOR GRAPH financialGraph syntax v1 {  print p1; }'
 ----
 
 ====
@@ -3486,7 +3496,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE 'localhost:14240/gsql/v1/packages/gds.commumity1
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' 'localhost:14240/gsql/v1/packages/gds.commumity1'
 ----
 --
 Sample Response::
@@ -3546,7 +3556,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE 'localhost:14240/gsql/v1/packages/function/gds.community.func1'
+curl -X DELETE -u tigergraph:tigergraph 'localhost:14240/gsql/v1/packages/function/gds.community.func1'
 ----
 --
 Sample Response::
@@ -3606,7 +3616,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE 'localhost:14240/gsql/v1/packages/template/gds.community.templateQuery1'
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' 'localhost:14240/gsql/v1/packages/template/gds.community.templateQuery1'
 ----
 --
 Sample Response::
@@ -3636,7 +3646,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST 'localhost:14240/gsql/v1/packages/import/pkg'
+curl -X POST -u tigergraph:tigergraph 'localhost:14240/gsql/v1/packages/import/pkg'
 ----
 --
 Sample Response::
@@ -3774,7 +3784,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/statements" -d 'ls'
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain" "http://localhost:14240/gsql/v1/statements" -d 'ls'
 ----
 --
 Sample Response::
@@ -3816,7 +3826,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: application/json" "http://localhost:14240/gsql/v1/statements/00000000006.317280417"
+curl -X GET -u tigergraph:tigergraph -H "content-type: application/json" "http://localhost:14240/gsql/v1/statements/00000000006.317280417"
 ----
 --
 Sample Response::
@@ -3854,7 +3864,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H "content-type: application/json" "http://localhost:14240/gsql/v1/statements/00000000006.317280417/cancel"
+curl -X PUT -H 'Authorization: Bearer <JWT-token>' -H "content-type: application/json" "http://localhost:14240/gsql/v1/statements/00000000006.317280417/cancel"
 ----
 --
 Sample Response::
@@ -3890,7 +3900,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/recover"
+curl -X POST -u tigergraph:tigergraph -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/recover"
 ----
 --
 Sample Response::
@@ -3922,7 +3932,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/check"
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "content-type: text/plain" "http://localhost:14240/gsql/v1/schema/check"
 ----
 --
 Sample Response::
@@ -4153,7 +4163,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens' -d "{\"secret\": \"j2qho3smncbk4g5cg4airige8up5bqn2\"}"
+curl -X POST -H 'Content-Type: application/json' 'localhost:14240/gsql/v1/tokens' -d "{\"secret\": \"j2qho3smncbk4g5cg4airige8up5bqn2\"}"
 ----
 --
 Sample Response::
@@ -4195,7 +4205,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/tokens' -d '{"tokens": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg"}'
+curl -X DELETE -H 'Content-Type: application/json' 'localhost:14240/gsql/v1/tokens' -d '{"tokens": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg"}'
 ----
 --
 Sample Response::
@@ -4225,7 +4235,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'localhost:14240/gsql/v1/tokens/check' -d '{"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg"}'
+curl -X POST -H 'Content-Type: application/json' 'localhost:14240/gsql/v1/tokens/check' -d '{"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aWdlcmdyYXBoIiwiaWF0IjoxNzM0MDgwODU0LCJleHAiOjE3MzQ2ODU2NTksImlzcyI6IlRpZ2VyR3JhcGgifQ.1Qrgj2I90WL4Xo8cMaXrmyOQmqhgNz1rES0hJu7H3mg"}'
 ----
 --
 Sample Response::
@@ -4313,7 +4323,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/secrets'
+curl -X GET -H 'Content-Type: application/json' 'localhost:14240/gsql/v1/secrets'
 ----
 --
 Sample Response::
@@ -4354,7 +4364,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/secrets' -d '{"secrets":[$secret1,$secret2]}'
+curl -X DELETE -H 'Content-Type: application/json' 'localhost:14240/gsql/v1/secrets' -d '{"secrets":[$secret1,$secret2]}'
 ----
 --
 Sample Response::
@@ -4395,7 +4405,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X GET 'localhost:14240/gsql/v1/secrets/s2'
+curl -X GET -H 'Content-Type: application/json' 'localhost:14240/gsql/v1/secrets/s2'
 ----
 --
 Sample Response::
@@ -4436,7 +4446,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X DELETE 'localhost:14240/gsql/v1/secrets/s2'
+curl -X DELETE -H 'Content-Type: application/json' 'localhost:14240/gsql/v1/secrets/s2'
 ----
 --
 Sample Response::
@@ -4469,7 +4479,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/groups/g1"
+curl -X GET -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/groups/g1"
 ----
 --
 Sample Response::
@@ -4511,7 +4521,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "Content-type: text/plain" "http://localhost:14240/gsql/v1/groups"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H "Content-type: text/plain" "http://localhost:14240/gsql/v1/groups"
 ----
 --
 Sample Response::
@@ -4544,7 +4554,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/v1/groups" -d '{"groupName":"g4","proxyRule":"group=tech-department"}'
+curl -X POST -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/v1/groups" -d '{"groupName":"g4","proxyRule":"group=tech-department"}'
 ----
 --
 Sample Response::
@@ -4576,7 +4586,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT "Content-type: application/json" "http://localhost:14240/gsql/v1/groups" -d '{"name": "g1", "rule": ""group=tech-department""}'
+curl -X PUT -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/v1/groups" -d '{"name": "g1", "rule": ""group=tech-department""}'
 ----
 --
 Sample Response::
@@ -4609,7 +4619,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1"
+curl -X DELETE -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/v1/groups/g1"
 ----
 --
 Sample Response::
@@ -4650,7 +4660,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/v1/groups?action=delete" -d '{"groupNames":["g1"]}'
+curl -X POST -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/v1/groups?action=delete" -d '{"groupNames":["g1"]}'
 ----
 --
 Sample Response::
@@ -4683,7 +4693,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/v1/users/u1"
+curl -X GET -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/users/u1"
 ----
 --
 Sample Response::
@@ -4715,7 +4725,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users"  -d '{"name": "tigergraph", "password": "123"}'
+curl -X PUT -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users"  -d '{"name": "tigergraph", "password": "123"}'
 ----
 --
 Sample Response::
@@ -4756,7 +4766,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users?action=delete"  -d ' {"userNames":["u1"]}'
+curl -X POST -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users?action=delete"  -d ' {"userNames":["u1"]}'
 ----
 --
 Sample Response::
@@ -4789,7 +4799,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users/u1"
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users/u1"
 ----
 --
 Sample Response::
@@ -4822,7 +4832,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users" -d ' {"password":"tiger123","username":"user2"}'
+curl -X POST -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users" -d ' {"password":"tiger123","username":"user2"}'
 ----
 --
 Sample Response::
@@ -4863,7 +4873,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/v1/users"
 ----
 --
 Sample Response::
@@ -5277,7 +5287,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/scim/v2/Groups/g2"
+curl -X GET -u tigergraph:tigergraph "http://localhost:14240/gsql/scim/v2/Groups/g2"
 ----
 --
 Sample Response::
@@ -5322,7 +5332,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?excludedAttributes=members&filter=displayName%ne%20'g2'%20and%20displayName%20sw%20'g1'"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H "Content-type: text/plain" "http://localhost:14240/gsql/scim/v2/Groups?excludedAttributes=members&filter=displayName%ne%20'g2'%20and%20displayName%20sw%20'g1'"
 ----
 --
 Sample Response::
@@ -5355,7 +5365,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups" -d '{"displayName":"scimG3","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:Group\"]","members":[{"display":"user3"},{"value":"user4"}]}'
+curl -X POST -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups" -d '{"displayName":"scimG3","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:Group\"]","members":[{"display":"user3"},{"value":"user4"}]}'
 ----
 --
 Sample Response::
@@ -5388,7 +5398,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PATCH "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1" -d '
+curl -X PATCH -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1" -d '
 {"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
 ----
 --
@@ -5422,7 +5432,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1" -d '
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups/g1" -d '
 {"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"remove","path":"members"},{"op":"replace","path":"members","value":[{"display":"user4"}]},{"op":"add","value":[{"display":"user3"}]}]}'
 ----
 --
@@ -5464,7 +5474,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?action=delete" -d '{"groupNames":["g1"]}'
+curl -X POST -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Groups?action=delete" -d '{"groupNames":["g1"]}'
 ----
 --
 Sample Response::
@@ -5497,7 +5507,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET "http://localhost:14240/gsql/scim/v2/Users/u1"
+curl -X GET -u tigergraph:tigergraph "http://localhost:14240/gsql/scim/v2/Users/u1"
 ----
 --
 Sample Response::
@@ -5529,7 +5539,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1"  -d '{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"replace","path":"password","value":"newPassword"}]}'
+curl -X PUT -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1"  -d '{"schemas":"[\"urn:ietf:params:scim:api:messages:2.0:PatchOp\"]","Operations":[{"op":"replace","path":"password","value":"newPassword"}]}'
 ----
 --
 Sample Response::
@@ -5570,7 +5580,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?action=delete"  -d ' {"userNames":["u1"]}'
+curl -X POST -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?action=delete"  -d ' {"userNames":["u1"]}'
 ----
 --
 Sample Response::
@@ -5603,7 +5613,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1"
+curl -X DELETE -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users/u1"
 ----
 --
 Sample Response::
@@ -5636,7 +5646,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users" -d '
+curl -X POST -u tigergraph:tigergraph -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users" -d '
 {"password":"12345678","schemas":"[\"urn:ietf:params:scim:schemas:core:2.0:User\"]","name":{"familyName":"f","givenName":"g"},"externalId":"externalId123","active":false,"userName":"scimUser2"}'
 ----
 --
@@ -5682,7 +5692,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?filter=userName%20ne%20%22tigergraph%22%20and%20userName%20sw%20%22u%22&excludedAttributes=names"
+curl -X GET -H 'Authorization: Bearer <JWT-token>' -H "Content-type: application/json" "http://localhost:14240/gsql/scim/v2/Users?filter=userName%20ne%20%22tigergraph%22%20and%20userName%20sw%20%22u%22&excludedAttributes=names"
 ----
 --
 Sample Response::
@@ -6462,7 +6472,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET 'localhost:14240/gsql/v1/udt/token-functions/_Concat'
+curl -X GET -u tigergraph:tigergraph 'localhost:14240/gsql/v1/udt/token-functions/_Concat'
 ----
 --
 Sample Response::
@@ -6492,7 +6502,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET 'localhost:14240/gsql/v1/udt/token-functions'
+curl -X GET -H 'Authorization: Bearer <JWT-token>' 'localhost:14240/gsql/v1/udt/token-functions'
 ----
 --
 Sample Response::
