@@ -4,481 +4,57 @@
 :fn-preview: footnote:preview[Features in the preview stage should not be used for production purposes. General Availability (GA) versions of the feature will be available in a later release.]
 :pp: {plus}{plus}
 :toc:
-:toclevels:2
+:to
 
-TigerGraph Server 4.1.2 was released on December 20, 2024.
+TigerGraph Server 4.2.0 Preview was released on April XX, 2025.
 
-TigerGraph Server 4.1.1 was released on November 12, 2024.
-
-TigerGraph Server 4.1.0 preview version was released on August 30, 2024.
-
-//LTS versions are supported for 24 months from their initial release (X.X.0) and should be the choice for production deployments.
+TigerGraph Server 4.2.0 Alpha was released on March 4, 2025.
 
 [NOTE]
 ====
-TigerGraph 4's feature set is an enhancement of what was available in 3.10.1.
-Therefore, features that were in 3.10.1 are not considered New Features.
+TigerGraph 4.2's feature set is an enhancement of what was available in 4.1.2.
+Therefore, features that were  in 4.1.2 are not considered New Features.
 ====
+
+== Key New Features
+
+** *xref:4.2@gsql-ref:vector:index.adoc[Hybrid Vector Search]*:
+Storage of and similarity search for vector attributes associated with vertices.
+
+* New `VECTOR` attribute data type with real-time updates
+* Fast approximate nearest neighborhood (ANN), with automatic indexing, incremental indexing
+* hybrid graph {plus} vector search in GSQL
+
+** *xref:tigergraph-server:intro:comparison-of-editions.adoc[Community Edition of TigerGraph Database]*:
+
+* up to 200GB graph data + 100GB vector data, single server only
+* some enterprise features are not included
+* community support only
++
+See a full xref:intro:comparison-of-editions.adoc[comparison of editions].
 
 == Detailed List of New and Modified Features
 
+
 === Backup and Restore Enhancements
 
-* **xref:4.1@tigergraph-server:backup-and-restore:point-in-time-restore.adoc[Point in Time Restore]**:
-Users can roll back the database to a moment they select, not only the time of an available backup snapshots.
-
-* **xref:4.1@tigergraph-server:backup-and-restore:configurations.adoc#_configure_backup_to_aws_s3_endpoint[Role ARN for Backup to AWS S3 buckets]**:
-Users can use AWS Role ARNs (Amazon Resource Names) for convenient and secure management of backups.
-
-* The **xref:4.1@tigergraph-server:backup-and-restore:backup-cluster.adoc#_data_backup[--custom-tag flag]** gives users more control over the naming of backup files.
-
-* See also xref:_high_availability_ha_enhancements[]
-
-=== Security Enhancements
-
-[#finer_grain_query_privileges]
-* **xref:4.1@tigergraph-server:user-access:fine-grained-query-privileges.adoc[Fine-grained Privileges on Queries]**:
-gives adminstrators finer control over who may do what actions with which objects:
-- Allows privileges to be granted/revoked at the query level.
-- Adds new query privileges OWNERSHIP, INSTALL and EXECUTE, and splits  WRITE to CREATE, UPDATE and DROP.
-
-* **xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_usage_of_gsql_jwt_token[JWT Authentication]**:
-JWT authorization/authentication is more secure than the plaintext tokens used in earlier TigerGraph versions.
-Users can generate and use JWT tokens when sending REST requests to the RESTPP server [in 4.1.0] or GSQL server [in 4.1.2].
-
-* **xref:4.1@tigergraph-server:security:password-policy.adoc[Password Complexity and Rotation Rules]**:
-Administrators can specify rules for the complexity of passwords and how long or how many times a password may be used, in order to improve security and help organizations to satisfy compliance requirements.
-
-* **xref:4.1@tigergraph-server:troubleshooting:audit-log.adoc[Expanded Audit Log Coverage]**:
-Audit logs now include `gadmin` activity, for more complete audit coverage.
-
-* [4.1.1] **xref:4.1@tigergraph-server:troubleshooting:audit-log.adoc#_gsql_service_audit_logs[More detailed information in audit logs]**. Also, an authorized admin user can configure the audit logs to include PII.
-
-* **xref:4.1@tigergraph-server:user-access:access-control-model.adoc#_built_in_roles[New Built-in Role]**: globalobserver
-- The globalobserver role introduces read-only access for schemas and loading jobs on the global scope
 
 === High Availability (HA) Enhancements
 
-* **xref:4.1@tigergraph-server:data-loading:data-loading-v2.adoc[Data Loading HA (Beta)]**:
-If the database is replicated, this data loading mode offers faster loading, reduced disk usage, and HA with automatic failover.
-Available for TigerGraph's xref:4.1@tigergraph-server:data-loading:manage-data-source.adoc[data streaming connectors] for cloud storage, Kafka, data warehouses, and Spark.
 
-* **xref:4.1@tigergraph-server:system-management:change-data-capture/cdc-overview.adoc#_cdc_ha[Change Data Capture (CDC) HA]**:
-CDC continues to function as long as at least one replica per partition is online.
-Previously, Replica 1 needed to remain operational.
+=== Security Enhancements
 
-* [4.1.1] **xref:system-management:change-data-capture/cdc-message-example.adoc#_other_message_fields[CDC messages have a "graph" field]** to specify which graph was affected.
-
-* [4.1.1] **xref:cluster-and-ha-management:crr-index.adoc[Cross-Region Replication]** now includes loading jobs.
-
-* **Backup HA**:
-Ensures backup processes can continue even during service failures, such as GPE or GSE downtime.
-// However, backups may still be impacted if an entire node fails. Tolerating node failures will be addressed in the 4.2 release.
-
-=== Data Streaming/Connector Enhancements
-
-* **xref:4.1@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_error[Malformed Loading Data Inspector]**:
-`SHOW LOADING ERROR` presents a sample of malformed data lines and their error types to an authorized user,
-enabling them to quickly locate and diagnose loading problems.
-
-* **xref:4.1@gsql-ref:querying:data-types.adoc#_file_object[Data Export to AWS S3]**:
-Export query results in CSV format directly to AWS S3 buckets for efficient data sharing and analysis
-
-* **xref:4.1@tigergraph-server:data-loading:read-to-spark-dataframe.adoc[Stream Data into Spark]**:
-Using the Spark data source reader API, users can run TigerGraph queries and stream the output to Spark as DataFrames.
-Streaming the output lifts the 2GB query response size limitation for non-streaming output.
-
-* **Notification for Stuck Loader**:
-If loading is stuck or acting abnormally, the loader sends an alert message to the console,
-including a diagnosis, enabling users to take timely action.
-
-* See also xref:_high_availability_ha_enhancements[]
 
 === System Management and Monitoring Enhancements ===
-* New options and optimized behavior in `GADMIN CONFIG APPLY` to 
-xref:4.1@tigergraph-server:system-management:management-commands.adoc#_gadmin_config_apply[restart only those services] that have been affected by configuration changes.
-
-* **xref:4.1@tigergraph-server:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics_format[Enhanced Metrics Reports]**: Total and available capacity for CPU and memory are now reported by the `/informant/metrics` endpoint.
-
-* **xref:4.1@tigergraph-server:reference:configuration-parameters.adoc#_restpp[Two new RESTPP Configuration Parameters]** to control how long the result files for xref:4.1@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[asynchronous queries] are retained.
-
-
-=== Kubernetes Operator Enhancements
-
-* TigerGraph Operator 1.2.0 introduces several significant new features, including the ability to create services for sidecar containers, support for cluster storage resizing, new lifecycle hooks for TigerGraph CR, and enhanced Multi-AZ cluster resiliency.
-+
-.TigerGraph K8s Operator 1.2.0 details
-[%collapsible]
-====
-- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/03-deploy/region-awareness-with-pod-topology-spread-constraints.md[Region Awareness with Pod Topology Spread Constraints]**: +
-Improve workload distribution and availability by enabling region awareness.
-
-- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/04-manage/expand-storage.md[Automatic Expansion of PVCs for TigerGraph CR]**: +
-Simplify storage management with automated Persistent Volume Claim (PVC) resizing.
-
-- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/03-deploy/lifecycle-of-tigergraph.md[New Lifecycle Hooks for TigerGraph CR]**: +
-Utilize preDeleteAction and prePauseAction lifecycle hooks for better control and automation during cluster operations.
-
-- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/03-deploy/configure-services-of-sidecar-containers.md[Service Creation for Sidecar Containers]**: +
-Easily create services for sidecar containers with TigerGraph CR.
-
-- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/04-manage/debug-mode.md[Enhanced Debugging Mode]**: +
-Debug more effectively with the newly introduced debugging mode in the operator.
-
-- **https://github.com/tigergraph/ecosys/blob/k8s-operator/1.2.0/k8s/docs/03-deploy/tigergraph-on-eks.md#install-tigergraph-operator[Customization of MaxConcurrentReconciles for the operator]**: +
-Fine tune TigerGraph operator's performance by customizing the maximum number of concurrent reconciles.
-====
-
-* [4.1.1] Added the namespace as a suffix to the HostName in the HostList configuration for TigerGraph on K8s.
-* [4.1.1] Support for customizing the external service port for the TigerGraph and sidecar listeners on K8s.
-* [4.1.1] Pre-upgrade hook in the TigerGraph Operator Helm chart to refresh the CRD automatically during the Operator upgrade.
 
 
 === Language Enhancements
 
-////
-* **GSQL OpenCypher additions**
-- *It is annoying to me as a writer and to readers that these are listed as separate bullet points without a logical reason for the separation. It is actually 5 separate doc tickets. Working incrementally without a top-down view leads to poor results.*
-- https://graphsql.atlassian.net/browse/DOC-2249 to *WRITE*
-
-- Adds elementId() function to GSQL and GSQL OpenCypher.
-- Adds head, last, size, tail, and reversedlist functions to GSQL and GSQL OpenCypher.
-- Adds StartNode and EndNode functions to GSQL for use in GSQL OpenCypher.
-- Introduces Range() and Split() functions to GSQL and OpenCypher.
-- Introduces stDevP() function for population standard deviation in GSQL and OpenCypher.
-////
-
-* **xref:4.1@tigergraph-server:API:index.adoc[REST APIs for Programmatic Use]**:
-Introduces a more complete and standard set of REST APIs:
-- provides coverage for database commands previously only available as xref:4.1@tigergraph-server:API:gsql-endpoints.adoc[GSQL commands].
-- allows developers and AI to more easily control and use TigerGraph programmatically.
-
-* [4.1.1] Added token function **xref:4.1@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_token_functions[gsql_current_datetime()]** for loading jobs.
-
-* Added support for using a **xref:4.1@gsql-ref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variables[global variable as the seed for a vertex set (vset)]**, enhancing the flexibility of seed set creation in GSQL queries.
-
-* Added the Workload queue option for **xref:4.1@gsql-ref:querying:query-operations.adoc#interpret-an-anonymous-query[interpreting anonymous queries]**, clarified declaration of workload queue via **xref:4.1@tigergraph-server:API:gsql-endpoints.adoc#_interpret_query[request header]** and **xref:4.1@tigergraph-server:API:gsql-endpoints.adoc#_interpret_query[GSQL command]**.
-
-* Added **xref:4.1@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached mode -async]** and **xref:4.1@tigergraph-server:system-management:workload-management.adoc#_running_a_query[Workload Queue]** option for runOptions when **xref:4.1@gsql-ref:querying:query-operations.adoc##interpret-a-created-query[interpreting a created queries]**.
-
-* Added support for logging into the GSQL shell using **xref:4.1@gsql-ref:basics:system-and-language-basics.adoc#_token_based_authentication_method[plain-text or JWT tokens]** `gsql -t/--token <token>`, providing a secure alternative to username and password authentication.
-
-* Added support for updating, showing, and dropping descriptions of **xref:4.1@gsql-ref:querying:query-operations.adoc#_query_descriptions[queries and query parameters in GSQL]**, improving the ability to manage and document query functionality.
-
-* Added the ability to create **xref:4.1@gsql-ref:querying:data-types.adoc#_virtual_edge[virtual edges]** in GSQL queries during runtime, streamlining multi-step vertex traversal.
-
-
-////
-* **xref:4.1@gsql-ref:querying:accumulators.adoc#_edge_attached_accumulators[Edge Accumulators in Multi-hop Queries]**
-- Edge accumulators can now be using in multi-hop pattern matching queries.
-- Query writers can save and retreive intermediate results using edge-based containers, enhancing the capabilities of the GSQL language for comprehensive graph data analysis.
-////
-
-== TigerGraph Suite
-
-=== GraphStudio
-
-* **Highlight Connected Edges When Hovering Over a Vertex**: +
-to show users the relationships and structure at a glance.
-Also available in Insights.
-
-* **Collapsible Sidebar**: +
-to let users use their screen space more effiently.
-
-////
-* **Implement query_status Endpoint in GUI**
-
-A new query_status endpoint has been added to the GUI for tracking the status of asynchronous query calls. This allows users to monitor the progress and completion of their queries without blocking their workflow.
-Users can now manage and track their async queries more effectively, improving the efficiency of their workflow and resource management.
-////
-* **Mandatory Password Change upon Expiration**: +
-A password must be changed when it expires or reaches a time/usage limit, enhancing security protocols.
-Not available on TigerGraph Cloud.
-
-* **Customizable Naming of Reverse Edges**: +
-enables data modelers to apply more intuitive and domain-specific names.
-
-////
-* ** User-Customizable Layout**:
-I don't get this. Also applies to Insights.
-////
-
-=== TigerGraph Insights
-
-* **Downloadable Query Output**: +
-as CSV or JSON
-
-* **"Tree" View Respects Direction of Directed Edges**: +
-to depict hierarchical structures and dependencies more meaningfully
-
-* **Support for Variables in Markdown Widget**: +
-for more context-aware and interactive dashboard displays
-
-=== AdminPortal
-
-* **Health Check Tool**:
-The Health Check Tool in TigerGraph AdminPortal provides administrators with a comprehensive set of checks and diagnostics to ensure the system is running optimally.
-
-* **Fine-grained Query Privileges in RBAC**:
-AdminPortal UI for the xref:#finer_grain_query_privileges[fine-grained query privileges] described above.
-
-* [4.1.2] **Read-only Access to Logs**:
-Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globaldesigner` and `superuser` built-in roles ) to read log files.
 
 == Fixed issues
 
-=== Fixed and Improved in 4.1.2
+TBA
 
-==== Functionality
-* Fixed issue where query installation failed for single-node queries that initialize vertex set variables in conditional branches (e.g., `if-else` or `case-when` statements) (GLE-8908).
-* Fixed disk critical issue caused by the rebuilder getting stuck in a partitioned cluster after dropping vertex or edge attributes (CORE-4418).
-* Fixed issue where CDC errors were not properly recorded in logs unless the log level was set to DEBUG (CORE-4425).
-* Fixed query compilation error when iterating through a `foreach` statement to retrieve an `accum` type attribute in a query compiled with the `-single` or `distributed` keyword. Ensured operations between two different `GroupByAccums` hold the same data types and field names (GLE-9054).
-* Fixed restore failure when importing GSQL data due to excessive time taken by the GSQL warmup process (TP-6948).
-* Fixed an exception (NoSuchElementException) when removing all access tokens from the system (GLE-9022).
-* Fixed a CDC UNKNOWN ID issue occurring under high load in the GSE service (CORE-4444).
-
-==== Improvements
-* Improved the performance of GSQL queries containing delete statements intended for deleting all vertices of a given type (GLE-8913).
-* Added new fields PodInitLabels and PodInitAnnotations in the PodTemplateSpec of the StatefulSet managing TigerGraph pods. These fields allow users to customize pod labels and annotations for initialization purposes (TP-6901).
-* Added functionality to allow Application Developers read-only access to TigerGraph logs (e.g., GSQL query logs, system logs) through GraphStudio without requiring sysadmin intervention (APPS-3253).
-* The GSQL REST endpoints now accept JWT tokens (GLE-8672).
-
-=== Fixed and Improved in 4.1.1
-
-==== Functionality
-* Fixed issue where local accumulators defined across multiple lines in a query were misinterpreted in the GSQL client (GLE-7833).
-* Fixed compile issue for escaped double quote inside string literal of loading job (GLE-8742).
-* Fixed issue where the input widget occasionally resets and loses content (APPS-3095).
-* Fixed inability to run gcollect on a k8s cluster (TP-6291).
-* Fixed Admin Portal log search when there are links to nonexistent logs (APPS-2874).
-
-==== Crashes and Deadlocks
-* Fixed a stall in differential backups if the preceding full backup was created before any data was loaded into the system (CORE-3833).
-* Fixed issue where a loading job was stuck and couldn't be cleared if it failed to start (TP-6419).
-* Fixed issue where the file loader enters an infinite loop if the source file contains only a header line (TP-6636).
-
-==== Security
-* Fixed issue where users without any roles and privileges could access other users' information through the "/gsql/v1/users" endpoint (GLE-8477).
-* Fixed issue in file input/output policy where symbolic links in the allow/block list were unexpectedly dereferenced (GLE-7139).
-* Fixed issue where TG Cloud password could be changed without first validating the current password (APP-2829).
-
-//==== Performance
-//==== Improvements
-//==== Backup
-//==== Loading
-//==== Insights
-//==== Kubernetes
-
-== Known Issues and Limitations
-
-[cols="4", separator=¦ ]
-|===
-¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
-
-¦After a cluster expansion, the GPE service may remain in the warmup state.
-¦4.1.1
-a¦If this happens, run `gadmin restart gse -y` to release the GPE.
-¦TBD
-
-¦When using xref:{page-component-version}@tigergraph-server:backup-and-restore:database-import-export.adoc[Import All] if the schema size in the `.zip` file is exceedingly large, the import may fail with an error messages like this:
-
-`Large catalog file key: /1/ReplicaList.json`
-
-¦ 3.2
-a¦
-* 3.9 and below users need to run the import process manually by executing the GSQL scripts in the `.zip`.
-* 3.10.0 and above users should xref:{page-component-version}@tigergraph-server:backup-and-restore:single-graph-import-export.adoc[import single or smaller batches of multiple graphs].
-¦ TBD
-
-a¦ If importing a role, policy, or function that has a different signature or content from the existing one, the one being imported will be skipped and not aborted.
-
-.For example:
-* If the original function is: `create function lib1.func2(int param1, float param2, string param3) returns (bool) {}`.
-* And the user imports the new function: `create function lib1.func2(int param1) returns (bool) {}`. This second one will be skipped.
-¦ 3.10.0
-¦ Users need to re-create (delete and create) the imported role, policy, or function manually, and make sure that the importing one meets the requirements set by the existing one.
-¦ TBD
-
-a¦ xref:{page-component-version}@tigergraph-server:user-access:rbac-row-policy/row-policy-overview.adoc[Row Policy (Preview Feature)] does not yet filter or check vertex attribute data in upsert operations.
-
-Such as,
-
-* A query with insert statements.
-* A file or Kafka loading job.
-* A DDL loading request.
-* Or a standard upsert request.
-¦ 3.10.0
-¦ Users should restrict the access of creating/running queries and loading jobs for roles related to row policy.
-¦ TBD
-
-¦ In file INPUT and OUTPUT policy, if there exists 2 path (`path1` and `path2`) in the configured policy list and `path1` is parent path of `path2`, then `path1` may not be effective.
-¦ 3.2 and 3.10.0
-¦ Users should avoid using paths if they are nested.
-
-For example, avoid this scenario, path2 = `"/tmp/more"` and path1= `"/tmp"`.
-¦ 3.10.1
-
-¦ When RESTPP sends a request to all GPEs, and if one is down, the request sent to it will `timeout`.
-Including the `consistency_check` request will also mark as `timeout`.
-¦ 3.10.0
-a¦
-. Run `/rebuildnow` to rebuild all the segments.
-+
-[NOTE]
-====
-Running `/rebuildnow` when one gpe is down will result in the request timeout. This does not mean the request failed, instead only the currently running GPE will do the rebuild, and any rebuild requests sent to the down GPEs will result in a timeout.
-====
-. Run `/data_consistency_check?realtime=false` to check the consistency.
-¦ TBD
-
-¦ While running `export graph` if the disk space is not enough, or the data has not been detected, the export data will get stuck loading.
-¦ 3.10.0
-¦ Restart all services in Admin Portal or the backend.
-¦ TBD
-
-¦ `[tg_]ExprFunction.hpp` will be automatically merged while importing single graphs. In some cases, query compilation may fail.
-¦ 3.10.0
-¦ See xref:{page-component-version}@tigergraph-server:backup-and-restore:single-graph-import-export.adoc#_known_issues_and_workarounds[Known Issues and Workarounds]
-¦ TBD
-
-¦ Upgrading from a previous version of TigerGraph has known issues.
-¦ 3.10.0
-¦ See section xref:{page-component-version}@tigergraph-server:installation:upgrade.adoc#_known_issues_and_workarounds[Known Issues and Workarounds] for more details.
-¦ TBD
-
-¦ Input Policy feature has known limitations.
-¦ 3.10.0
-¦ See section xref:{page-component-version}@tigergraph-server:security:gsql-file-input-policy.adoc#_limitations[Input Policy Limitations] for more details.
-¦ TBD
-
-¦ Change Data Capture (CDC) feature has known limitations.
-¦ 3.10.0
-¦ See section xref:{page-component-version}@tigergraph-server:system-management:change-data-capture/cdc-overview.adoc#_cdc_limitations[CDC Limitations] for more details.
-¦ TBD
-
-¦ If the `FROM` clause pattern is a multi-hop and the `ACCUM` clause reads both primitive and container type attributes or accumulators of a vertex, the internal query rewriting logic may generate an invalid rewritten output.
-¦ 3.9.3
-¦ This results in the error message: `It is not allowed to mix primitive types and accumulator types in GroupByAccum`.
-¦ TBD
-
-¦ Users may see a high CPU usage caused by Kafka prefetching when there is no query or posting request.
-¦ 3.9.3
-¦ TBD
-¦ TBD
-
-¦ GSQL query compiler may report a false error for a valid query using a vertex set variable (e.g. `Ent` in `reverse_traversal_syntax_err`) to specify the midpoint or target vertex of a path in a FROM clause pattern.
-¦ TBD
-¦ TBD
-¦ TBD
-
-¦ If a loading job is expected to load from a large batch of files or Kafka queues (e.g. more than 500), the job’s status may not be updated for an extended period of time.
-¦ 3.9.3
-¦ In this case, users should check the loader log file as an additional reference for loading status.
-¦ TBD
-
-¦ When a GPE/GSE is turned off right after initiating a loading job, the loading job is terminated internally. However, users may still observe the loading job as running on their end.
-¦ 3.9.3
-¦ Please see xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Troubleshooting Loading Job Delays] for additional details.
-¦ TBD
-
-¦ For v3.9.1 and v3.9.2 when inserting a new edge in `GPR` and `INTERPRET` mode, the GPE will print out a warning message because a discriminator string is not set for new-inserted edges. Creating an inconsistent problem in delta message for GPR and `INTERPRET` mode.
-¦ 3.9.2
-¦ Please see xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc[Troubleshooting Loading Job Delays] for additional details.
-¦ 3.9.3
-
-¦ GSQL `EXPORT GRAPH` may fail and cause a GPE to crash when UDT type has a fixed STRING size.
-¦ TBD
-¦ TBD
-¦ TBD
-
-¦ After a global loading job is running for a while a fail can be encountered when getting the loading status due to `KAFKASTRM-LL` not being online, when actually the status is online.
-Then the global loading process will exit and fail the local job after timeout while waiting the global loading job to finish.
-¦ TBD
-¦ TBD
-¦ TBD
-
-¦ When the memory usage approaches 100%, the system may stall because the process to elect a new GSE leader did not complete correctly.
-¦ TBD
-¦ This lockup can be cleared by restarting the GSE.
-¦ TBD
-
-¦ If the CPU and memory utilization remain high for an extended period during a schema change on a cluster, a GSE follower could crash, if it is requested to insert data belonging to the new schema before it has finished handling the schema update.
-¦ TBD
-¦ TBD
-¦ TBD
-
-¦ When available memory becomes very low in a cluster and there are a large number of vertex deletions to process, some remote servers might have difficulty receiving the metadata needed to be aware of all the deletions across the full cluster. The mismatched metadata will cause the GPE to go down.
-¦ TBD
-¦ TBD
-¦ TBD
-
-¦ Subqueries with SET<VERTEX> parameters cannot be run in Distributed or Interpreted mode.
-¦ TBD
-¦ (xref:{page-component-version}@gsql-ref:querying:operators-and-expressions.adoc#_subquery_limitations[Limited Distributed model support] is added in 3.9.2.)
-¦ TBD
-
-¦ Upgrading a cluster with 10 or more nodes to v3.9.0 requires a patch.
-¦ 3.9
-¦ Please contact TigerGraph Support if you have a cluster this large. Clusters with nine or fewer nodes do not require the patch.
-¦ 3.9.1
-
-¦ Downsizing a cluster to have fewer nodes requires a patch.
-¦ 3.9.0
-¦ Please contact TigerGraph Support.
-¦ TBD
-
-¦ During peak system load, loading jobs may sometimes display an inaccurate loading status.
-¦ 3.9.0
-¦ This issue can be remediated by continuing to run `SHOW LOADING STATUS` periodically to display the up-to-date status.
-¦ TBD
-
-¦ When managing many loading jobs, pausing a data loading job may result in longer-than-usual response time.
-¦ TBD
-¦ TBD
-¦ TBD
-
-¦ Schema change jobs may fail if the server is experiencing a heavy workload.
-¦ TBD
-¦ To remedy this, avoid applying schema changes during peak load times.
-¦ TBD
-
-¦ User-defined Types (UDT) do not work if exceeding string size limit.
-¦ TBD
-¦ Avoid using UDT for variable length strings that cannot be limited by size.
-¦ TBD
-
-¦ Unable to handle the tab character `\t` properly in AVRO or Parquet file loading. It will be loaded as `\\t`.
-¦ TBD
-¦ TBD
-¦ TBD
-
-¦ If `System.Backup.Local.Enable` is set to `true`, this also enables a daily full backup at 12:00am UTC.
-¦ 3.9.0
-¦ TBD
-¦ 3.9.1
-
-¦ The data streaming connector does not handle NULL values; the connector may operate properly if a NULL value is submitted.
-¦ TBD
-¦ Users should replace NULL with an alternate value, such as empty string "" for STRING data, 0 for INT data, etc.  (NULL is not a valid value for the TigerGraph graph data store.)
-¦ TBD
-
-¦ Automatic message removal is an Alpha feature of the Kafka connector. It has several xref:{page-component-version}@tigergraph-server:data-loading:load-from-cloud.adoc#_known_issues_with_loading[known issues].
-¦ TBD
-¦ TBD
-¦ TBD
-
-¦ The `DATETIME` data type is not supported by the `PRINT … TO CSV` statement.
-¦ 3.9.0
-¦ TBD
-¦ 3.9.1
-
-¦ The LDAP keyword `memberOf` for declaring group hierarchy is case-sensitive.
-¦ 3.9
-¦ Check the case of the keywords for `memberOf`. This has been fixed in versions 3.10.1 and above.
-¦ 3.10.1
-
-|===
 
 === Compatibility Issues
 
@@ -533,34 +109,12 @@ xref:4.1@system-management:change-data-capture/cdc-message-example.adoc#_cdc_mes
 ¦ 4.1.1
 ¦ TBD (possibly 4.2)
 
-¦ The use of plaintext tokens in xref:{page-component-version}@tigergraph-server:API:authentication.adoc[authentication] is deprecated.
-Use xref:{page-component-version}@tigergraph-server:user-access:jwt-token.adoc[] instead.
-¦ 3.10.0
-¦ TBD
-
-¦ *Vertex-level Access Control* (VLAC) and VLAC Methods are removed and are no longer available.
-¦ 3.10.0
-¦ 4.1.0
-
-¦ xref:{page-component-version}@tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection via JDBC Driver] is now deprecated and will no longer be supported.
-¦ 3.10.0 
-¦ TBD
-
-¦ `Build Graph Patterns` is deprecated and will not be updated or supported and instead
-we are focusing on xref:{page-component-version}@insights:widgets:index.adoc[Insights] as the tool of choice for building visual queries.
-¦ v3.9.3
-¦ TBD
-
-¦ Kubernetes classic  mode (non-operator) is deprecated.
-¦ v3.9
-¦ TBD
-
-¦ The `WRITE_DATA` RBAC privilege is deprecated.
-¦ v3.7
-¦ TBD
 |===
 
 == Release notes for previous versions
+
+* xref:4.1@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 4.1]
+* xref:3.11@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.11]
 * xref:3.10@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.10]
 * xref:3.9@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.9]
 * xref:3.6@tigergraph-server:release-notes:index.adoc[Release notes - TigerGraph 3.6]
