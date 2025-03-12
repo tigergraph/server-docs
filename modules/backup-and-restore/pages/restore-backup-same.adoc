@@ -7,6 +7,33 @@ This page walks you through the process of restoring a database from a backup th
 Restoring a backup is an offline operation.
 Your database will be down for a short period of time during database restore.
 
+== gadmin backup restore -h
+
+Restore a cluster from backup
+
+----
+Usage:
+  gadmin backup restore <tag/time point> [flags]
+----
+Description:
+  
+  Restores a backup of cluster data.
+  
+  Example:
+  gadmin backup restore my-backup-2021-11-04T120000
+
+Flags:
+
+  --dr       the flag indicates to turn on cross-region replication(CRR) and set the cluster as a disaster-recovery(DR) cluster after the restore (note that the CRR-related configs should be populated before the restore). Enabling CRR for a new cluster, or when you simply want to enable CRR, can be done without providing a backup tag, i.e., by using the 'gadmin backup restore --dr' command.
+  -h, --help                  help for restore
+      --ignore-space-check    Ignore the space check during the backup/restore.
+      --staging-path string   The path used to store the graph data during backup/restore. Defaults to dataroot.
+      --time-point            this flag indicates whether to restore to a specific point in time, rather than from a certain backup.
+  -y, --y                     yes to all questions
+        --keep-users          Restore 
+Global Flags:
+      --debug   enable debug log output to stdout
+
 == Prerequisites
 * You have access to the TigerGraph Linux user account on your cluster.
 All commands must be run from the TigerGraph Linux user.
