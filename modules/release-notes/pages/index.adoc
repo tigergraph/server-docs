@@ -185,7 +185,7 @@ for more context-aware and interactive dashboard displays
 * Fixed situation where a query containing a `BREAK` or `CONTINUE` statements could produce incorrect results (GLE-7874).
 * Fixed regression problem with installing queries which create lists containing mixed types of numeric data (GLE-7928).
 * Fixed int64 value underflow error by explicitly type casting uint64 (CORE-4108).
-* Fixed issue where When using IMPORT ALL if a users schema size in the .zip file is exceedingly large, the import fails with an error message:Large catalog file key: /1/ReplicaList.json(GLE-6505).
+* Fixed an issue so IMPORT ALL will no longer fail due to the schema size being very large (GLE-6505).
 * Restored the ability to run the TigerGraph `gcollect` command on Kubernetes (TP-6351).
 
 
