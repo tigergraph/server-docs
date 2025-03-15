@@ -32,7 +32,7 @@ You can monitor how much memory a query is using by searching the log file for t
 
 [source.wrap,console]
 ----
-$ grun all 'grep -i <request_id> $(gadmin config get System.LogRoot)/gpe/log.INFO | grep -i "querymem"'
+$ grun all 'grep -i <requestid> $(gadmin config get System.LogRoot)/gpe/log.INFO | grep -i "querymem"'
 ----
 
 You can also run a query first, and then run the following command immediately after to retrieve the most recent query logs and filter for `"QueryMem"`:
