@@ -1,6 +1,21 @@
 = Backup and Restore Configurations
+:description: Configuration parameters for backup and restore, with specific details for cloud storage
 
+[#_configure_backup_and_restore]
 This page describes the configuration options available for backup and restore on TigerGraph and how to set them.
+You can use `gadmin config set <parameter>` to change the value of any parameter.
+
+[TIP]
+`gadmin config entry backup` will walk you though all the available backup comfiguration parameters interactively. Enter a value for the ones you want to change; move past the ones you don't want to set.
+
+After configuring the parameters, run `gadmin config apply -y` to apply the new parameter values.
+
+To save to cloud storage, the container name and access credentials need to be configured.
+After the xref:#_configuration_parameters[table of configuration parameters], you will find instructions for configuring backup to
+
+* xref:#_backup_to_aws_s3[to AWS S3]
+* xref:#_backup_to_abs_azure_blob_storage[to Azure Blob Storage]
+* xref:#_backup_to_gcs_google_cloud_storage[to Google Cloud Storage]
 
 == Prerequisites
 * You have access to the TigerGraph Linux user account on your cluster.
@@ -77,15 +92,6 @@ It's recommended to keep the default value `10`, which means the number of proce
 ("BestSpeed", "DefaultCompression", "BestCompression")
 | "DefaultCompression"
 |===
-
-
-== Configure backup and restore
-
-Running `gadmin config entry backup` allows you to enter the value for each parameter individually.
-
-Alternatively, you can use `gadmin config set <parameter>` to change the value of any parameter.
-
-After configuring the parameters, run `gadmin config apply` to apply the new parameter values.
 
 == Backup to AWS S3
 
@@ -170,12 +176,8 @@ gadmin config set "System.Backup.S3.RoleARN" "arn:aws:iam::account:role/role-nam
 ----
 gadmin config apply -y
 ----
-+
-.Restart all services
-[console,]
-----
-gadmin restart all -y
-----
+
+Now you are ready to xref:backup-cluster.adoc[perform a backup].
 
 == Backup to ABS (Azure Blob Storage)
 
@@ -219,6 +221,8 @@ gadmin config set "System.Backup.ABS.AccountKey" "<account-key>"
 gadmin config apply -y
 ----
 
+Now you are ready to xref:backup-cluster.adoc[perform a backup].
+
 == Backup to GCS (Google Cloud Storage)
 Similar to backing up to ABS, prepare the proper https://cloud.google.com/storage/docs/authentication/hmackeys[HMAC keys]. Then configure it to be your backup storage via the following steps.
 
@@ -253,3 +257,6 @@ gadmin config set "System.Backup.GCS.Secret" "<secret>"
 ----
 gadmin config apply -y
 ----
+
+
+Now you are ready to xref:backup-cluster.adoc[perform a backup].
