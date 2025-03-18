@@ -1,14 +1,17 @@
 = Backup and Restore Configurations
+:description: Configuration parameters for backup and restore, with specific details for cloud storage
 
 [#_configure_backup_and_restore]
-This page describes the configuration options available for backup and restore on TigerGraph and how to set them. You can use `gadmin config set <parameter>` to change the value of any parameter.
+This page describes the configuration options available for backup and restore on TigerGraph and how to set them.
+You can use `gadmin config set <parameter>` to change the value of any parameter.
 
 [TIP]
 `gadmin config entry backup` will walk you though all the available backup comfiguration parameters interactively. Enter a value for the ones you want to change; move past the ones you don't want to set.
 
 After configuring the parameters, run `gadmin config apply -y` to apply the new parameter values.
 
-To save to cloud storage, the container name and access credentials need to be configured.Following the xref:#_configuration_parameters[table of configuration parameters] are instructions for configuring backup to
+To save to cloud storage, the container name and access credentials need to be configured.
+After the xref:#_configuration_parameters[table of configuration parameters], you will find instructions for configuring backup to
 
 * xref:#_backup_to_aws_s3[to AWS S3]
 * xref:#_backup_to_abs_azure_blob_storage[to Azure Blob Storage]
