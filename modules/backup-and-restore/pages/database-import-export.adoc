@@ -24,7 +24,7 @@ To import an exported database, ensure that the export files are from a database
 == Known Issues
 [WARNING]
 ====
-* User-defined loading jobs containing xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
+* User-defined loading jobs containing xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
 * If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be re-imported.
 * GSQL EXPORT GRAPH may fail and cause a GPE to crash when UDT type has a fixed STRING size.
 ====
@@ -240,7 +240,7 @@ Importing a new solution cannot be undone to restore the previous state, regardl
 Therefore, create a complete backup beforehand in case you need to restore the database: xref:backup-cluster.adoc[]
 
 For security purposes, TigerGraph has two `gadmin` commands, `GSQL.UDF.Policy.Enable` and `GSQL.UDF.Policy.HeaderAllowlist` to prevent malicious code execution during import.
-Please refer to the section on xref:gsql-ref:querying:func/query-user-defined-functions.adoc#udf-security[UDF Security] to ensure that UDFs comply with the security specifications. This will help you import the solution successfully.
+Please refer to the section on xref:{page-component-version}@gsql-ref:querying:func/query-user-defined-functions.adoc#udf-security[UDF Security] to ensure that UDFs comply with the security specifications. This will help you import the solution successfully.
 ====
 
 === Required privileges
