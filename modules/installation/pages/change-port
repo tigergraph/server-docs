@@ -1,0 +1,21 @@
+= Doc for cluster/node IP/Hostname change
+
+Description
+
+We need to add a new section around how to change the node/cluster IP/hostname(s) after installing a cluster.  
+
+  Before change IP/hostname(s):
+
+[source,bash]
+----
+gadmin init etcd
+gadmin stop all
+----
+
+  After change IP/hostname(s):
+  
+[source,bash]
+----
+gadmin config entry System.HostList --file ~/.tg.cfg  # Edit IP/hostname here
+gadmin init cluster --skip-stop --init-etcd
+----
