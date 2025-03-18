@@ -999,7 +999,7 @@ None
 
 xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level EXECUTE_LOADINGJOB
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:basics:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:{page-component-version}@gsql-ref:basics:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
 If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename variable at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.
 
@@ -1439,7 +1439,7 @@ This endpoint is available in v3.9.2+.
 
 This endpoint permanently deletes all the data out of the graph store (database), for all graphs.
 It does not delete the database schema, nor does it delete queries or loading jobs.
-It is equivalent to the GSQL command xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
+It is equivalent to the GSQL command xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
 
 [WARNING]
 ====
@@ -2029,7 +2029,7 @@ GET /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{ed
 ----
 
 This endpoint returns the edge of a specified type between a source vertex and a target vertex.
-If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+If the edge type isn't defined with a xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
 If the edge type is defined with a discriminator, this endpoint returns all edges of the edge type between the source and target vertices.
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
@@ -2100,7 +2100,7 @@ GET /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{ed
 ----
 
 This endpoint allows you to retrieve an edge by its source, target, edge type, and
-xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
 
 [NOTE]
 ====
@@ -2157,7 +2157,7 @@ DELETE /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/
 ----
 
 Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
-If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+If the edge type isn't defined with a xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
 
 If the edge type is defined with a discriminator, this endpoint deletes all edges of the edge type between the source and target vertices.
 If you want to delete a specific edge by its discriminator, see <<_delete_an_edge_by_source_target_edge_type_and_discriminator>>.
@@ -2248,7 +2248,7 @@ DELETE /restpp/graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/
 ----
 
 This endpoint allows you to delete an edge by its source, target, edge type, and
-xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
 
 [NOTE]
 ====
@@ -2702,7 +2702,7 @@ At the read committed level, it is guaranteed that any data read is committed at
 ==== Query parameter Passing
 
 When using a `POST` request to run an installed query, the query parameters are passed in through the request body and xref:API:index.adoc#_formatting_data_in_json[encoded in JSON format].
-The formatting rules for the JSON payload are the same as xref:gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
+The formatting rules for the JSON payload are the same as xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
 
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
@@ -2837,7 +2837,7 @@ curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "
 
 [NOTE]
 ====
-Installed queries can run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode].
+Installed queries can run in xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode].
 To do this, use the ``GSQL-ASYNC``header and set its value to `true`.
 
 The xref:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
@@ -3125,7 +3125,7 @@ Response::
 
 `GET /restpp/query_status`
 
-This endpoint allows you to check the status of a query run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
+This endpoint allows you to check the status of a query run in xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
 If you are running a TigerGraph cluster, this endpoint only allows you to check the status of a query running on the node to which the request is sent, not all nodes on the cluster.
 

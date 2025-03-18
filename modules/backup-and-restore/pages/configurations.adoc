@@ -1,6 +1,12 @@
 = Backup and Restore Configurations
 
 This page describes the configuration options available for backup and restore on TigerGraph and how to set them.
+It the provides the step-by-step instructions to
+
+* xref:#_configure_backup_and_restore[Configure backup to local storage]
+* xref:#_backup_to_aws_s3[Configure backup to AWS S3]
+* xref:#_backup_to_abs_azure_blob_storage[Configure backup to Azure Blob Storage]
+* xref:#_backup_to_gcs_google_cloud_storage[Configure backup to Google Cloud Storage]
 
 == Prerequisites
 * You have access to the TigerGraph Linux user account on your cluster.
@@ -174,8 +180,10 @@ gadmin config apply -y
 .Restart all services
 [console,]
 ----
-gadmin restart all -y
+gadmin restart -y
 ----
+
+Now you are ready to xref:backup-cluster.adoc[backup the database].
 
 == Backup to ABS (Azure Blob Storage)
 
