@@ -2745,6 +2745,18 @@ The Run Query endpoint accepts a number of headers that allow you to configure t
 |===
 |Name |Description
 
+|`PROFILE`
+|This header is used for query profiling. Currently, it supports only the value `BASIC`.
+When activated, query profiling allows users to view and analyze detailed information about query execution.
+By default, the value is empty, and profiling is not activated.
+
+Example:
+[source,bash]
+----
+curl -X POST -H "PROFILE: BASIC" -d '{"p":{"id":"Tom","type":"person"}}'
+"http://localhost:14240/restpp/query/social/hello"
+----
+
 |`GSQL-REPLICA`
 |The replica where the query is to be run.
 The value of the header needs to be an integer within the range 1 to the replication factor of the cluster.
