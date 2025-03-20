@@ -7,7 +7,13 @@ This page walks you through the process of restoring a cluster from a backup tha
 Restoring is an off-line operation.
 Your cluster is offline during the restore process.
 
-== gadmin backup restore -h
+== Command Options for Restore
+
+To see a summary of the command options for restore, run:
+
+`gadmin backup restore -h`
+
+The -h option displays help information, listing all available parameters for the gadmin backup restore command.
 
 Restore a cluster from backup
 
@@ -29,10 +35,14 @@ Flags:
       --ignore-space-check    Ignore the space check during the backup/restore.
       --staging-path string   The path used to store the graph data during backup/restore. Defaults to dataroot.
       --time-point            this flag indicates whether to restore to a specific point in time, rather than from a certain backup.
-  -y, --y                     yes to all questions
-        --keep-users          Restore 
+      --keep-users            Restore 
+      -y, --y                 yes to all questions
+        
 Global Flags:
+
       --debug   enable debug log output to stdout
+
+The `--keep-users` flag keeps existing user accounts unchanged during restore.
 
 == Prerequisites
 * Your new cluster has the same xref:cluster-and-ha-management:ha-cluster.adoc[partitioning factor] as the cluster from which the backup file was created.
