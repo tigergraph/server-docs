@@ -30,7 +30,7 @@ String literals can be represented according to the following options
 * Enclosed with double quote `"`.
 * Enclosed with triple double quotes `"""`.
 * Enclosed with triple single quotes `'''`.
-In the case of JSON that does not contain a colon `:` or a comma `,` the double quotes `"` can be omitted
+In the case of JSON that does not contain a colon `:` or a comma `,` the double quotes `"` can be omitted.
 
 [source,gsql]
 .Alternate quote syntax for inline JSON data
@@ -39,4 +39,4 @@ CREATE DATA_SOURCE s1 = """{
   "key": "<value>"
 }""" FOR GRAPH ldbc_snb
 
-Both a period `.` and `_` can be used for separation in the specified key name. Example: `first.second` or `first_second`.
+Either a period `.` or `_` can be used for separation in the specified key name. Example: `first.second` or `first_second`.
