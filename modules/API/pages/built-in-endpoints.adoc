@@ -2388,6 +2388,7 @@ The JSON response object contains three fields:
 
 ==== Parameters:
 
+[%autowidth]
 |===
 | Name | Required | Description
 
@@ -2413,14 +2414,19 @@ An installation request will wait in the background for any currently running pr
 
 ==== Parameters:
 
+[%autowidth]
 |===
 | Name | Required | Description
 
 |`graph` | Yes | The name of the graph the queries belong to
+
 |`queries` | Yes a|  The names of the queries to install.
 If `queries` is set to `all` or `*`, the endpoint installs all queries.
 
 To pass in the names of multiple queries, enter the same parameter multiple times with the names of the queries you want to install.
+
+|`async` | No | If `true`, install the query in the background and return a requestId which can be used to check the status of the installation.
+
 |===
 
 
@@ -2530,6 +2536,7 @@ In the case of a `GET` request, parameters should be passed in through the query
 
 ==== Parameters:
 
+[%autowidth]
 |===
 | Name | Required | Description
 
