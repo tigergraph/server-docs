@@ -24,7 +24,7 @@ $ gadmin backup restore <tag/time point>
 The restore will use the entire contents of the backup file.
 If the tag is for an incremental backup, it will also employ the chain of backups that the incremental backup(s) are based on, until it gets to a full backup.
 
-<time point> employs xref:point-in-time-restore.adoc[], automatically searching for the most appropriate backup files and using only the appropriate parts of those backup files.
+`<time point>` employs xref:point-in-time-restore.adoc[], automatically searching for the most appropriate backup files and using only the appropriate parts of those backup files.
 See the documentati on xref:point-in-time-restore.adoc[] to understand the limitations.
 
 For example, if you want to restore a backup with the tag `weekly-2022-08-31T004132`, run gadmin `backup restore weekly-2022-08-31T004132`.
@@ -38,33 +38,17 @@ The restore operation cannot be canceled once started.
 
 To see a summary of the command options for restore, run:
 
-gadmin backup restore -h
+`gadmin backup restore -h`
 
 The `-h` option displays help information, listing all available parameters for the gadmin backup restore command.
 
-Restore a cluster from backup
-
-
-Usage:
-----
-  gadmin backup restore <tag/time point> [flags]
-----
-
-Description:
-
-  Restores a backup of cluster data.
-
-Example:
-----
-  gadmin backup restore my-backup-2021-11-04T120000
-----
-
 Flags:
 ----
-  --dr       the flag indicates to turn on cross-region replication(CRR) and set the cluster
-             as a disaster-recovery(DR) cluster after the restore (note that the CRR-related
-             configs should be populated before the restore). Enabling CRR for a new cluster,
-             or when you simply want to enable CRR, can be done without providing a backup tag,
+  --dr       the flag indicates to turn on cross-region replication(CRR) and set
+             the cluster as a disaster-recovery(DR) cluster after the restore
+             (note that the CRR-related configs should be populated before the
+             restore). Enabling CRR for a new cluster, or when you simply want
+             to enable CRR, can be done without providing a backup tag,
              i.e., by using the 'gadmin backup restore --dr' command.
   -h, --help                  Help for restore
       --ignore-space-check    Ignore the space check during the backup/restore.
