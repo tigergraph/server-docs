@@ -2388,6 +2388,7 @@ The JSON response object contains three fields:
 
 ==== Parameters:
 
+[cols="1,1,2"]
 |===
 | Name | Required | Description
 
@@ -2413,14 +2414,19 @@ An installation request will wait in the background for any currently running pr
 
 ==== Parameters:
 
+[cols="1,1,2"]
 |===
 | Name | Required | Description
 
 |`graph` | Yes | The name of the graph the queries belong to
+
 |`queries` | Yes a|  The names of the queries to install.
 If `queries` is set to `all` or `*`, the endpoint installs all queries.
 
 To pass in the names of multiple queries, enter the same parameter multiple times with the names of the queries you want to install.
+
+|`async` | No | If `true`, install the query in the background and return a requestId which can be used to check the status of the installation.
+
 |===
 
 
@@ -2530,6 +2536,7 @@ In the case of a `GET` request, parameters should be passed in through the query
 
 ==== Parameters:
 
+[cols="1,1,2"]
 |===
 | Name | Required | Description
 
@@ -2690,6 +2697,7 @@ curl -X POST --data-binary @./<sample_file> "http://localhost:14240/restpp/query
 
 ==== Parameters:
 
+[cols="1,1,2"]
 |===
 | Name | Required | Description
 
@@ -2741,7 +2749,7 @@ containing a list of JSON `VERTEX`
 ==== Headers
 The Run Query endpoint accepts a number of headers that allow you to configure the way the query is run:
 
-
+[cols="1,2"]
 |===
 |Name |Description
 
@@ -3109,6 +3117,7 @@ Response::
 ====
 ==== Parameters:
 
+[cols="1,1,2"]
 |===
 | Name | Required | Description
 
@@ -3131,6 +3140,7 @@ If you are running a TigerGraph cluster, this endpoint only allows you to check 
 
 ==== Parameters:
 
+[cols="2,1,4"]
 |===
 |Parameter | Required |Description
 
@@ -3246,6 +3256,7 @@ Response::
 ====
 ==== Parameters:
 
+[cols="2,1,4"]
 |===
 | Name | Required | Description
 
@@ -3305,6 +3316,7 @@ Response::
 ====
 ==== Parameters:
 
+[cols="2,1,4"]
 |===
 | Name | Required | Description
 
@@ -3671,6 +3683,7 @@ This endpoint expects a request body that describes the source and target vertex
 
 ==== Parameters:
 
+[cols="2,1,4"]
 |===
 | Name | Required | Description
 
