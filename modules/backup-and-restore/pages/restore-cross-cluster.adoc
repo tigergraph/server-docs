@@ -61,58 +61,5 @@ The `--keep-users` flag can be used to retain the current cluster GSQL users ins
 
 
 [source, console]
-gadmin backup restore <backup_tag>
+gadmin backup restore --keep-users <backup_tag>
 
-== Procedure v3.9.1 and below
-
-=== 1) Upload Metadata to New Cluster
-Upload the metadata file specific to the backup with which you want to restore the cluster to a path on any node of the new cluster where the TigerGraph Linux user has access.
-
-For example, upload the  file to
-[source, console]
-/home/tigergraph/metadata
-
-on m1 of the new cluster.
-
-=== 2) Copy Data Backup to a New Cluster
-
-==== For Amazon S3 Backup:
-
-If your backups are stored in Amazon S3 buckets, set the following configuration parameter to be the location of your backup files.
-
-[source,console]
-System.Backup.S3.BucketName
-
-For the new cluster to be the same as the previous cluster.
-
-==== For Local Backup Storage:
-
-If your backups were stored locally, you need to make sure backup files from all nodes are copied to the new cluster.
-They do not necessarily need to be on the corresponding nodes as long as all partitions are in the new cluster at the specified paths you configured.
-
-* For example:
-+
-.If you have configured the backup path to be
-[source,console]
-/home/tigergraph/backups
-+
-.for a 3-node cluster, you can put all backup files for backup
-[source,console]
-weekly-<timestamp>
-+
-.in the folder like this:
-[source,console]
-/home/tigergraph/backups/weekly-<timestamp>
-
-=== 3) Restore Cluster
-
-Run the following command to restore the cluster using the backup.
-
-[IMPORTANT]
-You must run the command on the cluster to which you uploaded the cluster metadata.
-
-[.wrap,console]
-----
-$ gadmin backup restore --meta=/home/tigergraph/metadata <1>
-----
-<1> If you uploaded the metadata to a different folder, replace the path with the path where the file is.
