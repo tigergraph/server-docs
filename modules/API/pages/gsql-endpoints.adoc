@@ -107,7 +107,9 @@ Sample Response::
 
 `POST /gsql/v1/schema/vertices`
 
-Create global vertices using json contains gsql command
+Create global vertices using GSQL commands.
+The request body should contain one or more GSQL `CREATE VERTEX` statements.
+See the example below.
 
 ==== Parameters:
 
@@ -118,7 +120,8 @@ Create global vertices using json contains gsql command
 
 | `gsql`
 | no
-| Indicates whether to use the GSQL command for creation. Here must be set to true. The request body should contain the GSQL command within the JSON object.
+| Indicates whether to use GSQL command(s) to describe the creation.
+For this use case, it must be set to `true`.
 |===
 
 ==== Example
@@ -545,7 +548,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/nameIndex"
+curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/nameIndex?vertex=Account"
 ----
 --
 Sample Response::
@@ -694,7 +697,10 @@ Sample Response::
 
 `POST /gsql/v1/schema/edges`
 
-Create global edges using gsql command statement.
+Create global edges using GSQL commands.
+The request body should contain one or more GSQL `CREATE EDGE` statements.
+See the example below.
+
 
 ==== Parameters:
 
@@ -705,7 +711,8 @@ Create global edges using gsql command statement.
 
 | `gsql`
 | no
-| Indicates whether to use the GSQL command for creating edges. Here must set to true. The request body should contain the GSQL command within the JSON object.
+| Indicates whether to use GSQL command(s) to describe the creation.
+For this use case, it must be set to `true`.
 |===
 
 ==== Example:
@@ -6256,7 +6263,7 @@ Sample Response::
 
 '''
 
-=== delete mulitple accumulators
+=== delete multiple accumulators
 
 `DELETE /gsql/v1/udt/accum`
 
@@ -6327,11 +6334,12 @@ Sample Response::
 
 '''
 
-=== download expr files
+=== download user-defined function files
 
 `GET /gsql/v1/udt/files/{fileName}`
 
-Download one file by its name, {fileName} can be one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank.
+Download one of the .hpp files for storing user-defined functions.
+{fileName} can be one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank.
 
 ==== Example
 
@@ -6357,11 +6365,11 @@ Sample Response::
 
 '''
 
-=== download all files
+=== download all user-defined function files
 
 `GET /gsql/v1/udt/files`
 
-Get all files.
+Get all .hpp files used to store user-defined functions: [tg_]ExprFunction.hpp, [tg_]ExprUtil.hpp, TokenBank.hpp.
 
 ==== Example
 
@@ -6387,11 +6395,14 @@ Sample Response::
 
 '''
 
-=== upload one file
+=== upload one user-defined function file
 
 `PUT /gsql/v1/udt/files/{fileName}`
 
-Upload file.
+Upload one of the .hpp files for storing user-defined functions.
+{fileName} can be one of: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank.
+
+The file contents should be included in payload.
 
 ==== Example
 
@@ -6402,7 +6413,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X PUT 'localhost:14240/gsql/v1/udt/files/' -d '<Token Bank file content>'
+curl -H 'Content-Type: text/plain' -X PUT 'localhost:14240/gsql/v1/udt/files/TokenBank' -d '<Token Bank file content>'
 ----
 --
 Sample Response::
@@ -6417,11 +6428,13 @@ Sample Response::
 
 '''
 
-=== upload file
+=== upload all user-defined function files
 
 `PUT /gsql/v1/udt/files`
 
-Upload all files.
+Upload all .hpp files used to store user-defined functions: [tg_]ExprFunction.hpp, [tg_]ExprUtil.hpp, TokenBank.hpp.
+
+See the example for the structure of the data payload.
 
 ==== Example
 
@@ -6441,6 +6454,38 @@ Sample Response::
 [source.wrap,console]
 ----
 {"error":false,"message": "All files get updated: [TokenBank, ExprFunctions]."}
+----
+--
+====
+
+'''
+
+[#_delete_udt_files]
+=== Remove user-defined function files
+`DELETE /gsql/v1/udt/files`
+
+Remove one or more of the .hpp files for storing user-defined functions.
+{fileName} accepts the following 5 filenames: [tg_]ExprFunctions, [tg_]ExprUtil, TokenBank.
+Use a comma-separated list to remove more than one file.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X DELETE 'localhost:14240/gsql/v1/udt/files?name=ExprFunctions,ExprUtil'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Successfully dropped files: [ExprFunctions, ExprUtil]."}
 ----
 --
 ====
