@@ -5,10 +5,7 @@ you can change them by running the following commands as the tigergraph admin us
 
 1. Pause your database operations.
 
-2. Shut down services.
-
-The command `gadmin init etcd` initializes the etcd component of TigerGraph, while `gadmin stop all` stops all running TigerGraph services.
-  Before change IP/hostname(s):
+2. Shut down services, as shown below:
 
 [source,bash]
 ----
@@ -16,16 +13,18 @@ gadmin init etcd
 gadmin stop all
 ----
 
-3. Make your IP changes
+The command `gadmin init etcd` initializes the etcd component of TigerGraph, while `gadmin stop all` stops all running TigerGraph services.
+
+3. Make your IP changes (outside of TigerGraph).
 
 4. Edit the ~/.tg.cfg file, replacing the old IP/hostname information with the new information.
 Search for the JSON field called "Hostlist" to find the section to edit.
 
-5. Apply the IP/hostnames to TigerGraph
+5. Apply the new IP/hostnames, using the two commands below.
 
-The command updates the TigerGraph host list using IPs or hostnames from '~/.tg.cfg' to define cluster nodes for deployment.
+The first command applies the updated TigerGraph host list from '~/.tg.cfg' to define cluster nodes for deployment.
 
-The command initializes the TigerGraph cluster without stopping running services `(--skip-stop)` and also initializes etcd, 
+The second command initializes the TigerGraph cluster without stopping running services `(--skip-stop)` and also initializes etcd,
 the distributed key-value store for configuration and coordination `(--init-etcd)`.
 
   After change IP/hostname(s):
