@@ -35,23 +35,30 @@ See a full xref:intro:comparison-of-editions.adoc[comparison of editions].
 
 == Detailed List of New and Modified Features
 
+=== System Management Enhancements
 
-=== Backup and Restore Enhancements
+* [TBD] Introduced Incremental Backup which efficiently backs up only what has changed since the last backup.
+* **Added xref:4.2@tigergraph-server:backup-and-restore:restore-backup-same.adoc#_options_for_restore[Restore option `--keepusers`]** to keep the database users in the current database, not the ones from the backup file.
 
+=== Security and Access Control Enhancements
 
-=== High Availability (HA) Enhancements
+* **All REST endpoints now accept xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_user_guide_overview[
+JWT tokens for authentication]**, include GSQL endpoints.
 
+* Added two **new xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[access privileges]: READ_LOG and APP_ACCESS_LOG**.
+Both grant read-only access to log files; `APP_ACCESS_LOG` is specifically designed for xref:4.2@gui:admin-portal:monitoring/log-viewer.adoc#_privilges[
+ access from GraphStudio or Savanna].
 
-=== Security Enhancements
+=== Performance Improvements
 
-
-=== System Management and Monitoring Enhancements ===
+* [TBD] Introduced **Query Planned Caching**, to speed up the run time for queries which are run multiple times.
 
 
 === Language Enhancements
 
-* The Interpret Query endpoint `POST /gsql/v1/queries/interpret` can now be used with queries that have a xref:4.2@gsql-ref:querying:query-operations.adoc#_complex_type_parameter_passing[datetype parameter].
-
+* **xref:4.2@gsql-ref:querying:data-types.adoc#_s3_object[Writing query output to an S3 object]** can now be configured at the user session level instead at the system administration level, for better alignment of roles and privileges.
+* The **Interpret Query endpoint `POST /gsql/v1/queries/interpret`** can now be used with queries that have a xref:4.2@gsql-ref:querying:query-operations.adoc#_complex_type_parameter_passing[datetype parameter].
+* Added xref:4.2@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[configuation parameter `GSQL.Github.Enabled`] to **enable retrieving UDFs from a Github repository**.
 
 == Fixed issues
 
@@ -64,7 +71,10 @@ TBA
 |===
 ¦ Description ¦ Version Introduced
 
-¦In xref:{page-component-version}@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[CDC messages], the format of map values has changed.
+¦In xref:4.2@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[CDC messages], the format of tuple values has changed.
+¦v4.2.0
+
+¦In xref:4.1@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[CDC messages], the format of map values has changed.
 ¦v4.1.1
 
 ¦A full export package now includes access policies and template queries.
@@ -102,11 +112,14 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:{pa
 
 === Deprecations
 
-[cols="3", separator=¦ ]
+[cols="3", separator=¦, heading ]
 |===
 ¦ Description ¦ Deprecated ¦ Removed
 
-¦ The format for tuple structures in CDC messages will change in a future veresion. The future format is likely to be similar to the
+¦ The `--meta` option for backup is no longer needed because metadata is now included automatically with backup files.
+¦ 3.9.2 ¦ 4.2.0
+
+¦ The format for tuple structures in CDC messages will change in a future version. The future format is likely to be similar to the
 xref:4.1@system-management:change-data-capture/cdc-message-example.adoc#_cdc_message_with_type_edge[new format for maps].
 ¦ 4.1.1
 ¦ TBD (possibly 4.2)
