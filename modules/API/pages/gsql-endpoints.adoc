@@ -2820,6 +2820,44 @@ Sample Response::
 
 '''
 
+=== get schema information from a Snowflake data source
+
+
+`GET /gsql/v1/metadata/data-sources/{dsName}`
+
+Get schema information from a Snowflake data source.
+`{dsPath}` is the name of a previously created Snowflake data source object.
+
+
+==== Query Parameters:
+
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/metadata/data-sources/k1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"databaseName":"snowflake_db","schemaName":"snowflake_schema","tableNames":["COMMENT","PERSON","POST"],"tables":[{"columns":[{"name":"ID","nullable":true,"type":"NUMBER"},{"name":"CONTENT","nullable":true,"type":"VARCHAR"},{"name":"CREATIONDATE","nullable":true,"type":"VARCHAR"}],"name":"COMMENT"},{"columns":[{"name":"ID","nullable":true,"type":"NUMBER"},{"name":"FIRSTNAME","nullable":true,"type":"VARCHAR"},{"name":"LASTNAME","nullable":true,"type":"VARCHAR"}],"name":"PERSON"},{"columns":[{"name":"ID","nullable":true,"type":"NUMBER"},{"name":"CONTENT","nullable":true,"type":"VARCHAR"},{"name":"CREATIONDATE","nullable":true,"type":"VARCHAR"}],"name":"POST"}],"viewNames":["VIEW_PERSON_DETAILS"],"views":[{"columns":[{"name":"FULLNAME","nullable":true,"type":"VARCHAR"},{"name":"EMAIL","nullable":true,"type":"VARCHAR"}],"name":"VIEW_PERSON_DETAILS"}]}}
+
+----
+--
+====
+
+'''
+
 == Query
 
 === install queries
