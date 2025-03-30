@@ -1,0 +1,105 @@
+= Incremental Backup
+:description: Incremental Backup: saving changes since the previous backup
+
+An *incremental backup* is designed to save storage space and to run more quickly than a *xref:backup-cluster.adoc[full backup]* by only saving what has changed since a "base" event, where the default base is the most recent backup or restore event.
+TigerGraph's incremental backup feature also has an option to let you specify a backup tag other the default base.
+
+*Incremental backups* are related to but different than *differential backups*.
+A different backup saves since the most recent backup or restore event.
+
+Internally, incremental backup saves the Kafka messages that have changed since the base event.
+
+*Example:*
+
+At midnight every day, you run a backup.
+On Sunday nights, it is a full backup.
+On other nights, it is an incremental backup.
+Assume January 1 was a Sunday. The list below are the tags for your first four backups of the year.
+
+[console]
+----
+full-weekly-jan-01 // contains a full backup
+incr-daily-jan-02  // contains only what changed on Jan. 2
+incr-daily-jan-03  // contains only what changed on Jan. 3
+incr-daily-jan-04  // contains only waht changed on Jan. 4
+----
+
+In general, the incremental backup files will be much smaller than the full backup file.
+While the full backup file is proportional to the size of your database, the incremental backup files are proportional to the amount of change that occurred.
+
+
+== Run an Incremental Backup
+
+Adding the `--incremental` to the backup command creates an incremental backup whose base is the most recent backup, full or incremental.
+
+[console, gsql]
+----
+gadmin backup create <tag> --incremental
+----
+
+[IMPORTANT]
+====
+Prior to version 4.2, the `--incremental` flag actually performed a *differential backup*.
+====
+
+=== Specify the base
+
+The `--base` option causes the incremental backup to be based on a backup other than the most recently one:
+
+[console, gsql]
+----
+gadmin backup create <tag> --incremental --base <existing_backup_tag>
+----
+
+[TIP]
+====
+Differential backup can be emulated by using
+
+`--base <recent_full_backup_tag>`
+====
+
+=== Identify Full and Incremental Backups
+
+The output display from `gadmin backup list` distinguishes between Full and Incremental backups:
+
+[console, gsql]
+----
+gadmin backup list
+----
+
+.`gadmin backup list` example result.
+image::backup_list.png[]
+
+== Restore to an Incremental Backup Point
+
+Restore uses the same command, whether you are restoring a full backup or an incremental backup.
+However, eacn restore operation only handles the data that it backed up.
+Therefore, you need to run a sequence of restore operations, in the same chronological order of the backups, to get back to the desired point.
+
+*Example:*
+
+Suppose you made the following backups, at the times indicated by these tags:
+
+[console]
+----
+full-weekly-jan-01
+incr-daily-jan-02
+incr-daily-jan-03
+incr-daily-jan-04
+----
+If you want to restore to January 3, then you need to run the following sequence of restore operations:
+
+[console]
+----
+gadmin backup restore full-weekly-jan-01
+gadmin backup restore incr-daily-jan-02
+gadmin backup restore incr-daily-jan-03
+----
+
+== Limitations
+
+Differential backup does have some know limitations:
+
+* The base backup for an incremental backup cannot be for a time point before the most recent restore.
+* Incremental backup cannot be performed if a xref:point-in-time-restore.adoc[] occurred since the most recent full backup.  Perform another full backup first.
+* Incremental backup can only restore to a cluster that has the same partitioning factor as the cluster it backed up.

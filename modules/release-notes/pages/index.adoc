@@ -37,7 +37,7 @@ See a full xref:intro:comparison-of-editions.adoc[comparison of editions].
 
 === System Management Enhancements
 
-* [TBD] Introduced Incremental Backup which efficiently backs up only what has changed since the last backup.
+* **Introduced xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]** which efficiently backs up only what has changed since the last backup/restore event.
 * **Added xref:4.2@tigergraph-server:backup-and-restore:restore-backup-same.adoc#_options_for_restore[Restore option `--keepusers`]** to keep the database users in the current database, not the ones from the backup file.
 
 === Security and Access Control Enhancements
@@ -70,6 +70,9 @@ TBA
 [cols="2", separator=¦ ]
 |===
 ¦ Description ¦ Version Introduced
+
+¦The `--incremental` option for backup performs a true incremental backup instead of a differential backup.
+¦v4.2.0
 
 ¦In xref:4.2@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[CDC messages], the format of tuple values has changed.
 ¦v4.2.0
