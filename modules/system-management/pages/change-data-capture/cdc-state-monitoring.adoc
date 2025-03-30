@@ -1,7 +1,8 @@
 = CDC State Monitoring
 
 == State Monitoring
-.Check the state of CDC Service with this command:
+Check the state of CDC Service with this command:
+
 [console]
 ----
 grun_p gpe "cat $(gadmin config get System.DataRoot)/gstore/0/part/cdc.yaml"
@@ -12,7 +13,7 @@ The cdc state file should only exist on GPE Replica 1 node of each partition:
 * `GPE_1#1`
 * `GPE_2#1`
 
-.The response will look like this:
+.Example Response
 [console]
 ----
 ------------------ Output example for cdc.yaml on 1x2 cluster -------------------
@@ -25,7 +26,7 @@ index: 0
 cat: /home/tigergraph/tigergraph/data/gstore/0/part/cdc.yaml: No such file or directory
 ----
 
-.For each CDC state field, see the table below:
+.Information Fields for CDC Status Report
 [cols="2", separator=¦ ]
 |===
 ¦ Field ¦ Meaning
@@ -38,7 +39,7 @@ For a transaction, it’s the tid of the last delta batch for the transaction (m
 ¦ The `safe_persistent_tid` is the tid of the earliest delta batch among all open transactions that are not committed/rolled-back in CDC.
 If there’s no open transactions, this is the same as tid.
 
-All delta batches with `tid < safe_persistent_tid >` must have been written to external kafka.
+All delta batches with `tid <safe_persistent_tid>` must have been written to external kafka.
 
 ¦ `split_index`
 ¦ For non-transaction, it’s always 0. For transactions, the split_index is the index of the delta batch that was most recently written to external kafka among all delta batches for the same transaction.
@@ -49,13 +50,13 @@ All delta batches with `tid < safe_persistent_tid >` must have been written to e
 
 == State of DIM Service
 
-.Check the state of DIM(Deleted Id Map) service with this command:
+.Command to check the state of DIM(Deleted Id Map) service
 [console]
 ----
 grun_p gpe "cat $(gadmin config get System.DataRoot)/gstore/0/part/deleted_idmap_state.yaml"
 ----
 
-.Check disk usage of DIM(Deleted Id Map) service with this command:
+.Command to check disk usage of DIM(Deleted Id Map) service
 [console]
 ----
 grun_p gpe "du -sh $(gadmin config get System.DataRoot)/gstore/0/part/deletedID_store"
@@ -63,7 +64,7 @@ grun_p gpe "du -sh $(gadmin config get System.DataRoot)/gstore/0/part/deletedID_
 
 The dim state file exists on all GPE nodes, unlike the cdc state file.
 
-.The response will look like this:
+.Example response for DIM state
 [console]
 ----
 ------------ Output example for deleted_idmap_state.yaml on 1x2 cluster ------------
@@ -84,7 +85,7 @@ purged_deletedvid_curr_tid: 3752091
 The purging task runs every 30 minutes by default.
 ====
 
-.For each DIM state field, see the table below:
+.Information fields for DIM state report
 [cols="2", separator=¦ ]
 |===
 ¦ Field ¦ Meaning
