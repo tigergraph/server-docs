@@ -3099,7 +3099,7 @@ The endpoint is used to run a query by its name.
 
 To pass the input parameter values to the query being run, include a JSON name-value pair in the payload (body) of the endpoint with the name `"parameters"`.
 
-The value of `"parameters"` is an object containing a name-value pair for each parameter.
+The value of `"parameters"` is a JSON object containing a name-value pair for each parameter.
 
 //[%autowidth]
 .Format for query parameter values
@@ -3112,16 +3112,16 @@ The value of `"parameters"` is an object containing a name-value pair for each p
 | _value_
 | `"age": 25`
 
-| Vertex, type specified in query defintion
+| Vertex, type specified in query definition
 | _vertex_id_
-| `"source": "v34261"`
+| `"v_source": "v34261"`
 
 | Vertex, type not specified in query definition
 | [_vertex_id_, _vertex_type_]
-| `"target": ["v5933", "Person"]`
+| `"vset_target": ["v5933", "Person"]`
 |===
 
-If the parameter type is a set or list, then use JSON array syntax `[item1, item2, ..., itemN]` for the parameter value, where each item follows the rules in the table.
+If the parameter type is a set, list, then use JSON array syntax `[item1, item2, ..., itemN]` for the parameter value, where each item follows the rules in the table.
 
 ==== Example
 
