@@ -27,13 +27,12 @@ Storage of and similarity search for vector attributes associated with vertices.
 
 ** *xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]* which efficiently backs up only what has changed since the last backup/restore event.
 
-** *xref:tigergraph-server:intro:comparison-of-editions.adoc[Community Edition of TigerGraph Database]*:
+** *xref:4.2@tigergraph-server:intro:comparison-of-editions.adoc[Community Edition of TigerGraph Database]*:
 
 * up to 200GB graph data + 100GB vector data, single server only
-* some enterprise features are not included
-* community support only
+* some enterprise features are not included. Community support only
 +
-See a full xref:intro:comparison-of-editions.adoc[comparison of editions].
+See the full xref:intro:comparison-of-editions.adoc[comparison of editions].
 
 == Detailed List of New and Modified Features
 
@@ -45,7 +44,7 @@ See a full xref:intro:comparison-of-editions.adoc[comparison of editions].
 
 * *Added xref:4.2@tigergraph-server:backup-and-restore:restore-backup-same.adoc#_options_for_restore[Restore option `--keepusers`]* to keep the database users in the current database, not the ones from the backup file.
 
-* *Backup files can be written to xref:backup-and-restore:configurations.adoc#_backup_to_abs_azure_blob_storage[Azure] and xref:backup-and-restore:configurations.adoc#_backup_to_gcs_google_cloud_storage[GCP] cloud storage*, analogous to the existing support for backup to AWS S3.
+* *Backup files can be written to xref:4.2@tigergraph-server:backup-and-restore:configurations.adoc#_backup_to_abs_azure_blob_storage[Azure] and xref:4.2@tigergraph-server:backup-and-restore:configurations.adoc#_backup_to_gcs_google_cloud_storage[GCP] cloud storage*, analogous to the existing support for backup to AWS S3.
 
 
 
@@ -61,29 +60,42 @@ Both grant read-only access to log files; `APP_ACCESS_LOG` is specifically desig
 
 === Integration Enhancements
 
-
+* *xref:4.2@gsql-ref:querying:data-types.adoc#_s3_object[Writing query output to an S3 object]* can now be configured at the user session level instead at the system administration level, for better alignment of roles and privileges.
 === Performance Improvements
 
 * [TBD] Introduced **Query Planned Caching**, to speed up the run time for queries which are run multiple times.
 
+=== API Enhancements
+
+* *New endpoints to xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_get_schema_information_from_a_snowflake_data_source[fetch schema information and sample data from Snowflake]*.
+
+* Added a **REST endpoint to xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_delete_udt_files[delete user-defined function files]**.
+
+* The *Interpret Query endpoint `POST /gsql/v1/queries/interpret`* can now be used with queries that have a xref:4.2@gsql-ref:querying:query-operations.adoc#_complex_type_parameter_passing[datetype parameter].
+
+* The *Edge Upsert endpoint* now supports xref:4.2@tigergraph-server:API:upsert-rest.adoc#_upserting_multi_edges_with_discriminators[upserting the multiple edges of a discriminated edge] in a single API request.
 
 === Query Language Enhancements
 
+* *LIKE*: xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_like[<string1> LIKE <string pattern>] can be used anywhere a condition is allowed, and <string pattern> can include string functions.
+* *Bitwise Accumulators*: added official support for xref:4.2@gsql-ref:querying:accumulators.adoc#_bitwise_comparison_and_logic_operators[comparison and bitwise logic operators].
 
-* *xref:4.2@gsql-ref:querying:data-types.adoc#_s3_object[Writing query output to an S3 object]* can now be configured at the user session level instead at the system administration level, for better alignment of roles and privileges.
-* The *Interpret Query endpoint `POST /gsql/v1/queries/interpret`* can now be used with queries that have a xref:4.2@gsql-ref:querying:query-operations.adoc#_complex_type_parameter_passing[datetype parameter].
 * Added xref:4.2@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[configuation parameter `GSQL.Github.Enabled`] to *enable retrieving UDFs from a Github repository*.
-* Syntax V3, for GSQL + OpenCypher + GQL Pattern Matching:
+
+* Multiple enhancements to Syntax V3, for GSQL + OpenCypher + GQL Pattern Matching:
+** [TBD] OpenCypher/GQL style path pattern syntax in the FROM clause
 ** *xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_comparison_operators_and_conditions[comparison operators `=` and `<>`]*  as alternatives to `==` and `!=` in WHERE conditions.
 ** *xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_case_expressions[simple CASE expressions and searched CASE expressions]*.
 ** *link:https://github.com/tigergraph/ecosys/blob/master/tutorials/Cypher.md#optional-match[OPTIONAL MATCH]* (OpenCypher)
 ** *xref:4.2@gsql-ref:openCypher-in-gsql:index.adoc#_opencypher_features_in_gsql[type() and labels() functions]* (OpenCypher)
 
+=== Loading Enhancemnts
+
+* *Loading jobs* can specify xref:4.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_using_clause[multi-character separators between data fields].
+
 === GraphStudio, Admin Portal, and Insights
 
 See also the xref:4.2@insights:release-notes:index.adoc[release notes for Insights 4.2].
-
-curl -u tigergraph:tigergraph -X POST "http://localhost:14240/gsql/v1/secrets?alias=alias121&userName=tigergraph" -d '{"value": "12edaasd32324"}'
 
 
 
@@ -98,13 +110,16 @@ TBA
 |===
 ¦ Description ¦ Version Introduced
 
+¦To apply a xref:security:gsql-file-input-policy.adoc[File Input Policy] or xref:security:file-output-policy.adoc[File Output Policy] change, both `gsql` and `restpp` servers much be restarted: `gadmin restart gsql restpp -y`
+¦v4.2.0
+
 ¦The `--incremental` option for backup performs a true incremental backup instead of a differential backup.
 ¦v4.2.0
 
-¦In xref:4.2@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[CDC messages], the format of tuple values has changed.
+¦In xref:4.2@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[CDC messages], the format of *tuple values* has changed.
 ¦v4.2.0
 
-¦In xref:4.1@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[CDC messages], the format of map values has changed.
+¦In xref:4.1@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[CDC messages], the format of *map values* has changed.
 ¦v4.1.1
 
 ¦A full export package now includes access policies and template queries.
