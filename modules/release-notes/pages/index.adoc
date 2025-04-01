@@ -25,6 +25,8 @@ Storage of and similarity search for vector attributes associated with vertices.
 * Fast approximate nearest neighborhood (ANN), with automatic indexing, incremental indexing
 * hybrid graph {plus} vector search in GSQL
 
+** *xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]* which efficiently backs up only what has changed since the last backup/restore event.
+
 ** *xref:tigergraph-server:intro:comparison-of-editions.adoc[Community Edition of TigerGraph Database]*:
 
 * up to 200GB graph data + 100GB vector data, single server only
@@ -37,28 +39,53 @@ See a full xref:intro:comparison-of-editions.adoc[comparison of editions].
 
 === System Management Enhancements
 
-* **Introduced xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]** which efficiently backs up only what has changed since the last backup/restore event.
-* **Added xref:4.2@tigergraph-server:backup-and-restore:restore-backup-same.adoc#_options_for_restore[Restore option `--keepusers`]** to keep the database users in the current database, not the ones from the backup file.
+* *Introduced xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]* which efficiently backs up only what has changed since the last backup/restore event.
+
+* [TBD] Added *Rolling Upgrades* for maintentance version* updates*, in clusters with HA replicas. This is a Preview feature.
+
+* *Added xref:4.2@tigergraph-server:backup-and-restore:restore-backup-same.adoc#_options_for_restore[Restore option `--keepusers`]* to keep the database users in the current database, not the ones from the backup file.
+
+* *Backup files can be written to xref:backup-and-restore:configurations.adoc#_backup_to_abs_azure_blob_storage[Azure] and xref:backup-and-restore:configurations.adoc#_backup_to_gcs_google_cloud_storage[GCP] cloud storage*, analogous to the existing support for backup to AWS S3.
+
+
 
 === Security and Access Control Enhancements
 
-* **All REST endpoints now accept xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_user_guide_overview[
-JWT tokens for authentication]**, include GSQL endpoints.
+* *All REST endpoints now accept xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_user_guide_overview[
+JWT tokens for authentication]*, include GSQL endpoints.
 
-* Added two **new xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[access privileges]: READ_LOG and APP_ACCESS_LOG**.
+* *New xref:4.2@tigergraph-server:user-access:access-control-model.adoc#_built_in_roles[built-in role]: globalobserver*, used in Savanna, provides minimal initial privileges: `READ_SCHEMA` and `READ_LOADINGJOB`.
+* *Two new xref:4.2@tigergraph-server:user-access:rbac-row-policy/row-policy-privileges-table.adoc[access privileges]: READ_LOG and APP_ACCESS_LOG*.
 Both grant read-only access to log files; `APP_ACCESS_LOG` is specifically designed for xref:4.2@gui:admin-portal:monitoring/log-viewer.adoc#_privilges[
  access from GraphStudio or Savanna].
+
+=== Integration Enhancements
+
 
 === Performance Improvements
 
 * [TBD] Introduced **Query Planned Caching**, to speed up the run time for queries which are run multiple times.
 
 
-=== Language Enhancements
+=== Query Language Enhancements
 
-* **xref:4.2@gsql-ref:querying:data-types.adoc#_s3_object[Writing query output to an S3 object]** can now be configured at the user session level instead at the system administration level, for better alignment of roles and privileges.
-* The **Interpret Query endpoint `POST /gsql/v1/queries/interpret`** can now be used with queries that have a xref:4.2@gsql-ref:querying:query-operations.adoc#_complex_type_parameter_passing[datetype parameter].
-* Added xref:4.2@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[configuation parameter `GSQL.Github.Enabled`] to **enable retrieving UDFs from a Github repository**.
+
+* *xref:4.2@gsql-ref:querying:data-types.adoc#_s3_object[Writing query output to an S3 object]* can now be configured at the user session level instead at the system administration level, for better alignment of roles and privileges.
+* The *Interpret Query endpoint `POST /gsql/v1/queries/interpret`* can now be used with queries that have a xref:4.2@gsql-ref:querying:query-operations.adoc#_complex_type_parameter_passing[datetype parameter].
+* Added xref:4.2@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[configuation parameter `GSQL.Github.Enabled`] to *enable retrieving UDFs from a Github repository*.
+* Syntax V3, for GSQL + OpenCypher + GQL Pattern Matching:
+** *xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_comparison_operators_and_conditions[comparison operators `=` and `<>`]*  as alternatives to `==` and `!=` in WHERE conditions.
+** *xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_case_expressions[simple CASE expressions and searched CASE expressions]*.
+** *link:https://github.com/tigergraph/ecosys/blob/master/tutorials/Cypher.md#optional-match[OPTIONAL MATCH]* (OpenCypher)
+** *xref:4.2@gsql-ref:openCypher-in-gsql:index.adoc#_opencypher_features_in_gsql[type() and labels() functions]* (OpenCypher)
+
+=== GraphStudio, Admin Portal, and Insights
+
+See also the xref:4.2@insights:release-notes:index.adoc[release notes for Insights 4.2].
+
+curl -u tigergraph:tigergraph -X POST "http://localhost:14240/gsql/v1/secrets?alias=alias121&userName=tigergraph" -d '{"value": "12edaasd32324"}'
+
+
 
 == Fixed issues
 
