@@ -1,0 +1,33 @@
+= Changing IP or Hostname
+
+If you need to change the IP address or hostname of a node or a cluster after TigerGraph is up and running, 
+you can change them by running the following commands as the tigergraph admin user.
+
+1. Pause your database operations.
+
+2. Shut down services, as shown below:
+
+[source,bash]
+----
+gadmin init etcd
+gadmin stop all
+----
+
+The command `gadmin init etcd` initializes the etcd component of TigerGraph, while `gadmin stop all` stops all running TigerGraph services.
+
+3. Make your IP changes (outside of TigerGraph).
+
+4. Apply the new IP/hostnames, using the two commands below.
+
+The first command applies the updated TigerGraph host list from '~/.tg.cfg' to define cluster nodes for deployment.
+
+The second command initializes the TigerGraph cluster without stopping running services `(--skip-stop)` and also initializes etcd,
+the distributed key-value store for configuration and coordination `(--init-etcd)`.
+
+  After change IP/hostname(s):
+  
+[source,bash]
+----
+gadmin config entry System.HostList --file ~/.tg.cfg  # Edit IP/hostname here
+gadmin init cluster --skip-stop --init-etcd
+----
