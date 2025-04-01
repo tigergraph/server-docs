@@ -18,58 +18,53 @@ Therefore, features that were  in 4.1.2 are not considered New Features.
 
 == Key New Features
 
-** *xref:4.2@gsql-ref:vector:index.adoc[Hybrid Vector Search]*:
-Storage of and similarity search for vector attributes associated with vertices.
+* *xref:4.2@gsql-ref:vector:index.adoc[Hybrid Vector Search]*:
+Scalable storage and similarity search for vector attributes associated with vertices.
 
-* New `VECTOR` attribute data type with real-time updates
-* Fast approximate nearest neighborhood (ANN), with automatic indexing, incremental indexing
-* hybrid graph {plus} vector search in GSQL
+** New `VECTOR` attribute data type with real-time updates
+** Fast approximate nearest neighborhood (ANN), with automatic indexing, incremental indexing
+** hybrid graph {plus} vector search in GSQL
 
-** *xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]* which efficiently backs up only what has changed since the last backup/restore event.
+* *xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]* which efficiently backs up only what has changed since the last backup/restore event.
 
-** *xref:4.2@tigergraph-server:intro:comparison-of-editions.adoc[Community Edition of TigerGraph Database]*:
+* [TBD] *Rolling Upgrades of maintenance versions* for HA clusters (Preview).
 
-* up to 200GB graph data + 100GB vector data, single server only
-* some enterprise features are not included. Community support only
-+
-See the full xref:intro:comparison-of-editions.adoc[comparison of editions].
+* *xref:4.2@tigergraph-server:intro:comparison-of-editions.adoc[Community Edition of TigerGraph Database]*:
+
+** Up to 200GB graph data + 100GB vector data, single server only
+** Some enterprise features not included. Community support only
+** See the full xref:intro:comparison-of-editions.adoc[comparison of editions].
 
 == Detailed List of New and Modified Features
 
 === System Management Enhancements
 
-* *Introduced xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]* which efficiently backs up only what has changed since the last backup/restore event.
+* *xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]* which efficiently backs up only what has changed since the last backup/restore event.
 
-* [TBD] Added *Rolling Upgrades* for maintentance version* updates*, in clusters with HA replicas. This is a Preview feature.
+* [TBD] *Rolling Upgrades of maintenance versions* for HA clusters (Preview).
 
-* *Added xref:4.2@tigergraph-server:backup-and-restore:restore-backup-same.adoc#_options_for_restore[Restore option `--keepusers`]* to keep the database users in the current database, not the ones from the backup file.
+* *xref:4.2@tigergraph-server:backup-and-restore:restore-backup-same.adoc#_options_for_restore[Restore option `--keepusers`]* to keep the database users in the current database, not the ones from the backup file.
 
-* *Backup files can be written to xref:4.2@tigergraph-server:backup-and-restore:configurations.adoc#_backup_to_abs_azure_blob_storage[Azure] and xref:4.2@tigergraph-server:backup-and-restore:configurations.adoc#_backup_to_gcs_google_cloud_storage[GCP] cloud storage*, analogous to the existing support for backup to AWS S3.
-
-* [TBD] *Schema Change options* `-force` and `warn` to specify the behavior when loading jobs are in progress.
+* *Backup to xref:4.2@tigergraph-server:backup-and-restore:configurations.adoc#_backup_to_abs_azure_blob_storage[Azure] and xref:4.2@tigergraph-server:backup-and-restore:configurations.adoc#_backup_to_gcs_google_cloud_storage[GCP] cloud storage*, analogous to  existing support for backup to AWS S3.
 
 * [TBD] *More graceful xref:system-management:management-commands.adoc#_gadmin_stop[user-initiated shutdown]* of RESTPP and GPE services.
 
+* [TBD] *Schema Change options* `-force` and `warn` to specify the behavior when loading jobs run during a schema change.
 
 === Security and Access Control Enhancements
 
-* *All REST endpoints now accept xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_user_guide_overview[
-JWT tokens for authentication]*, include GSQL endpoints.
+* *xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_user_guide_overview[
+JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
-* *New xref:4.2@tigergraph-server:user-access:access-control-model.adoc#_built_in_roles[built-in role]: globalobserver*, used in Savanna, provides minimal initial privileges: `READ_SCHEMA` and `READ_LOADINGJOB`.
-* *Two new xref:4.2@tigergraph-server:user-access:rbac-row-policy/row-policy-privileges-table.adoc[access privileges]: READ_LOG and APP_ACCESS_LOG*.
-Both grant read-only access to log files; `APP_ACCESS_LOG` is specifically designed for xref:4.2@gui:admin-portal:monitoring/log-viewer.adoc#_privilges[
+* *New xref:4.2@tigergraph-server:user-access:access-control-model.adoc#_built_in_roles[built-in role]: globalobserver*, used in Savanna, for minimal privileges: `READ_SCHEMA` and `READ_LOADINGJOB`.
+* *Two new xref:4.2@tigergraph-server:user-access:rbac-row-policy/row-policy-privileges-table.adoc[access privileges]: READ_LOG and APP_ACCESS_LOG* to grant read-only access to log files. `APP_ACCESS_LOG` is specifically designed for xref:4.2@gui:admin-portal:monitoring/log-viewer.adoc#_privilges[
  access from GraphStudio or Savanna].
 
 === Integration Enhancements
 
 * *xref:4.2@gsql-ref:querying:data-types.adoc#_s3_object[Writing query output to an S3 object]* can now be configured at the user session level instead at the system administration level, for better alignment of roles and privileges.
 
-* Updated Kaka from 2.5.1 to 3.6.2. Updated Zookeeper from 3.6.3 to 3.8.4.
-
-=== Performance Improvements
-
-* [TBD] Introduced **Query Planned Caching**, to speed up the run time of repeated queries.
+* Updated Kafka from 2.5.1 to 3.6.2. Updated Zookeeper from 3.6.3 to 3.8.4.
 
 === API Enhancements
 
@@ -85,30 +80,34 @@ Both grant read-only access to log files; `APP_ACCESS_LOG` is specifically desig
 
 * Multiple enhancements to *Syntax V3*, which combines GSQL + OpenCypher + GQL Pattern Matching:
 ** [TBD] *GQL and OpenCypher standard path pattern syntax* support, in GSQL syntax
-** [TBD] Ability to *run OpenCypher queries and single GSQL SELECT blocks directly*, SQL style (non-procedural interpreted queries)
+** [TBD] *Run ad hoc OpenCypher queries and single GSQL SELECT blocks directly*  (non-procedural interpreted queries)
 ** *xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_comparison_operators_and_conditions[comparison operators `=` and `<>`]*  as alternatives to `==` and `!=` in WHERE conditions.
 ** *link:https://github.com/tigergraph/ecosys/blob/master/tutorials/Cypher.md#optional-match[OPTIONAL MATCH], COALESCE, and IS [NOT] NULL* (OpenCypher)
 ** *xref:4.2@gsql-ref:openCypher-in-gsql:index.adoc#_opencypher_features_in_gsql[type() and labels() functions]* (OpenCypher)
 
-* [TBD] *Map and Listquery parameters types* are now supported.
+* [TBD] *Map and List query parameter types* are now supported.
 
-* *LIKE*: xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_like[<string1> LIKE <string pattern>] can be used anywhere a condition is allowed, and <string pattern> can include string functions.
+* *LIKE: xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_like[<string1> LIKE <string pattern>]* can be used anywhere a condition is allowed, and <string pattern> can include functions.
 
-* *Added xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_case_expressions[simple CASE expressions and searched CASE expressions]*.
+* *xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_case_expressions[Simple CASE expressions and Searched CASE expressions]*
 
-* *Bitwise Accumulators*: added official support for xref:4.2@gsql-ref:querying:accumulators.adoc#_bitwise_comparison_and_logic_operators[comparison and bitwise logic operators].
+* *Bitwise Accumulators*: official support for xref:4.2@gsql-ref:querying:accumulators.adoc#_bitwise_comparison_and_logic_operators[comparison and bitwise logic operators].
 
-* Added xref:4.2@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[configuation parameter `GSQL.Github.Enabled`] to *enable retrieving UDFs from a Github repository*.
+* *xref:4.2@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[Configuation parameter `GSQL.Github.Enabled`]* to enable retrieving UDFs from a Github repository.
 
 * [TBD] *Query Profiler* to analyze query execution and performance.
 
 === Loading Enhancemnts
 
-* *Loading jobs* can specify xref:4.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_using_clause[multi-character separators between data fields].
+* *xref:4.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_using_clause[Multi-character separators between data fields]* in loading jobs.
 
-* [TBD] *The Spark Connect supports OAuth2 authentication*.
+* [TBD] *Spark Connector support for OAuth2 authentication*.
 
 * [TBD] *Introduced `DISABLED` Loading Job status* for jobs which have a schema conflict as a result of a Schema Change.
+
+=== Performance Improvements
+
+* [TBD] **Query Planned Caching**, to speed up the run time of repeated queries.
 
 === GraphStudio, Admin Portal, and Insights
 
