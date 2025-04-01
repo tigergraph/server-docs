@@ -1,9 +1,9 @@
 = GSQL Endpoints
+:description: A set of GSQL REST API endpoints about vertex in TigerGraph server.
+// :page-aliases: gsql-ref:API:gsql-endpoints.adoc // can't redirect from one component to another if they have exactly the same paths.
 :pp: {plus}{plus}
 :toc:
 :toclevels: 1
-:description: A set of GSQL REST API endpoints about vertex in TigerGraph server.
-//:page-aliases: built-in-endpoints.adoc
 
 This page describes the REST API endpoints accessible on a TigerGraph server. Assume all the sample requests and sample response are based on this sample schema (graph name is "financialGraph"):
 
@@ -2827,6 +2827,44 @@ Sample Response::
 
 '''
 
+=== get schema information from a Snowflake data source
+
+
+`GET /gsql/v1/metadata/data-sources/{dsName}`
+
+Get schema information from a Snowflake data source.
+`{dsPath}` is the name of a previously created Snowflake data source object.
+
+
+==== Query Parameters:
+
+
+None
+
+==== Example:
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X GET 'Content-type: text/plain' "http://localhost:14240/gsql/v1/metadata/data-sources/k1"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"","results":{"databaseName":"snowflake_db","schemaName":"snowflake_schema","tableNames":["COMMENT","PERSON","POST"],"tables":[{"columns":[{"name":"ID","nullable":true,"type":"NUMBER"},{"name":"CONTENT","nullable":true,"type":"VARCHAR"},{"name":"CREATIONDATE","nullable":true,"type":"VARCHAR"}],"name":"COMMENT"},{"columns":[{"name":"ID","nullable":true,"type":"NUMBER"},{"name":"FIRSTNAME","nullable":true,"type":"VARCHAR"},{"name":"LASTNAME","nullable":true,"type":"VARCHAR"}],"name":"PERSON"},{"columns":[{"name":"ID","nullable":true,"type":"NUMBER"},{"name":"CONTENT","nullable":true,"type":"VARCHAR"},{"name":"CREATIONDATE","nullable":true,"type":"VARCHAR"}],"name":"POST"}],"viewNames":["VIEW_PERSON_DETAILS"],"views":[{"columns":[{"name":"FULLNAME","nullable":true,"type":"VARCHAR"},{"name":"EMAIL","nullable":true,"type":"VARCHAR"}],"name":"VIEW_PERSON_DETAILS"}]}}
+
+----
+--
+====
+
+'''
+
 == Query
 
 === install queries
@@ -2979,7 +3017,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/quries?graph=financialGraph'  -d 'create query q1 {...}'
+curl -H 'Content-Type: text/plain' -X POST 'http://localhost:14240/gsql/v1/queries?graph=financialGraph'  -d 'create query q1 {...}'
 ----
 --
 Sample Response::
@@ -3092,9 +3130,8 @@ Sample Response::
 
 The endpoint is used to run a query by its name.
 
-==== Parameters:
+==== Endpoint Parameters:
 
-//[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
 |===
 | Name | Required | Description
@@ -3104,26 +3141,56 @@ The endpoint is used to run a query by its name.
 | the query to run
 |===
 
+==== Format for Parameters of Query Being Run
+
+To pass the input parameter values to the query being run, include a JSON name-value pair in the payload (body) of the endpoint with the name `"parameters"`.
+
+The value of `"parameters"` is a JSON object containing a name-value pair for each parameter.
+
+//[%autowidth]
+.Format for query parameter values
+[cols="1,1,2", heading]
+|===
+| Value Type | Value Format | Example of Name:Value Pair
+
+| Primitive
+(e.g., string, numeric, Boolean)
+| _value_
+| `"age": 25`
+
+| Vertex, type specified in query definition
+| _vertex_id_
+| `"v_source": "v34261"`
+
+| Vertex, type not specified in query definition
+| [_vertex_id_, _vertex_type_]
+| `"vset_target": ["v5933", "Person"]`
+|===
+
+If the parameter type is a set, list, then use JSON array syntax `[item1, item2, ..., itemN]` for the parameter value, where each item follows the rules in the table.
+
 ==== Example
+
+Sample Query:
+
+[source,bash]
+----
+CREATE QUERY paramEx(STRING name, INT age, SET<VERTEX> neighbors)
+{ PRINT name, age, neighbors; }
+----
 
 [,tabs]
 ====
 
-Sample Query::
-+
---
-[source,bash]
-----
-CREATE QUERY q1(String param1) { print param1;}
-----
---
 Sample Request::
 +
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/queries/q1?graph=financialGraph
--d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,"parameters":{"param1":"1"}}'
+curl -H 'Content-Type: application/json' -X POST 'http://localhost:14240/gsql/v1/queries/paramEx?graph=financialGraph
+-d '{"diagnose":false,"denseMode":false,"allvertex":false,"asyncRun":false,
+"parameters":{"name":"Fred", "age":35,
+"neighbors":[["Mr. McFeely","Person"],["Daniel Tiger","Puppet"]]}}'
 ----
 --
 Sample Response::
@@ -3131,7 +3198,9 @@ Sample Response::
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":[{"1":1}]}}
+{"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":
+["name":"Fred", "age":35,
+"neighbors":["Mr. McFeely","Daniel Tiger"]]}}
 ----
 --
 ====
