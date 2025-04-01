@@ -10,7 +10,7 @@ When using the CDC feature, a “CDC service” running in GPE nodes will proces
 ====
 
 == Setup Configuration
-TigerGraph employs librdkafka 1.1.0 for the Kafka producer in the CDC service.
+TigerGraph 4.2+ employs librdkafka 2.5.3 for the Kafka producer in the CDC service.
 Refer to the Global configuration properties and the Topic configuration properties sections of the librdkafka documentation for all other properties not mentioned in this guide, noting the applicable ones marked with “P”(Producer) or with “*” for both Producer and Consumer.
 
 === Configuring CDC Producer and Topic Settings
@@ -75,7 +75,7 @@ If you prefer to enter the property values interactively, use
 
 This will walk you through the full set of properties for this component, with a description and the current value for each item.
 
-The full list of entries for configuration file of `System.CDC.ProducerConfig` can be viewed in the table "Global configuration properties" at https://github.com/confluentinc/librdkafka/blob/v1.1.0/CONFIGURATION.md#global-configuration-properties.
+The full list of entries for configuration file of `System.CDC.ProducerConfig` can be viewed in the table "Global configuration properties" at https://github.com/confluentinc/librdkafka/blob/v2.5.3/CONFIGURATION.md#global-configuration-properties.
 
 NOTE: Only properties marked with P(Producer) or *(both Producer and Consumer) are applicable.
 
@@ -141,7 +141,7 @@ echo -e "name=cdc_topic" > /home/tigergraph/test_cdc/cdc_topic_config
 
 gadmin config set System.CDC.TopicConfig @/home/tigergraph/test_cdc/cdc_topic_config
 ----
-The full list of entries for configuration file of `System.CDC.TopicConfig` can be viewed in the table "Topic configuration properties" at https://github.com/edenhill/librdkafka/blob/v1.1.0/CONFIGURATION.md#topic-configuration-properties.
+The full list of entries for configuration file of `System.CDC.TopicConfig` can be viewed in the table "Topic configuration properties" at https://github.com/edenhill/librdkafka/blob/v2.5.3/CONFIGURATION.md#topic-configuration-properties.
 
 NOTE: Only properties marked with P(Producer) or *(both Producer and Consumer) are applicable.
 
