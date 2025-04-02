@@ -85,6 +85,152 @@ $ gadmin restart all -y
 
 . Enable CRR on the DR cluster.
 
+[#_rolling_upgrade]
+== Rolling Upgrade (Preview)
+
+A rolling upgrade allows you to upgrade your TigerGraph installation with minimal downtime by upgrading nodes in batches, ensuring that at least one full replica of the cluster is online throughout the process. 
+
+[NOTE]
+====
+Rolling Upgrade is only available for HA clusters (High Availability) and when making a maintenance update (e.g., 4.2.0 to 4.2.1, 4.3.1 to 4.3.3). 
+Upgrading from 4.2.0 to 4.3.0 or any other major version is not supported.
+====
+
+During a rolling upgrade, several operations are not permitted to ensure a smooth upgrade process. 
+These operations include installing queries, running schema changes, dropping all data, using `gsql --reset`, creating graphs, performing backup/restore operations, clearing the graph store, exporting/importing graphs, installing functions, changing TigerGraph configurations, starting or stopping services, setting up CRR (though CRR will continue working if already set up), running `gadmin init` for cluster initialization, upgrading services with `gadmin upgrade`, and performing service resets with `gadmin reset`. 
+While the rolling upgrade is in progress, loading jobs and running queries will continue to function; however, queries requiring all replicas to be online may fail, in which case you can retry them in a round-robin manner. 
+Please note that occasional slowdowns in Queries Per Second (QPS) may occur during the upgrade. Additionally, services like Zookeeper (ZK), Kafka, and ETCD will not be upgraded during this process.
+
+The rolling upgrade follows a two-phase process:
+
+. *Install the new version on one cluster node at a time while continuing to run the old version*. This ensures that your cluster remains online with at least one replica available at all times during the upgrade.
+
+. *Switch all nodes from the old version to the new version*, completing the upgrade across the entire cluster. You can choose to run the upgrade manually by selecting the `y/Y` option, or automatically by using the `-n` flag to bypass manual input.
+
+=== Rolling Upgrade Process
+
+Before starting the upgrade, always review the xref:tigergraph-server:installation:upgrade.adoc#check-release-notes-for-changes-in-functionality[general prerequisites] for all versions between your current and target version.
+For the Rolling Upgrade process, ensure long-running operations are allowed by running the following command.
+
+[source.wrap,bash]
+----
+# run this command on GSQL#1 (typically should be m1)
+$ curl -s -H "Authorization: Bearer $(gadmin config get System.AuthToken)" http://localhost:$(gadmin config get GSQL.Port)/gsql/v1/internal/long-running-operation/allow
+----
+
+==== Download and Extract Latest Version
+
+* Download the latest maintenance release of TigerGraph.
+* Extract the tar file on your system.
+
+==== Run Installation Script with Upgrade Flag
+
+Run the following installation script with the upgrade flag (`+-Ur+`) that was extracted from the tar file:
+
+[source, gsql]
+----
+$ ./install.sh -Ur
+----
+
+==== Switching to New Version
+
+After the binaries and configuration files are installed, the following prompt message will appear on the console:
+
+[console]
+----
+"Do you want to switch platform to the new version now (it can be delayed to a later time): y/N"
+----
+
+==== n/N option
+
+Selecting n/N will guide the user through the manual steps to switch to version 4.2.1, assuming the user is upgrading from 4.2.0.
+
+[console]
+----
+To switch platform to new version, please run 'gadmin upgrade 4.2.1'
+----
+
+==== y/Y Option
+
+If users selects `y/Y' the installer will automatically switch TigerGraph to the latest maintenance version. 
+If any errors occur, the upgrade process will terminate immediately. Follow the instructions in the prompts to manually continue the upgrade or revert to the original version.
+
+==== Option `-n`
+
+If the user wants to skip manual input during the upgrade, they can use the `-n` flag, which automatically switches to the new version without requiring any interaction.
+
+[source, gsql]
+----
+$ ./install.sh -Ur -n
+----
+
+.Example:
+[source, gsql]
+----
+./install.sh -Ur -n
+
+   _______                 ______                 __
+  /_  __(_)___ ____  _____/ ____/________ _____  / /_
+   / / / / __ `/ _ \/ ___/ / __/ ___/ __ `/ __ \/ __ \
+  / / / / /_/ /  __/ /  / /_/ / /  / /_/ / /_/ / / / /
+ /_/ /_/\__, /\___/_/   \____/_/   \__,_/ .___/_/ /_/
+       /____/                          /_/
+
+
+Welcome to the TigerGraph platform installer!
+
+[PROGRESS]: 08:10:44 Upgrade TigerGraph platform from existing one ... 
+[NOTE    ]: Obtained version of exist platform: 4.2.0 [OK] 
+[NOTE    ]: Obtained version of new platform: 4.2.1 [OK] 
+...
+[PROGRESS]: 08:13:37 Performing pre-upgrade check between version 4.2.0 and 4.2.1 successfully... 
+[NOTE    ]: Switching to new version 4.2.1 by rolling upgrade... 
+[NOTE    ]: This may take a significant amount of time, and you can reconnect by running 'gadmin upgrade --resume' if the connection is lost. 
+[   Info] performing pre-check for rolling upgrade...
+[   Info] initial version check passed, target version: 4.2.1
+[   Info] [Wed Mar 19 08:13:37 UTC 2025] [Rolling Upgrade]: rolling upgrade begins...
+.
+.
+[   Info] [Wed Mar 19 08:20:32 UTC 2025] [Rolling Upgrade]: unblocking GSQL operations ...
+[   Info] [Wed Mar 19 08:20:32 UTC 2025] [Rolling Upgrade]: GSQL operations are unblocked
+[   Info] Stopping CTRL
+[   Info] Starting CTRL
+[   Info] Rolling upgrade completes!
+[PROGRESS]: 08:20:33 Switching to new version 4.2.1 successfully...
+----
+
+=== Managing Service Disruption
+
+During the rolling upgrade, expect a temporary service disruption. If the upgrade fails or the connection is lost, user can *resume* the upgrade process by running:
+
+[source.wrap,bash]
+----
+$ gadmin upgrade --resume
+----
+
+If the upgrade encounters an issue, the error prompt will guide you on how to continue the upgrade manually. 
+Use the following command if you need to manually finish the upgrade:
+
+Execute the following command to restart services in sequence:
+
+[source.wrap,bash]
+----
+gadmin restart GUI#1 ADMIN#1 NGINX#1 EXE_1 IFM#1 KAFKASTRM-LL_1 RESTPP#1 DICT#1 KAFKACONN#1 GSE_1#1 GPE_1#1 CTRL#1 DICT#2 KAFKACONN#2 RESTPP#2 IFM#2 GUI#2 EXE_2 ADMIN#2 KAFKASTRM-LL_2 CTRL#2 GSE_1#2 NGINX#2 GPE_1#2 NGINX#3 GPE_1#3 GUI#3 KAFKASTRM-LL_3 DICT#3 KAFKACONN#3 RESTPP#3 EXE_3 ADMIN#3 CTRL#3 GSE_1#3 IFM#3 --no-dep -y
+----
+
+=== Revert to Previous Version
+
+To revert to your original version, follow these steps:
+
+[source.wrap,bash]
+----
+$ gadmin config set System.AppRoot /home/tigergraph/tigergraph/app/<old version>
+$ gadmin config apply -y
+$ gadmin restart all -y
+----
+
+where <old version> is the version you were running before the upgrade, e.g. `4.2.0`.
+
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
 
