@@ -2750,6 +2750,15 @@ containing a list of JSON `VERTEX`
 |`[{"id": "person1","type": "person"},{"id": "person2","type": "person"}]`
 |===
 
+[IMPORTANT]
+====
+If you are passing parameters in the inline body/payload of a POST request, you may need to escape the quotation marks in the JSON structure, e.g.,
+[console]
+----
+-d "{\"input\":[3,4,2,2]}"
+----
+====
+
 ==== Headers
 The Run Query endpoint accepts a number of headers that allow you to configure the way the query is run:
 
