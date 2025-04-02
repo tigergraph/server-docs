@@ -3149,7 +3149,7 @@ The value of `"parameters"` is a JSON object containing a name-value pair for ea
 
 //[%autowidth]
 .Format for query parameter values
-[cols="1,1,2", heading]
+[cols="1,2,2", heading]
 |===
 | Value Type | Value Format | Example of Name:Value Pair
 
@@ -3165,9 +3165,30 @@ The value of `"parameters"` is a JSON object containing a name-value pair for ea
 | Vertex, type not specified in query definition
 | [_vertex_id_, _vertex_type_]
 | `"vset_target": ["v5933", "Person"]`
+
+| List/set/bag of values
+a| JSON array:
+
+`[value, value, value]`
+| `"input": [3,4,2,2]`
+
+| Map of values
+a| Divide the map in an ordered list of keys and a correspondingly ordered list
+of values: JSON object containing a `"valuelist"` object and a `"keylist"` object
+| `"input":{"keylist":[49,50], "valuelist":["Alaska","Hawaii"]}}`
+
 |===
 
-If the parameter type is a set, list, then use JSON array syntax `[item1, item2, ..., itemN]` for the parameter value, where each item follows the rules in the table.
+[IMPORTANT]
+====
+If you are passing parameters in the inline body/payload of a POST request, you may need to escape the quotation marks in the JSON structure, e.g.,
+
+[console]
+----
+-d "{\"input\":[3,4,2,2]}"
+----
+====
+
 
 ==== Example
 

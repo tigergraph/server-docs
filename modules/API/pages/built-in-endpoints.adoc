@@ -2716,31 +2716,36 @@ The formatting rules for the JSON payload are the same as xref:{page-component-v
 |Parameter type |Syntax |Example
 
 |`DATETIME`
-|Use a string formatted as `"YYYY-MM-DD HH-MM-SS"`
+|A string formatted as `"YYYY-MM-DD HH-MM-SS"`
 |`"2019-02-19 19:19:19"`
 
-|Set or bag of primitives
-|Use a JSON array containing the primitive
+|List/set/bag of primitives
+|A JSON array containing the primitive
 values
 |`["a", "list", "of", "args"]`
 
+|Map of primitives
+|Divide the map in an ordered list of keys and a correspondingly ordered list
+of values: JSON object containing a `"valuelist"` object and a `"keylist"` object
+|`{"keylist":[49,50], "valuelist":["Alaska","Hawaii"]}}`
+
 |`VERTEX<type>`
-|Use a JSON object containing a field `"id"` for the
+|A JSON object containing a field `"id"` for the
 vertex ID and a field `"type"` for the type of the vertex
 |`{"id": "person1", "type": "person"}`
 
 |`VERTEX` (type not specified)
-|Use a JSON object containing a field
+|A JSON object containing a field
 `"id"` for the vertex ID
 |`{"id": "person1"}`
 
-|Set or bag of `VERTEX<type>`
-|Use a JSON array containing a list of
+|List/set/bag of `VERTEX<type>`
+|A JSON array containing a list of
 JSON `VERTEX<type>` object
 |`[{"id": "person1"}, {"id": "person2"}]`
 
-|Set or bag of vertices of unspecified types
-|Use a JSON array
+|List/set/bag of vertices of unspecified types
+|A JSON array
 containing a list of JSON `VERTEX`
 |`[{"id": "person1","type": "person"},{"id": "person2","type": "person"}]`
 |===
