@@ -99,7 +99,7 @@ Upgrading from 4.2.0 to 4.3.0 or any other major version is not supported.
 During a rolling upgrade, several operations are not permitted to ensure a smooth upgrade process. 
 These operations include installing queries, running schema changes, dropping all data, using `gsql --reset`, creating graphs, performing backup/restore operations, clearing the graph store, exporting/importing graphs, installing functions, changing TigerGraph configurations, starting or stopping services, setting up CRR (though CRR will continue working if already set up), running `gadmin init` for cluster initialization, upgrading services with `gadmin upgrade`, and performing service resets with `gadmin reset`. 
 While the rolling upgrade is in progress, loading jobs and running queries will continue to function; however, queries requiring all replicas to be online may fail, in which case you can retry them in a round-robin manner. 
-Please note that occasional drops in Queries Per Second (QPS) may occur during the upgrade. Additionally, services like Zookeeper (ZK), Kafka, and ETCD will not be upgraded during this process.
+Please note that occasional slowdowns in Queries Per Second (QPS) may occur during the upgrade. Additionally, services like Zookeeper (ZK), Kafka, and ETCD will not be upgraded during this process.
 
 The rolling upgrade follows a two-phase process:
 
@@ -109,7 +109,8 @@ The rolling upgrade follows a two-phase process:
 
 === Rolling Upgrade Process
 
-Before starting the upgrade process, ensure that long-running operations are allowed by running the following command:
+Before starting the upgrade, always review the xref:tigergraph-server:installation:upgrade.adoc#check-release-notes-for-changes-in-functionality[general prerequisites] for all versions between your current and target version.
+For the Rolling Upgrade process, ensure long-running operations are allowed by running the following command.
 
 [source.wrap,bash]
 ----
@@ -181,9 +182,24 @@ Welcome to the TigerGraph platform installer!
 [PROGRESS]: 08:10:44 Upgrade TigerGraph platform from existing one ... 
 [NOTE    ]: Obtained version of exist platform: 4.2.0 [OK] 
 [NOTE    ]: Obtained version of new platform: 4.2.1 [OK] 
+...
+[PROGRESS]: 08:13:37 Performing pre-upgrade check between version 4.2.0 and 4.2.1 successfully... 
+[NOTE    ]: Switching to new version 4.2.1 by rolling upgrade... 
+[NOTE    ]: This may take a significant amount of time, and you can reconnect by running 'gadmin upgrade --resume' if the connection is lost. 
+[   Info] performing pre-check for rolling upgrade...
+[   Info] initial version check passed, target version: 4.2.1
+[   Info] [Wed Mar 19 08:13:37 UTC 2025] [Rolling Upgrade]: rolling upgrade begins...
+.
+.
+[   Info] [Wed Mar 19 08:20:32 UTC 2025] [Rolling Upgrade]: unblocking GSQL operations ...
+[   Info] [Wed Mar 19 08:20:32 UTC 2025] [Rolling Upgrade]: GSQL operations are unblocked
+[   Info] Stopping CTRL
+[   Info] Starting CTRL
+[   Info] Rolling upgrade completes!
+[PROGRESS]: 08:20:33 Switching to new version 4.2.1 successfully...
 ----
 
-==== Handling Downtime
+=== Managing Service Disruption
 
 During the rolling upgrade, expect a temporary service disruption. If the upgrade fails or the connection is lost, user can *resume* the upgrade process by running:
 
@@ -192,7 +208,17 @@ During the rolling upgrade, expect a temporary service disruption. If the upgrad
 $ gadmin upgrade --resume
 ----
 
-==== Revert to Previous Version
+If the upgrade encounters an issue, the error prompt will guide you on how to continue the upgrade manually. 
+Use the following command if you need to manually finish the upgrade:
+
+Execute the following command to restart services in sequence:
+
+[source.wrap,bash]
+----
+gadmin restart GUI#1 ADMIN#1 NGINX#1 EXE_1 IFM#1 KAFKASTRM-LL_1 RESTPP#1 DICT#1 KAFKACONN#1 GSE_1#1 GPE_1#1 CTRL#1 DICT#2 KAFKACONN#2 RESTPP#2 IFM#2 GUI#2 EXE_2 ADMIN#2 KAFKASTRM-LL_2 CTRL#2 GSE_1#2 NGINX#2 GPE_1#2 NGINX#3 GPE_1#3 GUI#3 KAFKASTRM-LL_3 DICT#3 KAFKACONN#3 RESTPP#3 EXE_3 ADMIN#3 CTRL#3 GSE_1#3 IFM#3 --no-dep -y
+----
+
+=== Revert to Previous Version
 
 To revert to your original version, follow these steps:
 
@@ -204,16 +230,6 @@ $ gadmin restart all -y
 ----
 
 where <old version> is the version you were running before the upgrade, e.g. `4.2.0`.
-
-If the upgrade fails for any reason, the error prompt will guide you on whether to continue manually or revert to the previous version. 
-Use the following command if you need to manually finish the upgrade or revert:
-
-*Manual Upgrade*: Execute the following command to restart services in sequence:
-
-[source.wrap,bash]
-----
-gadmin restart GUI#1 ADMIN#1 NGINX#1 EXE_1 IFM#1 KAFKASTRM-LL_1 RESTPP#1 DICT#1 KAFKACONN#1 GSE_1#1 GPE_1#1 CTRL#1 DICT#2 KAFKACONN#2 RESTPP#2 IFM#2 GUI#2 EXE_2 ADMIN#2 KAFKASTRM-LL_2 CTRL#2 GSE_1#2 NGINX#2 GPE_1#2 NGINX#3 GPE_1#3 GUI#3 KAFKASTRM-LL_3 DICT#3 KAFKACONN#3 RESTPP#3 EXE_3 ADMIN#3 CTRL#3 GSE_1#3 IFM#3 --no-dep -y
-----
 
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
