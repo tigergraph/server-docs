@@ -45,16 +45,6 @@ SET <session_parameter> = <value>
 [cols=",",options="header",]
 |===
 |Session Parameter |Meaning and Usage
-|`sys.data_root` |The value should be a string, representing the absolute
-or relative path to the folder where data files are stored. After the
-parameter has been set, a loading statement can reference this parameter
-with $sys.data_root.
-
-|`gsql_src_dir` |The value should be a string, representing the absolute
-or relative path to the root folder for the gsql system installation.
-After the parameter has been set, a loading statement can reference this
-parameter with $gsql_src_dir.
-
 |`exit_on_error` |When this parameter is true (default), if a semantic error occurs while running a GSQL command file, the GSQL shell will terminate.
 
 Accepted parameter values: true, false (case-insensitive). If
@@ -69,9 +59,21 @@ to a nonexistent entity or an improper reuse of an entity.
 This session parameter does not affect GSQL interactive mode; GSQL interactive mode does not exit on any error.
 This session parameter does not affect syntactic errors: GSQL will always exit on a syntactic error.
 
-| `syntax_version` | The version of GSQL to be used for this session. Accepted values are `v1` or `v2`.
-
 | `export_timeout` | The timeout limit for the command `EXPORT GRAPH ALL` in milliseconds. The default value is around 138 hours.
 
+|`gsql_src_dir` |The value should be a string, representing the absolute
+or relative path to the root folder for the gsql system installation.
+After the parameter has been set, a loading statement can reference this
+parameter with $gsql_src_dir.
+
+| `profile` | This parameter enables xref:{page-component-version}@gsql-ref:querying:query-optimizer/query-profiling.adoc#_gsql[query profiling] to view and analyze the details of a query execution. It currently supports only the value `BASIC`. By default, the value is empty, and profiling is not activated.
+
 | `query_timeout` | If a query runs longer than the systemwide timeout (the default is 16 seconds), the query will abort. To customize this timeout limit for a GSQL session, set this value to an integer.
+
+|`sys.data_root` |The value should be a string, representing the absolute
+or relative path to the folder where data files are stored. After the
+parameter has been set, a loading statement can reference this parameter
+with $sys.data_root.
+
+| `syntax_version` | The version of GSQL to be used for this session. Accepted values are `v1` or `v2`.
 |===
