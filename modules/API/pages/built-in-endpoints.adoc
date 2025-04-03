@@ -2766,6 +2766,11 @@ The Run Query endpoint accepts a number of headers that allow you to configure t
 |===
 |Name |Description
 
+|`PROFILE`
+|Specifies the type of query profiling. Currently, only `BASIC` is supported.
+xref:{page-component-version}@gsql-ref:querying:query-optimizer/query-profiling.adoc#_restpp_request[Query profiling] profiles detailed information about query execution for users to view and analyze.
+Default: empty (no profiling).
+
 |`GSQL-REPLICA`
 |The replica where the query is to be run.
 The value of the header needs to be an integer within the range 1 to the replication factor of the cluster.
