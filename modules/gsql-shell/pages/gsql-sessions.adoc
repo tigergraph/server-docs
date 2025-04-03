@@ -74,4 +74,6 @@ This session parameter does not affect syntactic errors: GSQL will always exit o
 | `export_timeout` | The timeout limit for the command `EXPORT GRAPH ALL` in milliseconds. The default value is around 138 hours.
 
 | `query_timeout` | If a query runs longer than the systemwide timeout (the default is 16 seconds), the query will abort. To customize this timeout limit for a GSQL session, set this value to an integer.
+
+| `profile` | This parameter enables xref:{page-component-version}@gsql-ref:querying:query-optimizer/query-profiling.adoc#_gsql[query profiling] to view and analyze the details of a query execution. It currently supports only the value `BASIC`. By default, the value is empty, and profiling is not activated.
 |===
