@@ -1542,7 +1542,14 @@ Run global schema change job directly.
 
 ==== Parameters:
 
-None
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `force`
+| no
+| If true, abort any loading jobs which have a schema conflict with this change. See xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_schema_change_options[Run Schema Change options].
+|===
 
 ==== Example:
 [,tabs]
@@ -1585,6 +1592,10 @@ Run the schema change job directly.
 | `graph`
 | no
 | which graph to run the local schema change job on, run local schema change need provide this. If not provided, means running global schema change job.
+
+| `force`
+| no
+| If true, abort any loading jobs which have a schema conflict with this change. See xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_schema_change_options[Run Schema Change options].
 |===
 
 ==== Example:
@@ -1730,6 +1741,10 @@ Run an existing schema change job.
 | `graph`
 | no
 | which graph to run the schema change job on. If not provided, means run the global schema change job.
+
+| `force`
+| no
+| If true, abort any loading jobs which have a schema conflict with this change. See xref:gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_schema_change_options[Run Schema Change options].
 |===
 
 ==== Example:

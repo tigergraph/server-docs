@@ -29,6 +29,10 @@ Scalable storage and similarity search for vector attributes associated with ver
 
 * *xref:4.2@tigergraph-server:installation:upgrade.adoc#_rolling_upgrade[Rolling Upgrades of maintenance versions]* for HA clusters (Preview).
 
+* [TBD] *GQL/OpenCypher path pattern syntax*, within GSQL syntax
+
+* *Run ad hoc queries directly*  (xref:4.2@gsql-ref:querying:query-modes.adoc[non-procedural interpreted queries])
+
 * *xref:4.2@tigergraph-server:intro:comparison-of-editions.adoc[Community Edition of TigerGraph Database]*:
 
 ** Up to 200GB graph data + 100GB vector data, single server only
@@ -48,8 +52,6 @@ Scalable storage and similarity search for vector attributes associated with ver
 * *Backup to xref:4.2@tigergraph-server:backup-and-restore:configurations.adoc#_backup_to_abs_azure_blob_storage[Azure] and xref:4.2@tigergraph-server:backup-and-restore:configurations.adoc#_backup_to_gcs_google_cloud_storage[GCP] cloud storage*, analogous to  existing support for backup to AWS S3.
 
 * *More graceful xref:4.2@tigergraph-server:system-management:manage-services.adoc#_graceful_shutdown_of_restpp[user-initiated shutdown]* of RESTPP and GPE services.
-
-* [TBD] *Schema Change options* `-force` and `warn` to specify the behavior when loading jobs run during a schema change.
 
 === Security and Access Control Enhancements
 
@@ -79,7 +81,7 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 === Query Language Enhancements
 
 * Multiple enhancements to *Syntax V3*, which combines GSQL + OpenCypher + GQL Pattern Matching:
-** [TBD] *GQL and OpenCypher standard path pattern syntax* support, in GSQL syntax
+** [TBD] *GQL / OpenCypher path pattern syntax* , within GSQL
 ** *Run ad hoc OpenCypher queries and single GSQL SELECT blocks directly*  (xref:4.2@gsql-ref:querying:query-modes.adoc[non-procedural interpreted queries])
 ** *xref:4.2@gsql-ref:querying:operators-and-expressions.adoc#_comparison_operators_and_conditions[comparison operators `=` and `<>`]*  as alternatives to `==` and `!=` in WHERE conditions.
 ** *link:https://github.com/tigergraph/ecosys/blob/master/tutorials/Cypher.md#optional-match[OPTIONAL MATCH], COALESCE, and IS [NOT] NULL* (OpenCypher)
@@ -95,7 +97,7 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * *xref:4.2@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[Configuation parameter `GSQL.Github.Enabled`]* to enable retrieving UDFs from a Github repository.
 
-* [TBD] *Query Profiler* to analyze query execution and performance.
+* *xref:4.2@gsql-ref:querying:query-optimizer/query-profilng.adoc[Query Profiler]* to analyze query execution and performance.
 
 === Loading Enhancemnts
 
@@ -103,11 +105,13 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * [TBD] *Spark Connector support for OAuth2 authentication*.
 
-* [TBD] *Introduced `DISABLED` Loading Job status* for jobs which have a schema conflict as a result of a Schema Change.
+* *xref:4.2@gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_schema_change_options[Schema Change options]* `-force` and `warn` to specify the behavior when loading jobs run during a schema change.
+
+* *Introduced xref:4.2@gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_side_effects_of_schema_change[`DISABLED` Loading Job status]* for jobs which have a schema conflict as a result of a Schema Change.
 
 === Performance Improvements
 
-* [TBD] **Query Planned Caching**, to speed up the run time of repeated queries.
+* **xref:4.2@gsql-ref:querying:query-optimizer/query-plan-cache.adoc[Query Planned Caching]**, to speed up the run time of repeated queries.
 
 === GraphStudio, Admin Portal, and Insights
 
