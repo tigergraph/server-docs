@@ -151,6 +151,22 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 * Fixed the inability to fetch dynamic file output policy during query execution (GLE-4847).
 * Fixed issue where sensitive information was not removed from the browser localStorage, ensuring better security (APPS-1066)
 * Fixed a query installation failure for single-node queries that initialize vertex set variables in conditional branches, such as `if-else` or `case-when` statements (GLE-7369).
+* Added a button to refetch real-time graph statistics on the Load Data page in Graph Studio (APPS-2565).
+* Added the Standard Triangle Counting Algorithm to the built-in query list on the Write Query page in Graph Studio (APPS-3429).
+* Fixed the issue where query creation failed with a "query not found" prompt in Graph Studio (APPS-3624).
+* Removed the requirement to restart the GSQL service after modifying the SSO settings in Admin Portal (APPS-3167).
+* Allowed aborting a query in Graph Studio (APPS-3487).
+* Added a new page for changing passwords in TigerGraph Suite (APPS-3423).
+* Checked that the buffer length is non-negative before reading a file (TP-6690).
+* Fixed the issue where unauthorized users could access sensitive data, including superuser info, via the /gsql/v1/users API endpoint (GLE-8290).
+* Fixed NoSuchElementException thrown when removing all authentication tokens (GLE-8937).
+* Fixed issue with data source creation failing to sync to Disaster Recovery (DR) due to complex payload handling (GLE-9617).
+* Fixed bug with the to_vertex_set function (GLE-8083).
+* Unblocked the usage of the keyword “function” as a vertex/edge/attribute name (GLE-9803).
+* Fixed the backup restoration issue where GSQL was in a warmup state when importing GSQL data (TP-6949).
+* Fixed the metrics issue where tigergraph_cpu_usage exceeded 100 and tigergraph_cpu_available was negative under high load (TP-7127).
+* Fixed issue where failed backups in corner cases caused the Engine to pause for an extended period, leading to subsequent query timeouts (CORE-4110).
+
 
 ==== Improvements
 
