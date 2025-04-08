@@ -165,7 +165,11 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 * Unblocked the usage of the keyword “function” as a vertex/edge/attribute name (GLE-9803).
 * Fixed the backup restoration issue where GSQL was in a warmup state when importing GSQL data (TP-6949).
 * Fixed the metrics issue where `tigergraph_cpu_usage` exceeded 100 and `tigergraph_cpu_available` was negative under high load (TP-7127).
-* Fixed issue where failed backups in corner cases caused the Engine to pause for an extended period, leading to subsequent query timeouts (CORE-4110).
+* Fixed issue where failed backups in corner cases caused the Engine to pause for an extended period, leading to subsequent query timeouts (CORE-4532).
+* Fixed an issue where incremental backups could hang when based on a full backup with no data (CORE-4110).
+* Resolved the issue with downloading GSQL output files larger than 3GB in AdminPortal (APPS-3271).
+* Fixed an issue where the `GSQL-TIMEOUT` header was not being forwarded in the `/api/graphql/gsql` endpoint (APPS-3648).
+* Fixed a bug where local accumulators defined across multiple lines in a query were misinterpreted as a file in the GSQL client (GLE-8261).
 
 
 ==== Improvements
