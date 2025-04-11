@@ -4,7 +4,7 @@
 == Overview
 This guide demonstrates how to configure *PingFederate* as an *OIDC Identity Provider (IdP)* and *TigerGraph* as a *Service Provider (SP)*, enabling users to log in securely using *OpenID Connect (OIDC)* for *Single Sign-On (SSO)*.
 
-PingFederate is a federation server that supports identity management, SSO, and API security using various identity standards like *OAuth*, *SAML*, and *OpenID Connect (OIDC)*. We also have instructions for xref:{page-component-version}@tigergraph-server:user-access/sso-with-saml.adoc[SSO with SAML].
+PingFederate is a federation server that supports identity management, SSO, and API security using various identity standards like *OAuth*, *SAML*, and *OpenID Connect (OIDC)*. We also have instructions for xref:user-access:sso-with-saml.adoc[SSO with SAML].
 
 This guide will help you set up PingFederate for OIDC and integrate it with TigerGraph to provide a seamless login experience.
 
@@ -130,3 +130,43 @@ In PingFederate, create an SP connection for OIDC by following these steps:
 Click Done on the Protocol Settings Summary and then Next on the Credentials tab.
 . Select the signing certificate created earlier, click Next, and then click Done on the Digital Signature Settings Summary.
 . On the Activation & Summary tab, review the settings and click Save.
+
+== Configure and Test OIDC in TigerGraph
+
+=== Configure OIDC in TigerGraph using gadmin
+
+. On the TigerGraph server, use the following gadmin command to enter OIDC settings:
+* gadmin config entry OIDC
+. Fill in the following parameters using the metadata found at the provided https://34.231.78.134:9031/.well-known/openid-configuration[OpenID Configuration URL]
+
+[cols="2", options="header",]
+|===
+|Parameter |Value
+|Security.SSO.OIDC.Enable |`true`
+|Security.SSO.OIDC.CallBackUrl |`http://<tigergraph-machine-hostname>:14240`
+|Security.SSO.OIDC.ResponseType |`code`
+|Security.SSO.OIDC.Scope |`openid profile email`
+|Security.SSO.OIDC.OP.SSOUrl |`https://<pingfederate-host-name>:9031/as/authorization.oauth2`
+|Security.SSO.OIDC.OP.Issuer | `https://<pingfederate-host-name>:9031`
+|Security.SSO.OIDC.OP.ClientId | `TigerGraphTest`
+|Security.SSO.OIDC.OP.ClientSecret |`<client-secret>`
+|===
+
+3 Apply the configuration:
+`gadmin config apply -y`
+
+=== Final Steps in Admin Portal
+
+For the final steps, see the xref:{page-component-version}@gui:admin-portal:security/sso-oidc-okta.adoc#_3_setup_oidc_button[Admin Portal documentation] for detailed instructions on configuring users and verifying OIDC login.
+
+== Troubleshooting
+
+[cols="2", options="header",]
+|===
+|Issue |Solution
+|SSL Certificate Warnings |Use a domain (e.g., `idp.example.com`) instead of an IP for PingFederate.
+|Invalid Client Secret |Ensure the secret matches the one configured in PingFederate.
+|User Not Authorized |Verify proxy group rules and role assignments in Admin Portal.
+|Login Redirect Failures |Confirm the Redirect URI in PingFederate matches
+`http://<tigergraph-host>:14240/api/auth/oidc/callback`.
+|===
