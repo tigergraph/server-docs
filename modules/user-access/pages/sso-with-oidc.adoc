@@ -3,3 +3,170 @@
 
 == Overview
 This guide demonstrates how to configure *PingFederate* as an *OIDC Identity Provider (IdP)* and *TigerGraph* as a *Service Provider (SP)*, enabling users to log in securely using *OpenID Connect (OIDC)* for *Single Sign-On (SSO)*.
+
+PingFederate is a federation server that supports identity management, SSO, and API security using various identity standards like *OAuth*, *SAML*, and *OpenID Connect (OIDC)*. We also have instructions for xref:user-access:sso-with-saml.adoc[SSO with SAML].
+
+This guide will help you set up PingFederate for OIDC and integrate it with TigerGraph to provide a seamless login experience.
+
+== Prerequisites
+
+Before proceeding, ensure you have the following:
+
+* PingFederate Version 12.1.0.4 or later is installed and running.
+* TigerGraph instance (v3.10 or later) accessible at `http://<tigergraph-host>:14240`.
+* Administrative access to both PingFederate and TigerGraph servers.
+* A domain name to avoid SSL certificate issues when accessing PingFederate.
+
+== Install PingFederate
+
+Follow these steps to install PingFederate on your server (details on system requirements are available in the https://www.pingidentity.com/en/resources/downloads/pingfederate.html[PingFederate installation documentation])
+
+. Download and install PingFederate by following the instructions on the PingFederate Download Page.
+. Set up Java and ensure ports 9999 (admin console), 9031 (runtime), and 443 (SSL) are open on PingFederate.
+. Access PingFederate using a web browser at `https://<PingFed_host>:9999/`.
+
+== Configure PingFederate for OIDC
+
+To configure PingFederate for OIDC, follow these steps:
+
+=== Add a User
+
+. Log in to the PingFederate Console.
+' Navigate to Administrative Accounts to add a new user.
+. Add a username, e.g., `test`. Add an email, e.g., `test1@<your company>.com`.
+
+=== Create Password Credential Validator (PCV)
+
+. In PingFederate, go to Password Credential Validator.
+. Create a SimplePCV instance and select “Simple Username Password Credential Validator” as type.
+. Save the PCV.
+
+=== Create IDP Certificate
+
+. Navigate to “Signing & Decryption Keys & Certificates” in PingFederate.
+. Add a certificate for the *IDP Server* using the `<PingFed_host>`
+
+=== Add Access Token Manager
+
+. Navigate to *Applications > OAuth > Access Token Management*.
+. Click Create New Instance.
+. In the Type tab, input the name of the instance (e.g., `TigerGraphTokenManager`).
+. In the Session Validation section, enable the following options:
+* Select Include Session Identifier in Access Token.
+* Check Update Authentication Session Activity.
+. Under the Access Token Attribute Contract, add the attribute Extend the Contract and select `usernameFromATM`.
+. In the Resource URIs tab, add the following URI:
+* `http://<tigergraph-machine-hostname>:14240/api/auth/oidc/callback`
+. In the Access Control tab, add your client (e.g., the client you created earlier).
+. Click Save to apply the changes.
+
+=== Create OIDC Policy
+
+. Go to *Applications > OAuth > OpenID Connect Policy Management*.
+. Add a new policy and set the Access Token Manager to the one you created above (`TigerGraphTokenManager`).
+. In the Attribute Scopes tab, include `email` scope.
+
+=== Configure Access Token Mappings
+
+. Navigate to *Applications > OAuth > Access Token Mappings*.
+. Select your context and access token manager, then click Add Mapping.
+. In the Contract Fulfillment tab, configure the following:
+* Select your contract.
+* Choose Adapter for the source and username for the value.
+. Click Save to finalize the mapping.
+
+=== Add IdP Adapter
+
+. Go to *Authentication > Integration > IdP Adapters* and click Create Adapter Instance.
+. Choose HTML Form IdP Adapter as the Instance Type.
+* Set Instance Name and Instance ID to `SSOTestIdPHTML`.
+. Click Next and add SimplePCV as the Password Credential Validator.
+* Set Session State to Per Adapter.
+. In the Core Contract section, select username.
+. Click Next, and in Adapter Attributes, check Pseudonym for username.
+. In Adapter Contract Mapping, map username to `$(username)`.
+. Click Done, review the summary, and click Finish.
+
+=== Create Client
+
+. Navigate to *Applications > OAuth*. Click Add Client
+. Input the following:
+* Client ID: Choose a unique identifier for the client (e.g., `TigerGraphClient`).
+* Name: Provide a meaningful name (e.g., `TigerGraph OIDC Client`).
+. For Client Authentication, select Client Secret and click Generate Secret.
+* Important: Make sure to save the generated secret as you will need it in the TigerGraph configuration.
+. Under Redirect URIs, input the URI:
+* `http://<tigergraph-machine-hostname>:14240/api/auth/oidc/callback`
+. Under Restrict Common Scopes, select the appropriate scope (e.g., `openid, email, profile`).
+. For Allowed Grant Types, select:
+* Authorization Code and Client Credentials.
+. In Access Token Validation, select the Default Access Token Manager you created earlier.
+* Choose Restrict to Default Access Token Manager.
+. For the ID Token Signing Algorithm, select `RSA using SHA-256`.
+. Click Save to apply the configuration.
+
+== Set Up SP Connection in PingFederate for OIDC
+
+In PingFederate, create an SP connection for OIDC by following these steps:
+
+. Navigate to Applications > Integration > SP Connections (hyperlink to SP Connections) and click Create Connection.
+. Select Browser SSO Profiles connection template and click Next.
+. On the Connection Options page, check Browser SSO and click Next.
+. Skip the Metadata URL step and click Next.
+. Enter Partner’s Entity ID: `https://<PingFed_host>:9031` and Base URL:
+`http://<tigergraph-machine-hostname>:14240`, then click Next.
+. Click Configure Browser SSO on the Browser SSO tab.
+. Enable both IdP-Initiated SSO and SP-Initiated SSO on the SAML Profiles tab, then click Next.
+. Set the Assertion Lifetime and click Next.
+. Choose Standard Identity Mapping on the Assertion Creation tab, then click Next.
+. Change Subject Name Format to
+`urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified` or
+`urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`, then click Next.
+. Select the Authentication Source and Adapter Instance, then click Next.
+. Set SAML_SUBJECT Source to your adapter and Value to username, then click Next.
+. Specify any authorization conditions (optional), then click Next and Done.
+. On the Protocol Settings tab, set Binding to POST and Endpoint URL to `http://<tigergraph-machine-hostname>:14240/api/auth/saml/acs`, then click Next.
+. On the Signature Policy tab, check SIGN RESPONSE AS REQUIRED and click Next.
+Click Done on the Protocol Settings Summary and then Next on the Credentials tab.
+. Select the signing certificate created earlier, click Next, and then click Done on the Digital Signature Settings Summary.
+. On the Activation & Summary tab, review the settings and click Save.
+
+== Configure and Test OIDC in TigerGraph
+
+=== Configure OIDC in TigerGraph using gadmin
+
+. On the TigerGraph server, use the following gadmin command to enter OIDC settings:
+* gadmin config entry OIDC
+. Fill in the following parameters using the metadata found at the provided https://34.231.78.134:9031/.well-known/openid-configuration[OpenID Configuration URL]
+
+[cols="2", options="header",]
+|===
+|Parameter |Value
+|Security.SSO.OIDC.Enable |`true`
+|Security.SSO.OIDC.CallBackUrl |`http://<tigergraph-machine-hostname>:14240`
+|Security.SSO.OIDC.ResponseType |`code`
+|Security.SSO.OIDC.Scope |`openid profile email`
+|Security.SSO.OIDC.OP.SSOUrl |`https://<pingfederate-host-name>:9031/as/authorization.oauth2`
+|Security.SSO.OIDC.OP.Issuer | `https://<pingfederate-host-name>:9031`
+|Security.SSO.OIDC.OP.ClientId | `TigerGraphTest`
+|Security.SSO.OIDC.OP.ClientSecret |`<client-secret>`
+|===
+
+3 Apply the configuration:
+`gadmin config apply -y`
+
+=== Final Steps in Admin Portal
+
+For the final steps, see the xref:{page-component-version}@gui:admin-portal:security/sso-oidc-okta.adoc#_3_setup_oidc_button[Admin Portal documentation] for detailed instructions on configuring users and verifying OIDC login.
+
+== Troubleshooting
+
+[cols="2", options="header",]
+|===
+|Issue |Solution
+|SSL Certificate Warnings |Use a domain (e.g., `idp.example.com`) instead of an IP for PingFederate.
+|Invalid Client Secret |Ensure the secret matches the one configured in PingFederate.
+|User Not Authorized |Verify proxy group rules and role assignments in Admin Portal.
+|Login Redirect Failures |Confirm the Redirect URI in PingFederate matches
+`http://<tigergraph-host>:14240/api/auth/oidc/callback`.
+|===
