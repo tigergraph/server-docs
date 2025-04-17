@@ -1,9 +1,20 @@
-= List of Legacy Privilege Syntax
+= Legacy RBAC Privileges
+:description: List of the original RBAC privileges, which are now deprecated
+:page-aliases: list-of-privileges.adoc
 
-This page provides a complete list of privileges in TigerGraph's Role-based Access Control system.
+This page lists the privileges in TigerGraph's Legacy Role-Based Access Control system.
+In version 3.10, xref:tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_object_based_privileges[Object-Based Privileges] were introduced to eventually replace the original (legacy) RBAC system.
+See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privileges-table.adoc[] for a comparison with the legacy syntax.
 
+[WARNING]
+====
+The legacy system of privileges is deprecated.
+Users should move to the new object-based privileges.
+====
 
-== Legacy Privilege Syntax Limitations
+[#_legacy_privilege_syntax_limitations]
+== Legacy Privilege Limitations
+
 * Any privilege marked "`Global only`" can only be granted to a global role.
 It cannot be granted to a local role (See xref:user-access:access-control-model.adoc[Global role vs local role]).
 
@@ -14,15 +25,9 @@ It cannot be granted to a local role (See xref:user-access:access-control-model.
 * Legacy privilege syntax for function privileges is only supported on the global scope.
 ** To add function privileges, it's best to use the Object-Based Privileges syntax.
 
-[NOTE]
-====
-It’s recommended to use the xref:tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_object_based_privileges[Object-Based Privileges] syntax.
-See xref:tigergraph-server:user-access:rbac-row-policy/row-policy-privileges-table.adoc[] for a comparison with the legacy syntax.
-====
 
+== Table of Legacy RBAC Privileges
 
-
-== Table of Privileges
 [width="100%",cols="22%,63%,15%",options="header",]
 |===
 |*Privilege Name* |*Commands Associated* |*Global Only*
