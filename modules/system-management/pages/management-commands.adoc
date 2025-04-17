@@ -887,18 +887,20 @@ $ gadmin status
 +--------------------+-------------------------+-------------------------+
 ----
 
-You  can also check the status of each instance using the verbose flag : `gadmin status -v`  or `gadmin status --verbose`. This will show each machine's status. See example below
+You  can also check the status of each instance using the verbose flag : `gadmin status -v`  or `gadmin status --verbose`. This will show each machine's status along with additional information like *Process ID* and *Role*. See the example below:
 
 [source,console]
 ----
 $ gadmin status -v GPE
 
-+--------------------+-------------------------+-------------------------+
-|    Service Name    |     Service Status      |      Process State      |
-+--------------------+-------------------------+-------------------------+
-|      GPE_1#1       |         Warmup          |         Running         |
-|      GPE_1#2       |         Warmup          |         Running         |
-+--------------------+-------------------------+-------------------------+
++--------------------+-------------------------+-------------------------+--------------------+------------------------+
+|    Service Name    |     Service Status      |      Process State      |     Process ID     |         Role           |    
++--------------------+-------------------------+-------------------------+--------------------+------------------------+
+|      GPE_1#1       |         Online          |         Running         |      110523        |         Leader         |        
+|      GPE_1#2       |         Online          |         Running         |      217430        |         Follower       |         
+|      GPE_2#1       |         Online          |         Running         |      235846        |         Leader         |        
+|      GPE_2#2       |         Online          |         Running         |      163202        |         Follower       |         
++--------------------+-------------------------+-------------------------+--------------------+------------------------+
 ----
 
 Here are the most common service and process status states you might see from running the `gadmin status` command :
