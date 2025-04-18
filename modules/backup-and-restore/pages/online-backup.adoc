@@ -46,9 +46,12 @@ This improvement not only safeguards ongoing operations but also streamlines the
 
 == Limitations and Considerations
 
-Currently, the Online Backup feature has these known limitations:
+Currently, the Online Backup feature has one limitation:
 
-* If users start running a query, the full backup cannot succeed until that query finishes.
-* Running queries also block the rebuild process.
+* If a query starts during a *full* backup, the backup will not finish until that query finishes.
+
+However, *differential* backup does not have this limitation. Users can perform differential backups even if a query is running.
+
+
 
 
