@@ -5,11 +5,12 @@ When the TigerGraph database is configured with HA replicas, then data loading a
 
 This ensures continuous data loading operations even in the event of a single-node disruption, making it especially valuable for critical applications requiring consistent data availability.
 
+HA is not designed to provide continuous operation across configuration changes.
+For example, if Nginsx SSL security is reconfigured while a loading job is running, the loading job will fail.
+
 == Disabling and Reenabling Data Loading HA
 
 Data loading with HA was introduced in TigerGraph 4.1 as an option called *Data Loading V2*, enabled by setting the configuration parameter `KafkaConnect.EnableV2` to `true`.
-
-When enabling, loading job IDs will contain `.v2`.
 
 As of 4.2, this parameter defaults to `true`.  If for some reason you wish to disable this model, you can do so by setting the parameter to `false` and then applying the new server settings.
 
@@ -27,21 +28,12 @@ You would reenable Data Loading HA by setting it to `true` again and running `ga
 Do not run loading jobs while changing enabling or disabling the HA mode.
 ====
 
+
+=== Job IDs indicate HA is enabled
+
+When data loading HA is enable, loading job IDs will contain `.v2`.
+
 .Data Loading V2 Loading Progress Example
 image::data-loading:data-loading-v2-progress-example.png[Example GSQL loading progress with data loading v2 enabled]
 
-[separator=¦ ]
-|===
-¦ Key ¦ Default Value ¦  Description ¦ Note
 
-¦ `batch.size.bytes`
-¦ 0 (infinite)
-¦ The data size to be broken into if data in batch.size.rows is larger than batch.size.bytes. Example, each row of data is 1kb, and batch.size.rows = 10, batch.size.bytes = 5000, the data will be split into 2 5kb batches.
-
-Example usage: `DEFINE FILENAME file_Comment = """$s1:{"file.uris":"gs://data/Comment", "batch.size": 10000, "batch.size.bytes": 4000000}""";`
-
-¦ Only takes effect if data loading V2 is enabled
-
-|===
-
-NOTE: Modifying security configs such as Nginx SSL while loading job is running may cause the loading job to fail.
