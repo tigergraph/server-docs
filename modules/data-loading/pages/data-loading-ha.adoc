@@ -1,0 +1,47 @@
+= Data Loading HA
+:page-aliases: data-loading-v2.adoc
+
+When the TigerGraph database is configured with HA replicas, then data loading automatically takes advantage of the replicas to provide improved loading speed, reduced disk usage, load balancing, and automatic failover, at no additional system resource costs.
+
+This ensures continuous data loading operations even in the event of a single-node disruption, making it especially valuable for critical applications requiring consistent data availability.
+
+== Disabling and Reenabling Data Loading HA
+
+Data loading with HA was introduced in TigerGraph 4.1 as an option called *Data Loading V2*, enabled by setting the configuration parameter `KafkaConnect.EnableV2` to `true`.
+
+When enabling, loading job IDs will contain `.v2`.
+
+As of 4.2, this parameter defaults to `true`.  If for some reason you wish to disable this model, you can do so by setting the parameter to `false` and then applying the new server settings.
+
+.Disabling Data Loading HA
+[source, bash]
+----
+gadmin config set KafkaConnect.EnableV2 false
+gadmin config apply --restart-deps
+----
+
+You would reenable Data Loading HA by setting it to `true` again and running `gadmin config apply`.
+
+[NOTE]
+====
+Do not run loading jobs while changing enabling or disabling the HA mode.
+====
+
+.Data Loading V2 Loading Progress Example
+image::data-loading:data-loading-v2-progress-example.png[Example GSQL loading progress with data loading v2 enabled]
+
+[separator=¦ ]
+|===
+¦ Key ¦ Default Value ¦  Description ¦ Note
+
+¦ `batch.size.bytes`
+¦ 0 (infinite)
+¦ The data size to be broken into if data in batch.size.rows is larger than batch.size.bytes. Example, each row of data is 1kb, and batch.size.rows = 10, batch.size.bytes = 5000, the data will be split into 2 5kb batches.
+
+Example usage: `DEFINE FILENAME file_Comment = """$s1:{"file.uris":"gs://data/Comment", "batch.size": 10000, "batch.size.bytes": 4000000}""";`
+
+¦ Only takes effect if data loading V2 is enabled
+
+|===
+
+NOTE: Modifying security configs such as Nginx SSL while loading job is running may cause the loading job to fail.
