@@ -43,31 +43,59 @@ These are the required and optional configuration parameters:
 |One or more SQL queries separated by commas.
 To avoid timeout in a large query, you can break it into multiple smaller queries based on the partitioning key.
 These queries may be assigned to multiple tasks for execution, while the execution order is not guaranteed.
-|Required
+|Yes
 |N/A
 
 |batch.max.rows
 |Maximum number of rows to include in a single batch when polling for new data from the query result.
-|Optional
+|No
 |1000
 
 For Snowflake loading jobs only: The default setting for `batch.max.rows` is set to `100000` for better performance.
 
-|num.partitions
-|The number of partitions to use.
-When loading data, each partition is distributed evenly across each node.
-If one filename contains much more data than others, consider using a larger partition number.
-|Optional
-|3
-
 |tasks.max
 |The maximum number of tasks used to execute queries.
 When `query` contains multiple queries, you can increase this parameter to execute queries in parallel.
-|Optional
+|No
 |1
 
 |poll.interval.ms
 |Time interval in ms for periodic executoion of the query.
-|Optional
+|No
 |5000
+
+|loading.timeout.ms
+|The loading timeout per batch in milliseconds.
+
+If set to 0, then the global parameter `RESTPP.Factory.DefaultLoadingTimeoutSec` is used.
+|No
+|0
+
+|loading.max.retry.attempts
+|The maximum number of retries after a retryable server error.
+
+0 means an unlimited number of retries.
+|No
+|0
+
+|io.max.retry.attempts
+|The maximum number of HTTP transport retries.
+
+0 means an unlimited number of retries.
+|No
+|0
+
+|batch.size.bytes
+|The maximum data batch size in bytes, overriding the `batch.size.rows` limit.
+
+Example: If each row of data is 1000b, `batch.size.rows` = 10, and `batch.size.bytes` = 5000, then the data will be split into 2 5000b batches.
+|No
+|2,097,152 (2 MiB)
+
+|num.partitions
+|[Legacy: only used when gadmin parameter `KafkaConnect.EnableV2` is false] The number of partitions to use.
+When loading data, each partition is distributed evenly across each node.
+If one filename contains much more data than others, consider increasing this value.
+|No
+|3
 |===
