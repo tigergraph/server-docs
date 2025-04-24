@@ -241,6 +241,17 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 
 == Fixed issues
 
+=== Fixed and Improved in 4.1.3
+
+==== Functionality
+
+* Fixed issue where failed backups in corner cases caused the Engine to pause for an extended period, leading to subsequent query timeouts (CORE-4597).
+* Fixed issue where users encountered an error when creating queries in GraphStudio, reporting "query not found" (APPS-3668).
+* Resolved compilation issue when a variable assigned to the to_vertex_set function was used in the FROM clause (GLE-9434).
+* Fixed upgrade issue that allowed the use of reserved keywords like 'function' as vertex, edge, or attribute names (GLE-9842).
+* Fixed issue where dynamic file output policy was being fetched during query execution (GLE-9359).
+
+
 === Fixed and Improved in 4.1.2
 
 ==== Functionality
