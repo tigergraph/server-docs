@@ -2077,7 +2077,7 @@ curl -H 'Content-Type: application/json' -X POST -d @header.json
 ----
 where the file `header.json` contains
 
-`[{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1 "dataSources":[{"filename":"f","path":"./data","name":"file"}]}]`
+`[{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1,"dataSources":[{"filename":"f","path":"./data","name":"file"}],"configs":{"CONCURRENCY":2,"eof":"false","BATCH_SIZE":3}}]`
 --
 Sample Response::
 +
@@ -2088,6 +2088,8 @@ Sample Response::
 ----
 --
 ====
+
+We have details of the xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_options[options] and xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_parameters[parameters] available for running a loading job in GSQL.
 
 '''
 
