@@ -43,49 +43,78 @@ These are the required and optional configuration parameters:
 
 |file.uris
 |The URI or URIs separated by commas.
-|Required
+|Yes
 |N/A
 
 |file.type
 |`text` for CSV and JSON files; `parquet` for Parquet files.
-|Optional
+|No
 |If the file extension is `parquet`, then file.type default is Parquet;
 otherwise the default is `text`.
 
-|num.partitions
-|The number of partitions to use.
-When loading data, each partition is distributed evenly across each node.
-If one filename contains much more data than others, consider using a larger partition number.
-|Optional
-|3
-
 |batch.size
 |The number of CSV lines or JSON objects that will be processed per batch.
-|Optional
+|No
 |10000
 
 |recursive
 |If the URI refers to a directory, whether to search subdirectories recursively for files to load.
-|Optional
+|No
 |true
 
 |regexp
 |A regular expression to filter filenames to be loaded. Uses Java regular expression patterns.
-|Optional
+|No
 |.*, which permits all filenames.
 
 |default
 |The default value for any field left empty.
-|Optional
+|No
 |"", an empty string.
 
 |archive.type
 |The file type for archive files. Accepted values: `auto` (where it uses the file extension as the file type), `tar`, `zip`, `gzip`, `tar.gz` and `none` (loading from an uncompressed file).
-|Optional
+|No
 |auto
 
 |tasks.max
 |The number of threads used to download data.
-|Optional
+|No
 |1
+
+|loading.timeout.ms
+|The loading timeout per batch in milliseconds.
+
+If set to 0, then the global parameter `RESTPP.Factory.DefaultLoadingTimeoutSec` is used.
+|No
+|0
+
+|loading.max.retry.attempts
+|The maximum number of retries after a retryable server error.
+
+0 means an unlimited number of retries.
+|No
+|0
+
+|io.max.retry.attempts
+|The maximum number of HTTP transport retries.
+
+0 means an unlimited number of retries.
+|No
+|0
+
+|batch.size.bytes
+|The maximum data batch size in bytes, overriding the `batch.size.rows` limit.
+
+Example: If each row of data is 1000b, `batch.size.rows` = 10, and `batch.size.bytes` = 5000, then the data will be split into 2 5000b batches.
+|No
+|2,097,152 (2 MiB)
+
+|num.partitions
+|[Legacy: only used when gadmin parameter `KafkaConnect.EnableV2` is false] The number of partitions to use.
+When loading data, each partition is distributed evenly across each node.
+If one filename contains much more data than others, consider increasing this value.
+|No
+|3
+
 |===

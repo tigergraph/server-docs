@@ -3,10 +3,6 @@
 :description: Overview of available loading methods and supported features.
 :page-aliases: data-loading:kafka-loader/index.adoc
 
-//data-loading:data-streaming-connector/index.adoc, \
-//data-loading:kafka-loader:index.adoc, \
-//data-loading:data-streaming-connector:index.adoc
-
 Once you have xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc[defined a graph schema], you can load data into the graph. This section focuses on how to configure TigerGraph for the different data sources, as well as different data formats and transport schemes.
 
 == Loading System Architecture
@@ -36,8 +32,6 @@ See the pages for the specific method that fits your data source.
 
 * *Spark*: The TigerGraph xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc[Spark Connector] is used with Apache Spark to read data from a Spark DataFrame (or Data Lake) and write to TigerGraph.
 Users can leverage it to connect TigerGraph to the Spark ecosystem and load data from any Spark data sources
-
-** *Spark/JDBC (Deprecated)*: To load data from other big data platforms, such as Hadoop, the typical method is to use Spark's built-in feature to write a DataFrame to a JDBC target, together with TigerGraph's `POST /ddl` REST endpoint.
 
 == Loading Workflow
 

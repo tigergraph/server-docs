@@ -38,7 +38,7 @@ These are the required and optional configuration parameters:
 
 | topic
 | The source topic name
-| Required
+| Yes
 | N/A
 
 | time
@@ -54,8 +54,53 @@ These are the required and optional configuration parameters:
 | tasks.max
 | The maximum number of tasks used to consume the source topic.
 You can increase this value when the source topic contains multiple partitions.
-| Optional
+| No
 | 1
+
+| value.converter
+| Converter class used to convert between Kafka Connect format and the serialized form that is written to Kafka.
+This controls the format of the values in messages written to or read from Kafka.
+If records are in Avro format with Schema Registry service, use `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverter`.
+If records are in Avro format without using Schema Registry service, use `com.tigergraph.kafka.connect.converters.TigerGraphAvroConverterWithoutSchemaRegistry`.
+If records are in plaintext or JSON format, use `org.apache.kafka.connect.converters.ByteArrayConverter`.
+| No
+| N/A
+
+|loading.timeout.ms
+|The loading timeout per batch in milliseconds.
+
+If set to 0, then the global parameter `RESTPP.Factory.DefaultLoadingTimeoutSec` is used.
+|No
+|0
+
+|loading.max.retry.attempts
+|The maximum number of retries after a retryable server error.
+
+0 means an unlimited number of retries.
+|No
+|0
+
+|io.max.retry.attempts
+|The maximum number of HTTP transport retries.
+
+0 means an unlimited number of retries.
+|No
+|0
+
+|batch.size.bytes
+|The maximum data batch size in bytes, overriding the `batch.size.rows` limit.
+
+Example: If each row of data is 1000b, `batch.size.rows` = 10, and `batch.size.bytes` = 5000, then the data will be split into 2 5000b batches.
+|No
+|2,097,152 (2 MiB)
+
+|num.partitions
+|[Legacy: only used when gadmin parameter `KafkaConnect.EnableV2` is false] The number of partitions to use.
+When loading data, each partition is distributed evenly across each node.
+If one filename contains much more data than others, consider increasing this value.
+|No
+|3
+
 |===
 
 For example:
