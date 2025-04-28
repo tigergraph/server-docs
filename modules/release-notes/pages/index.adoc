@@ -181,6 +181,8 @@ Introduces a more complete and standard set of REST APIs:
 
 * [4.1.3] Added support for the xref:4.1@tigergraph-server:API:gsql-endpoints.adoc#_run_a_loading_job["configs"] object in loading jobs, enabling additional configuration xref:4.1@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_parameters[parameters] via the REST API.
 
+* [4.1.3] Changed `FUNCTION` from a reserved keyword to an xref:4.1@gsql-ref:appendix:keywords-and-reserved-words.adoc#_gsql_non_reserved_keywords[unreserved keyword].
+
 
 ////
 * **xref:4.1@gsql-ref:querying:accumulators.adoc#_edge_attached_accumulators[Edge Accumulators in Multi-hop Queries]**
@@ -240,6 +242,18 @@ AdminPortal UI for the xref:#finer_grain_query_privileges[fine-grained query pri
 Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globaldesigner` and `superuser` built-in roles ) to read log files.
 
 == Fixed issues
+
+=== Fixed and Improved in 4.1.3
+
+==== Functionality
+
+* Fixed issue where failed backups in corner cases caused the Engine to pause for an extended period, leading to subsequent query timeouts (CORE-4597).
+* Fixed issue where users encountered an error when creating queries in GraphStudio, reporting "query not found" (APPS-3668).
+* Resolved compilation issue when a variable assigned to the `to_vertex_set` function was used in the `FROM` clause (GLE-9434).
+* Changed `FUNCTION` from a reserved keyword to an unreserved keyword to fix an upgrade issue for users coming from 3.9 or earlier (GLE-9842).
+* Fixed issue where dynamic file output policy was being fetched during query execution (GLE-9359).
+* Fixed issue where the `tigergph_cpu_usage metric` was exceeding 100% under full load (TP-7193).
+
 
 === Fixed and Improved in 4.1.2
 
