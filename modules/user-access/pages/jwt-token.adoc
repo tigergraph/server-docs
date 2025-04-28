@@ -209,21 +209,37 @@ gadmin config set RESTPP.Factory.EnableAuth true
 
 == Setup JWT Token gadmin Configuration
 
+This section explains how to configure JWT token authentication and the priorities of the four key configuration items.
+
 === Configuration
 
-Users can set the URL for public key or secret settings with:
+* `Security.JWT.RSA.PublicKey`
+The public key used for JWT authentication when using the RSA algorithm.
 
-[console]
-----
-Security.JWT.RSA.PublicKey
-----
+* `Security.JWT.HMAC.Secret`
+The secret key used for JWT authentication when using the HMAC algorithm.
 
-or
+* `Security.JWT.JWKS.URL`
+This configuration item specifies the URL where the JWKS (JSON Web Key Set) can be accessed. The system uses this URL to fetch the JWT certificate dynamically using the Key ID (kid).
 
-[console]
-----
-Security.JWT.HMAC.Secret
-----
+* `GSQL.Token.HMACSecret`
+The HMAC secret used for JWT authentication in GSQL operations.
+
+*Configuration Item Priorities*
+
+These configuration items work in a prioritized order for JWT authentication. Here's how the system handles authentication:
+
+* *Priority 1:* If `Security.JWT.JWKS.URL` is set, the system looks for the *kid* in the JWT headers. 
+If the related RSA Public Key or HMAC Secret is found in the JWKS, it is used for authentication.
+
+* *Priority 2:* If *kid* is not set in the JWT headers or the related key is not found in the JWKS, the system falls back to using either the RSA key (`Security.JWT.RSA.PublicKey`) or the HMAC secret (`Security.JWT.HMAC.Secret`), depending on the algorithm specified in the JWT.
+
+* *Fallback Option:* If the JWT *iss* (issuer) claim is set to "TigerGraph," the system will use `GSQL.Token.HMACSecret` for authentication.
+
+[NOTE]
+====
+The *kid* (Key ID) in the JWT headers refers to a specific RSA public key or HMAC key in the JWKS. It is unique for each key and helps identify which key to use for authentication.
+====
 
 There are two ways to configure a public key or secret of a JWT token in TigerGraph through `gadmin config` set.
 
