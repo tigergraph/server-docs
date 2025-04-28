@@ -209,7 +209,7 @@ gadmin config set RESTPP.Factory.EnableAuth true
 
 == Setup JWT Token gadmin Configuration
 
-This section explains how to configure JWT token authentication and the priorities of the four key configuration items.
+There are four key configuration items for JWT token authentication, each with a defined priority to handle authentication.
 
 === Configuration
 
@@ -220,7 +220,7 @@ The public key used for JWT authentication when using the RSA algorithm.
 The secret key used for JWT authentication when using the HMAC algorithm.
 
 * `Security.JWT.JWKS.URL`
-This configuration item specifies the URL where the JWKS (JSON Web Key Set) can be accessed. The system uses this URL to fetch the JWT certificate dynamically using the Key ID (kid).
+The URL where the JWKS (JSON Web Key Set) can be accessed. The system uses this URL to fetch the JWT certificate dynamically using the Key ID (kid).
 
 * `GSQL.Token.HMACSecret`
 The HMAC secret used for JWT authentication in GSQL operations.
