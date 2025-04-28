@@ -15,7 +15,7 @@ The policy consists of an _allowlist_ and a _blocklist_:
 ----
 gadmin config set GSQL.FileInputPolicy '["/__TG_DATA_ROOT__/gui/loading_data", "!/etc", "!/usr/lib"]'
 gadmin config apply -y
-gadmin restart gsql restpp gpe -y
+gadmin restart gsql restpp -y
 ----
 
 Similar to the xref:tigergraph-server:security:file-output-policy.adoc[] the value for the config is a list of strings that start with either `!/` for the `blocklist` or `/` for the `allowlist`.
