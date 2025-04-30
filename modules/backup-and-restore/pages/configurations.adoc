@@ -6,7 +6,9 @@ This page describes the configuration options available for backup and restore o
 You can use `gadmin config set <parameter>` to change the value of any parameter.
 
 [TIP]
+====
 `gadmin config entry backup` will walk you though all the available backup comfiguration parameters interactively. Enter a value for the ones you want to change; move past the ones you don't want to set.
+====
 
 After configuring the parameters, run `gadmin config apply -y` to apply the new parameter values.
 
@@ -19,13 +21,16 @@ After the xref:#_configuration_parameters[table of configuration parameters], yo
 
 == Prerequisites
 * You have access to the TigerGraph Linux user account on your cluster.
-All commands must be run from the TigerGraph Linux user.
+* All commands must be run from the TigerGraph Linux user.
 
 == Configuration parameters
 
 The following is a list of configurations available for backup and restore.
 
-NOTE: For `System.Backup.Local.Enable`, `System.Backup.S3.Enable`, `System.Backup.ABS.Enable`, and `System.Backup.GCS.Enable`, only one can be enabled at a time.
+[NOTE]
+====
+For `System.Backup.Local.Enable`, `System.Backup.S3.Enable`, `System.Backup.ABS.Enable`, and `System.Backup.GCS.Enable`, only one can be enabled at a time.
+====
 
 |===
 |Configuration parameter |Description |Default
@@ -138,6 +143,23 @@ To configure backup files to an AWS S3 Bucket for an on-premises TigerGraph Serv
 TigerGraph clusters use long-lived credentials to authenticate to AWS as the IAM user, allowing TigerGraph access to put backup files into the S3 bucket.
 These credentials are also used to read and copy files during a Restore process.
 
+. Add the role policy to allow the role to assume itself.
+If the custom role is named `EC2S3AccessRole`, run the following AWS CLI command to set the required policy:
+
++
+[console,]
+----
+aws iam put-role-policy --role-name EC2S3AccessRole --policy-name AssumeEC2S3AccessRole --policy-document '{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::'$AWS_ACCOUNT':role/EC2S3AccessRole"
+    }
+  ]
+}'
+----
 
 . Configure each of the following parameters on the linux command line:
 +
@@ -171,6 +193,18 @@ Alternatively, instead of using `AccessKeyID` and `SecretAccessKey`, you may use
 ----
 gadmin config set "System.Backup.S3.RoleARN" "arn:aws:iam::account:role/role-name-with-path"
 ----
+
+. Set the AWS Region for EC2 instances:
+
+If you're running TigerGraph on an EC2 instance, set the AWS region for the AWS SDK by configuring the region as an environment variable:
++
+[console,]
+----
+gadmin config set Executor.BasicConfig.Env "AWS_REGION=us-west-2;$(gadmin config get Executor.BasicConfig.Env)"
+gadmin restart exe -y
+----
+Replace `us-west-2` with your actual AWS region.
+
 +
 .Apply the new parameter values
 [console,]
