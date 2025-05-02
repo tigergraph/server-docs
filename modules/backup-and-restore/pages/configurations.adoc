@@ -80,9 +80,9 @@ S3 Role ARN takes priority over access keys. For more information, see link:http
 
 |System.Backup.TimeoutSec |Timeout limit for the backup operation in seconds |`+18000+`
 
-|System.Backup.CompressProcessNumber | Number of concurrent processes for compression during backup.
+|System.Backup.CompressProcessNumber | Number of concurrent processes for compression during backup (default `10`).
 
-It's recommended to keep the default value `10`, which means the number of processes used to compress is equal to the number of CPU cores on each node.
+ `0` means the number of processes used to compress is equal to the number of CPU cores on each node.
 | `10`
 
 |System.Backup.DecompressProcessNumber | The number of concurrent processes for decompression during the restore.
