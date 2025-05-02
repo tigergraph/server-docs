@@ -40,20 +40,24 @@ The following command reveals the location of the log files:
 gadmin log
 ----
 
-You will be presented with a list of log files. The left side of the resulting file paths is the component for which the respective log file is logging information.
-The majority of the time, these files will contain what you are looking for. You may notice that there are multiple files for each TigerGraph component.
+This command will list the log files, and the left side of the resulting file paths indicates the respective component's log file. 
+Typically, these files contain the information you're looking for. Each TigerGraph component has multiple associated log files.
 
-[NOTE]
-====
-The .out file extension is for errors. +
-The .INFO file extension is for normal behaviors.
-====
+*Log File Extensions*
 
-In order to diagnose an issue for a given component, you'll want to check the .out log file extension for that component.
+* `.out` files capture *standard output (stdout)* and log runtime information, including error stack traces when services crash or unexpected errors occur. 
+These logs are especially useful for errors that aren't logged by the service's internal logging mechanism.
+
+* `.ERROR` files are used to log errors captured by the system, typically from exceptions caught in try-catch blocks. If an error occurs before the logging system initializes or is uncaught, it is logged in the `.out` file instead.
+
+* `.INFO` files log regular operational information about the system's normal functioning.
+
+To diagnose an issue for a given component, check the `.out` log file for that component.
 
 image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0QAG1M3vW1t0nmwo7oYr3DgwVsgJoIEjub-5tSA81UtOQ-Ot-9m30zZ9Zr5tRG077dgfZ7KaE3tMMafUK63oi6fILQeM-kQw6fKqc[]
 
-Other log files that are not listed by the *`gadmin log`* command are those for Zookeeper and Kafka, which can be found here:
+*Other Logs*
+For components like Zookeeper and Kafka, the log files are not listed by `gadmin log`. You can find them in the following locations:
 
 [source,console]
 ----
