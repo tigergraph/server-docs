@@ -196,11 +196,12 @@ gadmin config set "System.Backup.S3.RoleARN" "arn:aws:iam::account:role/role-nam
 . Set the AWS Region for EC2 instances:
 +
 To configure the AWS region for the AWS SDK on an EC2 instance running TigerGraph, set the region as an environment variable:
-
++
 [source,console]
 ----
 gadmin config set Executor.BasicConfig.Env "AWS_REGION=us-west-2;$(gadmin config get Executor.BasicConfig.Env)"
 ----
++
 Replace `us-west-2` with your actual AWS region.
 
 . Apply the new parameter values
