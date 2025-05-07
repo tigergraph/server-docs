@@ -47,7 +47,10 @@ These are the required and optional configuration parameters:
 | -2
 
 | partition.offsets
-| Specifies the partition offsets to consume from, separated by commas. For example, `0:0,1:3,2:-1` indicates that partition 0 starts at offset 0, partition 1 starts at offset 3, and partition 2 starts at the latest offset. The format is `partition_number:offset`. Here, `-1` represents the latest offset, and `-2` represents the beginning of the partition. If not specified, all partitions are consumed from the beginning.
+| Specifies the partition offsets to consume from, formatted as a comma-separated list of <partition>:<offset> pairs.
+For example, `0:0,1:3,2:-1` indicates that partition 0 starts at offset 0, partition 1 starts at offset 3, and partition 2 starts at the latest offset.
+An offset of -1 means the latest offset; a offset of -2 means the beginning of the partition.
+If not specified, all partitions are consumed from the beginning.
 | Optional
 | N/A
 
