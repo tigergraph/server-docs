@@ -12,18 +12,28 @@ val tgOptions = Map(
 )
 ----
 
-==== Some Helpful tips 
+==== Some Helpful tips
 
-* **Connection options object** 
+* **Connection options object**
 
-You may find it convenient to bundle the options related to making a database connection in a data object (e.g., `tgOptions`) and then use `.options(tgOptions)` when running the connector.
-Moreover, placing the user credentials in a data object keeps them separate from the connection commands.
+To simplify configuration, you can bundle the options related to database connection in a data object (e.g., `tgOptions`) and then use `.options(tgOptions)` when running the connector. This approach helps keep user credentials separate from connection commands.
 
 * **Authentication methods**
 
-Using username/password has the advantage that this authentication method will automatically refresh an access token as needed.If you choose to use a token, please make sure the lifetime of the token is long enough for the loading job.
+We recommend using username/password or secret-based authentication over a fixed token, as these allow for automatic token refresh.
 
-* **High Availabilty** 
+The Spark connector now supports the following authentication methods:
 
-To support fault tolerance and failover, please provide the URL of all nodes in the option `url`, e.g.,
+. `token`: Suitable for one-time Spark jobs, without refresh token support.
+. `username/password`: Works for both batch and streaming jobs. The token is automatically requested and refreshed.
+. `secret`: Also supports both batch and streaming jobs. The token is automatically managed using the GSQL secret.
+. `oauth2`: Can be used for both batch and streaming jobs. The token is automatically requested and refreshed using `oauth2.url` and `oauth2.parameters`.
+
+* **High Availability**
+
+To ensure fault tolerance, provide a list of all node `URLs` in the `url` option for the connector:
+
+[source,json]
+----
 "url" -> "https://m1:14240,https://m2:14240,https://m3:14240,https://m4:14240",
+----
