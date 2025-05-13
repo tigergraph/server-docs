@@ -6,7 +6,9 @@ This page describes the configuration options available for backup and restore o
 You can use `gadmin config set <parameter>` to change the value of any parameter.
 
 [TIP]
+====
 `gadmin config entry backup` will walk you though all the available backup comfiguration parameters interactively. Enter a value for the ones you want to change; move past the ones you don't want to set.
+====
 
 After configuring the parameters, run `gadmin config apply -y` to apply the new parameter values.
 
@@ -19,13 +21,16 @@ After the xref:#_configuration_parameters[table of configuration parameters], yo
 
 == Prerequisites
 * You have access to the TigerGraph Linux user account on your cluster.
-All commands must be run from the TigerGraph Linux user.
+* All commands must be run from the TigerGraph Linux user.
 
 == Configuration parameters
 
 The following is a list of configurations available for backup and restore.
 
-NOTE: For `System.Backup.Local.Enable`, `System.Backup.S3.Enable`, `System.Backup.ABS.Enable`, and `System.Backup.GCS.Enable`, only one can be enabled at a time.
+[NOTE]
+====
+For `System.Backup.Local.Enable`, `System.Backup.S3.Enable`, `System.Backup.ABS.Enable`, and `System.Backup.GCS.Enable`, only one can be enabled at a time.
+====
 
 |===
 |Configuration parameter |Description |Default
@@ -38,44 +43,44 @@ Required if backup is to be stored locally. |null
 
 |System.Backup.S3.Enable |Enables or disables backup to AWS S3 or S3-compatible services such as Ceph S3.|`false`
 
-|System.Backup.S3.AWSAccessKeyID |AWS Access Key ID for authentication (deprecated, use `System.Backup.S3.AccessKeyID` instead, which has a higher priority.) |`+nan+`
+|System.Backup.S3.AWSAccessKeyID |AWS Access Key ID for authentication (deprecated, use `System.Backup.S3.AccessKeyID` instead, which has a higher priority.) |
 
 |System.Backup.S3.AWSSecretAccessKey |AWS Secret Access Key for authentication (deprecated, use `System.Backup.S3.SecretAccessKey` instead, which has a higher priority.)
 
 *NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.
-|`+nan+`
+|
 
-|System.Backup.S3.AccessKeyID |Access key ID for authentication for AWS S3 or S3-compatible services.| `+nan+`
+|System.Backup.S3.AccessKeyID |Access key ID for authentication for AWS S3 or S3-compatible services.|
 |System.Backup.S3.SecretAccessKey |
 Secret Access Key for authentication for AWS S3 or S3-compatible services.
 
-*NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.|`+nan+`
+*NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.|
 
 |System.Backup.S3.RoleARN |The AWS role for accessing s3 buckets.
 S3 Role ARN takes priority over access keys. For more information, see link:https://docs.aws.amazon.com/IAM/latest/APIReference/API_Role.html[AWS role ARN documentation].
 
 *NOTE*: This is only for AWS S3, and TigerGraph assumes the credentials for using `sts:AssumeRole` have been set up. You can verify the credentials are ready by running link:https://docs.aws.amazon.com/cli/latest/reference/sts/assume-role.html#examples[aws sts assume-role]. One way to set up credentials is to configure access key id, secret access key and region with AWS CLI `aws configure`.
-|`+nan+`
+|
 
-|System.Backup.S3.BucketName |Bucket for AWS S3 or S3-compatible services.|`+nan+`
+|System.Backup.S3.BucketName |Bucket for AWS S3 or S3-compatible services.|
 
-|System.Backup.S3.Endpoint | A URL used to interact with the S3 (AWS S3/S3-compatible) service. It can be used for AWS S3 VPC Endpoint, customer endpoint, or S3-compatible service. For regular AWS S3, leave it empty.|`nan`
+|System.Backup.S3.Endpoint | A URL used to interact with the S3 (AWS S3/S3-compatible) service. It can be used for AWS S3 VPC Endpoint, customer endpoint, or S3-compatible service. For regular AWS S3, leave it empty.|
 
 |System.Backup.ABS.Enable |Enables or disables backup to ABS (Azure Blob Storage).|`false`
-|System.Backup.ABS.ContainerName |Azure storage account container|`+nan+`
+|System.Backup.ABS.ContainerName |Azure storage account container|
 |System.Backup.ABS.AccountName |Azure storage account name for authentication.
 
 *NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_key`.
-| `+nan+`
-|System.Backup.ABS.AccountKey |Account key for the Azure storage account.| `+nan+`
-|System.Backup.ABS.Endpoint|Optional Blob service endpoint; if not given, the default endpoint https://<account-name>.blob.core.windows.net will be used.|`+nan+`
+|
+|System.Backup.ABS.AccountKey |Account key for the Azure storage account.|
+|System.Backup.ABS.Endpoint|Optional Blob service endpoint; if not given, the default endpoint https://<account-name>.blob.core.windows.net will be used.|
 |System.Backup.GCS.Enable |Enables or disables backup to Google Cloud Storage (GCS).|`false`
-|System.Backup.GCS.BucketName |GCS bucket.|`+nan+`
-|System.Backup.GCS.AccessKeyID |Access Key for a GCS HMAC Key.| `+nan+`
+|System.Backup.GCS.BucketName |GCS bucket.|
+|System.Backup.GCS.AccessKeyID |Access Key for a GCS HMAC Key.| 
 |System.Backup.GCS.Secret |Secret for a GCS HMAC Key.
 
 *NOTE*: If setting this in interactive mode, store the key in a file and provide the path to the file, e.g., `@/tmp/test_secret`.
-| `+nan+`
+| 
 |System.Backup.GCS.Endpoint|GCS Storage URI.|`https://storage.googleapis.com`
 
 |System.Backup.TimeoutSec |Timeout limit for the backup operation in seconds |`+18000+`
@@ -138,6 +143,23 @@ To configure backup files to an AWS S3 Bucket for an on-premises TigerGraph Serv
 TigerGraph clusters use long-lived credentials to authenticate to AWS as the IAM user, allowing TigerGraph access to put backup files into the S3 bucket.
 These credentials are also used to read and copy files during a Restore process.
 
+. Add the role policy to allow the role to assume itself.
+If the custom role is named `EC2S3AccessRole`, run the following AWS CLI command to set the required policy:
+
++
+[console,]
+----
+aws iam put-role-policy --role-name EC2S3AccessRole --policy-name AssumeEC2S3AccessRole --policy-document '{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::'$AWS_ACCOUNT':role/EC2S3AccessRole"
+    }
+  ]
+}'
+----
 
 . Configure each of the following parameters on the linux command line:
 +
@@ -171,11 +193,30 @@ Alternatively, instead of using `AccessKeyID` and `SecretAccessKey`, you may use
 ----
 gadmin config set "System.Backup.S3.RoleARN" "arn:aws:iam::account:role/role-name-with-path"
 ----
+
+. Set the AWS Region for EC2 instances:
 +
-.Apply the new parameter values
-[console,]
+To configure the AWS region for the AWS SDK on an EC2 instance running TigerGraph, set the region as an environment variable:
++
+[source,console]
+----
+gadmin config set Executor.BasicConfig.Env "AWS_REGION=us-west-2;$(gadmin config get Executor.BasicConfig.Env)"
+----
++
+Replace `us-west-2` with your actual AWS region.
+
+. Apply the new parameter values
++
+[source,console]
 ----
 gadmin config apply -y
+----
+
+. Restart the service
++
+[source,console]
+----
+gadmin restart exe -y
 ----
 
 Now you are ready to xref:backup-cluster.adoc[perform a backup].
