@@ -59,6 +59,8 @@ Audit logs now include `gadmin` activity, for more complete audit coverage.
 
 * [4.1.2] **xref:tigergraph-server:user-access:sso.adoc#_command_line_options[The SAML SSO private key]** may now be PKCS#8 or PKCS#1 format.
 
+* [4.1.3] Added the `Security.JWT.JWKS.URL` xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[configuration parameter], to allow JWT certificates to be fetched using the Key ID (kid) from a JWKS (JSON Web Key Set) URL.
+
 === High Availability (HA) Enhancements
 
 * **xref:4.1@tigergraph-server:data-loading:data-loading-v2.adoc[Data Loading HA (Beta)]**:
@@ -95,6 +97,9 @@ If loading is stuck or acting abnormally, the loader sends an alert message to t
 including a diagnosis, enabling users to take timely action.
 
 * See also xref:_high_availability_ha_enhancements[]
+
+* [4.1.3] Spark Connector now supports xref:4.1@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_common_options[`OAuth2` authentication], enabling seamless JWT token retrieval from third-party IdPs like Azure AD and Auth0 for improved xref:4.1@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_authentication_methods[security and token management].
+
 
 === System Management and Monitoring Enhancements ===
 * New options and optimized behavior in `GADMIN CONFIG APPLY` to 
@@ -183,11 +188,8 @@ Introduces a more complete and standard set of REST APIs:
 
 * [4.1.3] Changed `FUNCTION` from a reserved keyword to an xref:4.1@gsql-ref:appendix:keywords-and-reserved-words.adoc#_gsql_non_reserved_keywords[unreserved keyword].
 
-* [4.1.3] Added the `Security.JWT.JWKS.URL` xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[configuration parameter], to allow JWT certificates to be fetched using the Key ID (kid) from a JWKS (JSON Web Key Set) URL.
-
 * [4.1.3] Added *xref:4.1@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[Configuation parameter `GSQL.Github.Enabled`]* to enable retrieving UDFs from a Github repository.
 
-* [4.1.3] Spark Connector now supports xref:4.1@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_common_options[`OAuth2` authentication], enabling seamless JWT token retrieval from third-party IdPs like Azure AD and Auth0 for improved xref:4.1@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_authentication_methods[security and token management].
 
 ////
 * **xref:4.1@gsql-ref:querying:accumulators.adoc#_edge_attached_accumulators[Edge Accumulators in Multi-hop Queries]**
@@ -259,6 +261,7 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Fixed issue where dynamic file output policy was being fetched during query execution (GLE-9359).
 * Fixed issue where the `tigergph_cpu_usage metric` was exceeding 100% under full load (TP-7193).
 * Added the `Security.JWT.JWKS.URL` configuration parameter to fetch JWT certificates using the Key ID (kid) from a JWKS URL, ensuring compliance with the JWKS standard (GLE-10288).
+* Fixed issue where exploration results and potentially sensitive data were included in the `gui/data.json` file, preventing accidental leakage of personally identifiable information (PII) (APPS-3920).
 
 
 === Fixed and Improved in 4.1.2
