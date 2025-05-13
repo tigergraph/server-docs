@@ -80,28 +80,3 @@ These can refer to actual files or be placeholder names. The actual data sources
 . LOAD statements specify how to take the data fields from files to construct vertices or edges.
 
 NOTE: Refer to the xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Creating a Loading Job] documentation for full details
-
-////
-OLD CONTENT
-== Set up a data source for a data streaming loading job
-
-GSQL uses a user-provided configuration file to automatically set up a streaming data connection and a loading job for data in these external cloud data hosts:
-
-* Google Cloud Storage (GCS)
-* AWS S3
-* Azure Blob Storage (ABS)
-* Google BigQuery
-
-Go to the xref:data-streaming-connector/index.adoc[] main page for instructions on setting up the loading job.
-
-NOTE: The data streaming will stage temporary data files on the database server's disk.
-You should have free disk space of at least 2 times the size of your total (uncompressed) input data.
-
-== Manual connector setup
-For data stored in an external Kafka cluster, you need to perform a few more steps to set up data streaming.
-Using `gadmin` server commands, you first create a connector to interpret the data source, then define the data source, create the loading job, and run it.
-
-See the xref:data-streaming-connector/kafka.adoc[Kafka cluster streaming] page for more information.
-
-This method relies on the xref:kafka-loader/index.adoc[TigerGraph Kafka Loader].
-////
