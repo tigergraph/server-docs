@@ -168,15 +168,15 @@ gadmin restart all -y
 
 Please add the following settings to the connector configuration:
 
-[NOTE]
-====
-See xref:tigergraph-server:data-loading:data-streaming-connector/kafka.adoc#_basic_configurations[Basic Configurations] for more information on connection configurations.
-====
-
 * `source.cluster.bootstrap.servers=<Source_Kafka_SSL_Broker_List>`
 * `target.cluster.bootstrap.servers=<Target_Kafka_SSL_Broker_List>`
 * `source.cluster.security.protocol=SSL`
 * `target.cluster.security.protocol=SSL`
+
+[NOTE]
+====
+See xref:data-loading:load-from-kafka.adoc#_configure_the_kafka_source[Configure the Kafka Source] for more information on Kafka connection configurations.
+====
 
 .A full connector configuration example, with schema registry:
 [console]
