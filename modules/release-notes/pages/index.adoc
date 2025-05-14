@@ -316,6 +316,21 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦A NullPointerException occurs when performing a code check for queries using statements other than `a = vt.*` or `a = {vt.*}`, causing query creation to fail.
+¦4.1.3
+a¦TBD
+¦TBD
+
+¦When `pulldict` fails, an empty debug log is generated, as the log level for debug is not enabled by default.
+¦4.1.3
+a¦TBD
+¦TBD
+
+¦After upgrading, the system fails to detect `to_string()` in the UDF file, leading to query compilation errors. This issue occurs because the system doesn't report parsing errors during file uploads.
+¦4.1.3
+a¦TBD
+¦TBD
+
 ¦When using `set(index, value)` and `flip(index)` with BitwiseOrAccum<1000>, the task fails due to lack of support for bit operators `(&, |, ~)` in bitwise accumulation.
 ¦4.1.3
 a¦TBD
