@@ -469,6 +469,8 @@ e.g. https://api.github.com |`nan`
 |GSQL.GithubUserAcessToken |The credential for github. Set it to
 `anonymous' for public access, or empty to not use github |`nan`
 
+| GSQL.GithubEnabled [4.1.3+]| To Enable the retrieval of UDFs (such as ExprFunctions.hpp, ExprUtils.hpp, etc.) from GitHub (default `false`). | `false`
+
 |GSQL.GrpcMessageMaxSizeMB |The maximum size of grpc message request of
 gsql |`40`
 
@@ -1024,12 +1026,16 @@ concurrent queries in the delay queue |`20`
 |===
 |Name |Description |Example
 
+| Security.JWT.JWKS.URL
+| Provide the URL for the public keys used to verify JWT signatures. The URL points to a xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[JWKS (JSON Web Key Set)] endpoint.
+| `https://jwt.example.com/.well-known/jwks.json`
+
 | Security.JWT.RSA.PublicKey
-| Configure a RSA public key for xref:tigergraph-server:user-access:jwt-token.adoc[].
+| Configure a RSA public key for xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[OIDC JWT Authentication].
 | `gadmin config set Security.JWT.RSA.PublicKey <public-key content or URL or @filepath>`
 
 | Security.JWT.HMAC.Secret
-| Configure a HMAC Secret for xref:tigergraph-server:user-access:jwt-token.adoc[].
+| Configure a HMAC Secret for xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[OIDC JWT Authentication].
 | `gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>`
 
 | Security.JWT.Issuer

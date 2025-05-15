@@ -116,4 +116,37 @@ The log will be printed to stderr unless `log.file` is set.
 ¦ (none)
 ¦ The log file name pattern, e.g., "/tmp/tigergraph-spark-connector.log". It requires setting `log.level` first.
 ¦ Logging
+
+¦ `oauth2.url`
+¦ (none)
+¦ The URL where the Client Credentials grant request should be sent for retrieving the access token. This URL is typically provided by the Identity Provider (IdP) such as Azure AD or Auth0.
+
+ For *Azure AD:*
+`https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token`
+
+For *Auth0:*
+`https://{yourDomain}/oauth/token`
+
+*Note:* Use the gadmin command to set the `Security.JWT.RSA.PublicKey` in advance for JWT verification.
+¦ Authentication
+
+¦ `oauth2.parameters`
+¦ (none)
+¦ A *stringified JSON* that carries parameters for retrieving the access token. The required parameters vary depending on the IdP.
+
+ For *Azure AD:*
+`{
+  "client_id": "{client_id}",
+  "client_secret": "{client_secret}",
+  "scope": "https://storage.azure.com/.default"
+}`
+
+For *Auth0:*
+`{
+"client_id": "{client_id}",
+"client_secret": "{client_secret}",
+"audience": "{api_identifier}"
+}`
+
+¦ Authentication
 |===

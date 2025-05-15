@@ -12,18 +12,28 @@ val tgOptions = Map(
 )
 ----
 
-==== Some Helpful tips 
+*Some Helpful tips*
 
-* **Connection options object** 
+* **Connection options object**
 
-You may find it convenient to bundle the options related to making a database connection in a data object (e.g., `tgOptions`) and then use `.options(tgOptions)` when running the connector.
-Moreover, placing the user credentials in a data object keeps them separate from the connection commands.
+To simplify configuration, you can bundle the options related to database connection in a data object (e.g., `tgOptions`) and then use `.options(tgOptions)` when running the connector. This approach helps keep user credentials separate from connection commands.
 
-* **Authentication methods**
+* **High Availability**
 
-Using username/password has the advantage that this authentication method will automatically refresh an access token as needed.If you choose to use a token, please make sure the lifetime of the token is long enough for the loading job.
+To ensure fault tolerance, provide a list of all node `URLs` in the `url` option for the connector:
 
-* **High Availabilty** 
-
-To support fault tolerance and failover, please provide the URL of all nodes in the option `url`, e.g.,
+[source,json]
+----
 "url" -> "https://m1:14240,https://m2:14240,https://m3:14240,https://m4:14240",
+----
+
+=== Authentication Methods
+
+We recommend using *OAuth2* for authentication. Our implementation supports automatic token requests and refresh, and is more secure that *username/password*, offering convenience and security for both batch and streaming jobs. 
+
+The Spark connector now supports the following authentication methods:
+
+* `oauth2`: Recommended for both batch and streaming jobs. The token is automatically requested and refreshed using `oauth2.url` and `oauth2.parameters`.
+* `token`: Suitable for one-time Spark jobs, but lacks support for refresh tokens.
+* `username/password`: Works for both batch and streaming jobs, but is considered an older, less secure method. The token is automatically requested and refreshed.
+* `secret`: Also works for batch and streaming jobs, and the token is managed using the GSQL secret, but is less secure compared to OAuth2.
