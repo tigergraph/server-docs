@@ -316,7 +316,7 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-¦A NullPointerException occurs when performing a code check for queries using statements other than `a = vt.*` or `a = {vt.*}`, causing query creation to fail.
+¦A NullPointerException occurs when performing a code check for queries using statements other than a = vt.* or a = {vt.*}, causing query creation to fail.
 ¦4.1.3
 a¦TBD
 ¦TBD
@@ -336,9 +336,9 @@ a¦TBD
 a¦TBD
 ¦TBD
 
-¦The `.flip()` function behaves differently in Single/Dist mode compared to UDF mode. In UDF mode, values are updated, but in Single/Dist mode, they remain unchanged. This is caused by the block mutator function being called inside the PRINT statement. To resolve this, use `.flip()` inside the POST-ACCUM block instead.
+¦Using xref:{page-component-version}@gsql-ref:querying:accumulators.adoc#_functions[`.flip()`] on `BitwiseAndAccum` or `BitwiseOrAccum` inside a `PRINT` block may produce different results in UDF mode versus Single/Distributed mode.
 ¦4.1.3
-a¦TBD
+a¦Move the `.flip()` logic to the POST-ACCUM block for consistent behavior.
 ¦TBD
 
 ¦After a cluster expansion, the GPE service may remain in the warmup state.
