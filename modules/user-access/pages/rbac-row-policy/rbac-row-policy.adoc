@@ -332,7 +332,7 @@ Here are some important terms and details for object-based privileges:
 They can be things like `GLOBAL`, `VERTEX`, `EDGE`, etc.
 * *Privilege Scopes*: Define where these privileges apply, like `GRAPH`, `PACKAGE`, or `GLOBAL`.
 
-To see a complete list, as well as the xref:tigergraph-server:reference:list-of-privileges-legacy.adoc[legacy privilege keywords] that the object-based privileges correspond to, see the xref:rbac-row-policy/row-policy-privileges-table.adoc[].
+To see a complete list, as well as the xref:reference:list-of-privileges-legacy.adoc[legacy privilege keywords] that the object-based privileges correspond to, see the xref:rbac-row-policy/row-policy-privileges-table.adoc[].
 
 === Privilege Commands
 
@@ -418,7 +418,7 @@ WRITE_POLICY on graph level
 
 [NOTE]
 ====
-For a complete list of Built-in roles see xref:tigergraph-server:user-access:access-control-model.adoc#_built_in_roles[Built-in Roles]
+For a complete list of Built-in roles see xref:user-access:access-control-model.adoc#_built_in_roles[Built-in Roles]
 ====
 
 == Context Functions
@@ -430,9 +430,9 @@ They work in: `INSTALLED` queries, `INTERPRET` queries, and xref:#_gsql_function
 
 Before users can use Context Functions, they must enable REST++ authentication.
 If it's not enabled, users will see an error message.
-To learn more about REST++ authentication see xref:tigergraph-server:API:authentication.adoc[REST API Authentication].
+To learn more about REST++ authentication see xref:API:authentication.adoc[REST API Authentication].
 
-Additionally, in order to use the context functions explicitly, ensure that the user holds the `READ_ROLE` privilege on the current graph, unless a xref:tigergraph-server:user-access:rbac-row-policy/setup-row-policy.adoc#_row_policy[Row Policy] already includes the context functions.
+Additionally, in order to use the context functions explicitly, ensure that the user holds the `READ_ROLE` privilege on the current graph, unless a xref:user-access:rbac-row-policy/setup-row-policy.adoc#_row_policy[Row Policy] already includes the context functions.
 
 
 === current_roles()
