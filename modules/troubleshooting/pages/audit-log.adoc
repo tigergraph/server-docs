@@ -7,15 +7,15 @@ Audit logs maintain a historical record of activity events, noting the time, res
 Audit logs enable organizations to meet certain compliance and business policy requirements.
 Additionally, Administrators use audit logs to track user activity, and security teams use them to investigate breaches and ensure regulatory compliance.
 
-== Key Features
+The sections below outline the <<_key_features_and_considerations>>, <<_enabling_audit_logging>>, <<_log_file_management_policies>>, <<_audit_log_format>>, <<_data_masking>>, and <<_known_issues>>.
 
-* The audit logs are structured in JSON format, ensuring machine-readability.
 
-* This format facilitates easy integration with third-party tools.
 
-* It eliminates the need for users to navigate through numerous log files.
+== Key Features and Considerations
 
-== Considerations
+* The audit logs are structured in JSON format, ensuring machine-readability and easy integration with third-party tools.
+
+* The gathering of audit data into one log eliminates the need to navigate through numerous log files.
 
 === Security
 
@@ -23,13 +23,13 @@ Additionally, Administrators use audit logs to track user activity, and security
 
 * Access to the audit log is restricted to those who have access to TigerGraph logs.
 
-* Sensitive data or PII in the audit log, such as credentials or sensitive query payload information is masked by default.
+* Sensitive data or PII in the audit log, such as credentials or sensitive query payload information is masked by default. See the section xref:#_data_masking[] for more details.
 
 === Performance and Scalability
 * Enabling audit logging records audit logs to separate files, adding a slight disk I/O workload.
 However, compared to the debug log, the audit log contains significantly less data, ensuring negligible performance impact.
 
-== Configuration Commands
+== Configuration Parameters
 
 .Users can enable, disable, and configure audit logging with the following `gadmin` configs:
 [cols="3", separator=¦ ]
@@ -38,9 +38,9 @@ However, compared to the debug log, the audit log contains significantly less da
 
 ¦ `System.Audit.Enable` ¦ Setting to enable audit logs. ¦ boolean (false)
 
-¦ `System.Audit.DataBaseName` ¦ Modify the DataBaseName field in log file header. ¦ name (TigerGraph)
+¦ `System.Audit.DataBaseName` ¦ Modify the DataBaseName field in log file header. ¦ string (`TigerGraph`)
 
-¦ `System.Audit.LogDirRelativePath` ¦ Modify the relative audit log path. ¦ path string (<TG_LogRoot>/AuditLog/)
+¦ `System.Audit.LogDirRelativePath` ¦ Modify the relative audit log path. ¦ path string (`<TG_LogRoot>/AuditLog/`)
 
 ¦ `System.Audit.LogConfig.LogFileMaxDurationDay` ¦ Modify the modification date when a new audit log file is created. ¦ Integer (90)
 
@@ -50,14 +50,11 @@ However, compared to the debug log, the audit log contains significantly less da
 
 ¦ `System.Audit.MaskPII`
 ¦ Mask Sensitive data or PII in the audit log.
-¦ Default value is: `true`
+¦ boolean (true)
 
 |===
 
-Additionally, all audit log files are stored in JSON format.
-Each log entry is a JSON object, and the log file is one JSON array of these objects.
-
-For more information see section xref:audit-log.adoc#_consuming_audit_logs[] or for a complete list of TigerGraph `gadmin` configs see xref:tigergraph-server:reference:configuration-parameters.adoc[].
+For a complete list of TigerGraph `gadmin` configuration parameters, see the xref:tigergraph-server:reference:configuration-parameters.adoc[] page.
 
 === Apply Configuration Changes
 
@@ -71,11 +68,11 @@ $ gadmin config apply -y
 $ gadmin restart gsql -y
 ----
 
-== Setup Environment
+== Enabling Audit Logging
 
-Audit logging is disabled by default in a TigerGraph system.
+Audit logging is disabled by default.
+To enable audit logging, use the following `gadmin` command:
 
-.To enable audit logging, use `gadmin` to run the following command to enable the setting:
 [console]
 ----
 $ gadmin config set System.Audit.Enable true
@@ -84,13 +81,13 @@ $ gadmin config set System.Audit.Enable true
 Once enabled, the audit log will be found in the `<System.LogRoot>/AuditLog` folder.
 The `<System.LogRoot>` represents the default path for all TigerGraph logs, set to `tigergraph/log` by default.
 
-.To customize the relative path for the audit log (in relation to `<System.LogRoot>`), execute the following command:
+To customize the *relative path* for the audit log (in relation to `<System.LogRoot>`), run the following command:
 [console]
 ----
 $ gadmin config set System.Audit.LogDirRelativePath <audit-log-relative-path>
 ----
 
-.You can also modify the <System.LogRoot> on your environment by:
+You can also modify the *`<System.LogRoot>`* on your environment by:
 [console]
 ----
 $ gadmin config set System.LogRoot <log-root-path>
@@ -98,52 +95,60 @@ $ gadmin config set System.LogRoot <log-root-path>
 
 [CAUTION]
 ====
-Take note that altering `<System.LogRoot>` impacts the root path for all TigerGraph logs.
+Altering `<System.LogRoot>` impacts the root path for ALL TigerGraph logs.
 ====
 
-== Log File Policy
+There is a *"DatabaseName"* field appended to the header of each audit log file.
+*The* value of this field is "TigerGraph" by default.
+
+You can modify this value by running the following command:
+[source, console]
+----
+$ gadmin config set System.Audit.DataBaseName <database-name>
+----
+
+== Log File Management Policies
+
+=== File creation and size
 A new audit log file will be created when *any* of the following situations occur:
 
 * The GSQL service is restarted.
 * The latest audit log file size exceeds the `System.Audit.LogConfig.LogFileMaxSizeMB` value.
-The value of this field is `100MB` by default.
+The default value is 100 MB.
 +
-.You can modify this value by running the following command:
+You can modify this value by running the following command:
++
 [console]
 ----
 $ gadmin config set System.Audit.LogConfig.LogFileMaxSizeMB <file-size>
 ----
 
-* Log files will be removed if its lifetime exceeds `System.Audit.LogConfig.LogFileMaxDurationDay`.
-The value of this field is `90` days by default.
-+
-.You can modify this value by running the following command:
+=== File deletion
+A log file will be removed if its lifetime exceeds `System.Audit.LogConfig.LogFileMaxDurationDay` days.
+The default value is 90 days.
+
+You can modify this value by running the following command:
 [console]
 ----
 $ gadmin config set System.Audit.LogConfig.LogFileMaxDurationDay <max-duration-day>
 ----
 
-* Lastly, the oldest audit log file will be automatically deleted, if the amount of audit logs in the audit log folder exceeds the `System.Audit.LogConfig.LogRotationFileNumber` value.
-The default of this value is `100` audit logs.
-+
-.You can modify this value by running the following command:
+The oldest audit log file will be automatically deleted if the number of audit logs in the audit log folder exceeds the `System.Audit.LogConfig.LogRotationFileNumber` value.
+The default value is 100 log files.
+
+You can modify this value by running the following command:
 [console]
 ----
 $ gadmin config set System.Audit.LogConfig.LogRotationFileNumber <file-number>
 ----
 
-=== Other Customizable Configs
-There is a “DatabaseName” field appended to the header of each audit log file.
-The value of this field is "TigerGraph" by default.
 
-.You can modify this value by running the following command:
-[console]
-----
-$ gadmin config set System.Audit.DataBaseName <database-name>
-----
 
-== Consuming Audit Logs
-=== Log Format
+
+
+== Audit Log Format
+
+=== General Format
 
 All audit log files are stored in JSON format, even when users are actively interacting with TigerGraph, so audit logs can be consumed at run time.
 
@@ -153,11 +158,10 @@ Audit log files are separated by GSQL service and REST++ API calls. Both having 
 
 * `log.AUDIT-GSQL` for the GSQL service.
 * `log.Audit-RESTPP` for direct REST++ API calls.
-
 ====
 
 .Here is an example of a whole audit log file:
-[console]
+[source, json]
 ----
 [
     {"serverHostIP":"127.0.0.1","databaseName":"TigerGraph","version":"1.0","timestamp":"2023-12-20T14:42:50.243-07:00"},
@@ -174,7 +178,7 @@ Audit log files are separated by GSQL service and REST++ API calls. Both having 
 === GSQL Service Audit Logs
 
 .The first JSON object is the header of this file, which consists of the following fields:
-[console]
+[source, json]
 ----
 {
     "version": "1.0",
@@ -197,7 +201,7 @@ The audit log will record any user-triggered activity, such as:
 Each activity will have its own audit log entry and fields.
 ====
 .The `createQuery` activity will produce an audit log entry with the following fields:
-[console]
+[source, json]
 ----
 {
     "timestamp":"2023-12-20T14:42:50.243-07:00",
@@ -208,7 +212,7 @@ Each activity will have its own audit log entry and fields.
     "userAgent": "GSQL Shell",
     "endpoint": "/gsql/file",
     "actionName": "createQuery",
-    "status": “SUCCESS”,
+    "status": "SUCCESS",
     "message": "Successfully created query 'query_name'"
 }
 ----
@@ -217,7 +221,7 @@ For user `login/auth` related activities, one more field called `failedAttempts`
 This field indicates how many times this user failed to provide the correct credentials.
 
 .Here is an example for user login event:
-[console]
+[source, json]
 ----
 {
     "timestamp": "2023-12-20T14:42:50.243-07:00",
@@ -246,7 +250,7 @@ They are similar to GSQL service audit logs, such as, the status for API calls w
 Values in `requestParams` and `requestBody` will be masked if they contain PII data.
 
 .Here is an example of the REST++ call event:
-[source, console]
+[source, json]
 ----
 {
   "timestamp": "2023-10-02T15:06:18.365Z",
@@ -266,13 +270,65 @@ Values in `requestParams` and `requestBody` will be masked if they contain PII d
 }
 ----
 
-== Known Issues
 
-* The real client IP address could be removed or masked by a firewall or another intermediate redirect layer before arriving at the TigerGraph service.
-** Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.
+== Data Masking
+
+By default, logs will not contain potentially sensitive data such as query parameters and query contents.
+For audit logs, there are three data files which are masked:
+
+* `"queryConent"`
+* `"queryParameters"`
+* `"fileNames"`
+
+These fields will have the value `"<Masked>"`.  For example:
+
+[source ,json]
+----
+{
+  "queryContent":"<Masked>",
+  "endpoint":"/gsql/v1/statements",
+  "clientHost":"10.244.6.79",
+  "clientOSUsername":"tigergraph",
+  "queryParameters":"<Masked>",
+  "userAgent":"GSQL Shell",
+  "userName":"tigergraph",
+  "authType":"USER_PASS",
+  "message":"Successfully ran query 'SumOfTwoInt'.",
+  "timestamp":"2025-04-25T08:51:20.159Z",
+  "actionName":"runQuery",
+  "status":"SUCCESS"
+}
+----
+
+However, if `System.Audit.MaskPII` is set to `false`, then the log will contain the unmasked data, such as
+
+[source ,json]
+----
+{
+  "queryContent":"CREATE OR REPLACE QUERY SumOfTwoInt(Int x, Int y) {\n  Print x+y;\n}",
+  "endpoint":"/gsql/v1/statements",
+  "clientHost":"10.244.6.79",
+  "clientOSUsername":"tigergraph",
+  "queryParameters":{"x":["3"],"y":["7"]},
+  "userAgent":"GSQL Shell",
+  "userName":"tigergraph",
+  "authType":"USER_PASS",
+  "message":"Successfully ran query 'SumOfTwoInt'.",
+  "timestamp":"2025-04-25T08:51:20.159Z",
+  "actionName":"runQuery",
+  "status":"SUCCESS"
+}
+----
+
+
+
+== Known Issues
 
 * Even when REST++ authentication is enabled and when a request that failed due to an invalid request parameter, the username in the corresponding audit log will be marked as `unknown` instead of the actual username.
 ** This is because request parameter validation happens before token validation. Thus, REST++ calls do not know the username before it gets printed in the audit log.
 
 * If the user logs into TG Cloud using SSO, they will not be required to provide credentials again when opening GraphStudio.
 ** Therefore, the login event would not be reflected in the audit log, but the user’s subsequent operations (`create query`, `install query`, etc.) will be recorded in the audit log as normal.
+
+* [Fixed in 3.10.2] The real client IP address could be removed or masked by a firewall or another intermediate redirect layer before arriving at the TigerGraph service.
+** Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.
