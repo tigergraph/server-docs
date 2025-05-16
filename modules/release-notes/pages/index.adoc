@@ -37,7 +37,7 @@ Scalable storage and similarity search for vector attributes associated with ver
 
 ** Up to 200GB graph data + 100GB vector data, single server only
 ** Some enterprise features not included. Community support only
-** See the full xref:intro:comparison-of-editions.adoc[comparison of editions].
+** See the full xref:4.2@intro:comparison-of-editions.adoc[comparison of editions].
 
 == Detailed List of New and Modified Features
 
@@ -114,7 +114,7 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 === Loading Enhancements
 
 * *xref:4.2@tigergraph-server:data-loading:load-from-kafka.adoc[Improved connector for loading from external Kafka source]*: new configuration details. Older connector to
-xref:tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still available.
+xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still available.
 
 * *xref:4.2@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_using_clause[Multi-character separators between data fields]* in loading jobs.
 
@@ -233,7 +233,7 @@ To better support Antlr processing, PRINT now removes any spaces from that key. 
 ¦ The filter for `/informant/metrics/get/cpu-memory` now accepts a list of ServiceDescriptors instead of a single ServiceDescriptor.
 ¦ v3.9.2+
 
-a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:{page-component-version}@tigergraph-server:security:index.adoc#_udf_file_scanning[increased security screening].
+a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
 
 * UDFs may no longer be called `to_string()`. This is now a built-in GSQL function.
 * UDF names may no longer use the `tg_` prefix. Any user-defined function that began with `tg_` must be renamed or removed in `ExprFunctions.hpp`.
@@ -253,7 +253,7 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:{pa
 ¦ 3.9.3 ¦ 4.2.0
 
 ¦ The format for tuple structures in CDC messages will change in a future version. The future format is likely to be similar to the
-xref:4.1@system-management:change-data-capture/cdc-message-example.adoc#_cdc_message_with_type_edge[new format for maps].
+xref:4.1@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_cdc_message_with_type_edge[new format for maps].
 ¦ 4.1.1
 ¦ 4.2
 

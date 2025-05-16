@@ -10,7 +10,7 @@ For example, an application's predefined queries will continue to run and file-b
 Incorporating HA can yield a number of other system benefits, such as:
 
 * The query workload is distributed across all replicas.
-** This includes replicas used for long-running queries or with the xref:tigergraph-server:API:built-in-endpoints.adoc#_headers[GSQL-REPLICA] header.
+** This includes replicas used for long-running queries or with the xref:API:built-in-endpoints.adoc#_headers[GSQL-REPLICA] header.
 * Data loading operations are distributed across all nodes.
 * Individual nodes can fail without impacting query workloads.
 ** If a query does fail during a node failure the system adjusts to accommodate the failed node (typically up to 30 seconds). It is highly recommended to adopt client-side retry logic as a workaround.
@@ -24,7 +24,7 @@ NOTE: The re-pavement of a node, is an offline process that takes a node offline
 TigerGraph HA provides continuous operation of some but not all services.
 Please note the following exceptions and consider your options for taking additional steps to maintain continuous operation or to restore service as quickly as possible.
 
-.If an HA system is operating with a failed node, unless the node is recovered, xref:tigergraph-server:cluster-and-ha-management:how_to-replace-a-node-in-a-cluster.adoc[replaced], or the system is reconfigured to xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[exclude that node], the following services are limited or unavailable:
+.If an HA system is operating with a failed node, unless the node is recovered, xref:how_to-replace-a-node-in-a-cluster.adoc[replaced], or the system is reconfigured to xref:remove-failed-node.adoc[exclude that node], the following services are limited or unavailable:
 
 * A data partition slated for a connector-based loading, such as, s3 files or via Kafka, *cannot* be loaded.
 
@@ -36,7 +36,7 @@ NOTE: However, new interpreted and any existing queries can still be executed.
 
 * Database export operation is *not available* and will be rejected.
 
-NOTE: As a workaround, if the failed node cannot be recovered (e.g. hardware issue), full operation can be restored temporarily by the xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removal of the failing nodes].
+NOTE: As a workaround, if the failed node cannot be recovered (e.g. hardware issue), full operation can be restored temporarily by the xref:remove-failed-node.adoc[removal of the failing nodes].
 For example, a 5 x 2 cluster with one node removed would become a 4x2 + 1, where 1 is the data partition that is not being replicated.
 
 === 3.9.2 and Below
@@ -44,7 +44,7 @@ For example, a 5 x 2 cluster with one node removed would become a 4x2 + 1, where
 In addition to the considerations above, in versions 3.9.2 and below,
 users will not be able to run a GSQL query when a single node is down in a High Availability cluster.
 
-In this case, as with the other consideration cases above, the failed node needs to be xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[removed] from the cluster via:
+In this case, as with the other consideration cases above, the failed node needs to be xref:remove-failed-node.adoc[removed] from the cluster via:
 
 [source, console]
 ----
@@ -56,7 +56,7 @@ gadmin cluster remove <node_name>:<node_ip_address>
 This issue is no longer present in versions 3.9.3 and 3.10.0.
 ====
 
-== xref:tigergraph-server:cluster-and-ha-management:ha-cluster.adoc[High Availability Cluster Configuration]
+== xref:ha-cluster.adoc[High Availability Cluster Configuration]
 
 Here you will find detailed information about terminology, system requirements, and how to configure an HA cluster.
 
@@ -64,25 +64,25 @@ Here you will find detailed information about terminology, system requirements, 
 
 Learn how to configure a high available cluster that can tolerate region-level failures.
 
-== xref:tigergraph-server:cluster-and-ha-management:ha-for-gsql-server.adoc[High Availability Support for GSQL Server]
+== xref:ha-for-gsql-server.adoc[High Availability Support for GSQL Server]
 
 Learn how TigerGraph incorporates built-in HA for all the internal critical components.
 
-== xref:tigergraph-server:cluster-and-ha-management:ha-for-application-server.adoc[High Availability Support for Application Server]
+== xref:ha-for-application-server.adoc[High Availability Support for Application Server]
 
 Here you will find detailed information about how TigerGraph supports native HA functionality for its application server, which serves the APIs for TigerGraph’s GUI - GraphStudio and Admin Portal.
 
-== xref:tigergraph-server:cluster-and-ha-management:cluster-commands.adoc[Cluster Commands]
+== xref:cluster-commands.adoc[Cluster Commands]
 
 Here platform owners can learn advanced Linux commands that simplify platform operations and can be performed during debugging on HA clusters.
 
-== xref:tigergraph-server:cluster-and-ha-management:remove-failed-node.adoc[Removal of Failed Nodes]
+== xref:remove-failed-node.adoc[Removal of Failed Nodes]
 
 Here you find detailed Instructions for the removal of a failed node.
 
 == File and Kafka loaders HA with Auto-Restart
 
-Loading jobs for xref:tigergraph-server:data-loading:load-from-kafka-mm.adoc[Kafka] and xref:tigergraph-server:data-loading:load-local-files.adoc[Local Files] will automatically restart the loader job process if it unexpectedly exits.
+Loading jobs for xref:data-loading:load-from-kafka-mm.adoc[Kafka] and xref:data-loading:load-local-files.adoc[Local Files] will automatically restart the loader job process if it unexpectedly exits.
 And will then continue to import data from the loading job.
 
 This functionality is enabled by default, but users can disable this feature by setting `LoaderRetryMax=0` through `gadmin config set RESTPP.BasicConfig.Env`.

@@ -1,5 +1,5 @@
 = Set Up Cross-Region Replication
-//:page-aliases: tigergraph-server:crr:set-up-crr.adoc
+//:page-aliases: crr:set-up-crr.adoc
 :description: Instruction on how to set up the DR cluster for cross-region replication.
 :sectnums:
 
@@ -32,9 +32,9 @@ The following setup is needed in order to enable Cross Region Replication.
 Retrieve the latest backup, for instance, `pr_latest_backup` from the Primary Cluster. How recent the backup is will determine how much the DR cluster lags behind and how long it will take to catch up with the Primary cluster.
 
 If there is no suitable backup, use `gadmin backup create <pr_latest_backup>` to create one.
-For more details refer to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[].
+For more details refer to xref:backup-and-restore:backup-cluster.adoc[].
 
-For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
+For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:backup-and-restore:cross-cluster-backup.adoc[].
 
 === Enable CRR on the DR cluster
 
@@ -94,7 +94,7 @@ However, note that these operations should be performed when there is no traffic
 gadmin backup restore --dr
 ----
 
-Specifically, when switching between PR and DR, before the switch, it is necessary to xref:tigergraph-server:crr:troubleshooting.adoc#_check_data_consistency_between_primary_and_dr[check data consistency between primary and DR]
+Specifically, when switching between PR and DR, before the switch, it is necessary to xref:cluster-and-ha-management:troubleshooting.adoc#_check_data_consistency_between_primary_and_dr[check data consistency between primary and DR]
 
 [NOTE]
 ====
@@ -198,7 +198,7 @@ To perform this correctly, follow this sequence of steps.
 $ gadmin crr stop -y
 ----
 +
-2. xref:tigergraph-server:installation:upgrade.adoc[Upgrade] both the primary cluster and DR cluster.
+2. xref:installation:upgrade.adoc[Upgrade] both the primary cluster and DR cluster.
 
 3. Start CRR on the DR cluster(From TigerGraph 3.10.0, no additional restart is required to start CRR).
 +

@@ -1,7 +1,7 @@
 = Online Backup
 
 The introduction of Online Backup in version 3.10.0 is designed to operate seamlessly.
-This feature maintains the same xref:tigergraph-server:backup-and-restore:configurations.adoc[] as before.
+This feature maintains the same xref:backup-and-restore:configurations.adoc[] as before.
 
 [IMPORTANT]
 ====
@@ -23,8 +23,8 @@ The primary advantage of online backup lies in the uninterrupted data operations
 Consider a scenario where your TigerGraph database is actively serving user requests and, simultaneously, a backup needs to be performed.
 
 In the past, this could lead to blocking write operations, causing timeouts and preventing users from upserting data.
-With online backup in place, users can seamlessly execute post requests via the xref:tigergraph-server:API:index.adoc[REST API] during the backup process.
-This means that even as critical operations continue, the database is concurrently backed up, ensuring continuous data availability and preventing the inability to xref:tigergraph-server:API:upsert-rest.adoc[upsert data to the database].
+With online backup in place, users can seamlessly execute post requests via the xref:API:index.adoc[REST API] during the backup process.
+This means that even as critical operations continue, the database is concurrently backed up, ensuring continuous data availability and preventing the inability to xref:API:upsert-rest.adoc[upsert data to the database].
 ====
 
 Summary of key benefits:
