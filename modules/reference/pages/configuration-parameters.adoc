@@ -1027,23 +1027,23 @@ concurrent queries in the delay queue |`20`
 |Name |Description |Example
 
 | Security.JWT.JWKS.URL
-| Provide the URL for the public keys used to verify JWT signatures. The URL points to a xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[JWKS (JSON Web Key Set)] endpoint.
+| Provide the URL for the public keys used to verify JWT signatures. The URL points to a xref:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[JWKS (JSON Web Key Set)] endpoint.
 | `https://jwt.example.com/.well-known/jwks.json`
 
 | Security.JWT.RSA.PublicKey
-| Configure a RSA public key for xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[OIDC JWT Authentication].
+| Configure a RSA public key for xref:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.RSA.PublicKey <public-key content or URL or @filepath>`
 
 | Security.JWT.HMAC.Secret
-| Configure a HMAC Secret for xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[OIDC JWT Authentication].
+| Configure a HMAC Secret for xref:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>`
 
 | Security.JWT.Issuer
-| Configure the `iss` claim that will be verified against this configured value for xref:tigergraph-server:user-access:jwt-token.adoc[].
+| Configure the `iss` claim that will be verified against this configured value for xref:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.Issuer "<issuer-name>"`
 
 | Security.JWT.Audience
-| Configure this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not for xref:tigergraph-server:user-access:jwt-token.adoc[].
+| Configure this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not for xref:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.Audience "<audience-name>"`
 
 |Security.LDAP.AdminDN |Configure the DN of LDAP user who has read
@@ -1344,7 +1344,7 @@ interval (s) |`60`
 |System.Metrics.IncludeHostName
 | If set to true, the hostname/ip will be included in all metrics output, in OpenMetrics format, as part of the variable labels.
 
-Otherwise, the default is `false` and the response will not include hostname/ip as part of the variable labels. As in the example xref:tigergraph-server:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics_format[Monitor system metrics (OpenMetrics format)]
+Otherwise, the default is `false` and the response will not include hostname/ip as part of the variable labels. As in the example xref:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics_format[Monitor system metrics (OpenMetrics format)]
 | `System.Metrics.IncludeHostName true`
 
 
@@ -1422,7 +1422,7 @@ If you use `gadmin config set GPE.BasicConfig.Env` or `gadmin config entry GPE.B
 
 |RESPP
 | `SSL_CA_CERT`, RESETPP.BasicConfig.Env
-| Set the CA certificate `SSL_CA_CERT` to establish the connection with the URL being set with xref:tigergraph-server:user-access:jwt-token.adoc[].
+| Set the CA certificate `SSL_CA_CERT` to establish the connection with the URL being set with xref:user-access:jwt-token.adoc[].
 | `SSL_CA_CERT=/home/tigergraph/cacertificate/example/;`
 
 |GPE

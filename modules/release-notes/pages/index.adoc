@@ -73,9 +73,9 @@ Available for TigerGraph's xref:4.1@tigergraph-server:data-loading:manage-data-s
 CDC continues to function as long as at least one replica per partition is online.
 Previously, Replica 1 needed to remain operational.
 
-* [4.1.1] **xref:system-management:change-data-capture/cdc-message-example.adoc#_other_message_fields[CDC messages have a "graph" field]** to specify which graph was affected.
+* [4.1.1] **xref:4.1@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_other_message_fields[CDC messages have a "graph" field]** to specify which graph was affected.
 
-* [4.1.1] **xref:cluster-and-ha-management:crr-index.adoc[Cross-Region Replication]** now includes loading jobs.
+* [4.1.1] **xref:4.1@tigergraph-server:cluster-and-ha-management:crr-index.adoc[Cross-Region Replication]** now includes loading jobs.
 
 * **Backup HA**:
 Ensures backup processes can continue even during service failures, such as GPE or GSE downtime.
@@ -103,7 +103,7 @@ including a diagnosis, enabling users to take timely action.
 * [4.1.3] Spark Connector now supports xref:4.1@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_common_options[`OAuth2` authentication], enabling seamless JWT token retrieval from third-party IdPs like Azure AD and Auth0 for improved xref:4.1@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_authentication_methods[security and token management].
 
 * [4.1.3] *xref:4.1@tigergraph-server:data-loading:load-from-kafka.adoc[Improved connector for loading from external Kafka source]*: New configuration details. The older connector to
-xref:tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still available.
+xref:4.1@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still available.
 
 
 === System Management and Monitoring Enhancements ===
@@ -585,7 +585,7 @@ To better support Antlr processing, PRINT now removes any spaces from that key. 
 ¦ The filter for `/informant/metrics/get/cpu-memory` now accepts a list of ServiceDescriptors instead of a single ServiceDescriptor.
 ¦ v3.9.2+
 
-a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:{page-component-version}@tigergraph-server:security:index.adoc#_udf_file_scanning[increased security screening].
+a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:security:index.adoc#_udf_file_scanning[increased security screening].
 
 * UDFs may no longer be called `to_string()`. This is now a built-in GSQL function.
 * UDF names may no longer use the `tg_` prefix. Any user-defined function that began with `tg_` must be renamed or removed in `ExprFunctions.hpp`.
@@ -599,7 +599,7 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:{pa
 ¦ Description ¦ Deprecated ¦ Removed
 
 ¦ The format for tuple structures in CDC messages will change in a future veresion. The future format is likely to be similar to the
-xref:4.1@system-management:change-data-capture/cdc-message-example.adoc#_cdc_message_with_type_edge[new format for maps].
+xref:{page-component-version}@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_cdc_message_with_type_edge[new format for maps].
 ¦ 4.1.1
 ¦ TBD (possibly 4.2)
 

@@ -57,7 +57,7 @@ System upgrade does not support version rollback at this time.
 . *Restore* your installation with GBAR to rebuild it.
 This step is necessary because TigerGraph 3.2 made major changes to the Graph Storage Engine and a restore is needed to remove certain files that would make the upgrade operation fail.
 . Ensure that the restore is completely finished and there are no pending graph modifications (schema change, insert, update, or delete) before starting the upgrade.
-You can do this by calling the xref:tigergraph-server:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint and waiting until there are no more PullDelta messages being printed in the logs.
+You can do this by calling the xref:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint and waiting until there are no more PullDelta messages being printed in the logs.
 
 === Ensure that the database is inactive
 
@@ -67,7 +67,7 @@ Ensure that the database will be inactive throughout the upgrade process.
 . Stop any new database requests.
 . Ensure that all previous operations such as queries, loading jobs, schema changes, and data updates and deletions are completely finished.
 Check the appropriate logs.
-Call the xref:tigergraph-server:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint to force the data store to consume all pending updates and then wait until there are no more PullDelta messages being printed in the logs.
+Call the xref:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint to force the data store to consume all pending updates and then wait until there are no more PullDelta messages being printed in the logs.
 
 == Upgrading a CRR system
 To upgrade the TigerGraph software on a CRR system, follow this sequence of steps.
@@ -225,7 +225,7 @@ In previous releases, `to_string()` was included in the default `ExprFunctions` 
 Users need to rename or remove UDFs that are called `to_string()`.
 Now, that it is added as a built-in function users are no longer needing to include it in the `ExprFunctions` file.
 
-For more reference on how to prepare for an upgrade please refer back to the section: xref:tigergraph-server:installation:upgrade.adoc#_before_you_begin[Before You Begin].
+For more reference on how to prepare for an upgrade please refer back to the section: xref:upgrade.adoc#_before_you_begin[Before You Begin].
 
 === `tg_` is Now a Reserved Keyword
 
@@ -237,7 +237,7 @@ Users can either rename, remove, or comment out any functions in their `ExprFunc
 Additionally, users should avoid prefixing future functions with this reserved prefix.
 This is to avoid naming collisions with queries.
 
-For more reference on how to prepare for an upgrade please refer back to the section: xref:tigergraph-server:installation:upgrade.adoc#_before_you_begin[Before You Begin].
+For more reference on how to prepare for an upgrade please refer back to the section: xref:upgrade.adoc#_before_you_begin[Before You Begin].
 
 === UDF File Policy
 
@@ -283,7 +283,7 @@ Sometimes users can encounter a issue with this policy after an upgrade.
 ==== What to do:
 Before (recommended) or after an upgrade users should change or use different constant paths for queries and loading jobs that do *not* violate policy.
 
-For more on file policy see xref:tigergraph-server:security:file-output-policy.adoc[] and/or xref:tigergraph-server:security:gsql-file-input-policy.adoc[].
+For more on file policy see xref:security:file-output-policy.adoc[] and/or xref:security:gsql-file-input-policy.adoc[].
 
 === Other issues
 
