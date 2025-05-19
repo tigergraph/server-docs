@@ -43,7 +43,7 @@ $ gadmin config set RESTPP.WorkLoadManager.MaxDelayQueueSize 20
 You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
 
 == Specify number of threads used by a query
-You can specify the limit of the number of threads that can be used by one query through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
+You can specify the limit of the number of threads that can be used by one query through the xref:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
 
 For example, to specify a limit of four threads that can be used by a query, use the `GSQL-THREAD-LIMIT` parameter and set its value to 4:
 
@@ -84,7 +84,7 @@ $ gadmin config entry RESTPP.QueryRouting.TargetSelectionCPUThreshold 40
 $ gadmin config entry RESTPP.QueryRouting.Mode 1
 
 == Specify replica to run query on
-On a distributed cluster, you can specify on which replica you want a query to be run through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
+On a distributed cluster, you can specify on which replica you want a query to be run through the xref:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
 
 For example, to run the query on the primary cluster, use the `GSQL-REPLICA` header when running a query and set its value to 1:
 
