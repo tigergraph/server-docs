@@ -263,10 +263,13 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Fixed issue where users encountered an error when creating queries in GraphStudio, reporting "query not found" (APPS-3668).
 * Resolved compilation issue when a variable assigned to the `to_vertex_set` function was used in the `FROM` clause (GLE-9434).
 * Changed `FUNCTION` from a reserved keyword to an unreserved keyword to fix an upgrade issue for users coming from 3.9 or earlier (GLE-9842).
-* Fixed issue where dynamic file output policy was being fetched during query execution (GLE-9359).
 * Fixed issue where the `tigergph_cpu_usage metric` was exceeding 100% under full load (TP-7193).
 * Added the `Security.JWT.JWKS.URL` configuration parameter to fetch JWT certificates using the Key ID (kid) from a JWKS URL, ensuring compliance with the JWKS standard (GLE-10288).
-* Fixed issue where exploration results and potentially sensitive data were included in the `gui/data.json` file, preventing accidental leakage of personally identifiable information (PII) (APPS-3920).
+* Excluded GraphStudio exploration results from `gui/data.json` file, to prevent accidental leakage of personally identifiable information (PII) (APPS-3920).
+
+==== Improvements
+
+* File output policy is now fetched when running a query rather than being compiled into the query at install time (GLE-9359).
 
 
 === Fixed and Improved in 4.1.2
