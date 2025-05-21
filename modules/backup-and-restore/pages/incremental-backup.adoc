@@ -91,14 +91,14 @@ incr-daily-jan-02
 incr-daily-jan-03
 incr-daily-jan-04
 ----
-If you want to restore to January 3, then you need to run the following sequence of restore operations:
+If you want to restore to January 3, run the following command:
 
 [console]
 ----
-gadmin backup restore full-weekly-jan-01
-gadmin backup restore incr-daily-jan-02
 gadmin backup restore incr-daily-jan-03
 ----
+
+This command automatically restores the full backup first, then applies all dependent incremental backups in the correct order.
 
 == Limitations
 
