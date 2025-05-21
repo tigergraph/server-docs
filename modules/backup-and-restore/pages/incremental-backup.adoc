@@ -98,7 +98,12 @@ If you want to restore to January 3, run the following command:
 gadmin backup restore incr-daily-jan-03
 ----
 
-This command automatically restores the full backup first, then applies all dependent incremental backups in the correct order.
+When the system gets the restore request, it checks to see what was the base for the requested restore file.
+If the base was another incremental backup file, it checks for _its_ base.
+It continues to search out the backup dependency chain until it gets to a full backup or a restore event.
+It then performs the sequence of restores, from oldest to newest, e.g.
+
+`full-weekly-jan-01` --> `incr-daily-jan-02` -->  `incr-daily-jan-03`
 
 == Limitations
 
