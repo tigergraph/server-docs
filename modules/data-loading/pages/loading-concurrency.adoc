@@ -1,6 +1,7 @@
-== Loading Job Concurrency
+= Loading Job Concurrency
+:description: How to configure loading job concurrency and resource allocation
 
-=== Number of concurrent loading jobs
+== Number of concurrent loading jobs
 
 By default, only one loading job may run at a time.
 Additional job requests are held in a wait queue.
@@ -22,7 +23,7 @@ $ gadmin config set KafkaLoader.ReplicaNumber <new_limit>
 $ gadmin config apply -y && gadmin restart gse gpe restpp -y
 ----
 
-=== Allowed resources for loading
+== Allowed resources for loading
 
 You can also configure how many resources are permitted to work on loading jobs.
 
