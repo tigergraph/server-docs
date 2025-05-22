@@ -78,7 +78,7 @@ Replace the `<prefix>` with the appropriate identifier:
 If the source cluster is configured for SSL or SASL protocols, you need to provide the following SSL/SASL credentials in order to communicate with the source cluster.
 
 * If the source cluster uses SASL, you need to upload the keytab of each Kerberos principal to every node of your TigerGraph cluster at the same absolute path.
-* If the source cluster uses SSL, see our documentation xref:data-loading:kafka-ssl-security-guide.adoc[]
+
 * If the source cluster uses SASL *and* SSL, you need to upload the keytab of each Kerberos principal, as well as the key store and truststore to every node of your TigerGraph cluster. Each file must be at the same absolute path on all nodes.
 
 The following configurations are required for admin, producer and consumer. Kafka allows SSL settings overriding, respecting security settings with the following precedence:
