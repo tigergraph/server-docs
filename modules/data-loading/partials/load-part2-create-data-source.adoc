@@ -21,10 +21,16 @@ type: <type>,
 key: <value>
 }" FOR GRAPH ldbc_snb
 
-String literals can be enclosed with a double quote `"`, triple double quotes `"""`, or triple single quotes `'''`.
-Double quotes `"` in the JSON can be omitted if the key name does not contain a colon `:` or comma `,`.
+=== String Literals
+String literals can be represented according to the following options:
 
-[source,php]
+* Enclosed with double quote `"`.
+* Enclosed with triple double quotes `"""`.
+* Enclosed with triple single quotes `'''`.
+
+In the case of JSON that does not contain a colon `:` or a comma `,` the double quotes `"` can be omitted.
+
+[source]
 .Alternate quote syntax for inline JSON data
 CREATE DATA_SOURCE s1 = """{
 "type": "<type>",
