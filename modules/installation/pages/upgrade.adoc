@@ -188,7 +188,7 @@ Welcome to the TigerGraph platform installer!
 
 === Managing Service Disruption During Rolling Upgrade
 
-During a rolling upgrade, expect temporary service interruptions. If the upgrade process fails or the connection is lost unexpectedly, you can resume the upgrade by running:
+During a rolling upgrade, temporary service interruptions are expected. If the upgrade process fails or the connection is unexpectedly lost, you can resume the upgrade by running:
 
 [source.wrap,bash]
 ----
@@ -197,7 +197,7 @@ $ gadmin upgrade --resume
 
 === Rolling Upgrade Failure with Error
 
-If the rolling upgrade encounters an error, the error message will guide you on how to proceed. You can manually finish the upgrade by following these steps in order:
+If the rolling upgrade encounters an error, the error message will guide you on how to proceed. To manually finish the upgrade, follow these steps:
 
 . Restart the services sequentially with this command:
 +
@@ -228,8 +228,16 @@ Replace `<old version>` with the version you were running before the upgrade (e.
 
 === Rolling Upgrade Failure Without Error
 
-Sometimes the rolling upgrade may fail without showing any error, like if the controller node is restarted manually. 
-When this happens, you can either *manually switch to the new version* yourself or *revert to the previous version*.
+In rare cases, the rolling upgrade may fail without displaying any error message. For example, this may happen if the controller node is accidentally restarted during the upgrade. If this occurs, you may not receive an error message or indication of failure.
+If the process halts and you do not receive a clear success message or an error after running:
+
+[source.wrap,bash]
+----
+$ gadmin upgrade --resume
+----
+It should be considered a silent failure.
+
+In such cases, you can either *manually switch to the new version* or *revert to the previous version*:
 
 *Switch to the New Version*
 
