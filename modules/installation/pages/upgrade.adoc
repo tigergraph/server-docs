@@ -186,36 +186,48 @@ Welcome to the TigerGraph platform installer!
 [PROGRESS]: 08:20:33 Switching to new version 4.2.1 successfully...
 ----
 
-=== Managing Service Disruption During Rolling Upgrade
+[NOTE]
+====
+During a rolling upgrade, the TigerGraph service may be briefly disrupted but should resume on its own.
+====
 
-During a rolling upgrade, temporary service interruptions are expected. If the upgrade process fails or the connection is unexpectedly lost, you can resume the upgrade by running:
+=== Recovering from an Incomplete Rolling Backup
+
+If your rolling upgrade is interrupted or fails to complete, first determine the upgrade status by running:
 
 [source.wrap,bash]
 ----
-$ gadmin upgrade --resume
+gadmin upgrade --resume
 ----
 
-=== Rolling Upgrade Failure with Error
+If you receive a clear success or error message, follow the instructions accordingly.
+If you receive no message and the upgrade process appears stalled, treat this as a silent failure.
 
-If the rolling upgrade encounters an error, the error message will guide you on how to proceed. To manually finish the upgrade, follow these steps:
+=== How to Proceed After an Incomplete Rolling Backup
 
-. Restart the services sequentially with this command:
+When your rolling upgrade does not finish successfully, you have two options:
+
+. Continue with a Manual Offline Upgrade
++
+You can manually complete the upgrade by restarting services sequentially:
 +
 [source.wrap,bash]
 ----
 gadmin restart GUI#1 ADMIN#1 NGINX#1 EXE_1 IFM#1 KAFKASTRM-LL_1 RESTPP#1 DICT#1 KAFKACONN#1 GSE_1#1 GPE_1#1 CTRL#1 DICT#2 KAFKACONN#2 RESTPP#2 IFM#2 GUI#2 EXE_2 ADMIN#2 KAFKASTRM-LL_2 CTRL#2 GSE_1#2 NGINX#2 GPE_1#2 NGINX#3 GPE_1#3 GUI#3 KAFKASTRM-LL_3 DICT#3 KAFKACONN#3 RESTPP#3 EXE_3 ADMIN#3 CTRL#3 GSE_1#3 IFM#3 --no-dep -y
 ----
-
-. Open another terminal and run the following command to monitor service status:
++
+Then monitor the upgrade progress by running:
 +
 [source.wrap,bash]
 ----
 watch -n 2 gadmin status -v
 ----
++
+Wait until all services are online; this means the upgrade is complete.
 
-. Wait until all services are online. This indicates the upgrade is complete.
-
-. If you need to revert to the *previous version*, run these commands:
+. Revert to the Previous Version
++
+If you need to revert to the *previous version*, run these commands:
 +
 [source.wrap,bash]
 ----
@@ -226,48 +238,10 @@ $ gadmin restart all -y
 
 Replace `<old version>` with the version you were running before the upgrade (e.g., `4.2.0`).
 
-=== Rolling Upgrade Failure Without Error
-
-In rare cases, the rolling upgrade may fail without displaying any error message. For example, this may happen if the controller node is accidentally restarted during the upgrade. If this occurs, you may not receive an error message or indication of failure.
-If the process halts and you do not receive a clear success message or an error after running:
-
-[source.wrap,bash]
-----
-$ gadmin upgrade --resume
-----
-It should be considered a silent failure.
-
-In such cases, you can either *manually switch to the new version* or *revert to the previous version*:
-
-*Switch to the New Version*
-
-To manually switch to the new version, run:
-
-[source.wrap,bash]
-----
-$ gadmin config set System.AppRoot /home/tigergraph/tigergraph/app/<new version>
-$ gadmin config apply -y
-$ gadmin restart all -y
-----
-
-Replace `<new version>` with the target version number (e.g., `4.2.1`).
-
-*Revert to the Previous Version*
-
-To revert back to the previous version, run:
-
-[source.wrap,bash]
-----
-$ gadmin config set System.AppRoot /home/tigergraph/tigergraph/app/<old version>
-$ gadmin config apply -y
-$ gadmin restart all -y
-----
-
-Replace `<old version>` with the previous version number (e.g., `4.2.0`).
-
 [NOTE]
 ====
-These manual steps for finishing or reverting upgrades may cause service downtime.
+* If the issue that caused the upgrade to stop is fixed and not expected to happen again, you can try running the rolling upgrade again as usual.
+* Be aware that both manual finishing and reverting may cause temporary service downtime.
 ====
 
 [[upgrading-from-v3x]]
