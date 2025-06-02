@@ -188,12 +188,16 @@ Welcome to the TigerGraph platform installer!
 
 [NOTE]
 ====
-During a rolling upgrade, the TigerGraph service may be briefly disrupted but should resume on its own.
+During a rolling upgrade, the TigerGraph service may experience brief disruptions but should automatically resume.
 ====
 
 === Recovering from an Incomplete Rolling Backup
 
-If your rolling upgrade is interrupted or fails to complete, first determine the upgrade status by running:
+If your rolling upgrade is interrupted or fails to complete, determine the status and resolve the issue by following the instructions below.
+
+==== Determining the Status of Your Rolling Upgrade
+
+To check the status of your upgrade, run the following command:
 
 [source.wrap,bash]
 ----
@@ -201,29 +205,29 @@ gadmin upgrade --resume
 ----
 
 If you receive a clear success or error message, follow the instructions accordingly.
-If you receive no message and the upgrade process appears stalled, treat this as a silent failure.
+If the process appears stuck and you don't receive any message, it’s considered a silent failure.
 
-=== How to Proceed After an Incomplete Rolling Backup
+==== Handling an Incomplete Rolling Upgrade
 
-When your rolling upgrade does not finish successfully, you have two options:
+If your upgrade is incomplete, there are two options for moving forward:
 
-. Continue with a Manual Offline Upgrade
+. Continue with an Offline Upgrade
 +
-You can manually complete the upgrade by restarting services sequentially:
+An offline upgrade requires manual intervention. To complete the upgrade, restart the services sequentially with the following command:
 +
 [source.wrap,bash]
 ----
 gadmin restart GUI#1 ADMIN#1 NGINX#1 EXE_1 IFM#1 KAFKASTRM-LL_1 RESTPP#1 DICT#1 KAFKACONN#1 GSE_1#1 GPE_1#1 CTRL#1 DICT#2 KAFKACONN#2 RESTPP#2 IFM#2 GUI#2 EXE_2 ADMIN#2 KAFKASTRM-LL_2 CTRL#2 GSE_1#2 NGINX#2 GPE_1#2 NGINX#3 GPE_1#3 GUI#3 KAFKASTRM-LL_3 DICT#3 KAFKACONN#3 RESTPP#3 EXE_3 ADMIN#3 CTRL#3 GSE_1#3 IFM#3 --no-dep -y
 ----
 +
-Then monitor the upgrade progress by running:
+Once the services are restarted, monitor the progress with this command:
 +
 [source.wrap,bash]
 ----
 watch -n 2 gadmin status -v
 ----
 +
-Wait until all services are online; this means the upgrade is complete.
+Wait until all services are online, which means the upgrade is complete.
 
 . Revert to the Previous Version
 +
@@ -241,7 +245,7 @@ Replace `<old version>` with the version you were running before the upgrade (e.
 [NOTE]
 ====
 * If the issue that caused the upgrade to stop is fixed and not expected to happen again, you can try running the rolling upgrade again as usual.
-* Be aware that both manual finishing and reverting may cause temporary service downtime.
+* Be aware that both manual finishing and reverting to the previous version may cause temporary service downtime.
 ====
 
 [[upgrading-from-v3x]]
