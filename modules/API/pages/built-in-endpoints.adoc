@@ -951,8 +951,8 @@ Response::
 
 *Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ DATA]
 
-When new data is being loaded into the graph (such as new vertices or edges), data is first stored in memory before it is saved to disk permanently.
-TigerGraph runs a rebuild of the Graph Processing Engine (GPE) to commit the data in memory to disk every 30 seconds, but you can also call this endpoint to trigger a rebuild immediately.
+When new data is being loaded into the graph (such as new vertices or edges), the data is initially stored in memory before being saved permanently to disk. 
+TigerGraph runs a rebuild of the Graph Processing Engine (GPE) to commit the data in memory to disk. You can also call this endpoint to trigger a rebuild immediately if necessary.
 
 ==== Parameters:
 
