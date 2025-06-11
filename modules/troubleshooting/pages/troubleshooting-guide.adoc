@@ -56,7 +56,15 @@ To diagnose an issue for a given component, check the `.out` log file for that c
 
 image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0QAG1M3vW1t0nmwo7oYr3DgwVsgJoIEjub-5tSA81UtOQ-Ot-9m30zZ9Zr5tRG077dgfZ7KaE3tMMafUK63oi6fILQeM-kQw6fKqc[]
 
+*Component-Specific Log Details*
+
+* *NGINX Logs:* The NGINX log files (e.g., `nginx.out`, `nginx.error.log`, `nginx.access.log`) are generated directly by the NGINX web server itself and are not internal TigerGraph component logs.
+
+* *GUI Logs (VIS):* For the GUI component, the `.out file` (e.g., `gui_ADMIN.log`, `gui_INFO.log`) serves as the primary log file. 
+It captures the standard output of the GUI process and includes all log levels (error, warning, info). There are no other separate log files for the GUI.
+
 *Other Logs*
+
 For components like Zookeeper and Kafka, the log files are not listed by `gadmin log`. You can find them in the following locations:
 
 [source,console]
