@@ -169,6 +169,24 @@ See xref:3.10@tigergraph-server:user-access:rbac-row-policy/row-policy-privilege
 
 == Fixed issues
 
+=== Fixed and Improved in 3.10.4
+
+==== Functionality
+
+* Fixed an issue where the `/codecheck` endpoint returned an empty response for queries with syntax or semantic errors, which previously allowed incorrect queries to be installed (GLE-10432).
+* Fixed a backward compatibility issue that caused system unavailability or schema check failures after upgrading when the keyword `function` was used in vertex attributes (GLE-9840).
+* Fixed an *Out-of-Memory (OOM)* issue that occurred during file loading operations (TP-8151).
+* Fixed an issue where vertex attributes loaded with invalid values when a loading job inserted vertices using reducer operators such as `and()`, `ignore_if_exists()`, `max()`, or `min()` (CORE-4866).
+
+==== Improvements
+
+* Upgraded Nginx to version 1.26 to enhance compliance and provide an updated underlying service component (TP-8129).
+
+==== Security
+
+* Removed GraphStudio exploration results and loading job sample data from `gui/data.json` to prevent potential leakage of Personally Identifiable Information (PII) during schema export (APPS-3946).
+* Fixed PII exposure in GSE INFO logs by masking vertex primary IDs to enhance data privacy (CORE-4860).
+
 === Fixed and Improved in 3.10.3
 
 ==== Functionality
