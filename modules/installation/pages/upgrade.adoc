@@ -15,6 +15,10 @@ For example, change the name of schema elements and refactor queries if a new re
 If you have any questions or uncertainty, please contact TigerGraph Support.
 ====
 
+=== Review Upgrade-Related Issues
+See the list of xref:#_known_issues_and_workarounds[].
+In some cases, there are limitations with migrating data from one version to a newer version.
+
 ==== User-defined function (UDF) compatibility
 
 TigerGraph version 3.9 introduced changes in the way user-defined functions are accepted by the system.
@@ -88,6 +92,14 @@ $ gadmin restart all -y
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
 
+Always upgrade from the most recent maintenance version in any minor release.
+If you are upgrading from a version that does not have the most recent patches applied to its minor version, upgrade to the most recent patches first before upgrading to another minor or major version.
+For example, if you are upgrading from 3.5.0 to 3.10.x, upgrade to 3.5.3 first using the installation script and then upgrade to 3.10.x.
+
+Additionally, versions upgrading from 3.0 or 3.1 must first go through 3.2.4.
+For example, if you are running version 3.1.3, you must first upgrade to 3.1.6, then 3.2.4, then to 3.10.x.
+
+
 [IMPORTANT]
 ====
 When switching to a new version of TigerGraph it will stop the current services which will make the cluster temporarily unavailable.
@@ -108,14 +120,12 @@ $ ./install.sh -U
 ....
 
 [NOTE]
+.Known Issue - File Permissions
 ====
-Please upgrade from the most recent maintenance version in any minor release.
-If you are upgrading from a version that does not have the most recent patches applied to its minor version, upgrade to the most recent patches first before upgrading to another minor or major version.
-For example, if you are upgrading from 3.5.0 to 3.10.x, upgrade to 3.5.3 first using the installation script and then upgrade to 3.10.x.
+The `pre_upgrade_check.sh` script might encounter a permission-denied error for the destination directory.
+If this occurs, manually give permission to the `/var/tmp` folder.
+====
 
-Additionally, versions upgrading from 3.0 or 3.1 must first go through 3.2.4.
-For example, if you are running version 3.1.3, you must first upgrade to 3.1.6, then 3.2.4, then to 3.10.x.
-====
 
 Once binaries and config files are installed on local machine and also distributed to all the other machines, a message will be prompted to user:
 
