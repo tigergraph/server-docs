@@ -303,6 +303,11 @@ See xref:3.10@tigergraph-server:user-access:rbac-row-policy/row-policy-privilege
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦ When xref:installation:upgrade.adoc#_upgrading_from_3_x[upgrading], possible permission error for destination folder.
+¦ 3.10.1
+¦ Manually grant permission to `/var/tmp`
+¦ TBD
+
 ¦Running either `EXPORT GRAPH ALL` or `IMPORT GRAPH ALL` resets the TigerGraph superuser's password back to its default value.
 ¦3.9.1
 ¦ After running either command, change the superuser's password to make it secure again.
@@ -340,6 +345,12 @@ a¦ xref:{page-component-version}@tigergraph-server:user-access:rbac-row-policy/
 ¦ 3.10.0
 ¦ Users should restrict the access of creating/running queries and loading jobs for roles related to row policy.
 ¦ TBD
+
+¦ In the audit log for GraphStudio, `clientHost` field reports an internal IP instead of the client user's IP. The `clientHost` may be missing a port number.
+¦ 3.10.0
+¦ N/A
+¦ 3.10.2
+
 
 ¦ In file INPUT and OUTPUT policy, if there exists 2 path (`path1` and `path2`) in the configured policy list and `path1` is parent path of `path2`, then `path1` may not be effective.
 ¦ 3.2 and 3.10.0
