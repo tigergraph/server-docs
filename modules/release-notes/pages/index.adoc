@@ -176,20 +176,18 @@ See xref:3.10@tigergraph-server:user-access:rbac-row-policy/row-policy-privilege
 * Fixed an issue where incorrect queries with syntax or semantic errors were allowed to be installed (GLE-10432).
 * Fixed a backward compatibility issue that caused system unavailability or schema check failures after upgrading when the keyword `function` was used in vertex attributes (GLE-9840).
 * Fixed an *Out-of-Memory (OOM)* issue that occurred during file loading operations (TP-8151).
-* Fixed an issue where vertex attributes loaded with invalid values when a loading job inserted vertices using reducer operators such as `and()`, `ignore_if_exists()`, `max()`, or `min()` (CORE-4866).
-* Fixed data rejection during loading jobs by enhancing timestamp conversion to support a wider range of dates, including those prior to 1970-01-01 (GLE-10579).
-* Fixed an issue where retrieving the query list in Write Queries would get stuck when creating a large query (GLE-10461).
-* Fixed an issue where users could not locate a vertex in the Graph Studio result when the executed query only printed edges (APPS-3991).
-* Fixed an issue where an incorrect 'query not running' error message appeared when aborting a query in the Admin Portal on multi-node systems (APPS-3962).
-* Fixed an issue where the delete query button was incorrectly enabled for queries that were only saved but not yet installed, causing an error when attempting to delete them (APPS-3917).
-* Fixed an issue where query changes were lost or reverted when clicking the save button immediately after editing or fixing syntax errors (APPS-3916).
-* Fixed issue where codecheck failed to prevent the installation of a query with syntax errors in Write Queries, by catching unexpected exceptions and reporting errors, rather than skipping the query (GLE-10467).
-* Fixed issue with exporting only vertexset attributes to CSV when using the `print <vertexset> TO_CSV <file>;` statement (GLE-10521).
+* Fixed an issue where a loading job inserted invalid vertex attribute values when reducer operators such as `and()`, `ignore_if_exists()`, `max()`, or `min() were used (CORE-4866).
+* Fixed a GraphStudio issue where retrieving the query list in Write Queries would get stuck when creating a large query (GLE-10461).
+* Fixed an issue where users could not locate a vertex in the GraphStudio result when the executed query only printed edges (APPS-3991).
+* Fixed an issue in GraphStudio where an incorrect `query not running` error message appeared when aborting a query in the Admin Portal on multi-node systems (APPS-3962).
+* Fixed an issue in GraphStudio where the delete query button was incorrectly enabled for queries that were only saved but not yet installed, causing an error when attempting to delete them (APPS-3917).
+* Fixed an issue in GraphStudio where query changes were lost or reverted when clicking the Save button immediately after editing or fixing syntax errors (APPS-3916).
+* Fixed issue where queries with certain syntax errors disappeared during installation, because the internal codecheck utility returned an empty result instead of an error message (GLE-10467).
 
 ==== Improvements
 
 * Upgraded Nginx to version 1.26 (TP-8129).
-* Removed authentication requirements for replaying requests in Disaster Recovery (DR) setups, streamlining Cross-Region Replication (CRR) operations (GLE-10601).
+* Removed the authentication step required for replaying requests in the Disaster Recovery (DR) environment during regular Cross-Region Replication (CRR) operations (GLE-10601).
 
 ==== Security
 
