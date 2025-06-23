@@ -96,8 +96,27 @@ Rolling Upgrade is only available for HA clusters (High Availability) and when m
 Upgrading from 4.2.0 to 4.3.0 or any other major version is not supported.
 ====
 
-During a rolling upgrade, several operations are not permitted to ensure a smooth upgrade process. 
-These operations include installing queries, running schema changes, dropping all data, using `gsql --reset`, creating graphs, performing backup/restore operations, clearing the graph store, exporting/importing graphs, installing functions, changing TigerGraph configurations, starting or stopping services, setting up CRR (though CRR will continue working if already set up), running `gadmin init` for cluster initialization, upgrading services with `gadmin upgrade`, and performing service resets with `gadmin reset`. 
+During a rolling upgrade, the following operations are currently blocked:
+
+	* Install query
+	* Run schema change
+	* Drop all
+	* gsql --reset
+	* Create graph
+	* Clear graph store
+	* Export/import graph
+	* Install function
+
+Additionally, please avoid the following operations, as they will interfere with or be affected by the rolling upgrade process:
+
+  * backup and restore
+  * cluster reszie (expansion, shrink, or removal)
+  * configraion change via `gadmin config set/apply`
+	* Starting or stopping services via `gadmin start/stop/restart`
+	* Setting up CRR (note: CRR will continue to function if it is already configured)
+	* cluster initialization via `gadmin init`
+	* reset service via `gadmin reset`
+
 While the rolling upgrade is in progress, loading jobs and running queries will continue to function; however, queries requiring all replicas to be online may fail, in which case you can retry them in a round-robin manner. 
 Please note that occasional slowdowns in Queries Per Second (QPS) may occur during the upgrade. Additionally, services like Zookeeper (ZK), Kafka, and ETCD will not be upgraded during this process.
 
@@ -191,62 +210,71 @@ Welcome to the TigerGraph platform installer!
 During a rolling upgrade, the TigerGraph service may experience brief disruptions but should automatically resume.
 ====
 
-=== Recovering from an Incomplete Rolling Upgrade
+=== Failure Handling During Rolling Upgrade
 
-If your rolling upgrade is interrupted or fails to complete, determine the status and resolve the issue by following the instructions below.
+==== Resume Rolling Upgrade
 
-==== Determining the Status of Your Rolling Upgrade
-
-To check the status of your upgrade, run the following command:
+During the rolling upgrade, if the connection is lost unexpectedly, you can reconnect to the upgrade by running:
 
 [source.wrap,bash]
 ----
 gadmin upgrade --resume
 ----
 
-If you receive a clear success or error message, follow the instructions accordingly.
-If the process appears stuck and you don't receive any message, it’s considered a silent failure.
+==== Rolling Upgrade failed with error
 
-==== Handling an Incomplete Rolling Upgrade
+If the rolling upgrade encounters an issue, the error message will guide you on how to continue the upgrade or manually revert to the previous version. Here is an example of the error prompt:
 
-If your upgrade is incomplete, there are two options for moving forward:
-
-. Continue with an Offline Upgrade
-+
-An offline upgrade requires manual intervention. To complete the upgrade, restart the services sequentially with the following command:
-+
 [source.wrap,bash]
 ----
-gadmin restart GUI#1 ADMIN#1 NGINX#1 EXE_1 IFM#1 KAFKASTRM-LL_1 RESTPP#1 DICT#1 KAFKACONN#1 GSE_1#1 GPE_1#1 CTRL#1 DICT#2 KAFKACONN#2 RESTPP#2 IFM#2 GUI#2 EXE_2 ADMIN#2 KAFKASTRM-LL_2 CTRL#2 GSE_1#2 NGINX#2 GPE_1#2 NGINX#3 GPE_1#3 GUI#3 KAFKASTRM-LL_3 DICT#3 KAFKACONN#3 RESTPP#3 EXE_3 ADMIN#3 CTRL#3 GSE_1#3 IFM#3 --no-dep -y
+You may try to manually finish the upgrade following below instructions in that order(NOTE: these instructions may cause downtime):
+* gadmin restart GUI#1 ADMIN#1 NGINX#1 EXE_1 IFM#1 KAFKASTRM-LL_1 RESTPP#1 DICT#1 KAFKACONN#1 GSE_1#1 GPE_1#1 CTRL#1 DICT#2 KAFKACONN#2 RESTPP#2 IFM#2 GUI#2 EXE_2 ADMIN#2 KAFKASTRM-LL_2 CTRL#2 GSE_1#2 NGINX#2 GPE_1#2 NGINX#3 GPE_1#3 GUI#3 KAFKASTRM-LL_3 DICT#3 KAFKACONN#3 RESTPP#3 EXE_3 ADMIN#3 CTRL#3 GSE_1#3 IFM#3 --no-dep -y
+* Open another shell, run 'watch -n 2 gadmin status -v', and wait for all services to go online
+* The upgrade is complete when all services are online
+
+To revert, run these commands(NOTE: reverting will cause downtime):
+1. gadmin config set System.AppRoot /home/tigergraph/tigergraph/app/4.2.0
+2. gadmin config apply -y
+3. gadmin restart all -y
+
+For further assistance, please contact support@tigergraph.com
 ----
-+
-Once the services are restarted, monitor the progress with this command:
-+
+
+==== Silent Failure During Rolling Upgrade
+
+An unexpected restart of the CTRL orchestrating the rolling upgrade will result in a silent failure. In this case, both the upgrade status and the upgrade connection will be lost, as if no rolling upgrade had ever been triggered.
+
+Subsequent attempts to reconnect using `gadmin upgrade --resume` will result in the following message:
 [source.wrap,bash]
 ----
-watch -n 2 gadmin status -v
+$ gadmin upgrade --resume
+[   Info] no rolling upgrade is underway
 ----
-+
-Wait until all services are online, which means the upgrade is complete.
+In such cases, you may manually switch to the new version or revert to the old version.
 
-. Revert to the Previous Version
-+
-If you need to revert to the *previous version*, run these commands:
-+
-[source.wrap,bash]
-----
-$ gadmin config set System.AppRoot /home/tigergraph/tigergraph/app/<old version>
-$ gadmin config apply -y
-$ gadmin restart all -y
-----
-
-Replace `<old version>` with the version you were running before the upgrade (e.g., `4.2.0`).
-
-[NOTE]
+[IMPORTANT]
 ====
-* If the issue that caused the upgrade to stop is fixed and not expected to happen again, you can try running the rolling upgrade again as usual.
-* If you choose to upgrade offline or revert back to the previous version, you should halt database operations until the version change is complete.
+These steps will cause downtime.
 ====
+
+===== Switch to the New Version
+
+----
+# Set System.AppRoot to the new version (e.g., 4.2.1)
+gadmin config set System.AppRoot /home/tigergraph/tigergraph/app/<new version>
+gadmin config apply -y
+gadmin restart all -y
+----
+
+===== Revert to the Previous Version
+
+----
+# Set System.AppRoot to the old version (e.g., 4.2.0)
+gadmin config set System.AppRoot /home/tigergraph/tigergraph/app/<old version>
+gadmin config apply -y
+gadmin restart all -y
+----
+
 
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
