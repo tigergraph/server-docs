@@ -112,10 +112,10 @@ Additionally, please avoid the following operations, as they will interfere with
   * backup and restore
   * cluster reszie (expansion, shrink, or removal)
   * configraion change via `gadmin config set/apply`
-	* Starting or stopping services via `gadmin start/stop/restart`
-	* Setting up CRR (note: CRR will continue to function if it is already configured)
-	* cluster initialization via `gadmin init`
-	* reset service via `gadmin reset`
+  * Starting or stopping services via `gadmin start/stop/restart`
+  * Setting up CRR (note: CRR will continue to function if it is already configured)
+  * cluster initialization via `gadmin init`
+  * reset service via `gadmin reset`
 
 While the rolling upgrade is in progress, loading jobs and running queries will continue to function; however, queries requiring all replicas to be online may fail, in which case you can retry them in a round-robin manner. 
 Please note that occasional slowdowns in Queries Per Second (QPS) may occur during the upgrade. Additionally, services like Zookeeper (ZK), Kafka, and ETCD will not be upgraded during this process.
