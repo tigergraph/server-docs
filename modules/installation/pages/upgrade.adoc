@@ -214,7 +214,7 @@ Welcome to the TigerGraph platform installer!
 During a rolling upgrade, the TigerGraph service may experience brief disruptions but should automatically resume.
 ====
 
-=== Handling Failures During Rolling Upgrade
+=== Handling an Incomplete Rolling Upgrade
 
 ==== Resuming a Rolling Upgrade
 
@@ -227,11 +227,12 @@ gadmin upgrade --resume
 
 ==== Rolling Upgrade Failed with an Error
 
-If the rolling upgrade fails with an error, the system will display a message with instructions on how to proceed. Follow these steps to complete the upgrade or revert to the previous version.
+If the rolling upgrade fails with an error, the error message will contain instructions on how to proceed. Follow those instructions to complete the upgrade or revert to the previous version. 
+Here is an example of the instructions you may see in the error message:
 
 [source.wrap,bash]
 ----
-You may try to manually finish the upgrade following below instructions in that order(NOTE: these instructions may cause downtime):
+# You may try to manually finish the upgrade following below instructions in that order (NOTE: these instructions may cause downtime):
 * gadmin restart GUI#1 ADMIN#1 NGINX#1 EXE_1 IFM#1 KAFKASTRM-LL_1 RESTPP#1 DICT#1 KAFKACONN#1 GSE_1#1 GPE_1#1 CTRL#1 DICT#2 KAFKACONN#2 RESTPP#2 IFM#2 GUI#2 EXE_2 ADMIN#2 KAFKASTRM-LL_2 CTRL#2 GSE_1#2 NGINX#2 GPE_1#2 NGINX#3 GPE_1#3 GUI#3 KAFKASTRM-LL_3 DICT#3 KAFKACONN#3 RESTPP#3 EXE_3 ADMIN#3 CTRL#3 GSE_1#3 IFM#3 --no-dep -y
 * Open another shell, run 'watch -n 2 gadmin status -v', and wait for all services to go online
 * The upgrade is complete when all services are online
