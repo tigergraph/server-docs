@@ -29,6 +29,11 @@ To ensure fault tolerance, provide a list of all node `URLs` in the `url` option
 
 === Authentication Methods
 
+[NOTE]
+====
+In version *4.1.3*, TigerGraph's Spark Connector supports `OAuth2` authentication, enabling it to request JWT tokens from third-party Identity Providers (IdPs) like `Azure AD` and `Auth0`, enhancing security and token management for Spark jobs.
+====
+
 We recommend using *OAuth2* for authentication. Our implementation supports automatic token requests and refresh, and is more secure that *username/password*, offering convenience and security for both batch and streaming jobs. 
 
 The Spark connector now supports the following authentication methods:
