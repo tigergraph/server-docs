@@ -111,7 +111,7 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * *xref:4.2@gsql-ref:querying:query-optimizer/query-profiling.adoc[Query Profiler]* to analyze query execution and performance.
 
-=== Loading Enhancements
+=== Data Streaming/Connector Enhancements
 
 * *xref:4.2@tigergraph-server:data-loading:load-from-kafka.adoc[Improved connector for loading from external Kafka source]*: new configuration details. Older connector to
 xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still available.
@@ -123,6 +123,8 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 * *xref:4.2@gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_run_schema_change_options[Schema Change options]* `-force` and `-warn` to specify the behavior when loading jobs run during a schema change.
 
 * *Introduced xref:4.2@gsql-ref:ddl-and-loading:modifying-a-graph-schema.adoc#_side_effects_of_schema_change[`DISABLED` Loading Job status]* for jobs which have a schema conflict as a result of a Schema Change.
+
+* Spark Connector supports *xref:4.2@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_common_options[`OAuth2` authentication]*, enabling seamless JWT token retrieval from third-party IdPs like Azure AD and Auth0 for improved *xref:4.2@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_authentication_methods[security and token management]*.
 
 === Performance Improvements
 
