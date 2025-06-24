@@ -71,7 +71,7 @@ users can now use the authorization secret in a request header as a GSQL-Secret.
 
 * xref:3.10@tigergraph-server:system-management:management-commands.adoc#_gadmin_backup_create[Two new flags for gadmin backup create] - added two parameters to enable data consistency checks during the backup.
 
-* [3.10.4] xref:3.10@tigergraph-server:reference:configuration-parameters.adoc#_zk[New ZK.SnapCount configuration] enables users to fine-tune the number of committed ZooKeeper transactions that trigger a snapshot, enhancing memory management and stability under high transaction loads.
+* [3.10.4] xref:3.10@tigergraph-server:reference:configuration-parameters.adoc#_zk[New ZK.SnapCount configuration] enables users to fine-tune the number of committed ZooKeeper transactions that trigger a ZK log file, enhancing memory management and stability under high transaction loads.
 
 === GSQL Command and Querying Language
 
@@ -113,6 +113,10 @@ users can now use the authorization secret in a request header as a GSQL-Secret.
 
 * [3.10.2] **xref:3.10@tigergraph-server:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics_format[Enhanced Metrics Reports]**
 Total and available capacity for CPU and memory are now reported by the `/informant/metrics` endpoint.
+
+=== Data Streaming/Connector Enhancements
+
+* [3.10.4] Spark Connector now supports xref:3.10@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_configure_the_connector[`OAuth2` authentication], enabling seamless JWT token retrieval from third-party IdPs like Azure AD and Auth0 for improved xref:3.10@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_authentication_methods[security and token management].
 
 === Kubernetes Operator
 
