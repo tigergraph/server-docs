@@ -31,47 +31,7 @@ $ grun all "date"      (Make sure the time across all nodes are synchronized
                         with time difference under 2 seconds. )
 ----
 
-=== Location of Log Files
-
-The following command reveals the location of the log files:
-
-[source,console]
-----
-gadmin log
-----
-
-This command will list the log files, and the left side of the resulting file paths indicates the respective component's log file. 
-Typically, these files contain the information you're looking for. Each TigerGraph component has multiple associated log files.
-
-*Log File Extensions*
-
-* `.out` files capture *standard output (stdout)* and log runtime information, including error stack traces when services crash or unexpected errors occur. 
-These logs are especially useful for errors that aren't logged by the service's internal logging mechanism.
-
-* `.ERROR` files are used to log errors captured by the system, typically from exceptions caught in try-catch blocks. If an error occurs before the logging system initializes or is uncaught, it is logged in the `.out` file instead.
-
-* `.INFO` files log regular operational information about the system's normal functioning.
-
-To diagnose an issue for a given component, check the `.out` log file for that component.
-
-image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0QAG1M3vW1t0nmwo7oYr3DgwVsgJoIEjub-5tSA81UtOQ-Ot-9m30zZ9Zr5tRG077dgfZ7KaE3tMMafUK63oi6fILQeM-kQw6fKqc[]
-
-*Component-Specific Log Details*
-
-* *NGINX Logs:* The NGINX log files (e.g., `nginx.out`, `nginx.error.log`, `nginx.access.log`) are generated directly by the NGINX web server itself and are not internal TigerGraph component logs.
-
-* *GUI Logs (VIS):* For the GUI component, the `.out file` (e.g., `gui_ADMIN.log`, `gui_INFO.log`) serves as the primary log file. 
-It captures the standard output of the GUI process and includes all log levels (error, warning, info). There are no other separate log files for the GUI.
-
-*Other Logs*
-
-For components like Zookeeper and Kafka, the log files are not listed by `gadmin log`. You can find them in the following locations:
-
-[source,console]
-----
-zookeeper : ~/tigergraph/zk/zookeeper.out.*
-kafka     : ~/tigergraph/kafka/kafka.out
-----
+For information on where to find log files, see the xref:troubleshooting:log-files.adoc#_available_log_files[Log Files] page
 
 === Synchronize time across nodes in a cluster
 
@@ -479,7 +439,7 @@ In this case, we see that RESTPP failed at the DRAIN stage. We need to first loo
 
 == GSE Error Debugging
 
-To check the status of GSE, and all other processes, run `gadmin status` to show the status of key TigerGraph processes. As with all other processes, you are able to find the log file locations for GSE by the `gadmin log` command. Refer to the link:[Location of Log Files] for more information about which files to check.
+To check the status of GSE, and all other processes, run `gadmin status` to show the status of key TigerGraph processes. As with all other processes, you are able to find the log file locations for GSE by the `gadmin log` command. Refer to the xref:troubleshooting:log-files.adoc#_available_log_files[Location of Log Files] for more information about which files to check.
 
 [source,console]
 ----
