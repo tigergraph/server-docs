@@ -355,14 +355,17 @@ empty. You can use @/cert/file/path to pass the certificate from a file.
 [rsa-sha1/rsa-sha256/rsa-sha384/rsa-sha512]: default rsa-sha256
 |`+rsa-sha256+`
 
-|Security.SSO.SAML.SP.SignonBinding |SAML protocol binding[POST/Redirect]
-to be used when returning the <Response> or sending the <LogoutRequest> message.
-Its value is `+POST+` in the general case, but `+Redirect+` for IDP ADFS.
-|`+POST+`
-
-|Security.SSO.SAML.SP.LogoutBinding |SAML protocol binding[POST/Redirect]
+|Security.SSO.SAML.SP.LogoutBinding |SAML protocol binding
 for the Single Logout Service of the SP.
+`POST` sends the message content using an HTML form.
+`Redirect sends the message content in HTTP parameters.
 |`+Redirect+`
+
+|Security.SSO.SAML.SP.SignonBinding |SAML protocol binding
+used when returning a <Response> message.
+`POST` (default) sends the message content using an HTML form.
+`Redirect sends the message content in HTTP parameters.
+|`+POST+`
 
 |===
 
