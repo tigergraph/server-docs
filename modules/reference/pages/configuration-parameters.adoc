@@ -1205,6 +1205,18 @@ Before v4.1.2, this must be in PKCS#8 format (start with ``BEGIN PRIVATE KEY'').
 |Security.SSO.SAML.SignatureAlgorithm |Signiture algorithm
 [rsa-sha1/rsa-sha256/rsa-sha384/rsa-sha512]: default rsa-sha256
 |`rsa-sha256`
+
+|Security.SSO.SAML.SP.LogoutBinding |SAML protocol binding
+for the Single Logout Service of the SP.
+`POST` sends the message content using an HTML form.
+`Redirect sends the message content in HTTP parameters.
+|`+Redirect+`
+
+|Security.SSO.SAML.SP.SignonBinding |SAML protocol binding
+used when returning a <Response> message.
+`POST` (default) sends the message content using an HTML form.
+`Redirect sends the message content in HTTP parameters.
+|`+POST+`
 |===
 
 == System
