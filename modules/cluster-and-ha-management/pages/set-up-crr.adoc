@@ -17,9 +17,7 @@ When necessary, you can fail over to a DR cluster, making it the new primary clu
 ** The username and password of the TigerGraph database user creates on the DR cluster during installation matches one of the superusers on the primary cluster.
 * Initializing the DR cluster requires running a restore operation from a recent backup of the primary cluster; therefore, *xref:backup-and-restore:configurations.adoc[backup and restore must be configured] on the DR cluster*.
 * If you choose to enable CRR and your DR cluster is in a different Virtual Private Cloud (VPC) than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
-
-
-** If you xref:installation:bare-metal-install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
+* If you xref:installation:bare-metal-install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
 ** If you xref:installation:bare-metal-install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
 
 [WARNING]
