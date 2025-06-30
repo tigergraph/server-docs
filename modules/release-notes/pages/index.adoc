@@ -23,7 +23,7 @@ Features in the preview stage should not be used for production purposes. Genera
 * **xref:3.11@tigergraph-server:backup-and-restore:point-in-time-restore.adoc[Point in Time Restore]**:
 Users can roll back the database to a moment they select, not only the time of an available backup snapshots.
 
-* **xref:3.11@tigergraph-server:backup-and-restore:configurations.adoc#_configure_backup_to_aws_s3_endpoint[Role ARN for Backup to AWS S3 buckets]**:
+* **xref:3.11@tigergraph-server:backup-and-restore:configurations.adoc#_configuration_parameters[Role ARN for Backup to AWS S3 buckets]**:
 Users can use AWS Role ARNs (Amazon Resource Names) for convenient and secure management of backups.
 
 * [3.11.1] **xref:3.11@tigergraph-server:backup-and-restore:configurations.adoc[Backup to Azure and Google clouds]**: Backup operations can be configured to store files on Azure and Google cloud storage, adding to existing support for AWS backup storage.
@@ -213,7 +213,7 @@ for more context-aware and interactive dashboard displays
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-¦ When xref:installation:upgrade.adoc#_upgrading_from_3_x[upgrading], possible permission error for destination folder.
+¦ When xref:{page-component-version}@installation:upgrade.adoc#_upgrading_from_3_x[upgrading], possible permission error for destination folder.
 ¦ 3.10.1
 ¦ Manually grant permission to `/var/tmp`
 ¦ TBD
@@ -465,24 +465,24 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:{pa
 |===
 ¦ Description ¦ Deprecated ¦ Removed
 
-¦ The use of plaintext tokens in xref:{page-component-version}@tigergraph-server:API:authentication.adoc[authentication] is deprecated.
-Use xref:{page-component-version}@tigergraph-server:user-access:jwt-token.adoc[] instead.
+¦ The use of plaintext tokens in xref:3.11@tigergraph-server:API:authentication.adoc[authentication] is deprecated.
+Use xref:3.11@tigergraph-server:user-access:jwt-token.adoc[] instead.
 ¦ 3.10.0
 ¦ 4.1
 
 
 ¦ The command `gbar` is removed and is no longer available.
-However, if you are using a version of TigerGraph before 3.10.0 you can still use `gbar` to xref:{page-component-version}@tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.
-See also xref:{page-component-version}@tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to create a backup.
+However, if you are using a version of TigerGraph before 3.10.0 you can still use `gbar` to xref:3.11@tigergraph-server:backup-and-restore:gbar-legacy.adoc[create a backup with gbar] of the primary cluster.
+See also xref:3.11@tigergraph-server:backup-and-restore:gbar-legacy.adoc[Backup and Restore with gbar] on how to create a backup.
 
 ¦ 3.7
 ¦ 3.10.0
 
-¦ xref:{page-component-version}@tigergraph-server:user-access:vlac.adoc[Vertex-level Access Control (VLAC)] and xref:{page-component-version}@gsql-ref:querying:func/vertex-methods.adoc#_vlac_vertex_alias_methods_deprecated[VLAC Methods] are now deprecated and will no longer be supported.
+¦ xref:3.11@tigergraph-server:user-access:vlac.adoc[Vertex-level Access Control (VLAC)] and xref:3.11@gsql-ref:querying:func/vertex-methods.adoc#_vlac_vertex_alias_methods_deprecated[VLAC Methods] are now deprecated and will no longer be supported.
 ¦ 3.10.0
 ¦ 4.0
 
-¦ xref:{page-component-version}@tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection via JDBC Driver] is now deprecated and will no longer be supported.
+¦ xref:3.11@tigergraph-server:data-loading:spark-connection-via-jdbc-driver.adoc[Spark Connection via JDBC Driver] is now deprecated and will no longer be supported.
 ¦ 3.10.0
 ¦ TBD
 
