@@ -21,7 +21,7 @@ LTS versions are supported for 24 months from their initial GA release (X.X.1) a
 * xref:3.10@tigergraph-server:system-management:change-data-capture/cdc-overview.adoc[Change Data Capture (CDC)] - This equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems maintained by the user.
 Additionally, CDC can be xref:3.10@gui:admin-portal:components/cdc.adoc[configured] in xref:3.10@gui:admin-portal:overview.adoc[Admin Portal].
 
-* xref:3.10@tigergraph-server:system-management:workload-management.adoc#_workload_queue[Workload Queue] - Configure workload queues so that queries are routed to the appropriate queues during runtime.
+* xref:3.10@tigergraph-server:system-management:workload-management.adoc#_workload_queues[Workload Queue] - Configure workload queues so that queries are routed to the appropriate queues during runtime.
 
 * xref:3.10@tigergraph-server:data-loading:load-from-spark-dataframe.adoc[Spark Connector] - A new dedicated connector used with Apache Spark to read data from a Spark DataFrame and write to TigerGraph.
 
@@ -75,15 +75,9 @@ users can now use the authorization secret in a request header as a GSQL-Secret.
 
 === GSQL Command and Querying Language
 
-//* [3.10.1] xref:3.10@gsql-ref:querying:func/aggregation-functions.adoc#_percentilecont[New Aggregation funtion percentileCont()] - `percentileCont()` Aggregating Returns the percentile of the given value over a group using linear interpolation.
-
-//* [3.10.1] xref:3.10@gsql-ref:querying:accumulators.adoc#_percentilecontaccum[A new accumulator PercentileContAccum()] - `PercentileContAccum()` that returns the percentile of the given value over a group using linear interpolation.
-
 * xref:3.10@gsql-ref:querying:func/context-functions.adoc[] - Context functions are a set of new built-in functions that provide insights into the user's information and work inside `INSTALLED` queries, `INTERPRET` queries, and xref:3.10@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
 
 * xref:3.10@tigergraph-server:system-management:management-commands.adoc[Command Updates] - Added new flag `--local` to commands xref:3.10@tigergraph-server:system-management:management-commands.adoc#_gadmin_start[gadmin start] and xref:3.10@tigergraph-server:system-management:management-commands.adoc#_gadmin_stop [gadmin stop] reducing the time required to start/stop local services.
-
-* xref:_improvements[GSQL Data Streaming Improvements] - Improvements to GSQL data streaming that reduce the CPU usage, improve performance, optimizes Disk usage, and increases stability and cohesion.
 
 * [3.10.4] Added two new timestamp conversion functions, xref:3.10@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_legacy.adoc[gsql_ts_to_epoch_seconds_legacy()] and xref:3.10@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_signed.adoc[gsql_ts_to_epoch_seconds_signed()], providing enhanced flexibility for date handling in loading jobs, including support for pre-1970 dates.
 
@@ -117,7 +111,7 @@ Total and available capacity for CPU and memory are now reported by the `/inform
 === Data Streaming/Connector Enhancements
 
 * [3.10.4] *xref:3.10@tigergraph-server:data-loading:load-from-kafka.adoc[Improved connector for loading from external Kafka source]*: new configuration details. Older connector to
-xref:tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still available.
+xref:3.10@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still available.
 
 * [3.10.4] *Spark Connector now supports xref:3.10@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_configure_the_connector[`OAuth2` authentication]*, enabling seamless JWT token retrieval from third-party IdPs like Azure AD and Auth0 for improved xref:3.10@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_authentication_methods[security and token management].
 
