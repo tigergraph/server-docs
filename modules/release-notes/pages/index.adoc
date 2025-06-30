@@ -43,7 +43,7 @@ LTS versions are supported for 24 months from their initial GA release (X.X.1) a
 * xref:3.9@tigergraph-server:data-loading:data-streaming-connector/index.adoc[]:
 ** Added support for the xref:3.9@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_loading_parquet_data[Parquet file format], widely used for big data.
 ** Moved data connector setup from `gadmin` to xref:3.9@tigergraph-server:data-loading:data-streaming-connector/[GSQL commmands], to better align with user personas and privileges.
-** Added xref:3.9@tigergraph-server:data-loading:load-from-cloud.adoc#_continuous_file_loading[auto-detection of new files] when in Stream mode.
+** Added xref:3.9@tigergraph-server:data-loading:load-from-cloud.adoc#_continuous_loading_from_cloud_storage[auto-detection of new files] when in Stream mode.
 ** Significantly improved CPU usage after connector finishes data loading.
 ** Documented additional xref:3.9@tigergraph-server:reference:configuration-parameters.adoc#_system[S3 authentication configuration parameters].
 ** `/library` is a set of endpoints for showing and running template queries.
@@ -93,7 +93,7 @@ multiple edges of the same type] between vertices, to simplify application desig
 * `to_string()` is now a built-in GSQL function, supporting all xref:3.9@gsql-ref:ddl-and-loading:attribute-data-types.adoc#_primitive_types[primitive] and xref:3.9@gsql-ref:querying:accumulators.adoc#_vertex_attached_accumulators
 [scalar accumulator] data types. This means xref:3.9@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined functions] in `Exprfunctions.hpp` may no longer use the name `to_string()` (case-insensitive).
 * Added support for batch deletion of multiple edges between vertices, both with GSQL `DELETE` and as a xref:3.9@tigergraph-server:API:built-in-endpoints.adoc#_delete_an_edge_by_source_target_edge_type_and_discriminator[REST endpoint].
-* Standardized `SHOW PACKAGE` for xref:graph-ml:using-an-algorithm:index.adoc[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
+* Standardized `SHOW PACKAGE` for xref:3.9@graph-ml:using-an-algorithm:index.adoc[packaged queries] to follow the same behavior as other `SHOW` catalog commands.
 * [3.9.2] `outdegree`
 xref:3.9@gsql-ref:querying:func/vertex-methods.adoc[vertex function]
 vertex function can also be used with vertex input parameters in the query-body statements, not only with SELECT block vertex aliases.
