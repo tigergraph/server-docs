@@ -96,6 +96,11 @@ It's recommended to keep the default value `10`, which means the number of proce
 |System.Backup.CompressionLevel |The backup compression level strikes a balance between size and speed. The better compression, the longer it takes.
 ("BestSpeed", "DefaultCompression", "BestCompression")
 | "DefaultCompression"
+
+|System.Backup.StagingPath | [v4.1.3+] Specifies the root directory for storing intermediate (staging) files during backup and restore operations. If left empty, a default `backup` folder under the TigerGraph data root is used. 
+You can override this configuration by providing the `--staging-path` option when running the `gadmin backup create` or `gadmin backup restore` commands. The command-line option takes precedence over the system configuration.
+Since these operations are I/O-intensive, we recommend setting this path to a dedicated disk separate from the TigerGraph data root directory. This helps minimize potential impact on business operations, especially during backups.
+| `"" (empty string)`
 |===
 
 == Backup to AWS S3
