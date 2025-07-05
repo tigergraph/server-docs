@@ -52,6 +52,7 @@ TigerGraph Kubernetes Operator allows you to automate operations such as the cre
 
 === Data API service
 * Added two parameters `target_vertex_must_exist` and `source_vertex_must_exist` to xref:3.6@tigergraph-server:API:built-in-endpoints.adoc#_upsert_data_to_graph[the REST endpoint to upsert data].
+* `GET /gsqlserver/gsql/queryinfo` endpoint on port 14240 now returns the query input parameters in the same order as they are in the query instead of an unordered list.
 
 === Query Language Enhancement
 * Reducer function `add()` now accumulates values when loading to a `MAP` attribute.
@@ -218,7 +219,8 @@ TigerGraph Server 3.6.1 was released on July 7th, 2022.
 
 == Deprecation and Compatibility Warnings
 * The `-OPTIMIZE` flag for `INSTALL QUERY` is deprecated and is planned to be dropped in the 3.7 release.
-* Begining with 3.6.3, a vertex having an empty string as its primary id cannot be loaded. Previously, such a vertex was permitted.
+
+See xref:compatibility/index.adoc[]
 
 == Known Issues
 
@@ -239,38 +241,3 @@ If the `primary_id_as_attribute` option is selected, then attending to perform n
 * xref:attachment$Release_Notes_3.3.pdf[Release notes - TigerGraph 3.3]
 * xref:attachment$Release_Notes_3.2.pdf[Release notes - TigerGraph 3.2]
 
-== Compatibility with TigerGraph 3.4
-* A single `POST-ACCUM` clause can no longer reference more than one vertex alias in Syntax V1.
-* `GET /requesttoken` endpoint is dropped.
-Please use `POST /requesttoken` to request authentication tokens instead.
-** Using request body to store credentials is more secure than using query string.
-If you have a create a token request that puts the credentials in the query string, all you need to do is use the `POST` endpoint and move your credentials to the request body. 
-* `GET /gsqlserver/gsql/queryinfo` endpoint on port 14240 now returns the query input parameters in the same order as they are in the query instead of an unordered list.
-* Deploying TigerGraph in Kubernetes now requires more service account permissions than previous versions.
-For details, see Prerequisites section in xref:3.6@tigergraph-server:kubernetes:quickstart-with-gke.adoc[], xref:3.6@tigergraph-server:kubernetes:quickstart-with-aks.adoc[], and xref:3.6@tigergraph-server:kubernetes:quickstart-with-eks.adoc[].
-
-== Compatibility with TigerGraph 3.1
-
-The following changes were made to the built-in roles in TigerGraph's Role-based Access Control
-
-* The built-in role `queryreader` can no longer run queries that include updates to the database.
-** To emulate the old `queryreader` role, create a role with all `queryreader` privileges, and also grant the `WRITE_DATA` privilege to the new role.
-* The built-in role `admin` can no longer create users
-** To emulate the old `admin` role, create a global role with all `admin` privileges, and also grant the `WRITE_USER` privilege to the new role.
-* To learn more about role management and the privileges of built-in roles, see:
-** xref:3.6@tigergraph-server:user-access:role-management.adoc[]
-** xref:3.6@tigergraph-server:reference:list-of-privileges.adoc[]
-
-== Compatibility with TigerGraph 2
-
-Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to deliver significant improvements. While we make every effort to maintain backward compatibility, in selected cases APIs have changed or deprecated features have been dropped, in order to advance the overall product.
-
-*Data migration*: A tool is available to migrate the data in TigerGraph 2.6 to TigerGraph 3.0. Please contact TigerGraph Support for assistance.
-
-*Query and API compatibility*:
-
-* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.
-Please see xref:3.6@tigergraph-server:system-management:management-with-gadmin.adoc[Managing with gadmin].
-* Some features which were previously deprecated have been dropped. Please see xref:3.6@tigergraph-server:release-notes:v3.0-removal-of-previously-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
-
-include::v3.0-removal-of-previously-deprecated-features.adoc[]
