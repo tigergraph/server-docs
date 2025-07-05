@@ -1030,12 +1030,16 @@ concurrent queries in the delay queue |`20`
 |===
 |Name |Description |Example
 
+| Security.JWT.JWKS.URL
+| Provide the URL for the public keys used to verify JWT signatures. The URL points to a xref:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[JWKS (JSON Web Key Set)] endpoint.
+| `https://jwt.example.com/.well-known/jwks.json`
+
 | Security.JWT.RSA.PublicKey
-| Configure a RSA public key for xref:user-access:jwt-token.adoc[].
+| Configure a RSA public key for xref:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[OIDC JWT Authentication].
 | `gadmin config set Security.JWT.RSA.PublicKey <public-key content or URL or @filepath>`
 
 | Security.JWT.HMAC.Secret
-| Configure a HMAC Secret for xref:user-access:jwt-token.adoc[].
+| Configure a HMAC Secret for xref:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[OIDC JWT Authentication].
 | `gadmin config set Security.JWT.HMAC.Secret <shared-secret-key content or URL or @filepath>`
 
 | Security.JWT.Issuer
