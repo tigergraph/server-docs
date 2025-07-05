@@ -1,0 +1,94 @@
+= Compatibility among TigerGraph 3 versions
+:description: lists the compatibility issues between different versions of TigerGraph 3, for users who plan to migrate
+
+This page lists the discontinued features or other incompatible changes from one TigerGraph 3.x version to another TigerGraph 3.x version.
+
+[NOTE]
+====
+The list does not include bug fixes where a feature was not working correctly before and now is working according to the specification.
+Those issues are listed on the Release Notes page.
+====
+
+== TigerGraph 3.6 Compatibility Changes
+
+[options="header,autowidth"]
+|===
+| Version | Description | Recommendation
+
+| 3.6.3
+| A vertex having an empty string as its primary id is considered bad data and will not be loaded.
+| Check input files and loading jobs to insure you are not attempting to load vertices with no ID.
+
+| 3.6
+| A single `POST-ACCUM` clause can no longer reference more than one vertex alias in Syntax V1.
+| Rewrite query, possibly using multiple `POST-ACCUM`s
+
+| 3.6
+| `GET /requesttoken endpoint` is dropped.
+| Use `POST /requestoken` instead, with credentials in the request body.
+
+| 3.6
+| Deploying TigerGraph in Kubernetes now requires more service account permissions than previous versions.
+| See Prerequisites section in xref:kubernetes:quickstart-with-gke.adoc[], xref:kubernetes:quickstart-with-aks.adoc[], and xref:kubernetes:quickstart-with-eks.adoc[].
+|===
+
+== TigerGraph 3.4 Compatibility Changes
+
+[options="header,autowidth"]
+|===
+| Version | Description of Change | Recommendation
+
+| 3.4
+| The built-in role `queryreader` can no longer run queries that include updates to the database.
+| To emulate the old `queryreader` role, create a role with all `queryreader` privileges, and also grant the `WRITE_DATA` privilege to the new role.
+
+| 3.4
+| The built-in role `admin` can no longer create users.
+| To emulate the old `admin` role, create a global role with all `admin` privileges, and also grant the `WRITE_USER` privilege to the new role.
+
+|===
+
+
+== TigerGraph 3.2 Compatibility Changes
+
+[options="header,autowidth"]
+|===
+| Version | Description of Change | Recommendation
+
+| 3.2
+| Subqueries: A distributed mode main query cannot call a distributed mode subquery.
+| Refactor such queries.
+
+| 3.2
+| Log files: Default logging level for GSQL logs has changed from `DEBUG` to `INFO`.
+| Set the xref:reference:configuration-parameters.adoc#_GSQL[logging level to GSQL] to `DEBUG` when needed.
+
+|===
+
+
+== TigerGraph 3.1 Compatibility Changes
+
+[options="header,autowidth"]
+|===
+| Version | Description of Change | Recommendation
+
+| 3.1.1
+a| Loading `TAGS`: syntax changed from BY (OR\|OVERWRITE) to `BY OR\|OVERWRITE`
+
+(parentheses no longer used)
+| Update loading jobs which use `TAGS`
+
+| 3.1.1
+| REST endpoint renamed from `dbsanitycheck` to `deleted_vertex_check`
+| Inform admin users
+
+| 3.1
+| `STRING COMPRESS` data type is deprecated. New data objects may not have this data type. Existing data objects continue to work.
+| Use `STRING` data type instead for new schemas.
+
+| 3.1
+| GSQL: A schema change can no longer drop a vertex type if it is used in an edge type.
+| Consider whether you intend to also remove the vertex type from any edges.
+
+|===
+

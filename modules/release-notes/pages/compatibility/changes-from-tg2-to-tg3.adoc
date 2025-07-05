@@ -1,4 +1,17 @@
-=== V3.0 Removal of Previously Deprecated Features
+= Compatibility between TigerGraph 2 and TigerGraph 3.0
+:description: lists the compatibility issues between TigerGraph 2 and TigerGraph 3, for users who plan to migrate
+
+Major revisions (e.g., from TigerGraph 2 to TigerGraph 3) are the opportunity to deliver significant improvements. While we make every effort to maintain backward compatibility, in selected cases APIs have changed or deprecated features have been dropped, in order to advance the overall product.
+
+*Data migration*: A tool is available to migrate the data in TigerGraph 2.6 to TigerGraph 3.0. Please contact TigerGraph Support for assistance.
+
+*Query and API compatibility*:
+
+* Some gadmin syntax has changed. Notably. `gadmin set config` is now `gadmin config set`.
+Please see xref:system-management:management-with-gadmin.adoc[Managing with gadmin].
+* Some features which were previously deprecated have been dropped. Please see xref:compatibility/.v3.0-removal-of-deprecated-features.adoc[V3.0 Removal of Previously Deprecated Features] for a detailed list.
+
+== V3.0 Removal of Previously Deprecated Features
 
 TigerGraph 2.x contained some features which were labeled as deprecated.
 These features are no longer necessary because they have been superseded already by improved approaches for using the TigerGraph platform.
@@ -100,7 +113,7 @@ END
 
 ==== Vertex set variable declaration
 
-See xref:3.6@gsql-ref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variables[Vertex Set Variable Declaration and Assignment]
+See xref:{page-component-version}@gsql-ref:querying:declaration-and-assignment-statements.adoc#_vertex_set_variables[Vertex Set Variable Declaration and Assignment]
 
 If a vertex type is specified, the vertex type must be within parentheses.
 
@@ -134,7 +147,7 @@ a|Job types need to be specified:
 * `RUN GLOBAL SCHEMA_CHANGE JOB`
 
 |`CREATE / SHOW/ REFRESH TOKEN`
-|To create a token, use the xref:3.6@tigergraph-server:API:built-in-endpoints.adoc#_request_a_token[REST endpoint GET /requesttoken].
+|To create a token, use the xref:API:built-in-endpoints.adoc#_request_a_token[REST endpoint GET /requesttoken].
 
 |`offline2online`
 |The offline loading job mode was discontinued in v2.0.
@@ -145,7 +158,7 @@ Do not write loading jobs using this syntax.
 
 ==== Output
 
-See xref:3.6@gsql-ref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[PRINT Statement]
+See xref:{page-component-version}@gsql-ref:querying:output-statements-and-file-objects.adoc#_print_statement_api_v2[PRINT Statement]
 
 |===
 | Deprecated Syntax | Alternate Syntax
@@ -173,4 +186,3 @@ a|
 * `SELECT count(*) FROM ...`
 ** exact, but slower than `approx_count(*)`
 |===
-
