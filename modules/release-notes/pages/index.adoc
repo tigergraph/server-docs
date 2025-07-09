@@ -183,6 +183,66 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 * Added support for debug mode when a pod restart fails due to a PostStartHookError (TP-7228).
 * Corrected the logic for the SelectVertex() function so it throws an error if the filePath is not an absolute path.
 
+== Known Issues and Limitations
+
+[%autowidth, cols="4", separator=¦]
+|===
+¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
+
+¦A NullPointerException occurs when performing a code check for queries using statements other than a = vt.* or a = {vt.*}, causing query creation to fail.
+¦4.1.3
+a¦TBD
+¦TBD
+
+¦When `pulldict` fails, an empty debug log is generated, as the log level for debug is not enabled by default.
+¦4.1.3
+a¦TBD
+¦TBD
+
+¦After upgrading, the system fails to detect `to_string()` in the UDF file, leading to query compilation errors. This issue occurs because the system doesn't report parsing errors during file uploads.
+¦4.1.3
+a¦TBD
+¦TBD
+
+¦When using `set(index, value)` and `flip(index)` with BitwiseOrAccum<1000>, the task fails due to lack of support for bit operators `(&, |, ~)` in bitwise accumulation.
+¦4.1.3
+a¦TBD
+¦TBD
+
+¦Using xref:{page-component-version}@gsql-ref:querying:accumulators.adoc#_bitwiseandaccum_bitwiseoraccum[`.flip()`] on `BitwiseAndAccum` or `BitwiseOrAccum` inside a `PRINT` block may produce different results in UDF mode versus Single/Distributed mode.
+¦4.1.3
+a¦Move the `.flip()` logic to the POST-ACCUM block for consistent behavior.
+¦TBD
+
+¦After a cluster expansion, the GPE service may remain in the warmup state.
+¦4.1.1
+a¦If this happens, run `gadmin restart gse -y` to release the GPE.
+¦TBD
+
+¦The `EXECUTE_QUERY` privilege is not enforced on RESTPP endpoints. That is, users who lack `EXECUTE_QUERY` can still run a query via
+
+ `POST /restpp/query/{graph_name}/{query_name}`
+¦4.1
+¦Use legacy methods for access control: Define separate graphs which span the same data but have different queries and users.
+¦TBD
+
+
+¦If a RESTPP request is for a graph operation and thus sent to the GPE then fails inside the GPE, the RESTPP will interpret the response from the GPE as success and report SUCCEED in the audit log.
+¦4.1
+¦Use a `/gsql` endpoint instead of a `/restpp` endpoint.
+¦TBD
+
+¦ When xref:installation:upgrade.adoc#_upgrading_from_3_x[upgrading], possible permission error for destination folder.
+¦ 3.10.1
+¦ Manually grant permission to `/var/tmp`
+¦ TBD
+
+
+¦ xref:{page-component-version}@backup-and-restore:database-import-export.adoc[Export] does not include LDAP proxy groups
+¦ 3.9+
+¦ Manually recreate the proxy groups on the imported database.
+¦
+|===
 === Compatibility Issues
 
 [cols="2,^1", separator=¦ ]

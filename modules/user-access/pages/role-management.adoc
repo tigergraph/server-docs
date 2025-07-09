@@ -2,12 +2,15 @@
 :description: This page explains the procedures for various role management tasks under TigerGraph's role-based access control model.
 :page-toclevels: 1
 
-This page explains the procedures for various role management tasks under TigerGraph's role-based access control model.
+This page explains the procedures for various role management tasks under TigerGraph's classic role-based access control model.
 
 [NOTE]
 ====
-For Row Policy and Object-Based privilege EBNF examples see xref:user-access:rbac-row-policy/row-policy-ebnf.adoc[].
+*Known Issue*: usernames beginning with a digit or containing non-alphanumeric characters cannot grant or revoke privileges.
 ====
+
+For Row Policy and Object-Based privilege management, see
+xref:user-access:rbac-row-policy/row-policy-overview.adoc[].
 
 == Create a local role
 
@@ -123,7 +126,7 @@ You can specify a role and view all users who are assigned that role.
 [source,gsql]
 SHOW GRANTS OF ROLE <role_name1>, <role_name2> ...
 
-=== Require privilege
+=== Required privilege
 `READ_ROLE` and `READ_USER` on global scope
 
 === Example
@@ -179,6 +182,12 @@ This will show all the roles in your current scope:
 
 Users with the `WRITE_ROLE` privileges on a scope can grant RBAC privileges to the roles in that scope.
 
+[NOTE]
+====
+*Known Issue*: usernames beginning with a digit or containing non-alphanumeric characters cannot grant or revoke privileges.
+====
+
+
 === Syntax
 
 [source,text]
@@ -188,7 +197,7 @@ ON (GLOBAL | ALL <object_type_plural1> (, ALL <object_type_plural2>)* | <object_
 IN [GRAPH <graph_name>|GLOBAL] TO <role_name1> (, <role_name2>)*
 ----
 
-=== Require privilege
+=== Required privilege
 
 `WRITE_ROLE`
 
