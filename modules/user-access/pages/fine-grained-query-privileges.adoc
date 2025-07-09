@@ -33,6 +33,12 @@ Users with the `admin` role in one graph hold the `OWNERSHIP` privilege on all q
 
 With above changes, corresponding grant/revoke commands and query related operations are also changed. Details of such changes will be displayed in the following sections.
 
+== Known Issue
+
+* The `EXECUTE_QUERY` privilege is not enforced on RESTPP endpoints. That is, users who lack `EXECUTE_QUERY` can still run a query via
+
+ `POST /restpp/query/{graph_name}/{query_name}`
+
 == Usage Examples 
 
 [NOTE]

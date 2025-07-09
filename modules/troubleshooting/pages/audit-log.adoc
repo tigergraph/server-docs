@@ -367,6 +367,7 @@ However, if `System.Audit.MaskPII` is set to `false`, then the log will contain 
 * If the user logs into TG Cloud using SSO, they will not be required to provide credentials again when opening GraphStudio.
 ** Therefore, the login event would not be reflected in the audit log, but the user’s subsequent operations (`create query`, `install query`, etc.) will be recorded in the audit log as normal.
 
-
 * [Fixed in 3.10.2 and 4.1.1] The real client IP address could be removed or masked by a firewall or another intermediate redirect layer before arriving at the TigerGraph service.
 ** Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.
+
+* If a RESTPP request is for a graph operation and thus sent to the GPE then fails inside the GPE, the RESTPP will interpret the response from the GPE as success and report SUCCEED in the audit log.
