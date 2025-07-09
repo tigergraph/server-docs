@@ -187,7 +187,7 @@ If the user's LDAP entry matches the proxy rule of an existing proxy group, a pr
 For example, if there is an attribute called `role` in the LDAP directory, and `engineering` is one of the `role` attribute values, we can create a proxy group with the proxy rule `role=engineering`.
 All users with the `role` attribute whose value is `engineering` are matched to the proxy group and have the privileges granted to the proxy group.
 
-=== Configure Proxy Group
+=== Configure proxy group
 
 Run the `CREATE GROUP` command to create a proxy group with a proxy rule.
 
@@ -242,7 +242,9 @@ When the roles and privileges of a proxy group changes, the roles and privileges
 
 [NOTE]
 ====
-Proxy groups cannot be xref:backup-and-restore:database-import-export.adoc[exported].However, performing a xref:backup-and-restore:index.adoc[backup and restore] will preserve all proxy groups present at the time of backup.
+Proxy groups are not included in a  xref:backup-and-restore:database-import-export.adoc[Database Export].
+They need to be recreated following an Import.
+However, xref:backup-and-restore:index.adoc[Backup and Restore] do preserve all proxy groups present at the time of backup.
 ====
 
 == Common errors
