@@ -353,6 +353,25 @@ a¦Move the `.flip()` logic to the POST-ACCUM block for consistent behavior.
 a¦If this happens, run `gadmin restart gse -y` to release the GPE.
 ¦TBD
 
+¦The `EXECUTE_QUERY` privilege is not enforced on RESTPP endpoints. That is, users who lack `EXECUTE_QUERY` can still run a query via
+
+ `POST /restpp/query/{graph_name}/{query_name}`
+¦4.1
+¦Use legacy methods for access control: Define separate graphs which span the same data but have different queries and users.
+¦TBD
+
+
+¦If a RESTPP request is for a graph operation and thus sent to the GPE then fails inside the GPE, the RESTPP will interpret the response from the GPE as success and report SUCCEED in the audit log.
+¦4.1
+¦Use a `/gsql` endpoint instead of a `/restpp` endpoint.
+¦TBD
+
+¦ When xref:installation:upgrade.adoc#_upgrading_from_3_x[upgrading], possible permission error for destination folder.
+¦ 3.10.1
+¦ Manually grant permission to `/var/tmp`
+¦ TBD
+
+
 ¦When using xref:{page-component-version}@tigergraph-server:backup-and-restore:database-import-export.adoc[Import All] if the schema size in the `.zip` file is exceedingly large, the import may fail with an error messages like this:
 
 `Large catalog file key: /1/ReplicaList.json`
@@ -549,6 +568,12 @@ Then the global loading process will exit and fail the local job after timeout w
 ¦ 3.9
 ¦ Check the case of the keywords for `memberOf`. This has been fixed in versions 3.10.1 and above.
 ¦ 3.10.1
+
+¦ xref:{page-component-version}@backup-and-restore:database-import-export.adoc[Export] does not include LDAP proxy groups
+¦ 3.9+
+¦ Manually recreate the proxy groups on the imported database.
+¦
+
 
 |===
 
