@@ -1,12 +1,12 @@
 = Log Files
 
-TigerGraph captures key information about activities across its components through log files. These logs are essential for xref:troubleshooting:troubleshooting-guide.adoctroubleshooting and auditing. 
+TigerGraph captures key information about activities across its components through log files. These logs are essential for xref:troubleshooting:troubleshooting-guide.adoc[troubleshooting] and auditing. 
 Logs may contain sensitive information, so direct access is restricted.
 
 This page provides an overview of the log files available in TigerGraph, including where to find them, how they are stored, and what information they contain.
 
 xref:audit-log.adoc[Audit logs] are structured in JSON, ensuring machine-readability and facilitating easy integration with third-party tools.
-TigerGraph Linux server administrators can also use the xref:gcollect.adoc[gcollect] utility to search for and gather selected information from the logs.
+TigerGraph Linux admin users also use the xref:gcollect.adoc[gcollect] utility to search for and gather selected information from the logs.
 We also provide instructions on how to
 xref:elk-filebeat.adoc[set up log viewing with Elasticsearch, Kibana, or Filebeat].
 
@@ -24,7 +24,7 @@ Logs in TigerGraph are stored in the log root directory, which is configured at 
 gadmin config get System.LogRoot
 ----
 
-Within this directory, you will find subdirectories for each TigerGraph component (e.g., admin, gpe, gsql, gui, kafka, nginx, zk, etc.).
+Within this directory, you will find subdirectories for each TigerGraph component (admin, gpe, gsql, gui, kafka, nginx, zk, etc.).
 
 [source,console]
 ----
@@ -33,18 +33,27 @@ admin       dict  executor    gpe  gsql  informant  kafkaconn     nginx       zk
 controller  etcd  fileLoader  gse  gui   kafka      kafkastrm-ll  restpp 
 ----
 
-To list log files, use:
+Use the `gadmin log` command to list log files:
 
-[source,console]
+[source, console]
 ----
-gadmin log
+$ gadmin log
+ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN#1.out
+ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN.INFO
+CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.log
+CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.out
+...
+ZK     : /home/tigergraph/tigergraph/log/zk/ZK#1.out
+ZK     : /home/tigergraph/tigergraph/log/zk/zookeeper.log
 ----
 
-To get logs for a specific service, use:
+Use the command `gadmin log <service name>` to get the logs for a specific service:
 
-[source,console]
+[source, console]
 ----
-gadmin log <service name>
+$ gadmin log gpe
+GPE    : /home/tigergraph/tigergraph/log/gpe/GPE_1#1.out
+GPE    : /home/tigergraph/tigergraph/log/gpe/log.INFO
 ----
 
 Some components like Zookeeper and Kafka have logs that are not listed by `gadmin log`. You can find them at:
@@ -55,7 +64,7 @@ zookeeper : ~/tigergraph/zk/zookeeper.out.*
 kafka     : ~/tigergraph/kafka/kafka.out
 ----
 
-=== Log File Extensions
+=== TigerGraph Component Log Files
 
 * `.out` files capture *standard output (stdout)* and log runtime information, including error stack traces when services crash or unexpected errors occur. 
 These logs are especially useful for errors that aren't logged by the service's internal logging mechanism.
@@ -68,42 +77,66 @@ To diagnose an issue for a given component, check the `.out` log file for that c
 
 image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0QAG1M3vW1t0nmwo7oYr3DgwVsgJoIEjub-5tSA81UtOQ-Ot-9m30zZ9Zr5tRG077dgfZ7KaE3tMMafUK63oi6fILQeM-kQw6fKqc[]
 
-=== Component-Specific Log Details
+[NOTE]
+====
+* The GUI component does not have separate `.log`, `.error`, or `.info` files.
+* Each GUI log file (e.g., `gui_ADMIN.log`, `gui_INFO.log`) captures the standard output of the GUI process and includes all log levels (error, warning, info).
+* The log level for the GUI component is *configurable*. You can set it using:
+
+[source,console]
+----
+gadmin config set GUI.BasicConfig.LogConfig.LogLevel <LEVEL>
+----
+
+Replace `<LEVEL>` with one of: `DEBUG`, `INFO`, `WARN`, `ERROR`, `PANIC`, or `FATAL`. The default level is `INFO`.
+====
+
+==== Symbolic Links
+
+In directories with frequently checked logs, such as `restpp`, `gsql`, and `admin`, symbolic links make it easier to access the latest log file.
+These links are automatically updated to point to the newest log.
+
+For example, `log.INFO` is a symbolic link that points to the current `.INFO` log file. To see what a symbolic link points to, use `ls -ll` followed by the symbolic link name:
+
+[source,console]
+----
+ls -ll log.INFO
+log.INFO -> log.INFO.2024-07-01-10-00-00
+----
+
+Here, `log.INFO` is a symbolic link pointing to the current `.INFO` log file.
+
+=== Third-Party Component Log Files
+
+TigerGraph uses several open-source components (such as Kafka, Nginx, ZooKeeper, Kafkaconn, Kafkastream) that maintain their own log conventions.
 
 * *NGINX Logs:* The NGINX log files (e.g., `nginx.out`, `nginx.error.log`, `nginx.access.log`) are generated directly by the NGINX web server itself and are not internal TigerGraph component logs.
 
-* *GUI Logs (VIS):* For the GUI component, the `.out file` (e.g., `gui_ADMIN.log`, `gui_INFO.log`) serves as the primary log file. 
-It captures the standard output of the GUI process and includes all log levels (error, warning, info). There are no other separate log files for the GUI.
+* *Kafka Logs:* Kafka logs include `controller.log`, `kafka.log`, `kafka-request.log`, `state-change.log`, and `server.log`.
+
+* *ZooKeeper Logs:* ZooKeeper logs are typically found as `zookeeper.out.*` in the ZooKeeper directory.
 
 == TigerGraph log structure
 
 [CAUTION]
 ====
-The log format differs between the `.out` and `INFO` logs.
-It also differs between certain TigerGraph services.
+Log formats may differ between `.out` and `.INFO` logs and between different TigerGraph services.
 An internal project to unify log formats is ongoing.
 ====
 
-In directories with frequent log checks (such as `restpp`, `gsql`, and `admin`), symbolic links help you quickly access the most recent log file.
-
-* `log.INFO`
-** Contains regular output and errors
-* `log.ERROR`
-** Contains errors only
-* `<component_name>.out`
-** Contains all output from the component process. Current `.out` logs have the form `<service name>.out`.
-Historical logs have the form `<service name>-old-YYYY-MM-DDTHH-MM-SS.fff.out`
-
+* `log.INFO`: Contains regular output and errors.
+* `log.ERROR`: Contains errors only.
+* `<component_name>.out`: Contains all output from the component process. Current `.out` logs have the form `<service name>.out`. Historical logs have the form `<service name>-old-YYYY-MM-DDTHH-MM-SS.fff.out`
 * `log.WARNING` or `log.DEBUG`
-** `log.WARNING` contains warnings and all error level messages
-* `log.FATAL`
-** Contains outputs for any fatal level events
+** `log.WARNING` contains warnings and all error-level messages.
+** `log.DEBUG` contains debug-level messages (not created by default).
+* `log.FATAL`: Contains outputs for any fatal level events
 
 [NOTE]
 ====
 All services do not create a `log.DEBUG` file by default.
 To change this, modify the parameter `<service>.BasicConfig.LogConfig.LogLevel`.
-For example, `GSQL.BasicConfig.LogConfig.LogLevel`. See xref:reference:configuration-parameters.adoc[] for more information.
+For example, `GSQL.BasicConfig.LogConfig.LogLevel`. See xref:reference:configuration-parameters.adoc[Configuration Parameters] for more information.
 ====
 
 == Log locations on a cluster
@@ -127,18 +160,8 @@ I@20210709 13:56:52.220  (SessionManager.java:204) All sessions aborted.
 I@20210709 13:56:52.224  (GsqlHAHandler.java:283) switched to new leader m1
 ----
 
-== Open source TigerGraph components
-
-For open source components included with TigerGraph (Kafka, Nginx, ZooKeeper, Kafkaconn, Kafkastream), log files follow their respective logging conventions. 
-
-For example, the Kafka logs have a `controller.log`, `kafka.log`, `kafka-request.log`, `state-change.log`, and `server.log`.
-
 == Log rotation
 
 TigerGraph also handles log rotation.
-When the log is rotated, the log.LEVEL symlink is updated to point to the newest log.
-The default configuration is to rotate under any of the following circumstances:
-
-* Log file size exceeds 100 MB
-* Log is older than 90 days
-* More than 100 files exist for that service
+When a log is rotated, the symlink (e.g., `log.INFO`) is updated to point to the newest log file.
+Logs are rotated when the file size exceeds *100 MB*, the log is older than *90 days*, or more than *100 files* exist for that service.
