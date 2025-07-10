@@ -200,7 +200,7 @@ See xref:3.10@tigergraph-server:user-access:rbac-row-policy/row-policy-privilege
 * Removed GraphStudio exploration results and loading job sample data from `gui/data.json` to prevent potential leakage of Personally Identifiable Information (PII) during schema export (APPS-3946).
 * Masked sensitive user IDs (vertex primary IDs) in system logs to enhance data privacy and prevent potential leakage of PII (CORE-4860).
 * Fixed the following security vulnerabilities:
-CVE-2016-20013, CVE-2020-8908, CVE-2023-2976, CVE-2023-45288, CVE-2023-45289, CVE-2023-45290, CVE-2023-7008, CVE-2024-23454, CVE-2024-23944, CVE-2024-24783, CVE-2024-24784, CVE-2024-24785, CVE-2024-24789, CVE-2024-24790, CVE-2024-24791, CVE-2024-31141, CVE-2024-34155, CVE-2024-34156, CVE-2024-34158, CVE-2024-45336, CVE-2024-45341, CVE-2024-47535, CVE-2024-51744, CVE-2024-56128, CVE-2024-56406, CVE-2024-57699, CVE-2024-6763, CVE-2025-0913, CVE-2025-22866, CVE-2025-22870, CVE-2025-22871, CVE-2025-22872, CVE-2025-22874, CVE-2025-23022, CVE-2025-24789, CVE-2025-24790, CVE-2025-24970, CVE-2025-25193, CVE-2025-27496, CVE-2025-29088, CVE-2025-30204, CVE-2025-32728, CVE-2025-3576, CVE-2025-4598, CVE-2025-4673, CVE-2025-46836, and CVE-2025-48734.
+CVE-2016-20013, CVE-2020-8908, CVE-2023-2976, CVE-2023-7008, CVE-2023-45289, CVE-2024-23454, CVE-2024-23944, CVE-2024-31141, CVE-2024-34155, CVE-2024-34156, CVE-2024-34158, CVE-2024-45336, CVE-2024-45341, CVE-2024-47535, CVE-2024-51744, CVE-2024-56406, CVE-2024-57699, CVE-2024-6763, CVE-2024-24783, CVE-2024-24784, CVE-2024-24785, CVE-2024-24789, CVE-2024-24790, CVE-2024-24791, CVE-2025-0913, CVE-2025-22866, CVE-2025-22870, CVE-2025-22871, CVE-2025-22872, CVE-2025-22874, CVE-2025-23022, CVE-2025-24970, CVE-2025-25193, CVE-2025-27496, CVE-2025-29088, CVE-2025-30204, CVE-2025-32728, CVE-2025-3576, CVE-2025-4673, CVE-2025-46836, and CVE-2025-48734.
 
 
 === Fixed and Improved in 3.10.3
@@ -223,7 +223,14 @@ CVE-2016-20013, CVE-2020-8908, CVE-2023-2976, CVE-2023-45288, CVE-2023-45289, CV
 
 * Improved the performance of GSQL queries containing delete statements intended for deleting all vertices of a given type (GLE-8930).
 
+==== Security
+
+* Fixed the following security vulnerabilities:
+CVE-2024-43382, CVE-2024-45337, CVE-2024-56128, CVE-2024-8184, CWE-1333, CWE-303, CWE-311, and CWE-639.
+
 === Fixed and Improved in 3.10.2
+
+==== Functionality
 
 * Fixed issue where local accumulators defined across multiple lines in a query were misinterpreted in the GSQL client (GLE-8259).
 * Fixed issue in the post-upgrade check that causes the upgrade to abort due to insufficient permissions to the /tmp directory (GLE-8005).
@@ -238,6 +245,10 @@ CVE-2016-20013, CVE-2020-8908, CVE-2023-2976, CVE-2023-45288, CVE-2023-45289, CV
 * Allowed installation to continue on Oracle and RedHat Linux, 8 even if the TigerGraph user is not listed in AllowedUsers in /etc/ssh/sshd_config (TP-5105).
 * Fixed an issue so IMPORT ALL will no longer fail due to the schema size being very large (GLE-6505).
 
+==== Security
+
+* Fixed the following security vulnerabilities:
+CVE-2020-25649, CVE-2020-36518, CVE-2021-38153, CVE-2021-45046, CVE-2022-41723, CVE-2022-45685, CVE-2023-1346, CVE-2023-34455, CVE-2023-36478, CVE-2023-42363, CVE-2023-42364, CVE-2023-42365, CVE-2023-42366, CVE-2023-50387, CVE-2023-50868, CVE-2023-52428, CVE-2024-25638, CVE-2024-29025, CVE-2024-29131, CVE-2024-29133, CVE-2024-39338, CVE-2024-4067, CVE-2024-4068, CVE-2024-42459, CVE-2024-42460, CVE-2024-42461, CVE-2024-4603, CVE-2024-4741, CVE-2024-47561, CVE-2024-5535, CVE-2024-7254, CWE-295, CWE-400, and CWE-918.
 
 === Fixed and Improved in 3.10.1
 
@@ -253,6 +264,8 @@ CVE-2016-20013, CVE-2020-8908, CVE-2023-2976, CVE-2023-45288, CVE-2023-45289, CV
 
 ==== Security
 * Enhanced security by disabling unapproved SSL/TLS protocols of `DHE-RSA-AES128-GCM-SHA256` and `DHE-RSA-AES256-GCM-SHA384` and upgrading to TLS 1.3 in Nginx (APPS-2729).
+* Fixed the following security vulnerabilities:
+CVE-2023-45288, CVE-2023-6237, CVE-2024-0727, CVE-2024-0793, CVE-2024-1597, CVE-2024-24786, CVE-2024-2511, CVE-2024-25710, CVE-2024-27088, CWE-835.
 
 //==== Crashes and Deadlocks
 //==== Improvements
@@ -296,6 +309,12 @@ CVE-2016-20013, CVE-2020-8908, CVE-2023-2976, CVE-2023-45288, CVE-2023-45289, CV
 * Improved functionality of the `ExprFunction` file to automatically remove the leftover “to_string” function in ExprFunction file (GLE-5834).
 * Improved retention strategy for `EventQueue` that improved timely monitoring of the utilization of disk space (TP-4920).
 * Improved service logs accuracy to show SSO users username in log (APPS-2496).
+
+
+==== Security
+
+* Fixed the following security vulnerabilities:
+CVE-2017-5645, CVE-2019-10202, CVE-2021-44228, CVE-2023-39325, CVE-2023-3978, CVE-2023-4316, CVE-2023-43642, CVE-2023-44487, CVE-2023-44981, CVE-2023-45133, CVE-2023-45857, CVE-2023-48795, and CVE-2023-5072.
 
 
 //(TP-4472)
