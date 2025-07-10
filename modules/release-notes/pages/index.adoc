@@ -21,7 +21,7 @@ LTS versions are supported for 24 months from their initial GA release (X.X.1) a
 * xref:3.10@tigergraph-server:system-management:change-data-capture/cdc-overview.adoc[Change Data Capture (CDC)] - This equips TigerGraph users with the capability to automatically capture and stream data changes to external Kafka systems maintained by the user.
 Additionally, CDC can be xref:3.10@gui:admin-portal:components/cdc.adoc[configured] in xref:3.10@gui:admin-portal:overview.adoc[Admin Portal].
 
-* xref:3.10@tigergraph-server:system-management:workload-management.adoc#_workload_queue[Workload Queue] - Configure workload queues so that queries are routed to the appropriate queues during runtime.
+* xref:3.10@tigergraph-server:system-management:workload-management.adoc#_workload_queues[Workload Queue] - Configure workload queues so that queries are routed to the appropriate queues during runtime.
 
 * xref:3.10@tigergraph-server:data-loading:load-from-spark-dataframe.adoc[Spark Connector] - A new dedicated connector used with Apache Spark to read data from a Spark DataFrame and write to TigerGraph.
 
@@ -71,17 +71,15 @@ users can now use the authorization secret in a request header as a GSQL-Secret.
 
 * xref:3.10@tigergraph-server:system-management:management-commands.adoc#_gadmin_backup_create[Two new flags for gadmin backup create] - added two parameters to enable data consistency checks during the backup.
 
+* [3.10.4] xref:3.10@tigergraph-server:reference:configuration-parameters.adoc#_zk[New ZK.SnapCount configuration] enables users to fine-tune the number of committed ZooKeeper transactions that trigger a ZK log file, enhancing memory management and stability under high transaction loads.
+
 === GSQL Command and Querying Language
-
-//* [3.10.1] xref:3.10@gsql-ref:querying:func/aggregation-functions.adoc#_percentilecont[New Aggregation funtion percentileCont()] - `percentileCont()` Aggregating Returns the percentile of the given value over a group using linear interpolation.
-
-//* [3.10.1] xref:3.10@gsql-ref:querying:accumulators.adoc#_percentilecontaccum[A new accumulator PercentileContAccum()] - `PercentileContAccum()` that returns the percentile of the given value over a group using linear interpolation.
 
 * xref:3.10@gsql-ref:querying:func/context-functions.adoc[] - Context functions are a set of new built-in functions that provide insights into the user's information and work inside `INSTALLED` queries, `INTERPRET` queries, and xref:3.10@tigergraph-server:user-access:rbac-row-policy/rbac-row-policy.adoc#_gsql_functions[GSQL Functions].
 
 * xref:3.10@tigergraph-server:system-management:management-commands.adoc[Command Updates] - Added new flag `--local` to commands xref:3.10@tigergraph-server:system-management:management-commands.adoc#_gadmin_start[gadmin start] and xref:3.10@tigergraph-server:system-management:management-commands.adoc#_gadmin_stop [gadmin stop] reducing the time required to start/stop local services.
 
-* xref:_improvements[GSQL Data Streaming Improvements] - Improvements to GSQL data streaming that reduce the CPU usage, improve performance, optimizes Disk usage, and increases stability and cohesion.
+* [3.10.4] Added two new timestamp conversion functions, xref:3.10@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_legacy.adoc[gsql_ts_to_epoch_seconds_legacy()] and xref:3.10@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_signed.adoc[gsql_ts_to_epoch_seconds_signed()], providing enhanced flexibility for date handling in loading jobs, including support for pre-1970 dates.
 
 ==== Loading
 
@@ -109,6 +107,13 @@ users can now use the authorization secret in a request header as a GSQL-Secret.
 
 * [3.10.2] **xref:3.10@tigergraph-server:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics_format[Enhanced Metrics Reports]**
 Total and available capacity for CPU and memory are now reported by the `/informant/metrics` endpoint.
+
+=== Data Streaming/Connector Enhancements
+
+* [3.10.4] *xref:3.10@tigergraph-server:data-loading:load-from-kafka.adoc[Improved connector for loading from external Kafka source]*: new configuration details. Older connector to
+xref:3.10@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still available.
+
+* [3.10.4] *Spark Connector now supports xref:3.10@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_configure_the_connector[`OAuth2` authentication]*, enabling seamless JWT token retrieval from third-party IdPs like Azure AD and Auth0 for improved xref:3.10@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_authentication_methods[security and token management].
 
 === Kubernetes Operator
 
@@ -166,6 +171,35 @@ See xref:3.10@tigergraph-server:user-access:rbac-row-policy/row-policy-privilege
 * xref:3.10@insights:widgets:scatter-plot-widget.adoc[Added Scatter Chart Widget] - The scatter chart will provide a visual representation of the relationship between two numerical variables, allowing users to identify patterns or correlations in the data.
 
 == Fixed issues
+
+=== Fixed and Improved in 3.10.4
+
+==== Functionality
+
+* Fixed an issue where incorrect queries with syntax or semantic errors were allowed to be installed (GLE-10432).
+* Fixed a backward compatibility issue that caused system unavailability or schema check failures after upgrading when the keyword `function` was used in vertex attributes (GLE-9840).
+* Fixed an Out-of-Memory (OOM) issue that occurred during file loading operations (TP-8151).
+* Fixed an issue where a loading job inserted invalid vertex attribute values when reducer operators such as `and()`, `ignore_if_exists()`, `max()`, or `min() were used (CORE-4866).
+* Fixed a GraphStudio issue where retrieving the query list in Write Queries would get stuck when creating a large query (GLE-10461).
+* Fixed an issue where users could not locate a vertex in the GraphStudio result when the executed query only printed edges (APPS-3991).
+* Fixed an issue in GraphStudio where an incorrect `query not running` error message appeared when aborting a query in the Admin Portal on multi-node systems (APPS-3962).
+* Fixed an issue in GraphStudio where the delete query button was incorrectly enabled for queries that were only saved but not yet installed, causing an error when attempting to delete them (APPS-3917).
+* Fixed an issue in GraphStudio where query changes were lost or reverted when clicking the Save button immediately after editing or fixing syntax errors (APPS-3916).
+* Fixed issue where queries with certain syntax errors disappeared during installation, because the internal codecheck utility returned an empty result instead of an error message (GLE-10467).
+* Fixed an Out-of-Memory (OOM) issue that caused RESTPP to crash during timeout checks on asynchronous queries (CORE-4885).
+
+==== Improvements
+
+* Upgraded Nginx to version 1.26 (TP-8129).
+* Removed the authentication step required for replaying requests in the Disaster Recovery (DR) environment during regular Cross-Region Replication (CRR) operations (GLE-10601).
+
+==== Security
+
+* Removed GraphStudio exploration results and loading job sample data from `gui/data.json` to prevent potential leakage of Personally Identifiable Information (PII) during schema export (APPS-3946).
+* Masked sensitive user IDs (vertex primary IDs) in system logs to enhance data privacy and prevent potential leakage of PII (CORE-4860).
+* Fixed the following security vulnerabilities:
+CVE-2016-20013, CVE-2020-8908, CVE-2023-2976, CVE-2023-45288, CVE-2023-45289, CVE-2023-45290, CVE-2023-7008, CVE-2024-23454, CVE-2024-23944, CVE-2024-24783, CVE-2024-24784, CVE-2024-24785, CVE-2024-24789, CVE-2024-24790, CVE-2024-24791, CVE-2024-31141, CVE-2024-34155, CVE-2024-34156, CVE-2024-34158, CVE-2024-45336, CVE-2024-45341, CVE-2024-47535, CVE-2024-51744, CVE-2024-56128, CVE-2024-56406, CVE-2024-57699, CVE-2024-6763, CVE-2025-0913, CVE-2025-22866, CVE-2025-22870, CVE-2025-22871, CVE-2025-22872, CVE-2025-22874, CVE-2025-23022, CVE-2025-24789, CVE-2025-24790, CVE-2025-24970, CVE-2025-25193, CVE-2025-27496, CVE-2025-29088, CVE-2025-30204, CVE-2025-32728, CVE-2025-3576, CVE-2025-4598, CVE-2025-4673, CVE-2025-46836, and CVE-2025-48734.
+
 
 === Fixed and Improved in 3.10.3
 
