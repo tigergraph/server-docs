@@ -1,33 +1,41 @@
-= User Access Management
+= Access Management
 :description: User Privileges and Authentication, LDAP, Single Sign-on
 :pp: {plus}{plus}
 :page-aliases: README.adoc, readme.adoc
 
-TigerGraph's user access management features are based on the role-based access control (RBAC) model, providing users with fine-grained access control.
+== Authorization
+*Authorization* is concerned with granting certain users permission to perform certain actions on certain objects.
 
-//Authentication is "who are you"
-//Authorization is "what can you do"
-//
-//
-//
-//~~~ Why can users override RBAC?
-//
-//~~~ this page should provide the three-axis overview of our access control concept.
+TigerGraph's access management utilizes object-based privileges and role-based grouping of users and privileges, providing administrators with fine-grained access control.
+
+* xref:user-access:user-management.adoc[]
+* xref:user-access:access-control-model.adoc[Access Control Model]
+* xref:user-access:fine-grained-query-privileges.adoc[]
+* xref:user-access:role-management.adoc[]
+* xref:user-access:rbac-row-policy/row-policy-overview.adoc[Row Policy Overview]
+** xref:user-access:rbac-row-policy/rbac-row-policy.adoc[Key Concepts]
+** xref:user-access:rbac-row-policy/setup-row-policy.adoc[]
+* xref:user-access:query-privilege-migration.adoc[Migrate Query Privileges from 3.x to 4.x]
+
+
+== Authentication
+*Authentication* is concerned with validating the identity of the user when they attempt to use the system.
+TigerGraph supports several industry-standard frameworks for authentication.
 
 WARNING: User authentication is not enabled by default.
 To secure your database and the underlying system, we strongly suggest that you xref:enabling-user-authentication.adoc[enable authentication].
 
-//
-//
-//== Access Control Lists
-//
-//== Role Base Access Control
-//
-//definition
-//
-//example
-//
-//Link?
+**** xref:user-access:enabling-user-authentication.adoc[]
+**** xref:user-access:user-credentials.adoc[]
+**** xref:user-access:sso-with-saml.adoc[]
+**** xref:user-access:sso-with-oidc.adoc[]
+**** xref:user-access:ldap.adoc[]
+**** xref:user-access:jwt-token.adoc[]
+
+
+
+
+
 
 
 
