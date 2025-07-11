@@ -273,6 +273,11 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 
 * File output policy is now fetched when running a query rather than being compiled into the query at install time (GLE-9359).
 
+==== Security
+
+* Fixed the following security vulnerabilities:
+CVE-2020-29582, CVE-2020-8908, CVE-2023-2976, CVE-2023-45288, CVE-2023-45289, CVE-2023-45290, CVE-2024-23454, CVE-2024-23944, CVE-2024-24783, CVE-2024-24784, CVE-2024-24785, CVE-2024-24789, CVE-2024-24790, CVE-2024-24791, CVE-2024-34155, CVE-2024-34156, CVE-2024-34158, CVE-2024-45336, CVE-2024-45341, CVE-2024-51744, CVE-2024-56406, CVE-2024-6763, CVE-2025-22228, CVE-2025-22234, CVE-2025-22866, CVE-2025-22870, CVE-2025-22871, CVE-2025-22872, CVE-2025-23022, CVE-2025-27496, CVE-2025-30204, and CVE-2025-32728.
+
 
 === Fixed and Improved in 4.1.2
 
@@ -290,6 +295,11 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Added new fields PodInitLabels and PodInitAnnotations in the PodTemplateSpec of the StatefulSet managing TigerGraph pods. These fields allow users to customize pod labels and annotations for initialization purposes (TP-6901).
 * Added functionality to allow Application Developers read-only access to TigerGraph logs (e.g., GSQL query logs, system logs) through GraphStudio without requiring sysadmin intervention (APPS-3253).
 * The GSQL REST endpoints now accept JWT tokens (GLE-8672).
+
+==== Security
+
+* Fixed the following security vulnerabilities:
+CVE-2023-44981, CVE-2024-45337, CVE-2024-8184, and CWE-639.
 
 === Fixed and Improved in 4.1.1
 
@@ -309,6 +319,8 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Fixed issue where users without any roles and privileges could access other users' information through the "/gsql/v1/users" endpoint (GLE-8477).
 * Fixed issue in file input/output policy where symbolic links in the allow/block list were unexpectedly dereferenced (GLE-7139).
 * Fixed issue where TG Cloud password could be changed without first validating the current password (APP-2829).
+* Fixed the following security vulnerabilities:
+CVE-2017-5645, CVE-2019-10172, CVE-2019-10202, CVE-2021-44228, CVE-2021-45046, CVE-2021-45105, CVE-2022-31692, CVE-2022-45143, CVE-2022-45685, CVE-2023-1346, CVE-2023-20860, CVE-2023-20883, CVE-2023-34034, CVE-2023-44487, CVE-2023-46589, CVE-2023-50387, CVE-2023-50868, CVE-2024-1597, CVE-2024-22243, CVE-2024-22257, CVE-2024-22259, CVE-2024-23672, CVE-2024-24549, CVE-2024-25638, CVE-2024-34750, CVE-2024-38286, CVE-2024-38816, CVE-2024-47561, CWE-20, CWE-116, CWE-284, CWE-285, CWE-400, CWE-444, CWE-502, CWE-601, CWE-613, CWE-755, CWE-770, CWE-917, and CWE-918.
 
 //==== Performance
 //==== Improvements
