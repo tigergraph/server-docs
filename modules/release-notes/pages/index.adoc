@@ -622,16 +622,21 @@ a¦ Some user-defined functions (UDFs) may no longer be accepted due to xref:sec
 ¦ v3.9+
 |===
 
-=== Deprecations
+=== Deprecations and Removals
 
 [cols="3", separator=¦ ]
 |===
 ¦ Description ¦ Deprecated ¦ Removed
 
-¦ The format for tuple structures in CDC messages will change in a future veresion. The future format is likely to be similar to the
+¦ The format for tuple structures in CDC messages will change in a future version. The future format is likely to be similar to the
 xref:{page-component-version}@tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_cdc_message_with_type_edge[new format for maps].
 ¦ 4.1.1
 ¦ TBD (possibly 4.2)
+
+¦ Access Control Lists (ACLs) are no longer supported.
+When upgrading from 3.x to 4.x, xref:{page-component-version}@user-access:query-privilege-migration.adoc[ACL privileges will be automatically migrated to object-based privileges].
+¦ 4.1.1
+¦ 4.1.1
 
 ¦ The use of plaintext tokens in xref:{page-component-version}@tigergraph-server:API:authentication.adoc[authentication] is deprecated.
 Use xref:{page-component-version}@tigergraph-server:user-access:jwt-token.adoc[] instead.
@@ -648,16 +653,16 @@ Use xref:{page-component-version}@tigergraph-server:user-access:jwt-token.adoc[]
 
 ¦ `Build Graph Patterns` is deprecated and will not be updated or supported and instead
 we are focusing on xref:{page-component-version}@insights:widgets:index.adoc[Insights] as the tool of choice for building visual queries.
-¦ v3.9.3
+¦ 3.9.3
 ¦ TBD
 
 ¦ Kubernetes classic  mode (non-operator) is deprecated.
-¦ v3.9
+¦ 3.9
 ¦ TBD
 
 ¦ The `WRITE_DATA` RBAC privilege is deprecated.
-¦ v3.7
-¦ TBD
+¦ 3.7
+¦ 4.1
 |===
 
 == Release notes for previous versions
