@@ -56,7 +56,7 @@ GPE    : /home/tigergraph/tigergraph/log/gpe/GPE_1#1.out
 GPE    : /home/tigergraph/tigergraph/log/gpe/log.INFO
 ----
 
-Some components like Zookeeper and Kafka have logs that are not listed by `gadmin log`. You can find them at:
+Third-Party components like Zookeeper and Kafka have logs that are not listed by `gadmin log`. You can find them at:
 
 [source,console]
 ----
@@ -79,7 +79,8 @@ image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0
 
 [NOTE]
 ====
-* The GUI component does not have separate `.log`, `.error`, or `.info` files.
+The GUI component writes all log levels to a single log file and does not generate separate `.log`, `.error`, or `.info` files.
+
 * Each GUI log file (e.g., `gui_ADMIN.log`, `gui_INFO.log`) captures the standard output of the GUI process and includes all log levels (error, warning, info).
 * The log level for the GUI component is *configurable*. You can set it using:
 
@@ -87,7 +88,7 @@ image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0
 ----
 gadmin config set GUI.BasicConfig.LogConfig.LogLevel <LEVEL>
 ----
-
++
 Replace `<LEVEL>` with one of: `DEBUG`, `INFO`, `WARN`, `ERROR`, `PANIC`, or `FATAL`. The default level is `INFO`.
 ====
 
@@ -121,7 +122,6 @@ TigerGraph uses several open-source components (such as Kafka, Nginx, ZooKeeper,
 [CAUTION]
 ====
 Log formats may differ between `.out` and `.INFO` logs and between different TigerGraph services.
-An internal project to unify log formats is ongoing.
 ====
 
 * `log.INFO`: Contains regular output and errors.
