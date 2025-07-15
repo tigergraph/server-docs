@@ -2,27 +2,65 @@
 
 TigerGraph Database captures key information on activities occurring across its different components through log functions that output to log files. These log files are not only helpful in xref:troubleshooting-guide.adoc[troubleshooting] but also serve as an auditory resource. This document gives a high-level overview of TigerGraph's logging structure and lists some common information one might need to monitor their database services and where to obtain them in the logs.
 
-== Overall Logging Structure
+== Available Log Files
 
-Logs in TigerGraph are stored at `<tigergraph_root_dir>/log/`. TigerGraph's logs are divided into different folders by the different internal components and each folder corresponds to a different component. Log formats also vary across the different components. In folders where logs are checked often, such as `restpp`, `gsql`, and `admin`,  there are three symbolic links that help you quickly get to the most recent log file of that category:
+TigerGraph generates a variety of log files for its different components. 
+Understanding what logs are available and what they contain is the first step in effective troubleshooting and system monitoring.
 
-* `log.INFO`
- ** Contains regular output and errors
-* `log.ERROR`
- ** Contains errors only
-* `<component_name>.out`
- ** Contains all output from the component process
-* `log.WARNING` or `log.DEBUG`
- ** `log.WARNING` contains warnings
- ** In the``gsql`` folder, `log.DEBUG` contains very specific information you only need when certain errors happen
+=== Log File Locations
 
-Knowing where certain activities are recorded allows one to use tools such as the Linux `grep` command to easily obtain critical information from your database.
+Logs in TigerGraph are stored in the log root directory, which is configured at install time. You can find this location by running:
 
-== Log locations on a cluster
+[source,console]
+----
+gadmin config get System.LogRoot
+----
 
-In a TigerGraph cluster, each node will only keep logs of activities that took place on the node itself. For example, the GSQL logs on the m1 node will only record events for m1 and are not replicated across the cluster.
+Within this directory, you will find subdirectories for each TigerGraph component (admin, gpe, gsql, gui, kafka, nginx, zk, etc.).
 
-For GSQL specifically, the cluster will elect a leader to which all GSQL requests will be forwarded. To check which node is the leader, start by checking the GSQL logs of the m1 node. Check the most recent lines of log.INFO and look for lines containing information about leader switch. For example, the logs below recorded a GSQL leader switch from m2 to m1:
+[source,console]
+----
+$ ls /home/tigergraph/tigergraph/log
+admin       dict  executor    gpe  gsql  informant  kafkaconn     nginx       zk
+controller  etcd  fileLoader  gse  gui   kafka      kafkastrm-ll  restpp 
+----
+
+Use the `gadmin log` command to list log files:
+
+[source, console]
+----
+$ gadmin log
+ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN#1.out
+ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN.INFO
+CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.log
+CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.out
+...
+ZK     : /home/tigergraph/tigergraph/log/zk/ZK#1.out
+ZK     : /home/tigergraph/tigergraph/log/zk/zookeeper.log
+----
+
+Use the command `gadmin log <service name>` to get the logs for a specific service:
+
+[source, console]
+----
+$ gadmin log gpe
+GPE    : /home/tigergraph/tigergraph/log/gpe/GPE_1#1.out
+GPE    : /home/tigergraph/tigergraph/log/gpe/log.INFO
+----
+
+Third-Party components like Zookeeper and Kafka have logs that are not listed by `gadmin log`. You can find them at:
+
+[source,console]
+----
+zookeeper : ~/tigergraph/zk/zookeeper.out.*
+kafka     : ~/tigergraph/kafka/kafka.out
+----
+
+In a *TigerGraph cluster*, each node maintains logs only for the activities that occur on that node. Logs are not automatically replicated across nodes.
+For example, the GSQL logs on the m1 node reflect only the operations performed on m1.
+To determine which node is currently the GSQL leader, check the most recent `log.INFO` file on m1.
+
+For example, the logs below recorded a GSQL leader switch from m2 to m1:
 
 [,console]
 ----
@@ -33,6 +71,81 @@ I@20210709 13:56:52.219  (SessionManager.java:197) Abort and clear all sessions.
 I@20210709 13:56:52.220  (SessionManager.java:204) All sessions aborted.
 I@20210709 13:56:52.224  (GsqlHAHandler.java:283) switched to new leader m1
 ----
+
+=== TigerGraph Component Log Files
+
+* `.out` files capture *standard output (stdout)* and log runtime information, including error stack traces when services crash or unexpected errors occur. 
+These logs are especially useful for errors that aren't logged by the service's internal logging mechanism.
+
+* `.ERROR` files are used to log errors captured by the system, typically from exceptions caught in try-catch blocks. If an error occurs before the logging system initializes or is uncaught, it is logged in the `.out` file instead.
+
+* `.INFO` files log regular operational information about the system's normal functioning.
+
+To diagnose an issue for a given component, check the `.out` log file for that component.
+
+image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0QAG1M3vW1t0nmwo7oYr3DgwVsgJoIEjub-5tSA81UtOQ-Ot-9m30zZ9Zr5tRG077dgfZ7KaE3tMMafUK63oi6fILQeM-kQw6fKqc[]
+
+[NOTE]
+====
+The GUI component writes all log levels to a single log file and does not generate separate `.log`, `.error`, or `.info` files.
+
+* Each GUI log file (e.g., `gui_ADMIN.log`, `gui_INFO.log`) captures the standard output of the GUI process and includes all log levels (error, warning, info).
+* The log level for the GUI component is *configurable*. You can set it using:
+
+[source,console]
+----
+gadmin config set GUI.BasicConfig.LogConfig.LogLevel <LEVEL>
+----
+
+Replace `<LEVEL>` with one of: `DEBUG`, `INFO`, `WARN`, `ERROR`, `PANIC`, or `FATAL`. The default level is `INFO`.
+====
+
+==== Symbolic Links
+
+In directories with frequently checked logs, such as `restpp`, `gsql`, and `admin`, symbolic links make it easier to access the latest log file.
+These links are automatically updated to point to the newest log.
+
+For example, `log.INFO` is a symbolic link that points to the current `.INFO` log file. To see what a symbolic link points to, use `ls -ll` followed by the symbolic link name:
+
+[source,console]
+----
+ls -ll log.INFO
+log.INFO -> log.INFO.2024-07-01-10-00-00
+----
+
+Here, `log.INFO` is a symbolic link pointing to the current `.INFO` log file.
+
+=== Third-Party Component Log Files
+
+TigerGraph uses several open-source components (such as Kafka, Nginx, ZooKeeper, Kafkaconn, Kafkastream) that maintain their own log conventions.
+
+* *NGINX Logs:* The NGINX log files (e.g., `nginx.out`, `nginx.error.log`, `nginx.access.log`) are generated directly by the NGINX web server itself and are not internal TigerGraph component logs.
+
+* *Kafka Logs:* Kafka logs include `controller.log`, `kafka.log`, `kafka-request.log`, `state-change.log`, and `server.log`.
+
+* *ZooKeeper Logs:* ZooKeeper logs are typically found as `zookeeper.out.*` in the ZooKeeper directory.
+
+== TigerGraph log structure
+
+[CAUTION]
+====
+Log formats may differ between `.out` and `.INFO` logs and between different TigerGraph services.
+====
+
+* `log.INFO`: Contains regular output and errors.
+* `log.ERROR`: Contains errors only.
+* `<component_name>.out`: Contains all output from the component process. Current `.out` logs have the form `<service name>.out`. Historical logs have the form `<service name>-old-YYYY-MM-DDTHH-MM-SS.fff.out`
+* `log.WARNING` or `log.DEBUG`
+** `log.WARNING` contains warnings and all error-level messages.
+** `log.DEBUG` contains debug-level messages (not created by default).
+* `log.FATAL`: Contains outputs for any fatal level events
+
+[NOTE]
+====
+All services do not create a `log.DEBUG` file by default.
+To change this, modify the parameter `<service>.BasicConfig.LogConfig.LogLevel`.
+For example, `GSQL.BasicConfig.LogConfig.LogLevel`. See xref:reference:configuration-parameters.adoc[Configuration Parameters] for more information.
+====
 
 == Monitor request history
 
