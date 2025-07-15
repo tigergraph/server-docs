@@ -120,18 +120,18 @@ gadmin config set <port_name> <port_number>
 ----
 
 [discrete]
-=== How do I backup my data?
+=== How do I back up my data?
 
-*GBAR* is the utility to do backup and restore of TigerGraph system.  Before a backup, GBAR needs to be configured. Please see xref:backup-and-restore:index.adoc[GBAR - Graph Backup and Restore] for details.
+*gadmin backup* is the utility to do backup and restore of TigerGraph system.  Before a backup, the backup operations need to be configured. Please see xref:backup-and-restore:index.adoc[] for details.
 
-To backup the current system:
+To back up the current system:
 
 [source,text]
 ----
-gbar backup -t <tag_of_the_backup>
+gadmin backup create <tag_of_the_backup>
 ----
 
-Please be advised that GBAR only backs up data and configuration. No logs or binaries will be backed up.
+Please be advised that `backup` only backs up data and configuration. No logs or binaries will be backed up.
 
 [discrete]
 === How do I restore a backup?
@@ -140,7 +140,7 @@ To restore an existing backup:
 
 [source,text]
 ----
-gbar restore <tag_of_the_backup>
+gadmin backup restore <tag of the backup>
 ----
 
 Please be advised that running restore will STOP the service and ERASE existing data.
