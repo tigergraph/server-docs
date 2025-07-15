@@ -24,13 +24,13 @@ Here is a list of all commands and operations that will stop CRR:
 * `gsql --reset` which clears all data, schemas and users, even resetting the password of the default tigergraph.
 * `gsql import graph`
 * `gsql export graph`
-* `gbar restore`
+* `gadmin backup restore`
 
 == Why is GSQL failing to replay a replica with an "UNAUTHORIZED" error?
 
 It's most likely that primary and DR have different passwords for the same TigerGraph user.
 
-This can happen when you enable CRR without restoring the GBAR backup in the DR cluster (since you did not have any data), but the DR was installed with a different password than the primary.
+This can happen when you enable CRR without restoring the backup of the DR cluster (since you did not have any data), but the DR was installed with a different password than the primary.
 Make sure the DR and primary clusters have the same TigerGraph password before enabling CRR.
 
 == What happens if DR is down, unavailable or under scheduled maintenance (e.g. VM Motion)?
