@@ -57,8 +57,8 @@ System upgrade does not support version rollback at this time.
 
 === Prepare a pre-3.2 database
 
-. First perform a backup xref:backup-and-restore:index.adoc[using GBAR (Graph Backup and Restore)] on your existing installation.
-. *Restore* your installation with GBAR to rebuild it.
+. First perform a backup xref:backup-and-restore:index.adoc[backup] on your existing installation.
+. *Restore* your installation with `gadmin backup restore` to rebuild it.
 This step is necessary because TigerGraph 3.2 made major changes to the Graph Storage Engine and a restore is needed to remove certain files that would make the upgrade operation fail.
 . Ensure that the restore is completely finished and there are no pending graph modifications (schema change, insert, update, or delete) before starting the upgrade.
 You can do this by calling the xref:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint and waiting until there are no more PullDelta messages being printed in the logs.
@@ -213,7 +213,7 @@ link:https://tigergraph.zendesk.com/hc/en-us/articles/8173584319892-2-6-x-to-3-x
 
 === Upgrading from 3.x
 
-. xref:backup-and-restore:backup-and-restore.adoc[Back up] your TigerGraph instance using GBAR.
+. xref:backup-and-restore:backup-and-restore.adoc[Back up] your TigerGraph instance using `gadmin backup`.
 . Start a new instance from the latest cloud marketplace listing.
 . Use the backup files you generated earlier to xref:backup-and-restore:backup-and-restore.adoc[restore] the new instance.
 
