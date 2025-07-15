@@ -89,6 +89,8 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * The *Edge Upsert endpoint* now supports xref:4.2@tigergraph-server:API:upsert-rest.adoc#_upserting_multi_edges_with_discriminators[upserting the multiple edges of a discriminated edge] in a single API request.
 
+* [4.2.1] Added endpoints to *xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_list_running_queries[list running queries]* and *xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_list_running_loading_jobs[list running loading jobs]* for a specific graph. Each endpoint shows currently running queries or loading jobs, plus a `hasRunning` indicator.
+
 === Query Language Enhancements
 
 * Multiple enhancements to *Syntax V3*, which combines GSQL + OpenCypher + GQL Pattern Matching:
@@ -144,6 +146,13 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 ---
 
 == Fixed issues
+
+=== Fixed and Improved in 4.2.1
+
+==== Improvements
+
+* Moved GSQL query and loading job compilation checks to the pre-check phase during upgrade to catch errors earlier and avoid manual fixes after upgrade (TP-7289).
+
 
 === Fixed and Improved in 4.2.0
 
