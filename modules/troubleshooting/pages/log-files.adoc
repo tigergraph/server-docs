@@ -64,6 +64,22 @@ zookeeper : ~/tigergraph/zk/zookeeper.out.*
 kafka     : ~/tigergraph/kafka/kafka.out
 ----
 
+In a *TigerGraph cluster*, each node maintains logs only for the activities that occur on that node. Logs are not automatically replicated across nodes.
+For example, the GSQL logs on the m1 node reflect only the operations performed on m1.
+To determine which node is currently the GSQL leader, check the most recent `log.INFO` file on m1.
+
+For example, the logs below recorded a GSQL leader switch from m2 to m1:
+
+[,console]
+----
+I@20210709 13:56:52.214  (GsqlHAHandler.java:231) GSQL leader switches from 'm2' to 'm1' ...
+E@20210709 13:56:52.215  (GsqlHAHandler.java:246) GSQL HA leader switches to 'm1', abort and clear all sessions now.
+If you want to lower the chance of leader switch by increasing timeout, please use 'gadmin config' to increase 'Controller.LeaderElectionHeartBeatMaxMiss' and/or 'Controller.LeaderElectionHeartBeatIntervalMS'.
+I@20210709 13:56:52.219  (SessionManager.java:197) Abort and clear all sessions...
+I@20210709 13:56:52.220  (SessionManager.java:204) All sessions aborted.
+I@20210709 13:56:52.224  (GsqlHAHandler.java:283) switched to new leader m1
+----
+
 === TigerGraph Component Log Files
 
 * `.out` files capture *standard output (stdout)* and log runtime information, including error stack traces when services crash or unexpected errors occur. 
@@ -138,27 +154,6 @@ All services do not create a `log.DEBUG` file by default.
 To change this, modify the parameter `<service>.BasicConfig.LogConfig.LogLevel`.
 For example, `GSQL.BasicConfig.LogConfig.LogLevel`. See xref:reference:configuration-parameters.adoc[Configuration Parameters] for more information.
 ====
-
-== Log locations on a cluster
-
-In a TigerGraph cluster, each node only keeps logs of activities that took place on the node itself.
-For example, the GSQL logs on the m1 node only record events for m1 and are not replicated across the cluster.
-
-For GSQL specifically, the cluster elects a leader to which all GSQL requests will be forwarded.
-To check which node is the leader, start by checking the GSQL logs of the m1 node.
-Check the most recent lines of `log.INFO` and look for lines containing information about a leader switch.
-
-For example, the logs below recorded a GSQL leader switch from m2 to m1:
-
-[,console]
-----
-I@20210709 13:56:52.214  (GsqlHAHandler.java:231) GSQL leader switches from 'm2' to 'm1' ...
-E@20210709 13:56:52.215  (GsqlHAHandler.java:246) GSQL HA leader switches to 'm1', abort and clear all sessions now.
-If you want to lower the chance of leader switch by increasing timeout, please use 'gadmin config' to increase 'Controller.LeaderElectionHeartBeatMaxMiss' and/or 'Controller.LeaderElectionHeartBeatIntervalMS'.
-I@20210709 13:56:52.219  (SessionManager.java:197) Abort and clear all sessions...
-I@20210709 13:56:52.220  (SessionManager.java:204) All sessions aborted.
-I@20210709 13:56:52.224  (GsqlHAHandler.java:283) switched to new leader m1
-----
 
 == Log rotation
 
