@@ -1406,7 +1406,7 @@ This request requires the privilege `WRITE_USER`:
 
 [.wrap,console]
 ----
-curl -X DELETE "https://localhost:14240/expiredtoken"
+curl --user example_username:example_password -X DELETE https://localhost:14240/gsqlserver/gsql/expiredtoken
 ----
 
 The following request deletes all expired tokens that belong to users `u1` and `u2` as well as all tokens created with secrets `s1` and `s2`.
