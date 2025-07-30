@@ -151,6 +151,10 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 
 === Fixed and Improved in 4.2.1
 
+==== Functionality
+
+* Fixed missing error message when running a non-procedural GSQL query containing syntax errors at the end (GLE-10295).
+
 ==== Improvements
 
 * Moved GSQL query and loading job compilation checks to the pre-check phase during upgrade to catch errors earlier and avoid manual fixes after upgrade (TP-7289).
@@ -205,6 +209,11 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 [%autowidth, cols="4", separator=¦]
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
+
+¦When user entered a non-procedural query with incorrect syntax (e.g., a typo or unexpected characters), the GSQL interpreter ignored the invalid portion and executed only the partial query, without alerting the user. This behavior made it difficult to identify and correct mistakes in queries.
+¦4.2.0
+¦Check queries for extra or misspelled keywords.
+¦4.2.1
 
 ¦A NullPointerException occurs when performing a code check for queries using statements other than a = vt.* or a = {vt.*}, causing query creation to fail.
 ¦4.1.3
