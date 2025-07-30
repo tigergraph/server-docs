@@ -70,6 +70,12 @@ Check the appropriate logs.
 Call the xref:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint to force the data store to consume all pending updates and then wait until there are no more PullDelta messages being printed in the logs.
 
 == Upgrading a CRR system
+
+[NOTE]
+====
+After upgrading to a newer version, you must perform a backup and restore on the newer version before enabling CRR, even if no data has changed. You cannot enable CRR using a backup from an earlier version.
+====
+
 To upgrade the TigerGraph software on a CRR system, follow this sequence of steps.
 
 . Disable CRR on your DR cluster.
