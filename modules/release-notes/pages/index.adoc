@@ -154,10 +154,22 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 ==== Functionality
 
 * Fixed missing error message when running a non-procedural GSQL query containing syntax errors at the end (GLE-10295).
+* Fixed confusing *REST-10015* error messages when upserting a single vertex using the `gsql-atomic-level:atomic` flag via REST API (GLE-10680).
+* Fixed a GPE crash after removing a node or when a Disaster Recovery cluster has fewer replicas than the primary cluster (CORE-4967).
+* Fixed the MaxFlow algorithm to return correct results, consistent with documented examples (GLE-10737).
 
 ==== Improvements
 
 * Moved GSQL query and loading job compilation checks to the pre-check phase during upgrade to catch errors earlier and avoid manual fixes after upgrade (TP-7289).
+* Reduced disk usage by removing on-disk indexes in cloud mode and deleting main files in both cloud and on-prem deployments (CORE-4930).
+* Added support for extracting JWT certificates from JWKS by `kid` to handle automatic key rotation by identity providers (GLE-10001).
+* Enhanced security for namespace-scoped TigerGraph Operator installations by separating the necessary cluster roles and namespace roles (TP-7024).
+
+==== Security
+
+* Fixed a security vulnerability that exposed sensitive AWS credentials in plain text when you accessed them with the `gadmin config get` command. These values are now properly masked (TP-8285).
+* Fixed unauthorized exposure of graph name and creator information via the `/auth/simple` and `/internal/info` APIs (GLE-10746).
+* Fixed exposure of raw personally identifiable information (PII) in loading job summary files by replacing detailed data with line numbers for invalid entries (TP-8575).
 
 
 === Fixed and Improved in 4.2.0
