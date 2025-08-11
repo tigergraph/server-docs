@@ -94,16 +94,16 @@ $ gadmin restart all -y
 
 A rolling upgrade allows you to upgrade your TigerGraph installation with minimal downtime by upgrading nodes in batches, ensuring that at least one full replica of the cluster is online throughout the process.
 
-*Before You Begin*
+*Feature Notes*
 
 Rolling Upgrade is only available for HA (High Availability) clusters.
-It is supported only for maintenance updates (for example, 4.2.0 to 4.2.1, or 4.3.1 to 4.3.3). Upgrading from 4.2.0 to 4.3.0 or another major version is not supported.
+It is supported only for maintenance updates (for example, 4.2.x to 4.2.1, or 4.3.1 to 4.3.3). Upgrading from 4.2.0 to 4.3.0 or another major version is not supported.
+Third-party components such as Kafka are not upgraded unless the Release Notes for the maintenance upgrade explicitly mention an upgrade.
 
 During a rolling upgrade:
 
-* Loading jobs and running queries will continue to function.
+* Loading jobs and running queries will continue to function, with some limitations described in the next section.
 * Occasional slowdowns in queries per second (QPS) may occur.
-* TigerGraph does not upgrade Zookeeper (ZK), Kafka, or ETCD as part of this upgrade.
 
 *Query Processing and Failure Handling During Rolling Upgrade*
 
@@ -111,8 +111,8 @@ Queries usually continue to work while a rolling upgrade is in progress, but can
 
 * If a query is sent to a replica that is about to be upgraded, it may fail because the services on that replica will be restarted. The query will timeout if the replica doesn’t respond in time.
 
-* Queries may fail if their execution time exceeds the GPE stop timeout.
-By default, `GPE.StopTimeoutMS` is set to 5 minutes; after this time, GPE is forcefully stopped and any incomplete queries will fail.
+* Queries may fail if their execution time exceeds half of the GPE stop timeout.
+By default, `GPE.StopTimeoutMS` is 5 minutes, which means GPE will be forcefully stopped after 2 minutes and 30 seconds. Any incomplete queries will fail.
 
 TigerGraph handles queries during the upgrade in the following ways:
 
@@ -135,13 +135,13 @@ To minimize query failures and keep your database highly available during a roll
 To ensure a smooth upgrade, the following operations are blocked during a rolling upgrade:
 
 * `INSTALL QUERY`
-* `SCHEMA CHANGE`
+* `RUN SCHEMA CHANGE`
 * `DROP ALL`
-* `gsql --reset`
 * `CREATE GRAPH`
 * `CLEAR GRAPH STORE`
 * `EXPORT` or `IMPORT GRAPH`
 * `INSTALL FUNCTION`
+* Run `gsql --reset`
 
 [NOTE]
 ====
