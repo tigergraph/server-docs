@@ -154,8 +154,8 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 ==== Functionality
 
 * Fixed missing error message when running a non-procedural GSQL query containing syntax errors at the end (GLE-10295).
-* Fixed confusing *REST-10015* error messages when upserting a single vertex using the `gsql-atomic-level:atomic` flag via REST API (GLE-10680).
-* Fixed a GPE crash after removing a node or when a Disaster Recovery cluster has fewer replicas than the primary cluster (CORE-4967).
+* Eliminated false *REST-10015* error message when upserting a single vertex using the `gsql-atomic-level:atomic` flag via REST API (GLE-10680).
+* Fixed a GPE crash caused by removing a cluster node or when a Disaster Recovery cluster has fewer replicas than the primary cluster (CORE-4967).
 * Fixed the MaxFlow algorithm to return correct results, consistent with documented examples (GLE-10737).
 
 ==== Improvements
@@ -167,9 +167,9 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 
 ==== Security
 
-* Fixed a security vulnerability that exposed sensitive AWS credentials in plain text when you accessed them with the `gadmin config get` command. These values are now properly masked (TP-8285).
+* Eliminated a security vulnerability that allowed AWS credentials to be read in plain text using the `gadmin config get` command. These values are now masked (TP-8285).
 * Fixed unauthorized exposure of graph name and creator information via the `/auth/simple` and `/internal/info` APIs (GLE-10746).
-* Fixed exposure of raw personally identifiable information (PII) in loading job summary files by replacing detailed data with line numbers for invalid entries (TP-8575).
+* Eliminated the potential exposure of personally identifiable information (PII) in loading job summary files by replacing detailed data with line numbers for invalid entries (TP-8575).
 
 
 === Fixed and Improved in 4.2.0
