@@ -92,41 +92,73 @@ $ gadmin restart all -y
 [#_rolling_upgrade]
 == Rolling Upgrade (Preview)
 
-A rolling upgrade allows you to upgrade your TigerGraph installation with minimal downtime by upgrading nodes in batches, ensuring that at least one full replica of the cluster is online throughout the process. 
+A rolling upgrade allows you to upgrade your TigerGraph installation with minimal downtime by upgrading nodes in batches, ensuring that at least one full replica of the cluster is online throughout the process.
 
-[NOTE]
-====
-Rolling Upgrade is only available for HA clusters (High Availability) and when making a maintenance update (e.g., 4.2.0 to 4.2.1, 4.3.1 to 4.3.3). 
-Upgrading from 4.2.0 to 4.3.0 or any other major version is not supported.
-====
+*Feature Notes*
+
+Rolling Upgrade is only available for HA (High Availability) clusters.
+It is supported only for maintenance updates (for example, 4.2.x to 4.2.1, or 4.3.1 to 4.3.3). Upgrading from 4.2.0 to 4.3.0 or another major version is not supported.
+Third-party components such as Kafka are not upgraded unless the Release Notes for the maintenance upgrade explicitly mention an upgrade.
+
+During a rolling upgrade:
+
+* Loading jobs and running queries will continue to function, with some limitations described in the next section.
+* Occasional slowdowns in queries per second (QPS) may occur.
+
+*Query Processing and Failure Handling During Rolling Upgrade*
+
+Queries usually continue to work while a rolling upgrade is in progress, but can fail in these scenarios:
+
+* If a query is sent to a replica that is about to be upgraded, it may fail because the services on that replica will be restarted. The query will timeout if the replica doesn’t respond in time.
+
+* Queries may fail if their execution time exceeds half of the GPE stop timeout.
+By default, `GPE.StopTimeoutMS` is 5 minutes, which means GPE will be forcefully stopped after 2 minutes and 30 seconds. Any incomplete queries will fail.
+
+TigerGraph handles queries during the upgrade in the following ways:
+
+* Upon receiving a query, RESTPP checks that every partition has at least one live replica available. If any partition lacks a live replica, the query fails immediately.
+
+* RESTPP forwards each query to the set of live replicas in a round-robin fashion (for example, in a 2x3 cluster, if two nodes are being upgraded, queries will go to the remaining four nodes).
+
+* The query succeeds only if all replicas that received the query respond successfully. If any of them restarts before responding, the query fails.
+
+*Best Practices*
+
+To minimize query failures and keep your database highly available during a rolling upgrade, follow these recommendations:
+
+* Implement automatic retries with round-robin logic and backoff for failed queries.
+* Avoid running long queries during upgrade. Break them into smaller parts or optimize them when possible.
+* Adjust `GPE.StopTimeoutMS` if your use case requires longer-running queries (be aware that this will increase overall upgrade time, as GPE waits longer before stopping).
 
 *Blocked Operations During Rolling Upgrade*
 
 To ensure a smooth upgrade, the following operations are blocked during a rolling upgrade:
 
-* Install query
-* Run schema change
-* Drop all
+* `INSTALL QUERY`
+* `RUN SCHEMA CHANGE`
+* `DROP ALL`
+* `CREATE GRAPH`
+* `CLEAR GRAPH STORE`
+* `EXPORT` or `IMPORT GRAPH`
+* `INSTALL FUNCTION`
 * Run `gsql --reset`
-* Create graph
-* Clear graph store
-* Export or import graph
-* Install function
+
+[NOTE]
+====
+The blocked operations may apply to both *GSQL* commands and *REST API* endpoints.
+====
 
 *Operations to Avoid*
 
 Avoid these operations during a rolling upgrade, as they can disrupt the process or may not work as expected:
   
 * Backup and restore
-* Cluster reszie (expansion, shrink, or removal)
+* Cluster resize (expansion, shrink, or removal)
 * Configuration changes using `gadmin config set` or `gadmin config apply`
 * Starting, stopping, or restarting services using `gadmin start`, `gadmin stop`, or `gadmin restart`
 * Setting up Cross-Region Replication (CRR). Note: Existing CRR configurations will continue to function.
 * Cluster initialization using `gadmin init`
 * Resetting services with `gadmin reset`
-
-While the rolling upgrade is in progress, loading jobs and running queries will continue to function; however, queries requiring all replicas to be online may fail, in which case you can retry them in a round-robin manner. 
-Please note that occasional slowdowns in Queries Per Second (QPS) may occur during the upgrade. Additionally, services like Zookeeper (ZK), Kafka, and ETCD will not be upgraded during this process.
 
 === Rolling Upgrade Process
 
@@ -157,7 +189,7 @@ After the binaries and configuration files are installed, the following prompt m
 
 ==== n/N option
 
-Selecting n/N will guide the user through the manual steps to switch to version 4.2.1, assuming the user is upgrading from 4.2.0.
+Selecting `n/N` will guide the user through the manual steps to switch to version 4.2.1, assuming the user is upgrading from 4.2.0.
 
 [console]
 ----
@@ -166,7 +198,7 @@ To switch platform to new version, please run 'gadmin upgrade 4.2.1'
 
 ==== y/Y Option
 
-If users selects `y/Y' the installer will automatically switch TigerGraph to the latest maintenance version. 
+If users selects `y/Y` the installer will automatically switch TigerGraph to the latest maintenance version.
 If any errors occur, the upgrade process will terminate immediately. Follow the instructions in the prompts to manually continue the upgrade or revert to the original version.
 
 ==== Option `-n`
