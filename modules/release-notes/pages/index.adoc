@@ -46,7 +46,6 @@ Scalable storage and similarity search for vector attributes associated with ver
 * *xref:4.2@tigergraph-server:backup-and-restore:incremental-backup.adoc[Incremental Backup]* which efficiently backs up only what has changed since the last backup/restore event.
 
 * *xref:4.2@tigergraph-server:installation:upgrade.adoc#_rolling_upgrade[Rolling Upgrades of maintenance versions]* for HA clusters (Preview).
-Rolling upgrade now clarifies query behavior, retry handling, and timeout tuning during upgrades, addressing limitations.
 
 * *xref:4.2@tigergraph-server:backup-and-restore:restore-backup-same.adoc#_options_for_restore[Restore option `--keepusers`]* to keep the database users in the current database, not the ones from the backup file.
 
@@ -159,6 +158,7 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 ==== Improvements
 
 * Moved GSQL query and loading job compilation checks to the pre-check phase during upgrade to catch errors earlier and avoid manual fixes after upgrade (TP-7289).
+* Improved the xref:4.2@tigergraph-server:installation:upgrade.adoc#_rolling_upgrade[Rolling Upgrade] feature to explain how queries behave during upgrades, how retries are handled, and how to tune timeout settings. This helps users avoid failures and plan upgrades more effectively.
 
 
 === Fixed and Improved in 4.2.0
