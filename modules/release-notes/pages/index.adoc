@@ -153,7 +153,7 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 
 ==== Functionality
 
-* Fixed missing error message when running a non-procedural GSQL query containing syntax errors at the end (GLE-10295).
+* Fixed: if an interpreted non-procedural query contained an error but the text prior to the error was valid, the partial query would run and ignore the error (GLE-10295).
 
 ==== Improvements
 
@@ -211,9 +211,9 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
-¦When user entered a non-procedural query with incorrect syntax (e.g., a typo or unexpected characters), the GSQL interpreter ignored the invalid portion and executed only the partial query, without alerting the user. This behavior made it difficult to identify and correct mistakes in queries.
+¦If a non-procedural query has a syntax error, the GSQL interpreter ignored the invalid portion and executed the partial query before the error, without raising an error.
 ¦4.2.0
-¦Check queries for extra or misspelled keywords.
+¦Check the full query before accepting it.
 ¦4.2.1
 
 ¦A NullPointerException occurs when performing a code check for queries using statements other than a = vt.* or a = {vt.*}, causing query creation to fail.
