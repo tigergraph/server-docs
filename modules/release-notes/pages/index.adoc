@@ -121,6 +121,8 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * [4.2.1] Added two new timestamp conversion functions, *xref:4.2@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_legacy.adoc[gsql_ts_to_epoch_seconds_legacy()]* and *xref:4.2@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_signed.adoc[gsql_ts_to_epoch_seconds_signed()]*, providing enhanced flexibility for date handling in loading jobs, including support for pre-1970 dates.
 
+* [4.2.1] Added support for the xref:4.2@gsql-ref:querying:output-statements-and-file-objects.adoc#_printing_csv_to_a_file_object[`PRINT vt TO_CSV f` syntax] to allow printing a vertex set directly to a CSV file.
+
 === Data Streaming/Connector Enhancements
 
 * *xref:4.2@tigergraph-server:data-loading:load-from-kafka.adoc[Improved connector for loading from external Kafka source]*: new configuration details. Older connector to
@@ -159,17 +161,15 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 * Fixed the MaxFlow algorithm to return correct results, consistent with documented examples (GLE-10737).
 * Fixed a UDF parsing error that failed to detect user-defined function names which conflict with built-in functions (GLE-10326).
 * Fixed an issue where the system would throw a NullPointerException and fail to create or install a query during code validation (GLE-10501).
-* Fixed an issue by skipping authentication when replaying requests in a Disaster Recovery cluster (GLE-10702).
-* Fixed an issue that could cause upgrade failures by performing query and token bank compilation checks during the pre‑upgrade stage (GLE‑9459).
+* Fixed an issue where authentication was skipped when replaying requests in a Disaster Recovery cluster (GLE-10702).
+* Improved the upgrade process by performing query and token bank compilation checks during pre‑upgrade instead of post-upgrade (GLE‑9459).
+* Fixed GSQL startup failures during upgrade caused by errors while verifying dictionary and UDF files (GLE-11224).
 
 ==== Improvements
 
-* Moved GSQL query and loading job compilation checks to the pre-check phase during upgrade to catch errors earlier and avoid manual fixes after upgrade (TP-7289).
 * Reduced disk usage by removing on-disk indexes in cloud mode and deleting main files in both cloud and on-prem deployments (CORE-4930).
-* Added support for extracting JWT certificates from JWKS by `kid` to handle automatic key rotation by identity providers (GLE-10001).
 * Enhanced security for namespace-scoped TigerGraph Operator installations by separating the necessary cluster roles and namespace roles (TP-7024).
 * Improved upgrade logs with a clearer message: *Installation of new TigerGraph version* (TP-8249).
-* Added support for the `PRINT vt TO_CSV f` syntax to allow printing a vertex set directly to a CSV file (GLE-10523).
 
 ==== Security
 
