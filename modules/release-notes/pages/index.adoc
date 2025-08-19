@@ -239,7 +239,7 @@ CVE-2024-43382, CVE-2024-45337, CVE-2024-56128, CVE-2024-8184, CWE-1333, CWE-303
 * Fixed situation where a query containing a `BREAK` or `CONTINUE` statements could produce incorrect results (GLE-7874).
 * Fixed regression problem with installing queries which create lists containing mixed types of numeric data (GLE-7928).
 * Resolved an intermittent deadlock in Informant that caused `gadmin status` to fail (TP-5930).
-* Fixed int64 value underflow error by explicitly type casting uint64 (CORE-4108).
+* Fixed and unblock differential backup if full backup made with empty kafka queue(int64 value underflow error by explicitly type casting uint64 CORE-4108).
 * Restored the ability to run the TigerGraph `gcollect` command on Kubernetes (TP-6351).
 * Fixed issue with database import hanging caused by the status of a loading job not being received by Kafka streaming library (TP-5772).
 * Allowed installation to continue on Oracle and RedHat Linux, 8 even if the TigerGraph user is not listed in AllowedUsers in /etc/ssh/sshd_config (TP-5105).
