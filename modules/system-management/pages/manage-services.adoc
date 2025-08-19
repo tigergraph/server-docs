@@ -35,16 +35,16 @@ The timeout is defined by the xref:reference:configuration-parameters.adoc#_gadm
 The `--timeout` flag of `gadmin stop` will override the value of the configuation parameter.
 
 === Graceful Shutdown of GPE
-When stopping GPE by `gadmin stop gpe`, the GPE will wait until all ongoing requests are complete before the timeout, plus an additional grace period of 5s to give room for any subsequent requests that may arrive later.
-Any long-running queries will be discarded once the `gadmin stop` command hits the timeout.
-The timeout is defined by the xref:reference:configuration-parameters.adoc#_gpe[`GPE.StopTimeoutMS` configuration parameter] (300s by default).
-The `--timeout` flag of `gadmin stop` will override the value of the configuation parameter.
 
-Moreover, the 5s grace period can be adjusted by adding `ShutdownGracePeriodMs=<YOUR_CHOICE_OF_GRACE_PERIOD_MS>;` to the GPE.BasicConfig.Env parameter.
+When you stop GPE using `gadmin stop gpe`, the process waits for a specific duration to allow ongoing requests to complete gracefully. 
+Any long-running queries will be discarded once the `gadmin stop` command hits the timeout. 
+The timeout is defined by the xref:reference:configuration-parameters.adoc#_gpe[`GPE.StopTimeoutMS` configuration parameter], which is *300 seconds (5 minutes) by default*.
 
+The graceful shutdown period is set to half of the `GPE.StopTimeoutMS` value. This means after 2 minutes and 30 seconds, GPE is forcefully stopped, causing any incomplete queries to fail.
 
+Additionally, the `gadmin stop` command has a `--timeout` flag that can override the value of the `GPE.StopTimeoutMS` configuration parameter.
 
-
+Moreover, the 5s grace period can be adjusted by adding `ShutdownGracePeriodMs=<YOUR_CHOICE_OF_GRACE_PERIOD_MS>;` to the `GPE.BasicConfig.Env` parameter.
 
 == Check service status
 
