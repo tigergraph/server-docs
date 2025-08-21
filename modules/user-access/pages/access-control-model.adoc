@@ -92,16 +92,20 @@ To read an edge or its attributes, user must also have `READ_DATA` privilege on 
 |Permission to update all data of the type where the privilege is granted.
 |Permission to update the attribute value where the privilege is granted.
 `UPDATE_DATA` on all attributes is also required for creating new vertices and edges.
+To update an edge, the user must also have `UPDATE_DATA` privilege on the primary ID attributes of its source and target vertex types.
 
 |`DELETE_DATA`
 |Permission to delete data of the type where the privilege is granted.
 |N/A.
 This privilege is not applicable on the attribute level.
+To delete an edge, the user must also have `DELETE_DATA` privilege on the primary ID attributes of its source and target vertex types.
 |===
 
 ==== Creating Edges
 
 When creating an edge, user must have `CREATE_DATA` privilege on the primary ID attributes of both the source and target vertex types, in addition to `CREATE_DATA` on the edge type itself.
+
+The same principle applies to all edge operations: to create, read, update, or delete an edge, the user must also have the corresponding privilege (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) on the primary ID attributes of the edge’s source and target vertex types.
 
 Creating an edge references specific vertices by their IDs, and the system requires permission to validate those IDs. Without this, the system returns a permission error, even if user have `CREATE_DATA` on the edge type itself.
 
