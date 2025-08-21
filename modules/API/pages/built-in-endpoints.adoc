@@ -2901,7 +2901,7 @@ curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsql/
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 This includes installed queries. interpreted queries, as well as built-in queries.
 
-In 4.2.1, this endpoint provides a complete view of all running queries on all nodes for the specified graph.
+As of 4.2.1, this endpoint reports on the activity on all server nodes in a distributed cluster, not just for the node being addressed.
 
 This endpoint requires the `READ_DATA` privilege on the graph you are querying.
 
@@ -2913,7 +2913,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/showprocesslist/poc_graph"
+curl -X GET "http://localhost:14240/restpp/showprocesslist/poc_graph" |jq
 ----
 --
 Response::
@@ -2966,7 +2966,7 @@ If set to `true`, the response will only include the status of queries on the cu
 This endpoint reports the statistics of all running queries across all graphs on a TigerGraph instance: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 This includes installed queries. interpreted queries, as well as built-in queries.
 
-In 4.2.1, this endpoint provides a complete view of all running queries on all nodes in the cluster.
+As of 4.2.1, this endpoint reports on the activity on all server nodes in a distributed cluster, not just for the node being addressed.
 
 CAUTION: If a high volume of queries are running, invoking the endpoint can be an expensive operation that should be used with caution. 
 
@@ -2979,7 +2979,7 @@ Request::
 +
 [.wrap,console]
 ----
-curl -X GET "http://localhost:14240/restpp/showprocesslistall"
+curl -X GET "http://localhost:14240/restpp/showprocesslistall" |jq
 ----
 Response::
 +
@@ -3151,7 +3151,7 @@ Response::
 
 This endpoint allows you to check the status of a query run in xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
-In 4.2.1, you can send the request to any live RESTPP node, and it will return the complete status from across the cluster.
+As of 4.2.1, this endpoint reports on the query's status on all server nodes in a distributed cluster, not just for the node being addressed.
 
 If you are running a TigerGraph cluster, this endpoint only allows you to check the status of a query running on the node to which the request is sent, not all nodes on the cluster.
 
@@ -3252,7 +3252,9 @@ If a query ID is marked as unknown, it means either the query does not exist or 
 `GET /restpp/query_result`
 
 This endpoint allows you to check the results of queries run in Detached Mode if they have finished running. 
-In 4.2.1, you only need to send your request to any live RESTPP node. The endpoint returns query results regardless of which RESTPP node handled the workflow. 
+If the query is still running, the endpoint will respond with an error and a message saying `"Unable to retrieve result for query <requestid>"`.  Ensure that the query is finished before checking its result.
+
+As of 4.2.1, this endpoint reports on the query results from all server nodes in a distributed cluster, not just for the node being addressed.
 
 
 ==== Sample request:
