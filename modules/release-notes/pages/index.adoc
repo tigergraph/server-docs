@@ -91,7 +91,7 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * [4.2.1] Added endpoints to *xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_list_running_queries[list running queries]* and *xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_list_running_loading_jobs[list running loading jobs]* for a specific graph. Each endpoint shows currently running queries or loading jobs, plus a `hasRunning` indicator.
 
-* [4.2.1] *xref:4.2@tigergraph-server:API:built-in-endpoints.adoc[RESTPP endpoints `/query_status`, `/query_result`, `/showprocesslist/{graph_name}`, and `/showprocesslistall`]* now support internal redirect. You can send the request to any RESTPP node in a cluster and receive a complete response with results from all nodes. An optional parameter disallow_redirect lets you revert to the old behavior and only query the local node.
+* [4.2.1] *xref:4.2@tigergraph-server:API:built-in-endpoints.adoc[RESTPP endpoints `/query_status`, `/query_result`, `/showprocesslist/{graph_name}`, and `/showprocesslistall`]* now report query status and results across all server nodes in a distributed cluster, not just the node receiving the request. Use the optional `disallow_redirect` parameter to query only the local node, if desired.
 
 === Query Language Enhancements
 
