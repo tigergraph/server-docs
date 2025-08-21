@@ -78,6 +78,7 @@ a|* If granted on a vertex type attribute, it gives permission to create vertice
 ** The user must have `CREATE_DATA` privilege on the primary ID of the vertex type to be able to create vertices.
 * If granted on an edge type attribute, it gives permission to create edges, but only specify values for attributes where the user has `CREATE_DATA` privilege if the user also has `UPDATE_DATA` privilege on all attributes of that type.
 * For attributes where the user doesn't have privilege, they must use wildcards(`_`) to use the default value for vertices/edges created by the xref:{page-component-version}@gsql-ref:querying:data-modification-statements.adoc#_insert_into_statement[`INSERT INTO` statements].
+* To create an edge, user must also have `CREATE_DATA` privilege on the primary ID attributes of its source and target vertex types.
 
 |`READ_DATA`
 |Permission to access all data of the type where the privilege is granted.
@@ -85,18 +86,42 @@ a|* If granted on a vertex type attribute, it gives permission to create vertice
 
 To grant  `READ_DATA` to a specific attribute of a type, you must grant `READ_DATA` to the primary key of the type first or in the same command.
 
-For edges, you must grant `READ_DATA` to the primary key of the `FROM` and `TO`
-vertex types before granting `READ_DATA` to other attributes of the edge type.
+To read an edge or its attributes, user must also have `READ_DATA` privilege on the primary ID attributes of its `FROM` and `TO` vertex types.
+
 |`UPDATE_DATA`
 |Permission to update all data of the type where the privilege is granted.
 |Permission to update the attribute value where the privilege is granted.
 `UPDATE_DATA` on all attributes is also required for creating new vertices and edges.
+To update an edge, the user must also have `UPDATE_DATA` privilege on the primary ID attributes of its source and target vertex types.
 
 |`DELETE_DATA`
 |Permission to delete data of the type where the privilege is granted.
 |N/A.
 This privilege is not applicable on the attribute level.
+To delete an edge, the user must also have `DELETE_DATA` privilege on the primary ID attributes of its source and target vertex types.
 |===
+
+==== Creating Edges
+
+When creating an edge, user must have `CREATE_DATA` privilege on the primary ID attributes of both the source and target vertex types, in addition to `CREATE_DATA` on the edge type itself.
+
+The same principle applies to all edge operations: to create, read, update, or delete an edge, the user must also have the corresponding privilege (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) on the primary ID attributes of the edge’s source and target vertex types.
+
+Creating an edge references specific vertices by their IDs, and the system requires permission to validate those IDs. Without this, the system returns a permission error, even if user have `CREATE_DATA` on the edge type itself.
+
+Consider the following `INSERT INTO` statement:
+
+[.wrap,gsql]
+----
+INSERT INTO HAS_INTEREST1 VALUES (1 Person1, 2 Tag1);
+----
+
+To successfully run this command, the user must have:
+
+* `CREATE_DATA` on the edge type `HAS_INTEREST1`
+* `CREATE_DATA` on the id attribute of vertex types `Person1` and `Tag1`
+
+Otherwise, the query fails with a missing privilege error on the vertex type.
 
 ==== Examples
 
