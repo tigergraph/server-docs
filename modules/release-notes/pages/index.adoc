@@ -98,7 +98,7 @@ multiple edges of the same type] between vertices, to simplify application desig
 xref:3.9@gsql-ref:querying:func/vertex-methods.adoc[vertex function]
 vertex function can also be used with vertex input parameters in the query-body statements, not only with SELECT block vertex aliases.
 * [3.9.3] Added parameters for xref:3.9@tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[GPE query routing based on CPU usage]
-* [3.9.3] To create or read edges, you now need xref:3.9@tigergraph-server:user-access:access-control-model.adoc#_data_crud_privileges[`CREATE_DATA` or `READ_DATA` privileges] on the primary IDs of the associated source and target vertex types.
+* [3.9.3] xref:3.9@tigergraph-server:user-access:access-control-model.adoc#_data_crud_privileges[Edge operations] now require privileges on endpoint vertex IDs. To create, read, update, or delete an edge, the corresponding privilege (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) must also be present on the primary IDs of the source and target vertices, respectively.
 
 
 //=== JDBC Spark Connector
@@ -351,6 +351,10 @@ This lockup can be cleared by restarting the GSE.
 * In v3.9.1, when database backup is performed, the superuser password is reset back to the default. To maintain security, manually reset the superuser password after the export or import completes.
 
 === Compatibility Issues
+
+* v3.9.3
+** Performing edge operations now requires both edge-level and vertex-level privileges. Specifically, to create, read, update, or delete an edge, the corresponding privilege (`CREATE_DATA`, `READ_DATA`, `UPDATE_DATA`, `DELETE_DATA`) must also be granted on the primary IDs of the edge’s source and target vertices, respectively.
+
 * v3.9.3
 ** When a PRINT argument is an expression, the output uses the expression as the key (label) for that output value.
 To better support Antlr processing, PRINT now removes any spaces from that key. For example, `count(DISTINCT @@ids)` becomes `count(DISTINCT@@ids)`.
