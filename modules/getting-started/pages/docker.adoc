@@ -59,7 +59,7 @@ For example, if you mount the host OS folder `~/data` to the docker folder `/hom
 
 == Run TigerGraph Docker image as a daemon
 
-Run the following command to pull the TigerGraph docker image, bind ports, map a shared data folder, and start a container from the image. Note: this command is very long; please make sure you copy the whole command by dragging the scroll bar to the end:
+Run the following command to pull the TigerGraph Docker image, bind ports, map a shared data folder, and start a container from the image:
 
 [source.wrap,console]
 ----
@@ -72,6 +72,14 @@ $ docker run -d \ <1>
     -v ~/data:/home/tigergraph/mydata \ <5>
     -t \ <6>
     tigergraph/tigergraph:latest <7>
+sudo docker run -d \ <1>
+    -p 14022:22 \ <2>
+    -p 9000:9000 \ <2>
+    -p 14240:14240 \ <2>
+    --name tigergraph \ <3>
+    --ulimit nofile=1000000:1000000 \ <4>
+    -v ~/data:/home/tigergraph/mydata \ <5>
+    -t tigergraph/tigergraph:latest <6>
 ----
 <1> `-d`: make the container run in the background.
 <2> `-p`: map docker 22 port to host OS 14022 port, 9000 port to host OS 9000 port, 14240 port to host OS 14240 port.
@@ -79,8 +87,7 @@ $ docker run -d \ <1>
 <4>  `--ulimit`: set the `ulimit` (the number of open file descriptors per process) to 1 million.
 <5> `-v`: mount the host OS `~/data` folder to the docker `/home/tigergraph/mydata` folder using the -v option. If you are using Windows, change the above ~/data to something using Windows file system convention.
 For example, `c:\data`
-<6> `-t`: allocate a pseudo terminal.
-<7> `tigergraph/tigergraph:latest`:  download the latest docker image from the TigerGraph docker registry URL tigergraph/tigergraph.
+<6> `tigergraph/tigergraph:latest`:  download the latest docker image from the TigerGraph docker registry URL tigergraph/tigergraph.
 
 [NOTE]
 ====
@@ -90,11 +97,23 @@ For example, if you want to get the 3.0.5 version, the URL should be:
 `tigergraph/tigergraph:3.0.5`
 ====
 
-If you use Windows and have write permission issues with the above command,  try the following command instead (this command does not map the shared folder on your host machine to your container) :
+In Linux shells, a *backslash (\)* lets you split a long command across multiple lines. Our examples use it for readability. If you do the same, make sure the backslash is the very last character on the line with no space after it, or the command will fail with an *invalid reference format* error.
+If you see a permission denied error like:
 
 [source.wrap,console]
 ----
-$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t tigergraph/tigergraph:latest
+docker: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Head "http://%2Fvar%2Frun%2Fdocker.sock/_ping": dial unix /var/run/docker.sock: connect: permission denied
+----
+
+Run the command with `sudo` (as shown above), or configure your system so your user can run Docker without `sudo`.
+
+If you are on Windows and encounter file permission issues, you can run the command without mounting the shared folder:
+
+[source.wrap,console]
+----
+sudo docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 \
+    --name tigergraph --ulimit nofile=1000000:1000000 \
+    -t tigergraph/tigergraph:latest
 ----
 
 == Connect to your container (via SSH or `docker exec`)
