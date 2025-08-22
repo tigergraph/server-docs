@@ -72,7 +72,7 @@ Run the following command to pull the TigerGraph Docker image, bind ports, map a
 
 [source.wrap,console]
 ----
-$ docker run -d \ <1>
+sudo docker run -d \ <1>
     -p 14022:22 \ <2>
     -p 9000:9000 \ <2>
     -p 14240:14240 \ <2>
@@ -80,8 +80,8 @@ $ docker run -d \ <1>
     --ulimit nofile=1000000:1000000 \ <4>
     -v ~/data:/home/tigergraph/mydata \ <5>
     -v tg-data:/home/tigergraph \ <6>
-    -t \ <7>
-    tigergraph/tigergraph:latest <8>
+    -t tigergraph/tigergraph:latest <7>
+
 ----
 <1> `-d`: make the container run in the background.
 <2> `-p`: map Docker port 22 to the host OS port 14022, 9000 to host OS 9000, and 14240 to host OS 14240.
@@ -94,21 +94,34 @@ For example, `c:\data`
 If the volume doesn't exist, Docker creates it automatically.
 This allows you to retain the data from your container.
 The next time you start up a new container with the same volume, all your changes are preserved.
-<7> `-t`: allocate a pseudo terminal.
-<8> `tigergraph/tigergraph:latest`:  download the latest Docker image from the TigerGraph Docker registry URL tigergraph/tigergraph.
+<7> `tigergraph/tigergraph:latest`:  download the latest Docker image from the TigerGraph Docker registry URL tigergraph/tigergraph.
 Replace "latest" with a specific version number if a dedicated version of TigerGraph is to be used.
 For example, if you want to get the 3.0.5 version, the URL should be:
 `tigergraph/tigergraph:3.0.5`.
 
-If you use Windows and have write permission issues with the above command,  try the following command instead (this command does not map the shared folder on your host machine to your container) :
+In Linux shells, a *backslash (\)* lets you split a long command across multiple lines. Our examples use it for readability. If you do the same, make sure the backslash is the very last character on the line with no space after it, or the command will fail with an *invalid reference format* error.
+If you see a permission denied error like:
 
 [source.wrap,console]
 ----
-$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t tigergraph/tigergraph:latest
+docker: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Head "http://%2Fvar%2Frun%2Fdocker.sock/_ping": dial unix /var/run/docker.sock: connect: permission denied
+----
+
+Run the command with `sudo` (as shown above), or configure your system so your user can run Docker without `sudo`.
+
+If you are on Windows and encounter file permission issues, you can run the command without mounting the shared folder:
+
+[source.wrap,console]
+----
+sudo docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 \
+    --name tigergraph --ulimit nofile=1000000:1000000 \
+    -t tigergraph/tigergraph:latest
 ----
 
 [NOTE]
-If you intend to have multiple instances of TigerGraph in the same Docker environment, whether they are the same version or not, we advise using unique <3> container names and <6> volume names for each one, to avoid accidental reuse or interference between volumes.
+====
+If you intend to have multiple instances of TigerGraph in the same Docker environment, whether they are the same version or not, we advise using unique <3> container names and <6> volume names for each one, to avoid conflicts and data overwrite.
+====
 
 == Connect to your container (via SSH or `docker exec`)
 
