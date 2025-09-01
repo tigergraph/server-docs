@@ -125,6 +125,8 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * [4.2.1] Added support for the xref:4.2@gsql-ref:querying:output-statements-and-file-objects.adoc#_printing_csv_to_a_file_object[`PRINT vt TO_CSV f` syntax] to allow printing a vertex set directly to a CSV file.
 
+* [4.2.1] File objects can now be created with an optional xref:4.2@gsql-ref:querying:declaration-and-assignment-statements.adoc#_file_objects[file permission parameter], allowing users to specify permissions using a Linux octal-encoded file permission code.
+
 === Data Streaming/Connector Enhancements
 
 * *xref:4.2@tigergraph-server:data-loading:load-from-kafka.adoc[Improved connector for loading from external Kafka source]*: new configuration details. Older connector to
@@ -169,6 +171,7 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 * Improved the upgrade process by performing query and token bank compilation checks during pre‑upgrade instead of post-upgrade (GLE‑9459).
 * Fixed GSQL startup failures during upgrade caused by errors while verifying dictionary and UDF files (GLE-11224).
 * Fixed: If an interpreted non-procedural query contained an error but the text prior to the error was valid, the partial query would run and ignore the error (GLE-10295).
+* Fixed an issue that could cause false negatives or false positives during license checks caused by an underflow in the vertex count reporting (CORE-5117).
 
 ==== Improvements
 
@@ -177,6 +180,7 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 * Improved upgrade logs with a clearer message: *Installation of new TigerGraph version* (TP-8249).
 * Improved the xref:4.2@tigergraph-server:installation:upgrade.adoc#_rolling_upgrade[Rolling Upgrade] documentation to explain how queries behave during upgrades, how retries are handled, and how to tune timeout settings, so users can plan smoother upgrades.
 * Improved the xref:4.2@gsql-ref:vector:index.adoc[Vector Search] documentation to detail known limitations, including unsupported ListAccum patterns, use of the ListAccum operator, and WHERE clause restrictions.
+* Added support in Insights for global parameters, enabling application-level variables to be defined once and shared across multiple pages (APPS-2495).
 
 ==== Security
 
