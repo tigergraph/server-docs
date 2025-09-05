@@ -955,7 +955,7 @@ This request requires the privilege `WRITE_USER`:
 
 [.wrap,console]
 ----
-curl -X DELETE "https://localhost:14240/expiredtoken"
+curl --user example_username:example_password -X DELETE https://localhost:14240/gsqlserver/gsql/expiredtoken
 ----
 
 The following request deletes all expired tokens that belong to users `u1` and `u2` as well as all tokens created with secrets `s1` and `s2`.
@@ -2873,7 +2873,7 @@ The xref:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and 
 
 `POST /gsql/v1/queries/interpret`
 
-This endpoint runs a GSQL query in Interpreted Mode. The query body should be supplied at the data payload, and the query's parameters are supplied as the URL's query string. *This endpoint exists on the GSQL server on port 14240.*
+This endpoint runs a GSQL query in Interpreted Mode. The query body should be supplied as the data payload, and the query parameters are supplied as the URL's query string. *This endpoint exists on the GSQL server on port 14240.*
 
 This request goes directly to the GSQL server (port 14240) instead of the RESTPP server, so the username and password must be specified in the header. If you are using curl, you can use the `-u` option as shown below.
 
@@ -2886,13 +2886,40 @@ The request body for this endpoint should be the entire `INTERPRET QUERY` statem
 When running an interpreted query through this endpoint, the query parameters should be xref:index.adoc#_query_string_parameters[passed in through the URL query string].
 
 ==== Sample request:
-
+[tabs]
+====
+Request::
++
+--
 [source.wrap,bash]
 ----
-curl --fail -u <my_username>:<my_password> -X POST "http://localhost:14240/gsql/v1/queries/interpret?a=10" -d 'INTERPRET QUERY (INT a) FOR GRAPH gsql_demo {
+curl -u <my_username>:<my_password> -H "Content-Type: text/plain" -X POST "http://localhost:14240/gsql/v1/queries/interpret?a=10" -d 'INTERPRET QUERY (INT a) FOR GRAPH gsql_demo {
     PRINT a;
- }'
+}'
 ----
+--
+Response::
++
+--
+[source,json]
+----
+{
+    "error": false,
+    "message": "",
+    "version": {
+        "schema": 3,
+        "edition": "enterprise",
+        "api": "v2"
+    },
+    "results": [
+        {
+            "a": 10
+        }
+    ]
+}
+----
+--
+====
 
 === List running queries of a graph
 

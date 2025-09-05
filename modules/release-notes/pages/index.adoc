@@ -302,11 +302,17 @@ CVE-2025-8176
 * Added support for debug mode when a pod restart fails due to a PostStartHookError (TP-7228).
 * Corrected the logic for the SelectVertex() function so it throws an error if the filePath is not an absolute path.
 
+==== Security
+
+* Fixed the following security vulnerabilities:
+CVE-2023-45288, CVE-2024-24790, CVE-2024-34156, and CVE-2024-45337.
+
 == Known Issues and Limitations
 
 [%autowidth, cols="4", separator=¦]
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
+
 
 ¦If a non-procedural query has a syntax error, the GSQL interpreter ignored the invalid portion and executed the partial query before the error, without raising an error.
 ¦4.2.0
