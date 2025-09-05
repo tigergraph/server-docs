@@ -38,6 +38,7 @@ Scalable storage and similarity search for vector attributes associated with ver
 ** Up to 200GB graph data + 100GB vector data, single server only
 ** Some enterprise features not included. Community support only
 ** See the full xref:4.2@intro:comparison-of-editions.adoc[comparison of editions].
+** [4.2.1] xref:4.2@intro:comparison-of-editions.adoc#_database_features[Combined graph and vector data size] limit for Community Edition, allowing flexible allocation of up to 300 GB for graph and vector storage.
 
 == Detailed List of New and Modified Features
 
@@ -60,6 +61,8 @@ Scalable storage and similarity search for vector attributes associated with ver
 
 * *xref:4.2@tigergraph-server:system-management:management-commands.adoc#_gadmin_status[gadmin status -v]* now displays Role information, with support for GPE, GSE, and GSQL.
 
+* [4.2.1] *xref:4.2@tigergraph-server:reference:configuration-parameters.adoc#_zk[New ZK.SnapCount configuration]* enables users to fine-tune the number of committed ZooKeeper transactions that trigger a snapshot, enhancing memory management and stability under high transaction loads.
+
 === Security and Access Control Enhancements
 
 * *xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_user_guide_overview[
@@ -68,6 +71,8 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 * *New xref:4.2@tigergraph-server:user-access:access-control-model.adoc#_built_in_roles[built-in role]: globalobserver*, used in Savanna, for minimal privileges: `READ_SCHEMA` and `READ_LOADINGJOB`.
 * *Two new xref:4.2@tigergraph-server:user-access:rbac-row-policy/row-policy-privileges-table.adoc[access privileges]: READ_LOG and APP_ACCESS_LOG* to grant read-only access to log files. `APP_ACCESS_LOG` is specifically designed for xref:4.2@gui:admin-portal:monitoring/log-viewer.adoc#_privilges[
  access from GraphStudio or Savanna].
+
+* [4.2.1] Added the `Security.JWT.JWKS.URL` *xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[configuration parameter]*, to allow JWT certificates to be fetched using the Key ID (kid) from a JWKS (JSON Web Key Set) URL.
 
 === Integration Enhancements
 
@@ -84,6 +89,10 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 * The *Interpret Query endpoint `POST /gsql/v1/queries/interpret`* can now be used with queries that have a xref:4.2@gsql-ref:querying:query-operations.adoc#_complex_type_parameter_passing[datetype parameter].
 
 * The *Edge Upsert endpoint* now supports xref:4.2@tigergraph-server:API:upsert-rest.adoc#_upserting_multi_edges_with_discriminators[upserting the multiple edges of a discriminated edge] in a single API request.
+
+* [4.2.1] Added endpoints to *xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_list_running_queries[list running queries]* and *xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_list_running_loading_jobs[list running loading jobs]* for a specific graph. Each endpoint shows currently running queries or loading jobs, plus a `hasRunning` indicator.
+
+* [4.2.1] *xref:4.2@tigergraph-server:API:built-in-endpoints.adoc[RESTPP endpoints `/query_status`, `/query_result`, `/showprocesslist/{graph_name}`, and `/showprocesslistall`]* now report query status and results across all server nodes in a distributed cluster, not just the node receiving the request. Use the optional `disallow_redirect` parameter to query only the local node, if desired.
 
 === Query Language Enhancements
 
@@ -111,6 +120,14 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * *xref:4.2@gsql-ref:querying:query-optimizer/query-profiling.adoc[Query Profiler]* to analyze query execution and performance.
 
+* [4.2.1] Added support for the *xref:4.2@tigergraph-server:API:gsql-endpoints.adoc#_run_a_loading_job["configs"]* object in loading jobs, enabling additional configuration *xref:4.2@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_parameters[parameters]* via the REST API.
+
+* [4.2.1] Added two new timestamp conversion functions, *xref:4.2@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_legacy.adoc[gsql_ts_to_epoch_seconds_legacy()]* and *xref:4.2@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_signed.adoc[gsql_ts_to_epoch_seconds_signed()]*, providing enhanced flexibility for date handling in loading jobs, including support for pre-1970 dates.
+
+* [4.2.1] Added support for the xref:4.2@gsql-ref:querying:output-statements-and-file-objects.adoc#_printing_csv_to_a_file_object[`PRINT vt TO_CSV f` syntax] to allow printing a vertex set directly to a CSV file.
+
+* [4.2.1] File objects can now be created with an optional xref:4.2@gsql-ref:querying:declaration-and-assignment-statements.adoc#_file_objects[file permission parameter], allowing users to specify permissions using a Linux octal-encoded file permission code.
+
 === Data Streaming/Connector Enhancements
 
 * *xref:4.2@tigergraph-server:data-loading:load-from-kafka.adoc[Improved connector for loading from external Kafka source]*: new configuration details. Older connector to
@@ -133,11 +150,113 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 === GraphStudio, Admin Portal, and Insights
 
 * Added a new page for changing passwords in **xref:4.2@gui:admin-portal:management/user-management.adoc[TigerGraph Suite]**.
-* See the xref:4.2@insights:release-notes:index.adoc[release notes for Insights 4.2].
+* See the **xref:4.2@insights:release-notes:index.adoc[release notes for Insights 4.2]**.
+* [4.2.1] **xref:4.2@gui:graphstudio:export-and-import-solution.adoc#_install_a_pre_built_solution[Added a new entry on the GraphStudio homepage]** to browse and download pre-built solutions, making it easy to import and start projects with common graph use cases.
+* [4.2.1] Added support in Insights for global parameters, enabling application-level variables to be defined once and shared across multiple pages.
 
 ---
 
 == Fixed issues
+
+=== Fixed and Improved in 4.2.1
+
+==== Functionality
+
+
+* Fixed missing error message when running a non-procedural GSQL query containing syntax errors at the end (GLE-10295).
+* Eliminated false *REST-10015* error message when upserting a single vertex using the `gsql-atomic-level:atomic` flag via REST API (GLE-10680).
+* Fixed a GPE crash caused by removing a cluster node or when a Disaster Recovery cluster has fewer replicas than the primary cluster (CORE-4967).
+* Fixed the MaxFlow algorithm to return correct results, consistent with documented examples (GLE-10737).
+* Fixed a UDF parsing error that failed to detect user-defined function names which conflict with built-in functions (GLE-10326).
+* Fixed an issue where the system would throw a NullPointerException and fail to create or install a query during code validation (GLE-10501).
+* Fixed an issue where authentication was skipped when replaying requests in a Disaster Recovery cluster (GLE-10702).
+* Improved the upgrade process by performing query and token bank compilation checks during pre‑upgrade instead of post-upgrade (GLE‑9459).
+* Fixed GSQL startup failures during upgrade caused by errors while verifying dictionary and UDF files (GLE-11224).
+* Fixed: If an interpreted non-procedural query contained an error but the text prior to the error was valid, the partial query would run and ignore the error (GLE-10295).
+* Fixed an issue that could cause false negatives or false positives during license checks caused by an underflow in the vertex count reporting (CORE-5117).
+
+==== Improvements
+
+* Reduced disk usage by removing on-disk indexes in cloud mode and deleting main files in both cloud and on-prem deployments (CORE-4930).
+* Enhanced security for namespace-scoped TigerGraph Operator installations by separating the necessary cluster roles and namespace roles (TP-7024).
+* Improved upgrade logs with a clearer message: *Installation of new TigerGraph version* (TP-8249).
+* Improved the xref:4.2@tigergraph-server:installation:upgrade.adoc#_rolling_upgrade[Rolling Upgrade] documentation to explain how queries behave during upgrades, how retries are handled, and how to tune timeout settings, so users can plan smoother upgrades.
+* Improved the xref:4.2@gsql-ref:vector:index.adoc[Vector Search] documentation to detail known limitations, including unsupported ListAccum patterns, use of the ListAccum operator, and WHERE clause restrictions.
+* Added support for configuring file permissions when exporting query results with `PRINT TO_CSV`, instead of using hardcoded defaults (GLE-11322).
+
+==== Security
+
+* Eliminated a security vulnerability that allowed AWS credentials to be read in plain text using the `gadmin config get` command. These values are now masked (TP-8285).
+* Fixed unauthorized exposure of graph name and creator information via the `/auth/simple` and `/internal/info` APIs (GLE-10746).
+* Eliminated the potential exposure of personally identifiable information (PII) in loading job summary files by replacing detailed data with line numbers for invalid entries (TP-8575).
+* Eliminated potential exposure of personally identifiable information (PII) in error messages when a loading job semantic check failed during creation (GLE-11125).
+* Addressed multiple upstream and OS-level security vulnerabilities through package upgrades and dependency patching. Fixed the following security vulnerabilities:
+** CVE-2016-20013, CVE-2016-2781
+** CVE-2017-11164, CVE-2017-7475
+** CVE-2018-18064
+** CVE-2019-6461
+** CVE-2020-8908, CVE-2020-29582
+** CVE-2021-31879
+** CVE-2022-27943, CVE-2022-3219, CVE-2022-41409, CVE-2022-4899
+** CVE-2023-29383, CVE-2023-2976, CVE-2023-34969, CVE-2023-37769,
++
+CVE-2023-4039, CVE-2023-45288, CVE-2023-45289, CVE-2023-45290,
++
+CVE-2023-45918, CVE-2023-48161, CVE-2023-50495, CVE-2023-7008
+** CVE-2024-10041, CVE-2024-2236, CVE-2024-23337, CVE-2024-23454, CVE-2024-23944,
++
+CVE-2024-24783, CVE-2024-24784, CVE-2024-24785, CVE-2024-24789, CVE-2024-24790, CVE-2024-24791,
++
+CVE-2024-34155, CVE-2024-34156, CVE-2024-34158,
++
+CVE-2024-41996, CVE-2024-45336, CVE-2024-45341,
++
+CVE-2024-52005, CVE-2024-52615, CVE-2024-52616,
++
+CVE-2024-56406, CVE-2024-56433,
++
+CVE-2024-6763, CVE-2024-8176
+** CVE-2025-0167, CVE-2025-0913, CVE-2025-1352, CVE-2025-1376,
++
+CVE-2025-22233, CVE-2025-22234, CVE-2025-22235,
++
+CVE-2025-22866, CVE-2025-22870, CVE-2025-22871, CVE-2025-22872, CVE-2025-22874,
++
+CVE-2025-23022,
++
+CVE-2025-27496, CVE-2025-27613, CVE-2025-27817, CVE-2025-27818, CVE-2025-27819,
++
+CVE-2025-29088, CVE-2025-30204,
++
+CVE-2025-32728, CVE-2025-32988, CVE-2025-32989, CVE-2025-32990,
++
+CVE-2025-3576,
++
+CVE-2025-41234, CVE-2025-41242,
++
+CVE-2025-4598, CVE-2025-4673, CVE-2025-46701,
++
+CVE-2025-46835, CVE-2025-46836,
++
+CVE-2025-47907, CVE-2025-48060,
++
+CVE-2025-48734, CVE-2025-48924, CVE-2025-48988, CVE-2025-48989,
++
+CVE-2025-49125, CVE-2025-49146,
++
+CVE-2025-49574,
++
+CVE-2025-52520, CVE-2025-53506,
++
+CVE-2025-55163,
++
+CVE-2025-6069, CVE-2025-6395,
++
+CVE-2025-7345,
++
+CVE-2025-8176
+
+
 
 === Fixed and Improved in 4.2.0
 
@@ -193,6 +312,12 @@ CVE-2023-45288, CVE-2024-24790, CVE-2024-34156, and CVE-2024-45337.
 [%autowidth, cols="4", separator=¦]
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
+
+
+¦If a non-procedural query has a syntax error, the GSQL interpreter ignored the invalid portion and executed the partial query before the error, without raising an error.
+¦4.2.0
+¦Check the full query before accepting it.
+¦4.2.1
 
 ¦A NullPointerException occurs when performing a code check for queries using statements other than a = vt.* or a = {vt.*}, causing query creation to fail.
 ¦4.1.3

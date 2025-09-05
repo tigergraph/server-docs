@@ -98,45 +98,79 @@ $ gadmin restart all -y
 [#_rolling_upgrade]
 == Rolling Upgrade (Preview)
 
-A rolling upgrade allows you to upgrade your TigerGraph installation with minimal downtime by upgrading nodes in batches, ensuring that at least one full replica of the cluster is online throughout the process. 
+A rolling upgrade allows you to upgrade your TigerGraph installation with minimal downtime by upgrading nodes in batches, ensuring that at least one full replica of the cluster is online throughout the process.
 
-[NOTE]
-====
-Rolling Upgrade is only available for HA clusters (High Availability) and when making a maintenance update (e.g., 4.2.0 to 4.2.1, 4.3.1 to 4.3.3). 
-Upgrading from 4.2.0 to 4.3.0 or any other major version is not supported.
-====
+* Rolling Upgrade is only available for HA (High Availability) clusters.
+* Rolling Upgrade is supported only for maintenance updates (for example, 4.2.x to 4.2.1, or 4.3.1 to 4.3.3). Upgrading from 4.2.0 to 4.3.0 or another major version is not supported.
+* Third-party components such as Kafka are not upgraded unless the Release Notes for the maintenance upgrade explicitly mention an upgrade.
+
+During a rolling upgrade:
+
+* Loading jobs and running queries will continue to function, with some limitations described in the next section.
+* Occasional slowdowns in queries per second (QPS) may occur.
+
+=== Understanding Query Processing During Rolling Upgrade
+
+*Why Queries Can Fail*
+
+Queries usually continue to work while a rolling upgrade is in progress, but can fail in these scenarios:
+
+* If a query is sent to a replica that is about to be upgraded, it may fail because the services on that replica will be restarted. The query will time out if the replica doesn’t respond in time.
+
+* Queries may fail if their execution time exceeds half of the GPE stop timeout.
+By default, `GPE.StopTimeoutMS` is 5 minutes, which means GPE will be forcefully stopped after 2 minutes and 30 seconds. Any incomplete queries will fail.
+
+TigerGraph handles queries during the upgrade in the following ways:
+
+* Upon receiving a query, RESTPP checks that every partition has at least one live replica available. If any partition lacks a live replica, the query fails immediately.
+
+* RESTPP forwards each query to the set of live replicas in a round-robin fashion (for example, in a 2x3 cluster, if two nodes are being upgraded, queries will go to the remaining four nodes).
+
+* The query succeeds only if all replicas that received the query respond successfully. If any of them restarts before responding, the query fails.
+
+For recommendations on how to reduce the risk of query failures during rolling upgrade, see xref:upgrade.adoc#_best_practices_to_minimize_query_failures[Best Practices to Minimize Query Failures].
+
+=== How to Perform Rolling Upgrade
+
+Before starting the upgrade, always review the xref:upgrade.adoc#_check_release_notes_for_changes_in_functionality[general prerequisites] for all versions between your current and target version.
+
+==== Best Practices to Minimize Query Failures
+
+To minimize query failures and keep your database highly available during a rolling upgrade, follow these recommendations:
+
+* Implement automatic retries with round-robin logic and backoff for failed queries.
+* Avoid running long queries during the upgrade. Break them into smaller parts or optimize them when possible.
+* Adjust `GPE.StopTimeoutMS` if your use case requires longer-running queries (be aware that this will increase overall upgrade time, as GPE waits longer before stopping).
 
 *Blocked Operations During Rolling Upgrade*
 
 To ensure a smooth upgrade, the following operations are blocked during a rolling upgrade:
 
-* Install query
-* Run schema change
-* Drop all
+* `INSTALL QUERY`
+* `RUN SCHEMA CHANGE`
+* `DROP ALL`
+* `CREATE GRAPH`
+* `CLEAR GRAPH STORE`
+* `EXPORT` or `IMPORT GRAPH`
+* `INSTALL FUNCTION`
 * Run `gsql --reset`
-* Create graph
-* Clear graph store
-* Export or import graph
-* Install function
+
+[NOTE]
+====
+The blocked operations may apply to both *GSQL* commands and *REST API* endpoints.
+====
 
 *Operations to Avoid*
 
 Avoid these operations during a rolling upgrade, as they can disrupt the process or may not work as expected:
   
 * Backup and restore
-* Cluster reszie (expansion, shrink, or removal)
+* Cluster resize (expansion, shrink, or removal)
 * Configuration changes using `gadmin config set` or `gadmin config apply`
 * Starting, stopping, or restarting services using `gadmin start`, `gadmin stop`, or `gadmin restart`
 * Setting up Cross-Region Replication (CRR). Note: Existing CRR configurations will continue to function.
 * Cluster initialization using `gadmin init`
 * Resetting services with `gadmin reset`
-
-While the rolling upgrade is in progress, loading jobs and running queries will continue to function; however, queries requiring all replicas to be online may fail, in which case you can retry them in a round-robin manner. 
-Please note that occasional slowdowns in Queries Per Second (QPS) may occur during the upgrade. Additionally, services like Zookeeper (ZK), Kafka, and ETCD will not be upgraded during this process.
-
-=== Rolling Upgrade Process
-
-Before starting the upgrade, always review the xref:upgrade.adoc#_check_release_notes_for_changes_in_functionality[general prerequisites] for all versions between your current and target version.
 
 ==== Download and Extract Latest Version
 
@@ -163,7 +197,7 @@ After the binaries and configuration files are installed, the following prompt m
 
 ==== n/N option
 
-Selecting n/N will guide the user through the manual steps to switch to version 4.2.1, assuming the user is upgrading from 4.2.0.
+Selecting `n/N` will guide the user through the manual steps to switch to version 4.2.1, assuming the user is upgrading from 4.2.0.
 
 [console]
 ----
@@ -172,7 +206,7 @@ To switch platform to new version, please run 'gadmin upgrade 4.2.1'
 
 ==== y/Y Option
 
-If users selects `y/Y' the installer will automatically switch TigerGraph to the latest maintenance version. 
+If a user selects `y/Y` the installer will automatically switch TigerGraph to the latest maintenance version.
 If any errors occur, the upgrade process will terminate immediately. Follow the instructions in the prompts to manually continue the upgrade or revert to the original version.
 
 ==== Option `-n`
@@ -272,7 +306,7 @@ When this happens, you can either manually switch to the new version or revert t
 
 [NOTE]
 ====
-Both options will cause downtime.
+Expect downtime when using either option for switching versions. Use this method only for rolling upgrades with corresponding maintenance versions (e.g., 4.2.1 to 4.2.2).
 ====
 
 *Switch to the New Version*
@@ -340,12 +374,12 @@ Once binaries and config files are installed on local machine and also distribut
 
 === n/N option
 
-If users selects `n/N`, now it is listing a list of scripts taking the same parameters as `gadmin/gsql` commands.
+If a user selects `n/N`, now it is listing a list of scripts taking the same parameters as `gadmin/gsql` commands.
 
 .Ex.
 [console]
 ----
-[NOTE    ]: To switch platform to new version, please follow the instructions:
+[NOTE    ]: To switch the platform to the new version, please follow the instructions:
 1.  pre_upgrade_check_infra.sh 3.6.5 3.10.0
 2.  pre_upgrade_check_engine.sh 3.6.5 3.10.0
 3.  pre_upgrade_check_gsql.sh 3.6.5 3.10.0
@@ -397,7 +431,7 @@ $ ./install.sh -U -n
 Welcome to the TigerGraph platform installer!
 
 [PROGRESS]: 20:02:38 Upgrade TigerGraph platform from existing one ...
-[NOTE    ]: Obtained version of exist platform: 3.10.0 [OK]
+[NOTE    ]: Obtained version of existing platform: 3.10.0 [OK]
 ----
 
 [[upgrading-from-v2x]]

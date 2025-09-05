@@ -2928,8 +2928,7 @@ Response::
 This endpoint reports statistics of running queries of a graph: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 This includes installed queries. interpreted queries, as well as built-in queries.
 
-If you are running a TigerGraph cluster, this endpoint only shows queries running on the node to which the request is sent, not all running queries on the cluster.
-
+As of 4.2.1, this endpoint reports on the activity on all server nodes in a distributed cluster, not just for the node being addressed.
 
 This endpoint requires the `READ_DATA` privilege on the graph you are querying.
 
@@ -2941,7 +2940,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -X GET "http://localhost:14240/restpp/showprocesslist/poc_graph" | jq .
+curl -X GET "http://localhost:14240/restpp/showprocesslist/poc_graph" |jq
 ----
 --
 Response::
@@ -2950,11 +2949,7 @@ Response::
 [source,json]
 ----
 {
-  "version": {
-    "edition": "enterprise",
-    "api": "v2",
-    "schema": 0
-  },
+  "version": {"edition": "enterprise","api": "v2","schema": 0},
   "error": false,
   "message": "",
   "results": [
@@ -2965,7 +2960,7 @@ Response::
       "url": "/sleepgpe?milliseconds=100001"
     },
     {
-      "requestid": "196609.RESTPP_1_1.1558386401478.N",
+      "requestid": "196609.RESTPP_2_1.1558386401478.N",
       "startTime": "2019-05-20 14:06:41.478",
       "expirationTime": "2019-05-20 14:15:01.478",
       "url": "/sleepgpe?milliseconds=100000"
@@ -2978,7 +2973,19 @@ Response::
 ====
 ==== Parameters:
 
-No Parameters.
+|===
+| Name | Required | Description
+
+| `graph_name`
+| Yes
+| The name of the graph whose running queries to list.
+
+|`disallow_redirect`
+|No
+|Optional flag (`true` or `false`, default `false`).
+If set to `true`, the response will only include the status of queries on the current node.
+|===
+
 
 === List all running queries
 `GET /restpp/showprocesslistall`
@@ -2986,7 +2993,7 @@ No Parameters.
 This endpoint reports the statistics of all running queries across all graphs on a TigerGraph instance: the query's request ID, start time, expiration time, and the REST endpoint's URL.
 This includes installed queries. interpreted queries, as well as built-in queries.
 
-If you are running a TigerGraph cluster, this endpoint only shows queries running on the node to which the request is sent, not all running queries on the cluster.
+As of 4.2.1, this endpoint reports on the activity on all server nodes in a distributed cluster, not just for the node being addressed.
 
 CAUTION: If a high volume of queries are running, invoking the endpoint can be an expensive operation that should be used with caution. 
 
@@ -2999,43 +3006,27 @@ Request::
 +
 [.wrap,console]
 ----
-$ curl -X GET "http://localhost:14240/restpp/showprocesslistall" |jq
+curl -X GET "http://localhost:14240/restpp/showprocesslistall" |jq
 ----
 Response::
 +
 ----
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   671  100   671    0     0   655k      0 --:--:-- --:--:-- --:--:--  655k
 {
-  "version": {
-    "edition": "enterprise",
-    "api": "v2",
-    "schema": 0
-  },
+  "version": {"edition": "enterprise","api": "v2","schema": 0},
   "error": false,
   "message": "",
   "results": [
     {
-      "requestid": "15.RESTPP_1_1.1660165648633.N", <1>
-      "startTime": "2022-08-10 21:07:28.633",
-      "expirationTime": "2022-08-10 21:07:44.633", <2>
-      "url": "/query/Social/rngExample",
-      "elapsedTime": 3385
+      "requestid": "65538.RESTPP_1_1.1558386411523.N", <1>
+      "startTime": "2019-05-20 14:06:51.523",
+      "expirationTime": "2019-05-20 14:15:11.523", <2>
+      "url": "/sleepgpe?milliseconds=100001"
     },
     {
-      "requestid": "65551.RESTPP_1_1.1660165648638.N",
-      "startTime": "2022-08-10 21:07:28.638",
-      "expirationTime": "2022-08-10 21:07:44.638",
-      "url": "/query/Work_Net/rngExample",
-      "elapsedTime": 3380
-    },
-    {
-      "requestid": "131087.RESTPP_1_1.1660165648723.N",
-      "startTime": "2022-08-10 21:07:28.723",
-      "expirationTime": "2022-08-10 21:07:44.723",
-      "url": "/query/Entity_Resolution/rngExample",
-      "elapsedTime": 3295
+      "requestid": "196609.RESTPP_2_1.1558386401478.N",
+      "startTime": "2019-05-20 14:06:41.478",
+      "expirationTime": "2019-05-20 14:15:01.478",
+      "url": "/sleepgpe?milliseconds=100000"
     }
   ],
   "code": "REST-0000"
@@ -3046,7 +3037,14 @@ Response::
 ====
 
 ==== Parameters:
-No parameters.
+|===
+| Name | Required | Description
+
+|`disallow_redirect`
+|No
+|Optional flag (`true` or `false`, default `false`).
+If set to `true`, the response will only include the status of queries on the current node.
+|===
 
 === Show all delayed queries
 
@@ -3180,7 +3178,7 @@ Response::
 
 This endpoint allows you to check the status of a query run in xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
-If you are running a TigerGraph cluster, this endpoint only allows you to check the status of a query running on the node to which the request is sent, not all nodes on the cluster.
+As of 4.2.1, this endpoint reports on the query's status on all server nodes in a distributed cluster, not just for the node being addressed.
 
 ==== Parameters:
 
@@ -3197,6 +3195,11 @@ If not specified, the value of the parameter defaults to `all`.
 |No
 |The name of the graph whose running  queries to report on.
 If not specified, the endpoint returns queries running on the first created graph on the node to which the request is sent.
+
+|`disallow_redirect`
+|No
+|Optional flag (`true` or `false`, default `false`).
+If set to `true`, the response will only include the status of queries on the current node.
 |===
 
 
@@ -3208,7 +3211,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -s -X GET "http://localhost:14240/restpp/query_status?graph_name=poc_graph&requestid=4.RESTPP_1_1.1599672031541.N"
+curl -s -X GET "http://localhost:14240/restpp/query_status?requestid=4.RESTPP_1_1.1599672031541.N&requestid=4.RESTPP_2_1.1599672031541.N"
 ----
 --
 Response::
@@ -3217,38 +3220,51 @@ Response::
 [source,javascript]
 ----
 {
-  "version": {
-    "edition": "enterprise",
-    "api": "v2",
-    "schema": 0
-  },
+  "version": {"edition": "enterprise","api": "v2","schema": 0},
   "error": false,
   "message": "",
-  "results": [{
-    "requestid": "4.RESTPP_1_1.1599672031541.N", <1>
-    "startTime": "2020-09-09 10:20:31.541", <2>
-    "expirationTime": "2020-09-09 10:20:47.541", <3>
-    "url": "/query/ldbc_snb/countIndirectFriends?pid=21990232555889", <4>
-    "elapsedTime": 19, <5>
-    "status": "success" <6>
-  }]
+  "results": [
+    {
+      "requestid": "4.RESTPP_1_1.1599672031541.N",   <1>
+      "startTime": "2020-09-09 10:20:31.541",        <2>
+      "expirationTime": "2020-09-09 10:20:47.541",   <3>
+      "url": "/query/ldbc_snb/countIndirectFriends?pid=21990232555889", <4>
+      "elapsedTime": 19,                             <5>
+      "status": "success"                            <6>
+    },
+    {
+      "requestid": "4.RESTPP_2_1.1599672031541.N",   <7>
+      "startTime": "2020-09-09 10:20:31.541",        <8>
+      "expirationTime": "2020-09-09 10:20:47.541",   <9>
+      "url": "/query/ldbc_snb/countIndirectFriends?pid=21990232555890", <10>
+      "elapsedTime": 24,                             <11>
+      "status": "success"                            <12>
+    }
+  ]
 }
 ----
-<1> The query ID associated with the given query status JSON
-object.
-<2> The timestamp for the start time of the given query.
-<3> The timestamp for when the given query times out. The
-default timeout limit is 16 seconds and can be set using
-the xref:index.adoc#_gsql_query_timeout[`GSQL-TIMEOUT`]
-header.
-<4> URL of the given query.
-<5> Elapsed real time of the given query measured in
-milliseconds. For completed queries, the value shows the total runtime
-of the request. For ongoing queries, it shows the amount of time taken
-so far.
-<6> The status of the given query. Possible values are
-`“success”`, `“timeout”`, `“aborted”`, or `“running”`.
-
+<1> The query ID associated with the first query status JSON object.
+<2> The timestamp for the start time of the first query.
+<3> The timestamp for when the first query times out. 
+The default timeout limit is 16 seconds and can be set using 
+the xref:index.adoc#_gsql_query_timeout[GSQL-TIMEOUT] header.
+<4> The URL of the first query.
+<5> Elapsed real time of the first query measured in milliseconds. 
+For completed queries, the value shows the total runtime of the request. 
+For ongoing queries, it shows the amount of time taken so far.
+<6> The status of the first query. Possible values are 
+“success”, “timeout”, “aborted”, or “running”.
+<7> The query ID associated with the second query status JSON object.
+<8> The timestamp for the start time of the second query.
+<9> The timestamp for when the second query times out. 
+The default timeout limit is 16 seconds and can be set using 
+the xref:index.adoc#_gsql_query_timeout[GSQL-TIMEOUT] header.
+<10> The URL of the second query.
+<11> Elapsed real time of the second query measured in milliseconds. 
+For completed queries, the value shows the total runtime of the request. 
+For ongoing queries, it shows the amount of time taken so far.
+<12> The status of the second query. Possible values are 
+“success”, “timeout”, “aborted”, or “running”.
 --
 ====
 
@@ -3260,9 +3276,11 @@ If a query ID is marked as unknown, it means either the query does not exist or 
 
 `GET /restpp/query_result`
 
-This endpoint allows you to check the results of queries run in Detached Mode if they have finished running. If the query is still running, the endpoint will respond with an error and a message saying `"Unable to retrieve result for query <requestid>"`.  Ensure that the query is finished before checking its result.
+This endpoint allows you to check the results of queries run in Detached Mode if they have finished running. 
+If the query is still running, the endpoint will respond with an error and a message saying `"Unable to retrieve result for query <requestid>"`.  Ensure that the query is finished before checking its result.
 
-This endpoint only allows you to check the results of a query sent to the requested node, not any query in the graph.
+As of 4.2.1, this endpoint reports on the query results from all server nodes in a distributed cluster, not just for the node being addressed.
+
 
 ==== Sample request:
 [tabs]
@@ -3272,7 +3290,7 @@ Request::
 --
 [source.wrap,bash]
 ----
-curl -s -X GET "http://localhost:14240/restpp/query_result?requestid=196611.RESTPP_1_1.1630601692834.N"
+curl -s -X GET "http://localhost:14240/restpp/query_result?requestid=196611.RESTPP_2_1.1630601692834.N"
 ----
 --
 Response::
@@ -3283,11 +3301,7 @@ Response::
 {
   "error": false,
   "message": "",
-  "version": {
-    "edition": "enterprise",
-    "api": "v2",
-    "schema": 0
-  },
+  "version": {"edition": "enterprise","api": "v2","schema": 0},
   "results": [{"vSet": [{
     "v_id": "21990232555889",
     "attributes": {"vSet.@friendCount": 13677},
@@ -3305,6 +3319,11 @@ Response::
 | `requestid`
 | Yes
 | String ID of the query.
+
+|`disallow_redirect`
+|No
+|Optional flag (`true` or `false`, default `false`).
+If set to `true`, the response will only include the status of queries on the current node.
 |===
 
 
