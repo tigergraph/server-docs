@@ -43,6 +43,11 @@ TigerGraph internally would try to evenly distribute queries evenly among the no
 Before making changes, it’s a good practice to retrieve the current configuration using the *GET Workload Queue* command. After reviewing, you can update or apply new configurations using the *PUT Workload Queue* command.
 These commands are available both as GSQL commands and as REST endpoints.
 
+[NOTE]
+====
+For workload management, use `username:password` for GSQL APIs and a JWT token with `-H "Authorization: Bearer <JWT-token>"` for RESTPP APIs to ensure secure and correct authentication.
+====
+
 *GSQL Commands*
 
 * *Retrieve Current Configuration:*
@@ -76,14 +81,14 @@ POST /gsqlserver/gsql/workload-manager/configs
 1.  *Retrieve Current Configuration:*
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
+curl -X GET -H "Authorization: Bearer <token>" \
   <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/configs
 ----
 
 2. *Modify Workload Queue Configuration:*
 [source.warp, bash]
 ----
-curl -X POST -u tigergraph:tigergraph \
+curl -X POST -H "Authorization: Bearer <token>" \
 <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/configs \
 -d '{"isEnabled":true,"queues":{"OLTP":{"description":"OLTP queries","isDefault":false,"maxConcurrentQueries":100,"maxDelayQueueSize":200}}}'
 ----
@@ -143,7 +148,7 @@ GET /restpp/workload-manager/queue
 *Example Request*
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
+curl -X GET -H "Authorization: Bearer <token>" \
   <hostname>:<nginx-port>/restpp/workload-manager/queue
 ----
 
@@ -228,7 +233,7 @@ The request body must have the following fields at the top level:
 Grant the queue `OLTP` to the user `u1` and `u2`:
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
+curl -X POST -H "Authorization: Bearer <JWT-token>" \
   <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/permission \
   -d '{"action": "grant", "queue": "OLTP", "user": ["u1", "u2"]}'
 ----
@@ -236,9 +241,9 @@ curl -X GET -u tigergraph:tigergraph \
 Revoke the queue `scheduled_jobs` from all users and the role `r1`:
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
+curl -X POST -H "Authorization: Bearer <JWT-token>" \
   <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/permission \
-  -d '{"action": "REVOKE" "queue": "scheduled_jobs", "user": "*", role": ["r1"]}'
+  -d '{"action": "revoke", "queue": "scheduled_jobs", "user": "*", "role": ["r1"]}'
 ----
 
 *Response Status Codes*
@@ -283,7 +288,7 @@ GET /gsqlserver/gsql/workload-manager/permission
 To retrieve the permission info of the queue `OLTP`:
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
+curl -X GET -H "Authorization: Bearer <JWT-token>" \
   localhost:14240/gsql/v1/workload-manager/permission?id=OLTP
 ----
 
@@ -346,9 +351,9 @@ If Request Body is not provided, response is generated as if both fields are usi
 *Example Request*
 [source.warp, bash]
 ----
-curl -X POST -u tigergraph:tigergraph \
+curl -X POST -H "Authorization: Bearer <JWT-token>" \
   <hostname>:<nginx-port>/restpp/workload-manager/queuestatus \
-   -d '{"queuelist": ["AdHoc"], "mode": "verbose"}'
+  -d '{"queuelist": ["AdHoc"], "mode": "verbose"}'
 ----
 
 *Example Response*
@@ -468,7 +473,7 @@ RUN QUERY -queue AdHoc q1()
 or you can use the HTTP header `Workload-Queue`:
 [source.warp, bash]
 ----
-curl -X POST -u tigergraph:tigergraph \
+curl -X POST -H "Authorization: Bearer <JWT-token>" \
   -H "Workload-Queue: AdHoc" \
   <hostname>:14240/restpp/query/ldbc_snb/q1"
 ----
