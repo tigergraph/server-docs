@@ -99,20 +99,33 @@ When the primary cluster executes an `IMPORT`, `DROP ALL`, or `CLEAR GRAPH STORE
 To bring an outdated cluster back in sync, you need to generate a fresh backup of the primary cluster, and perform the setup steps detailed on this page again.
 However, you can skip <<_enable_crr_on_the_dr_cluster, Step 3: Enable CRR on the DR cluster>>, because CRR will have already been enabled.
 
-== Updating a CRR system
+== Upgrading a CRR system
 
 From time to time, you may want to update the TigerGraph software on a CRR system.
 To perform this correctly, follow this sequence of steps.
 
+
+. Stop CRR on your DR cluster.
++
+[source,console]
+----
+gadmin crr stop -y
+----
+
 . Disable CRR on your DR cluster.
 +
-[source.wrap,console]
+[source,console]
 ----
-$ gadmin config set System.CrossRegionReplication.Enabled false
-$ gadmin config apply -y
-$ gadmin restart all -y
+gadmin config set System.CrossRegionReplication.Enabled false
+gadmin config apply -y
+gadmin restart all -y
 ----
 
-. xref:installation:upgrade.adoc[Upgrade] both the primary cluster and DR cluster.
+. xref:installation:upgrade.adoc[Upgrade] the cluster.
 
-. Enable CRR on the DR cluster.
+. Start CRR on the new DR cluster.
++
+[source,console]
+----
+gadmin crr start
+----
