@@ -188,23 +188,32 @@ tasks.max=4
 Do not change the values of `name`, `topics`, as this will cause the CRR to work abnormally.
 ====
 
-== Updating a CRR system
+== Upgrading a CRR system
 
 From time to time, you may want to update the TigerGraph software on a CRR system.
 To perform this correctly, follow this sequence of steps.
 
-1. Stop CRR on your DR cluster.
+. Stop CRR on your DR cluster.
 +
-[source.wrap,console]
+[source,console]
 ----
-$ gadmin crr stop -y
+gadmin crr stop -y
 ----
-+
-2. xref:installation:upgrade.adoc[Upgrade] both the primary cluster and DR cluster.
 
-3. Start CRR on the DR cluster(From TigerGraph 3.10.0, no additional restart is required to start CRR).
+. Disable CRR on your DR cluster.
 +
-[source.wrap,console]
+[source,console]
 ----
-$ gadmin crr start
+gadmin config set System.CrossRegionReplication.Enabled false
+gadmin config apply -y
+gadmin restart all -y
+----
+
+. xref:installation:upgrade.adoc[Upgrade] the cluster.
+
+. Start CRR on the new DR cluster.
++
+[source,console]
+----
+gadmin crr start
 ----
