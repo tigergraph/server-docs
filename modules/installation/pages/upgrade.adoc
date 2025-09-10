@@ -82,18 +82,30 @@ After upgrading to a newer version, you must perform a backup and restore on the
 
 To upgrade the TigerGraph software on a CRR system, follow this sequence of steps.
 
+. Stop CRR on your DR cluster.
++
+[source,console]
+----
+gadmin crr stop -y
+----
+
 . Disable CRR on your DR cluster.
 +
-[source.wrap,console]
+[source,console]
 ----
-$ gadmin config set System.CrossRegionReplication.Enabled false
-$ gadmin config apply -y
-$ gadmin restart all -y
+gadmin config set System.CrossRegionReplication.Enabled false
+gadmin config apply -y
+gadmin restart all -y
 ----
 
-. Upgrade both the primary cluster and DR cluster, according to the instructions on this page.
+. Upgrade the cluster.
 
-. Enable CRR on the DR cluster.
+. Start CRR on the new DR cluster.
++
+[source,console]
+----
+gadmin crr start
+----
 
 [#_rolling_upgrade]
 == Rolling Upgrade (Preview)
