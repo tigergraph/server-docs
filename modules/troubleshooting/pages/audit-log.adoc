@@ -38,6 +38,8 @@ However, compared to the debug log, the audit log contains significantly less da
 
 ¦ `System.Audit.Enable` ¦ Setting to enable audit logs. ¦ boolean (false)
 
+¦ `System.Audit.DiscreteJsonFormat` ¦ Setting to print each log entry as a discrete JSON object instead of a JSON array. ¦ boolean (false)
+
 ¦ `System.Audit.DataBaseName` ¦ Modify the DataBaseName field in log file header. ¦ string (`TigerGraph`)
 
 ¦ `System.Audit.LogDirRelativePath` ¦ Modify the relative audit log path. ¦ path string (`<TG_LogRoot>/AuditLog/`)
@@ -53,6 +55,15 @@ However, compared to the debug log, the audit log contains significantly less da
 ¦ boolean (true)
 
 |===
+
+[NOTE]
+====
+By default, the `databaseName` field is no longer printed in the audit log header. Users can enable it by setting a custom value with:
+
+    gadmin config set System.Audit.DataBaseName <value>
+
+The value provided will appear in the log file header.
+====
 
 For a complete list of TigerGraph `gadmin` configuration parameters, see the xref:reference:configuration-parameters.adoc[] page.
 
@@ -97,15 +108,6 @@ $ gadmin config set System.LogRoot <log-root-path>
 ====
 Altering `<System.LogRoot>` impacts the root path for ALL TigerGraph logs.
 ====
-
-There is a *"DatabaseName"* field appended to the header of each audit log file.
-*The* value of this field is "TigerGraph" by default.
-
-You can modify this value by running the following command:
-[source, console]
-----
-$ gadmin config set System.Audit.DataBaseName <database-name>
-----
 
 == Log File Management Policies
 
@@ -217,6 +219,70 @@ The following information is masked (excluded from the audit logs) by default, b
 ====
 Each activity will have its own audit log entry and fields.
 ====
+
+=== GSQL Service Audit Log Fields
+
+[options="header"]
+|===
+| Field Name   | Type                  | Description
+
+| clientHost
+| string
+| Client IP Address
+
+| userAgent
+| string
+| Client type: GSQL shell, GraphStudio etc.
+
+| userName
+| string
+| Username of GSQL service
+
+| clientOSUsername
+| string
+| OS-level username of the client
+
+| timestamp
+| ISODate
+| Event timestamp
+
+| authType
+| string
+| Authentication type: Password, SSO, Secret, etc.
+
+| endpoint
+| string
+| Endpoint URL
+
+| actionType
+| string
+| Standardized database action type. Possible values: DDL, DML, DQL, DCL, TCL, Other.
+
+| actionName
+| string
+| The specific action performed (e.g., createVertex, runQuery)
+
+| objectType
+| string
+| The object impacted by the action (e.g., Vertex, Edge, Graph, Job, User, Role, Privilege, Query, Function, Package, Secret, DataSource, etc.).
+
+| graphName
+| string
+| The graph context for the action. For global actions not tied to a specific graph (e.g., create user, grant role), the value is `"global"`.
+
+| commandText
+| string
+| The exact GSQL command text executed. For GraphStudio or REST requests, this may include request parameters or body. If not applicable, shown as `"N/A"`.
+
+| status
+| SUCCESS/FAILED
+| Whether the action executed successfully
+
+| message
+| string
+| A simple summary of the action
+|===
+
 .The `createQuery` activity will produce an audit log entry with the following fields:
 [source, json]
 ----
@@ -228,7 +294,9 @@ Each activity will have its own audit log entry and fields.
     "clientOSUsername":"OSusername",
     "userAgent": "GSQL Shell",
     "endpoint": "/gsql/file",
+    "actionType": "DDL",
     "actionName": "createQuery",
+    "object": "Query",
     "status": "SUCCESS",
     "message": "Successfully created query 'query_name'"
 }
@@ -248,7 +316,9 @@ This field indicates how many times this user failed to provide the correct cred
     "clientOSUsername":"tigergraph",
     "userAgent": "GraphStudio",
     "endpoint": "/gsql/simpleauth",
+    "actionType": "Other", 
     "actionName": "login",
+    "graph": "global",
     "failedAttempts" : 1,
     "status" : "FAILURE",
     "message": "Username doesn't exist"
