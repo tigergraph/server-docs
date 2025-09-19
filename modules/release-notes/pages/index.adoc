@@ -352,9 +352,7 @@ a¦If this happens, run `gadmin restart gse -y` to release the GPE.
 ¦Many REST API endpoints were updated, including consolidation, path prefix changes, and token authentication support. See the xref:4.1@tigergraph-server:API:index.adoc[REST API reference] page.
 ¦v4.1.0
 
-¦Long and dynamic length `BitwiseAccum` (`BitwiseOrAccum`/`BitwiseAndAccum` with length >64 or variable length) are not supported in distributed mode.
-Run queries in single-node mode to avoid crashes and memory issues. Both types are limited to 10,000,000 in length.
-The `.clear()` method is supported to release memory and reduce OOM errors. Comparison and arithmetic operators between two such accumulators are blocked, but comparisons with `UINT` (e.g., @@bw1 < 64) are still allowed.
+¦Long and dynamic length xref:4.2@gsql-ref:querying:accumulators#_bitwiseandaccum_bitwiseoraccum[BitwiseAccum] (`BitwiseOrAccum`/`BitwiseAndAccum` with length >64 or variable length) are not supported in distributed mode. Both types are limited to 10,000,000 bits, and comparisons/arithmetic between two such accumulators are blocked.
 ¦v4.2.1
 
 ¦To apply a xref:security:gsql-file-input-policy.adoc[File Input Policy] or xref:security:file-output-policy.adoc[File Output Policy] change, now both `gsql` and `restpp` servers must be restarted: `gadmin restart gsql restpp -y`
