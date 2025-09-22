@@ -33,11 +33,32 @@ Users with the `admin` role in one graph hold the `OWNERSHIP` privilege on all q
 
 With above changes, corresponding grant/revoke commands and query related operations are also changed. Details of such changes will be displayed in the following sections.
 
-== Known Issue
+[NOTE]
+====
+In 4.3.0, RESTPP enforces *Query EXECUTE privileges* in the same way as the GSQL client.
 
-* The `EXECUTE_QUERY` privilege is not enforced on RESTPP endpoints. That is, users who lack `EXECUTE_QUERY` can still run a query via
+A query can be executed through RESTPP by:
 
- `POST /restpp/query/{graph_name}/{query_name}`
+* Users with the built-in role `superuser` or `graph admin`
+* The `owner` of the query
+* Users granted EXECUTE privilege on the query and its subqueries
+
+If a user without the required privilege attempts to run a query, RESTPP returns the following error:
+
+----
+{
+  "code": "REST-10018",
+  "error": true,
+  "message": "Access Denied because the input token = 'xxxx' lacks EXECUTE privilege required to run the query and/or its subqueries.",
+  "version": {
+    "api": "v2",
+    "edition": "enterprise",
+    "schema": 2
+  }
+}
+----
+====
+
 
 == Usage Examples 
 
