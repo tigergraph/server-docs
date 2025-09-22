@@ -441,3 +441,12 @@ However, if `System.Audit.MaskPII` is set to `false`, then the log will contain 
 ** Thus, TigerGraph cannot get the actual client ip, instead it will put the ip address of the last layer who forwarded the request to TigerGraph service in the audit log.
 
 * If a RESTPP request is for a graph operation and thus sent to the GPE then fails inside the GPE, the RESTPP will interpret the response from the GPE as success and report SUCCEED in the audit log.
+
+* `commandText` field double quotes may not be escaped correctly
+** For example, the command `show function -r ".*f.*"` should be shown as `"commandText":"show function -r \".*f.*\""`, however, it is currently shown as `"commandText":"show function -r .*f.*"` for now
+
+
+
+
+
+
