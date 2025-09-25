@@ -1769,13 +1769,61 @@ Sample Response::
 ====
 
 '''
+
+=== get latest schema version
+
+`GET /gsql/v1/schema/version`
+
+Retrieve the current committed schema version.
+
+==== Permissions
+
+Requires the `READ SCHEMA` privilege.
+
+==== Parameters:
+
+None
+
+==== Example:
+
+[.tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl --user tigergraph:tigergraph http://<tigergraph-host>:14240/gsql/v1/schema/version
+----
+--
+
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+  "error": false,
+  "message": "",
+  "version": 1
+}
+----
+--
+====
+
+[NOTE]
+====
+* If a schema change job is running but not yet committed, this endpoint still returns the old version.
+* Once the schema change is successfully committed, it returns the new version.
+====
+
 === get schema change jobs
 
 `GET /gsql/v1/schema/jobs`
 
 Get all local/global schema change jobs.
 
-==== Parameters:
+==== Parameters
 
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
