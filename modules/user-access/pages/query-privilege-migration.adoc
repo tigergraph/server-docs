@@ -8,7 +8,8 @@ To see Role-based Access Control(RBAC) Object-Based privileges, see xref:user-ac
 == Migrate ACL Privileges
 Starting with TigerGraph 4.1, Access Control Lists (ACLs) are no longer available.
 
-Query ACL privileges should be migrated automatically during upgrade. 
+TigerGraph blocks ACL privilege migrations in  4.1.4, if the ACL catalog contains query contents. Before upgrading from version 3.x, you must revoke all ACL READ privileges on queries.
+
 
 [#_migrate_query_acl_owner]
 === Migrate Query ACL Owner
@@ -24,8 +25,12 @@ The query ACL executors will be granted `EXECUTE` privilege on the same query af
 
 [NOTE]
 ====
-In some cases, query ACL privileges can't be migrated successfully.
-Then the owner of queries will become the user who operates the upgrade procedure.
+If ACL read privileges are still present during upgrade, the system displays this message:
+
+----
+The ACLPrivilegeCatalog.json contains the hidden query contents.
+Please revoke all ACL READ privileges on queries before upgrading to 4.x.
+----
 
 Contact TigerGraph Support if you need help retaining ACL-like privileges after upgrading from version 3.x to 4.x.
 ====
