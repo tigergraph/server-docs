@@ -633,6 +633,19 @@ request timeout in milliseconds |`600000`
 
 |Gadmin.StopServiceDefaultTimeoutMS |The stop one service default
 request timeout in milliseconds. Default 200000 (200s).|`30000`
+
+|Gadmin.GSQL.AllowInterpretedQueries 
+a|Enables or disables all interpreted (ad hoc) GSQL queries for the cluster. Default: `true`.
+
+[.bullets]
+* When `true`: Both interpreted and installed queries are allowed.
+* When `false`: Interpreted queries are blocked. Only installed queries run.
+
+Use this setting in production to prevent misuse or heavy resource consumption from interpreted queries.
+
+
+|`gadmin config set GSQL.AllowInterpretedQueries false`
+
 |===
 
 == Informant
