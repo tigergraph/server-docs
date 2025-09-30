@@ -2915,6 +2915,61 @@ Sample Response::
 ----
 --
 ====
+=== Get the sample data of local files
+`POST /gsql/v1/sample-data`
+
+Get the sample data of local files
+
+==== Parameters:
+
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `path`
+| yes
+| local file path (`file://`).
+
+| `size`
+| no
+| Number of lines to return (default: 10).
+|===
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -u tigergraph:tigergraph 'http://<tigergraph-host>:14240/gsql/v1/sample-data' \
+-d '{
+  "path": "file:///path/to/local/filename",
+  "size": 10
+}'
+
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+  "error": false,
+  "message": "Sample data loaded successfully",
+  "results": {
+    "file": "file:///path/to/local/filename",
+    "loadedRecords": 10
+  }
+}
+----
+--
+====
+
+
 
 '''
 === get all files and directories under given S3 bucket path
