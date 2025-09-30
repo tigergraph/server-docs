@@ -165,12 +165,12 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 ==== Functionality
 
 * Fixed schema change failures during retry of DSCApply and restart caused by a schema inconsistency from deprecated or corrupted shared libraries for installed queries (CORE-5250).
-* Fixed issue where `/query_status` and `/query_result` endpoints require requests to specific cluster nodes, now making them node-agnostic for consistent access (CORE-5202).
-* Fixed issue where the `pre_upgrade_check_gsql.sh` script failed silently after running `decrypt_acl_catalog`, preventing important error messages from being displayed during upgrade checks (GLE-11481).
+* Fixed issue where `/query_status`, `/query_result`, `/showprocesslist`, and `/showprocesslistall` endpoints required requests to specific cluster nodes. These endpoints are now node agnostic for consistent access (CORE-5202).
+* Fixed issue where the `pre_upgrade_check_gsql.sh` script failed silently, preventing error messages from being displayed during upgrade checks (GLE-11481).
 
 ==== Improvements
 
-* Added the ability to configure file permissions for files generated using the `PRINT TO_CSV statement` in GSQL (GLE-11321).
+* Added the ability to configure file permissions for files generated with the `PRINT TO_CSV` statement in GSQL (GLE-11321).
 
 ==== Security
 
