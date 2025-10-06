@@ -1,1 +1,165 @@
 = Mutual TLS (mTLS) Authentication
+
+TigerGraph 4.3.0 introduces *Mutual TLS (mTLS)* to enhance security between clients and the TigerGraph server.
+
+With mTLS, both client and server authenticate each other using digital certificates. This ensures that only trusted clients can connect securely to the database, meeting enterprise-grade security and compliance requirements
+
+== Prerequisites
+
+. SSL/TLS is already enabled in your TigerGraph system. See xref:encrypting-connections.adoc[Connection encryption (TLS 1.2)].
+. You have valid SSL certificates for both the server and clients.
+. You understand the basics of SSL certificates, including the following concepts:
+
+* Certificate Authority (CA)
+* Subject Distinguished Name (DN)
+* Subject Alternative Name (SAN)
+* Online Certificate Status Protocol (OCSP)
+
+== Step 1: Enable mTLS Verification
+
+You can enable mutual TLS verification using `gadmin`.
+This setting ensures that Nginx verifies client certificates for all incoming connections.
+
+[source,console]
+----
+gadmin config set Nginx.SSL.Client.Verify true
+----
+
+Then, specify the trusted CA certificate used to verify client certificates:
+
+[source,console]
+----
+gadmin config set Nginx.SSL.Client.Cert @/path/to/client-ca-certificates
+----
+
+Alternatively, you can upload the client CA certificate through the **GraphStudio GUI**.
+
+[NOTE]
+====
+TigerGraph accepts only PEM-encoded certificates.
+If your certificate is in another format (for example, DER), convert it to PEM before use.
+====
+
+== Step 2: Configure Distinguished Name (DN) Validation
+
+You can configure validation rules for the Subject Distinguished Name (DN) fields in the client certificate.
+This helps ensure that only certificates matching the expected attributes are accepted.
+
+Examples:
+
+[source,console]
+----
+# Set DN.Country to 'US'
+gadmin config set Nginx.SSL.Client.DN.Country '["US"]'
+
+# Set DN.Country to 'US' and 'UK'
+gadmin config set Nginx.SSL.Client.DN.Country '["US", "UK"]'
+
+# Set Common Name
+gadmin config set Nginx.SSL.Client.DN.CommonName '["client.example.com"]'
+----
+
+The supported DN fields include:
+
+* `Nginx.SSL.Client.DN.Verify`
+* `Nginx.SSL.Client.DN.Country`
+* `Nginx.SSL.Client.DN.Organization`
+* `Nginx.SSL.Client.DN.OrganizationalUnit`
+* `Nginx.SSL.Client.DN.CommonName`
+* `Nginx.SSL.Client.DN.Locality`
+* `Nginx.SSL.Client.DN.StateOrProvince`
+
+== Step 3: Configure Subject Alternative Name (SAN) Validation
+
+You can also validate the Subject Alternative Name (SAN) fields in the client certificate.
+This allows you to restrict access based on DNS names, email addresses, or other identifiers.
+
+Examples:
+
+[source,console]
+----
+# Set SAN.DNS to "client1.example.com"
+gadmin config set Nginx.SSL.Client.SAN.DNS '["client1.example.com"]'
+
+# Set SAN.DNS to multiple domains
+gadmin config set Nginx.SSL.Client.SAN.DNS '["client1.example.com", "client2.example.com"]'
+
+# Set SAN.Email to a specific address
+gadmin config set Nginx.SSL.Client.SAN.Email '["admin@example.com"]'
+----
+
+The supported SAN fields include:
+
+* `Nginx.SSL.Client.SAN.Verify`
+* `Nginx.SSL.Client.SAN.Email`
+* `Nginx.SSL.Client.SAN.DNS`
+* `Nginx.SSL.Client.SAN.URI`
+* `Nginx.SSL.Client.SAN.IP`
+* `Nginx.SSL.Client.SAN.RID`
+
+== Step 4: Configure OCSP (Certificate Status Validation)
+
+TigerGraph supports the Online Certificate Status Protocol (OCSP) to check if client certificates are valid and not revoked.
+
+[source,console]
+----
+# Enable OCSP verification
+gadmin config set Nginx.SSL.Client.OCSP.Verify true
+
+# Specify DNS resolvers for OCSP
+gadmin config set Nginx.SSL.Client.OCSP.Resolver "8.8.8.8,8.8.4.4"
+
+# Override the OCSP responder URL
+gadmin config set Nginx.SSL.Client.OCSP.Responder "http://ocsp.example.com"
+----
+
+[NOTE]
+====
+If no OCSP resolver is specified, Nginx uses the system’s default DNS resolver.
+Only `http://` OCSP responder URLs are supported.
+====
+
+== Step 5: Apply the Configuration and Restart Services
+
+After updating the configuration, apply your changes and restart the necessary services:
+
+[source,console]
+----
+gadmin config apply -y
+gadmin restart nginx gui gsql -y
+----
+
+== Step 6: Test the mTLS Configuration
+
+You can test the mTLS connection using `curl` with your client certificate and key.
+
+[source,console]
+----
+curl --cert client.crt --key client.key --cacert ca.crt https://<server-ip>:14240
+----
+
+If authentication is successful, the server responds normally.
+If the validation fails, you will receive a `403 Forbidden` response.
+
+== Troubleshooting
+
+[cols="1,2,2", options="header"]
+|===
+| Issue | Description | Resolution
+
+| *403 Forbidden* | DN or SAN mismatch | Check that the client certificate attributes match the configured validation rules.
+| *Missing client certificate* | Client did not present a certificate | Ensure the client provides a valid certificate and key.
+| *OCSP verification failure* | Cannot validate certificate status | Check OCSP configuration or disable temporarily for testing.
+|===
+
+Logs:
+
+* Nginx logs record the 403 errors (without details).
+* TigerGraph logs provide additional handshake failure information.
+
+[NOTE]
+====
+* Clients that do not use mTLS will still work *if they run on the same TigerGraph server node*.
+* External clients without valid certificates are *blocked (403)*.
+* As of 4.3.0, *pyTigerGraph* does not support mTLS.
+====
