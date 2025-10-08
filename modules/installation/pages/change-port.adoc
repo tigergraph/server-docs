@@ -1,9 +1,21 @@
 = Changing Ports
+:description: Learn how to change default ports in TigerGraph. Note that default ports have changed since version 4.1.
 
-The following are the ports you will be used for communicating with TigerGraph:
+[NOTE]
+====
+Starting with *TigerGraph 4.1*, port usage for REST API requests has changed.
 
-* 9000: serving RESTPP that accepts upstream TigerGraph Nginx requests
-* 14240: serving TigerGraph Nginx
+* The *RESTPP service (port 9000)* is no longer publicly accessible.  
+* Use the *GSQL server (port 14240)* for API requests on self-managed systems.  
+* For *TigerGraph Cloud*, send API requests to **port 443**.  
+
+For more details, see the xref:4.1@tigergraph-server:API:index.adoc[REST API reference].
+====
+
+The following ports apply to *TigerGraph versions earlier than 4.1*:
+
+* *9000* – serves RESTPP, which accepts upstream TigerGraph Nginx requests.  
+* *14240* – serves TigerGraph Nginx.
 
 If the above ports are restricted in your environment and cannot be enabled (for whatever reason) you can change them once TigerGraph is up and running by running the following commands as tigergraph user:
 
