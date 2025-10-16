@@ -1,167 +1,230 @@
 = Encrypting Connections
 
-TigerGraph supports secure data-in-flight communication, using SSL/TLS encryption protocol. This applies to any outward-facing channel, including GSQL clients, RESTPP endpoints, and the GraphStudio web interface. When SSL/TLS is enabled, HTTPS takes the place of HTTP for RESTPP and GraphStudio connections.
+TigerGraph supports secure in-transit data communication using the SSL/TLS encryption protocol. This applies to all outward-facing channels, including GSQL clients, RESTPP endpoints, and the GraphStudio web interface.
+
+As of TigerGraph 4.3.0, Mutual TLS (mTLS) authentication is also supported. mTLS enhances security by ensuring that both the client and server authenticate each other using certificates.
+
+You can configure either server-only SSL/TLS or mutual authentication (mTLS), depending on your security requirements:
+
+* *Server-only SSL/TLS*: Only the server presents a certificate, and clients verify the server’s identity.
+* *Mutual TLS (mTLS)*: Both the server and client present certificates, and each is authenticated.
 
 == Prerequisites
 
-You should have basic knowledge about how SSL works:
+Before you begin, ensure you have a basic understanding of these concepts:
+- What SSL certificates and keys are used for
+- How SSL certificate chains work
+- What a Distinguished Name (DN) and Subject Alternative Name (SAN) are
 
-. What the SSL certificate and key are used for
-. That an SSL certificate is bound to a domain
-. How an SSL certificate chain works
-
-A good primer on SSL is available at Apache's link:https://httpd.apache.org/docs/2.4/ssl/ssl_intro.html[SSL/TLS Strong Encryption: An Introduction]
+Learn more: link:https://httpd.apache.org/docs/2.4/ssl/ssl_intro.html[SSL/TLS Strong Encryption: An Introduction]
 
 == Nginx-Based
 
-TigerGraph uses the Nginx web server, so SSL configuration makes use of some built-in support in Nginx.
+TigerGraph uses the Nginx web server, so SSL/TLS configuration relies on Nginx’s built-in HTTPS support.
 
-http://nginx.org/en/docs/http/configuring_https_servers.html
+For additional reference, see the official Nginx documentation:
+link:http://nginx.org/en/docs/http/configuring_https_servers.html[Configuring HTTPS Servers (Nginx)].
 
-== Step 1. Obtain an SSL Certificate
+== Step 1: Obtain and Install Certificates
 
-The two main options for obtaining an SSL Certificate are to generate your own self-signed certificate or to purchase a certificate from a trusted Certificate Authority. Regardless of which method you choose, your certificate should be chained to a trusted root certificate embedded in your browser. The options and details for producing a trusted SSL certificate are beyond the scope of this document. The focus of this document is how to configure your TigerGraph system to use the certificate to enable SSL.
+You need certificates for your server (always) and for each client (only for mTLS).
 
-=== Option 1: Using a Certificate From A Trusted Agent
+=== Option A: Use a Certificate from a Trusted Authority
 
-First, obtain an SSL certificate from a trusted agent of your choice. Certificate vendors will provide clear instructions for ordering a certificate and then for installing it on your system.
+Obtain a certificate from a trusted Certificate Authority (CA).
+CA vendors provide guidance for requesting and installing certificates.
 
-Then you can configure the certificate with `gadmin config entry ssl`
+Configure in TigerGraph:
+[source,console]
+----
+gadmin config entry ssl
+----
 
-=== Option 2: Create a Self-Signed Certificate
+=== Option B: Create a Self-Signed Certificate
 
-There are multiple ways to create a self-signed certificate.  One example is shown below.
+For testing or internal use, you can generate your own certificate:
+
+[source,console]
+----
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout <PRIVATE_KEY_PATH> -out <CERTIFICATE_PATH>
+----
+
+Replace `<PRIVATE_KEY_PATH>` with the path to your private key and `<CERTIFICATE_PATH>` with the path to your public certificate.
+
+You will be prompted for certificate fields such as country, locality, organization, and hostname (Common Name).
 
 [WARNING]
 ====
-For simplicity, the method below will use the root certificate directly as the HTTPS server certificate.  This method is satisfactory for testing but should not be used for a production system.
+The self-signed process below uses the root certificate as the HTTPS server certificate. This is suitable for testing—not for production.
 ====
 
 [NOTE]
 ====
-In the example below, the Common Name value should be your server hostname, since HTTPS certificates are bound to domain names.
+The Common Name should be your server’s hostname, since certificates are bound to domain names.
 ====
 
-.Self-Signed Certificate generation example using openssl
+=== Change Certificate Permissions
+
+Secure your certificate files:
+[source,console]
+----
+chmod 600 <CERTIFICATE_PATH> <PRIVATE_KEY_PATH>
+----
+
+== Step 2: Configure SSL with gadmin
+
+After you have your certificates, enable SSL/TLS in TigerGraph:
 
 [source,console]
 ----
-$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ~/nginx-selfsigned.key -out ~/nginx-selfsigned.crt
-
-Generating a 2048 bit RSA private key
-.................................................................................................................................+++
-........+++
-writing new private key to '/home/tigergraph/nginx-selfsigned.key'
------
-You are about to be asked to enter information that will be incorporated
-into your certificate request.
-What you are about to enter is what is called a Distinguished Name or a DN.
-There are quite a few fields but you can leave some blank
-For some fields there will be a default value,
-If you enter '.', the field will be left blank.
------
-Country Name (2 letter code) [AU]:US
-State or Province Name (full name) [Some-State]:California
-Locality Name (eg, city) []:Redwood City
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:TigerGraph
-Organizational Unit Name (eg, section) []:GLE
-Common Name (e.g. server FQDN or YOUR name) []: my.ip.addr.num
-Email Address []:engineer@tigergraph.com
+gadmin config entry ssl
+Nginx.SSL.Enable: true
+Nginx.SSL.Key: <PRIVATE_KEY_PATH>
+Nginx.SSL.Cert: <CERTIFICATE_PATH>
 ----
 
+TigerGraph accepts only PEM-encoded certificates. If needed, convert using
+link:https://www.sslshopper.com/ssl-converter.html[SSL Converter].
 
-
-=== Change the Certificate Permission
-
-For security reasons, the certificates can only be used with permission 600 or less.
-
-[source,text]
-----
-$ chmod 600 ~/nginx-selfsigned.*
-----
-
-== Step 2: Configure SSL with `gadmin`
-
-With the self-signed certificate successfully generated, you can configure it with `gadmin`, so that all the HTTP traffic will be protected with SSL.
-
-[NOTE]
-====
-TigerGraph's SSL only accepts PEM-encoded certificates. If you have a certificate encoded in other formats (e.g. DER), you need to https://www.sslshopper.com/ssl-converter.html[convert it to a PEM-encoded certificate] first.
-====
-
+Apply the configuration:
 [source,console]
-----
-$ gadmin config entry ssl
-
-​Nginx.SSL.Enable [ false ]: Enable SSL connection for all HTTP requests
-New: true
-
-Nginx.SSL.Key [ <masked> ]: Private key for SSL
-New: @privateKey_file_path
-
-Nginx.SSL.Cert [ <masked> ]: Public certificate for SSL
-New: @ssl_cert_path
-
-# This config (Nginx.ProxySSLVerify) was removed in v3.1.1
-Nginx.ProxySSLVerify [ false ]: Enable verification of the proxied HTTPS server certificate. Recommend to turn on.
-New: true
-----
-
-After saving the settings, apply the configuration settings.
-
-[source,text]
 ----
 gadmin config apply -y
-
-[ Info] Successfully applied configuration change. Please restart services to make it effective immediately.
 ----
 
-Then restart the following services: `gsql`, `nginx`, and `gui`.
-
-[source,text]
-----
-$ gadmin restart gsql nginx gui -y
-----
-
-== Testing Your SSL Connection
-
-Now you may test the connection.
-
-A direct curl request to the server will fail due to certificate verification failure:
-
-[source,text]
-----
-$ curl https://localhost:14240
-
-curl: (60) server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
-More details here: http://curl.haxx.se/docs/sslcerts.html
-
-curl performs SSL certificate verification by default, using a "bundle"
-of Certificate Authority (CA) public keys (CA certs). If the default
-bundle file isn't adequate, you can specify an alternate file
-using the --cacert option.
-
-If this HTTPS server uses a certificate signed by a CA represented in
-the bundle, the certificate verification probably failed due to a
-problem with the certificate (it might be expired, or the name might
-not match the domain name in the URL).
-
-If you'd like to turn off curl's verification of the certificate, use
-the -k (or --insecure) option.
-----
-
-[WARNING]
-====
-In v1.2, the default TCP/IP port for Nginx has changed from 44240 to 14240, to avoid possible port conflicts with Zookeeper.
-====
-
-You may use the -k option to turn off the verification, but it is unsafe and not recommended.
-
-To successfully make requests with curl, you will need to specify the certificate by using the `--cacert` parameter:
-
+Then restart services:
 [source,console]
 ----
-$ curl --cacert /home/tigergraph/nginx-selfsigned.crt https://localhost:14240
-
-<!doctype html><html lang="en"><head><meta charset="utf-8"><title>GraphStudio</title><base href="/"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/x-icon" href="favicon.ico"><link href="styles.d67299ba9f5d73aecbe2.bundle.css" rel="stylesheet"/></head><body class="mat-typography"><app-root></app-root><script type="text/javascript" src="inline.4aae6a8088c30a61d5b0.bundle.js"></script><script type="text/javascript" src="polyfills.c9b879328f3396b2bbe8.bundle.js"></script><script type="text/javascript" src="vendor.5392e4ea4f904cd1658c.bundle.js"></script><script type="text/javascript" src="main.a39087227fcdf478cd2a.bundle.js"></script></body></html>
+gadmin restart gsql nginx gui -y
 ----
+
+== Step 3: Set Up Mutual TLS (mTLS)
+
+Mutual TLS (mTLS) adds two-way authentication, where both the client and server verify each other’s identities.
+To enable mTLS, first complete the server-side SSL/TLS setup (above), then follow these steps.
+
+=== Required Parameters
+
+Enable client certificate verification (mTLS):
+[source,console]
+----
+gadmin config set Nginx.SSL.Client.Verify true
+----
+
+=== Upload or Specify Client CA Certificates
+
+Provide a list of Certificate Authorities (CAs) trusted to authenticate client certificates.
+
+You can do this in one of two ways:
+
+*Admin Portal Method:*
+Upload client CA certificates through the Admin Portal.
+See xref:gui:admin-portal:components/nginx.adoc[Admin Portal: Nginx Configuration].
+
+*gadmin Method:*
+[source,console]
+----
+gadmin config set Nginx.SSL.Client.Cert <CLIENT_CA_CERT_PATH>
+----
+Replace `<CLIENT_CA_CERT_PATH>` with the full path to your PEM-encoded client CA certificate file, for example:
+`/etc/tigergraph/client_ca_cert.pem`.
+
+=== Optional Parameters
+
+The following parameters are optional and add deeper verification checks on client certificates.
+Even if you skip them, mTLS will still validate the client certificate’s signature.
+
+*DN Attribute Validation*
+[source,console]
+----
+gadmin config set Nginx.SSL.Client.DN.Country '["US", "UK"]'
+gadmin config set Nginx.SSL.Client.DN.Organization '["MyOrg"]'
+gadmin config set Nginx.SSL.Client.DN.CommonName '["client1.example.com"]'
+----
+
+*SAN Attribute Validation*
+[source,console]
+----
+gadmin config set Nginx.SSL.Client.SAN.DNS '["clientdomain.com"]'
+gadmin config set Nginx.SSL.Client.SAN.Email '["user@email.com"]'
+gadmin config set Nginx.SSL.Client.SAN.URI '["spiffe://client/uri"]'
+gadmin config set Nginx.SSL.Client.SAN.IP '["192.168.1.1"]'
+gadmin config set Nginx.SSL.Client.SAN.RID '["1.2.3.4.5"]'
+----
+
+*OCSP (Certificate Revocation) Verification*
+[source,console]
+----
+gadmin config set Nginx.SSL.Client.OCSP.Verify true
+gadmin config set Nginx.SSL.Client.OCSP.Resolver "8.8.8.8,8.8.4.4"
+gadmin config set Nginx.SSL.Client.OCSP.Responder "http://ocsp.myca.com"
+----
+
+[NOTE]
+====
+Each of the above parameters provides an extra layer of verification.
+For basic testing, you can leave them unset and rely only on the client certificate signature.
+====
+
+== Testing Your Connection
+
+To test SSL/TLS or mTLS:
+
+*Server-only TLS*:
+You only need a CA certificate to verify the server.
+[source,console]
+----
+curl --cacert <CERTIFICATE_PATH> https://localhost:14240
+----
+
+*Mutual TLS (mTLS)*:
+You need both server and client certificates.
+[source,console]
+----
+curl --cert <CLIENT_CERT_PATH> --key <CLIENT_KEY_PATH> --cacert <CLIENT_CA_CERT_PATH> https://localhost:14240
+----
+
+Replace placeholders:
+
+* `<CERTIFICATE_PATH>` — server’s public certificate
+* `<CLIENT_CERT_PATH>` — client’s certificate
+* `<CLIENT_KEY_PATH>` — client’s private key
+* `<CLIENT_CA_CERT_PATH>` — client CA certificate (PEM)
+
+If the validation fails, you will receive a `403 Forbidden` response.
+
+== Troubleshooting
+
+[cols="1,2,2", options="header"]
+|===
+| Issue | Description | Resolution
+
+| *403 Forbidden* | DN or SAN mismatch | Ensure the client certificate attributes match the configured validation rules.
+| *Missing client certificate* | Client did not present a certificate | Ensure the client provides a valid certificate and key.
+| *OCSP verification failure* | Cannot validate certificate status | Check OCSP configuration or disable temporarily for testing.
+|===
+
+Check logs:
+* Nginx logs record HTTP 403 errors.
+* TigerGraph logs provide detailed handshake error information.
+
+== Limitations
+
+If you use mTLS, note these limitations in TigerGraph 4.3.0:
+
+. Internal clients on the same TigerGraph server node may connect without mTLS.
+. *pyTigerGraph* does not support mTLS.
+
+== Quick Reference: mTLS Parameters
+
+[cols="1,3"]
+|===
+| Parameter | Purpose
+| Nginx.SSL.Client.Verify         | Enable client certificate verification (mTLS)
+| Nginx.SSL.Client.Cert           | Path to trusted CA file for client certificates
+| Nginx.SSL.Client.DN.*           | DN attribute checks (Country, Organization, CommonName)
+| Nginx.SSL.Client.SAN.*          | SAN attribute checks (DNS, Email, URI, IP, RID)
+| Nginx.SSL.Client.OCSP.Verify    | Enable OCSP for real-time revocation checking
+| Nginx.SSL.Client.OCSP.Resolver  | DNS resolvers for OCSP queries
+| Nginx.SSL.Client.OCSP.Responder | Custom OCSP responder URL
+|===
