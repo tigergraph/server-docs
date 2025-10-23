@@ -89,6 +89,8 @@ heartbeats that can be missed before one service is considered dead by the
 controller |`5`
 
 |Controller.Port |The serving gRPC (Google Remote Procedure Call) port for Controller |`9188`
+
+|Controller.ServiceManager.AutoRestart |When set to `true`, all services start with the `--auto-restart` option during xref:management-commands.adoc#_gadmin_start[`gadmin start`] or xref:management-commands.adoc#_gadmin_restart[`gadmin restart`]. This enables services to automatically restart if they crash. The default value is `false`. |`false`
 |===
 
 == Dict
