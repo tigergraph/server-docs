@@ -19,7 +19,7 @@ xref:data-loading:load-from-spark-dataframe.adoc#_load_data_from_delta_lake[Delt
 xref:data-loading:load-from-spark-dataframe.adoc#_load_data_from_iceberg[Iceberg]
 and xref:data-loading:load-from-spark-dataframe.adoc#_load_data_from_hudi[Hudi]
 
-Alternatively,TigerGraph Spark Connector provides a xref:direct-upsert-from-spark-dataframe.adoc#_direct_upsert_from_spark_dataframe[Direct Upsert] feature that enables direct upsert of vertices and edges from a Spark DataFrame to a TigerGraph database without the need to create a GSQL loading job beforehand.
+Alternatively, The TigerGraph Spark Connector provides a xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_direct_upsert_from_spark_dataframe feature that enables direct upsert of vertices and edges from a Spark DataFrame to a TigerGraph database without the need to create a GSQL loading job beforehand.
 This is particularly useful for ad-hoc data loading, small datasets, or when the data schema is dynamic.
 include::partial$spark/jdbc-deprecation.adoc[]
 
@@ -520,7 +520,7 @@ There are 3 levels of stats:
 The Direct Upsert feature enables you to upsert data directly from a Spark DataFrame into vertices and edges in TigerGraph without the need to define a GSQL loading job.
 The connector sends data in batches to TigerGraph's REST++ upsert endpoint.
 
-== Upserting Vertices
+=== Upserting Vertices
 
 To upsert vertices, specify the vertex type and the field in the DataFrame corresponding to the vertex primary ID.
 
@@ -537,7 +537,7 @@ df.write
   .save()
 ----
 
-== Upserting Edges
+=== Upserting Edges
 
 To upsert edges, specify the edge type, the source and target vertex types, and the fields in the DataFrame that correspond to the source and target vertex primary IDs.
 
@@ -557,7 +557,7 @@ df.write
   .save()
 ----
 
-== Attribute Mapping and Operations
+=== Attribute Mapping and Operations
 
 By default, the connector maps DataFrame column names to TigerGraph vertex or edge attribute names.
 Custom mappings and operations can be specified using `upsert.attribute.mapping` and `upsert.attribute.op`.
