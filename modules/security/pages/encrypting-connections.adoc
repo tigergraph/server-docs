@@ -2,7 +2,7 @@
 
 TigerGraph supports secure data-in-transit communication using the SSL/TLS encryption protocol. This applies to all outward-facing interfaces, including GSQL clients, RESTPP endpoints, and the GraphStudio web interface.
 
-As of TigerGraph 4.3.0, Mutual TLS (mTLS) authentication is also supported. mTLS enhances security by ensuring that both the client and server authenticate each other using certificates.
+As of TigerGraph 4.3.0, *Mutual TLS (mTLS)* authentication is also supported. mTLS enhances security by ensuring that both the client and server authenticate each other using certificates.
 
 You can configure either server-only SSL/TLS or mutual authentication (mTLS), depending on your security requirements:
 
@@ -12,9 +12,9 @@ You can configure either server-only SSL/TLS or mutual authentication (mTLS), de
 == Prerequisites
 
 Before you begin, ensure you have a basic understanding of these concepts:
-- What SSL certificates and keys are used for
-- How SSL certificate chains work
-- What a Distinguished Name (DN) and Subject Alternative Name (SAN) are
+* What SSL certificates and keys are used for
+* How SSL certificate chains work
+* What a Distinguished Name (DN) and Subject Alternative Name (SAN) are
 
 Learn more: link:https://httpd.apache.org/docs/2.4/ssl/ssl_intro.html[SSL/TLS Strong Encryption: An Introduction]
 
@@ -205,6 +205,7 @@ If the validation fails, you will receive a `403 Forbidden` response.
 |===
 
 Check logs:
+
 * Nginx logs record HTTP 403 errors.
 * TigerGraph logs provide detailed handshake error information.
 
