@@ -828,6 +828,9 @@ $ gadmin start all
 [   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 IFM GUI
 ----
 
+When xref:reference:configuration-parameters.adoc#_controller[`Controller.ServiceManager.AutoRestart`] is set to `true`, TigerGraph automatically restarts all services if they crash during `gadmin start` or `gadmin restart`.
+The default value is `false`. It does not restart services that are manually stopped.
+
 [#_gadmin_status]
 === gadmin status
 
