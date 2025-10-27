@@ -27,6 +27,11 @@ To ensure fault tolerance, provide a list of all node `URLs` in the `url` option
 "url" -> "https://m1:14240,https://m2:14240,https://m3:14240,https://m4:14240",
 ----
 
+[NOTE]
+====
+If you’re running long queries through the Spark connector and a load balancer (for example, Azure Load Balancer) is between Spark and TigerGraph, increase the load balancer’s idle timeout to prevent the connection from timing out.
+====
+
 === Authentication Methods
 
 [NOTE]
