@@ -19,6 +19,11 @@ val tgOptions = Map(
 )
 ----
 
+[NOTE]
+====
+If you’re running long queries through the Spark connector and a load balancer (for example, Azure Load Balancer) is between Spark and TigerGraph, increase the load balancer’s idle timeout to prevent the connection from timing out.
+====
+
 [TIP]
 .Authentication methods
 ====
