@@ -48,27 +48,27 @@ The Avro message will contain a `scheme ID`, the Transformation (or previous con
 
 == How to Enable Avro Data Validation
 
-To enable Avro data validation, configure Kafka Connector with `ErrorTolerance` and the new transformation.
+In 4.2.1, to enable Avro data validation, configure the Kafka data source with `ErrorTolerance` and the transformation settings.
 
-Below are the additional settings to be added to the connector config:
+Below is an example configuration to add to the data source:
 
-[source, gsql]
+[source,json]
 ----
-connector.class=org.apache.kafka.connect.mirror.MirrorSourceConnector
-...
-key.converter=org.apache.kafka.connect.converters.ByteArrayConverter
-header.converter=org.apache.kafka.connect.storage.StringConverter
-value.converter=org.apache.kafka.connect.converters.ByteArrayConverter
-transforms=TigerGraphAvroTransform
-transforms.TigerGraphAvroTransform.type=com.tigergraph.kafka.connect.transformations.TigergraphAvroWithSchemaRegistryTransformation
-transforms.TigerGraphAvroTransform.schema.registry.url=<URL to schema registry>
-transforms.TigerGraphAvroTransform.errors.tolerance=all
+{
+  "type": "kafka", 
+  ...
+  "transforms": "TigerGraphAvroTransform",
+  "transforms.TigerGraphAvroTransform.type": "com.tigergraph.kafka.connect.transformations.TigergraphAvroWithSchemaRegistryTransformation",
+  "transforms.TigerGraphAvroTransform.schema.registry.url": "{schema-registry-url}",
+  "transforms.TigerGraphAvroTransform.schema.registry.basic.auth.credentials.source": "USER_INFO",
+  "transforms.TigerGraphAvroTransform.schema.registry.basic.auth.user.info": "{username}:{password}",
+  "transforms.TigerGraphAvroTransform.errors.tolerance": "all"
+}
 ----
 
 [NOTE]
 ====
-* In the above settings, `MirrorSourceConnector` is the connector.
-* The transformation type is set to `TigergraphAvroWithSchemaRegistryTransformation,` but alternatively, it could be set to `TigergraphAvroWithoutSchemaRegistryTransformation.`
+To enable Avro transformation with data validation, remove any configurations that start with `value.converter`.
 ====
 
 === Old Schema vs. New Schema:
