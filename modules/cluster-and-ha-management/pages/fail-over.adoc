@@ -1,44 +1,150 @@
 = Fail over to the DR cluster
 //:page-aliases: crr:fail-over.adoc
 
+
 In the event of catastrophic failure that has impacted the full cluster due to Data Center or Region failure, the user can initiate the failover to the Disaster Recovery (DR) cluster.
-This is a manual process.
 
-Run the following commands to make configuration changes on the DR cluster to upgrade it to the primary cluster.
+Starting from TigerGraph 4.3.0, failover to a Disaster Recovery (DR) cluster is simplified into a single command.
+The new `--promote` flag for `gadmin crr stop` replaces the previous multi-step manual process, making DR promotion faster and more reliable.
+Update existing failover scripts to use this new command.
 
-[source,console]
+[source,bash]
 ----
-gadmin crr stop -y"
-gadmin config set System.CrossRegionReplication.Enabled false"
-gadmin config apply -y"
-gadmin restart -y
+gadmin crr stop --promote --dump-checkpoint /path/to/checkpoint.json -y
 ----
 
-== Set up a new DR cluster after failover
+[#key_behavior_changes]
+=== Key Behavior Changes and Enhancements
 
-After you fail over to your DR cluster, your DR cluster is now the primary cluster. You may want to set up a new DR cluster to still be able to recover your services in the event of another disaster.
+==== 1. Single Command Operation
+The `gadmin crr stop --promote` command now orchestrates the entire promotion process.
+It replaces four legacy commands and automates the following actions:
 
-To set up a new DR cluster over the upgraded primary cluster:
+* Stops the CRR connector.
+* Updates the configuration parameter: `System.CrossRegionReplication.Enabled=false`
+* Applies configuration changes and restarts dependent services.
 
-. Make a backup of the upgraded primary cluster
-. Run the following command on the new cluster. The commands are the mostly same as setting up the first DR cluster, except that in the fourth command, the value for `System.CrossRegionReplication.TopicPrefix` becomes `Primary.Primary` instead of `Primary`
-. On the new DR cluster, restore from the backup of the upgraded primary cluster
+==== 2. Automated Safety Checks for Data Consistency
+Before stopping replication, the command automatically verifies synchronization between the DR and Primary clusters.
 
-[source,console]
+* If replication lag is detected, the system displays a warning indicating the DR cluster is not fully synchronized.
+* Promoting a lagging DR cluster can result in data loss. If lag is detected, the command pauses and requests explicit confirmation before proceeding.
+* If no lag exists, promotion continues automatically without user intervention.
+
+==== 3. Integrated Replication Checkpointing
+The `--dump-checkpoint` flag generates a replication checkpoint file that records precise replication offsets at the moment of promotion.
+
+* When the DR cluster is fully synchronized, the checkpoint file is saved automatically to the specified path.
+* This checkpoint enables a **fast-switch** operation when converting the old Primary cluster into a new DR cluster—avoiding a full backup and restore.
+* See <<set-up-new-dr-cluster>> for instructions on using the checkpoint for a fast-switch.
+
+==== 4. Forced Promotion for Emergency Scenarios
+In urgent cases, administrators can use the `--force` flag along with `--promote` to bypass synchronization checks.
+
+[source,bash]
 ----
- # Kafka mirrormaker primary cluster's IPs, separator by ','
- $ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
- 
- # Kafka mirrormaker primary cluster's KafkaPort
- $ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
- 
- # The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
- $ gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
- 
- # Enable CRR with the primary's backup created in step 1
- $ gadmin backup restore <backup from the primary cluster> --dr
+gadmin crr stop --promote --force -y
 ----
 
-There is no limit on the number of times a cluster can fail over to another cluster. When designating a new DR cluster, make sure that you set the `System.CrossRegionReplication.TopicPrefix` parameter correctly by adding an additional `.Primary` .
+Use this option only during emergencies. Forced promotion may lead to data loss and will require a full backup and restore to re-establish the DR cluster.
 
-For example, if your original cluster fails over once, and the current cluster's `TopicPrefix` is `Primary`, then the new DR cluster needs to have its `TopicPrefix` be `Primary.Primary`. If it needs to fail over again, the new DR cluster needs to have its `TopicPrefix` be set to `Primary.Primary.Primary`.
+[NOTE]
+====
+Users must update existing failover scripts and operational runbooks.
+The older four-step failover process is now deprecated and should be replaced with the single `gadmin crr stop --promote` command.
+
+This update improves safety, reduces operational complexity, and ensures more reliable failover operations.
+====
+
+
+[[set-up-new-dr-cluster]]
+
+== Set Up a New DR Cluster After Failover
+:description: Procedure for re-establishing high availability after DR promotion using fast-switch or backup restore.
+
+=== Overview
+TigerGraph v4.3 introduces a new **fast-switch** capability that allows administrators to quickly convert the former Primary cluster into a new DR cluster.
+This method leverages the replication checkpoint generated during failover, reducing downtime and avoiding a full backup and restore.
+
+After promoting the DR cluster to Primary, the former Primary becomes offline.
+To re-establish high availability, configure the old Primary as the new DR cluster.
+
+=== Principle: Checkpoint Validation for Fast-Switch
+The fast-switch mechanism depends on whether the DR cluster was fully synchronized with the Primary at the time of failover.
+This is determined by validating the replication checkpoint file created during promotion.
+
+[source,bash]
+----
+gadmin crr stop --promote --dump-checkpoint <path>
+----
+
+Validation outcomes:
+
+* **Validation passes:**
+Clusters were fully synchronized. A fast-switch occurs, converting the cluster to a DR instance instantly without data transfer.
+* **Validation fails:**
+The failover occurred during replication lag (e.g., when `--force` was used). A fast-switch is not possible, and a full backup and restore is required.
+
+=== Method 1: Fast-Switch Using a Replication Checkpoint (Recommended)
+
+Use this method when:
+
+* The failover was clean (no replication lag detected).
+* A valid replication checkpoint file (e.g., `checkpoint.json`) was created successfully.
+
+==== Steps
+
+. **Configure the old Primary cluster as the new DR cluster.**
++
+[source,bash]
+----
+# Set the IPs of the new Primary cluster
+gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs <new_primary_ip1,...>
+
+# Set the Kafka port of the new Primary cluster
+gadmin config set System.CrossRegionReplication.PrimaryKafkaPort <new_primary_kafka_port>
+
+# Set the topic prefix. Add an additional ".Primary" suffix for each failover.
+gadmin config set System.CrossRegionReplication.TopicPrefix <prefix>
+
+# Apply configuration changes
+gadmin config apply
+----
+
+. **Perform the fast-switch restore.**
++
+[source,bash]
+----
+gadmin backup restore --dr --dr-checkpoint /path/to/checkpoint.json
+----
++
+If validation succeeds, the cluster is reconfigured as a DR instance and replication resumes from the exact checkpoint position.
+
+=== Method 2: Full Backup and Restore (Fallback Method)
+
+Use this method when:
+
+* The checkpoint validation fails (clusters were not synchronized).
+* The checkpoint file is missing.
+* The DR cluster is being deployed on new hardware.
+
+==== Steps
+
+. **Create a backup on the new Primary cluster.**
++
+[source,bash]
+----
+gadmin backup create <backup_name>
+----
+
+. **Configure the new DR cluster.**
++
+Follow the configuration steps in *Method 1* to point the DR cluster to the new Primary.
+
+. **Restore the backup to the new DR cluster.**
++
+[source,bash]
+----
+gadmin backup restore <backup_tag> --dr
+----
+

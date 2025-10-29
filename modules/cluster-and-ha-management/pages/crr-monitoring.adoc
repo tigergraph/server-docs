@@ -1,1 +1,115 @@
 = CRR Monitoring
+= Monitor Cross-Region Replication (CRR)
+//:page-aliases: crr:monitor-crr.adoc
+:description: Monitor Cross-Region Replication (CRR) status and metrics collection in TigerGraph.
+:sectnums:
+
+Starting from version 4.3, TigerGraph Disaster Recovery (DR) clusters support monitoring Cross-Region Replication (CRR) status and metrics. This enhancement enables administrators to track replication and replay progress, identify potential delays, and integrate monitoring data with external observability systems.
+
+
+
+The CRR metrics collection interval can be configured using the following command (default: `60s`):
+
+[source,console]
+----
+gadmin config entry System.Metrics.CRRIntervalSec
+----
+
+[#cli_status_query]
+== CLI-based CRR status query
+
+TigerGraph introduces a new `gadmin` sub-command to display detailed CRR metrics.
+
+[source,console]
+----
+gadmin crr status [flags]
+----
+
+Displays comprehensive CRR status information, including:
+
+* Overall CRR system status
+* Topic replication and replay lag
+* MirrorMaker 2 connector status
+
+=== Flags
+
+|===
+| Flag | Description
+
+| `--json` | Outputs CRR status in JSON format.
+| `--realtime` | Retrieves real-time status instead of cached data.
+| `-v`, `--verbose` | Displays detailed metrics, including source and target offsets and timestamps.
+|===
+
+
+[#topic_metrics]
+=== Topic Metrics Definition
+
+
+|===
+| Field Name | Description | Notes | Verbose
+
+| `replicationLagRecords` | Number of records the DR topic is behind the corresponding PR topic. | Calculated as `sourceOffset - replicatedOffset` | false
+| `replayLagRecords` | Number of records the replay process in DR is behind the replicated topic. | Calculated as `targetOffset - replayedOffset` | false
+| `replicationLagSeconds` | Time lag in seconds between the latest record in PR and its replication in DR. | Calculated as `sourceTimestamp - replicatedTimestamp` | false
+| `replayLagSeconds` | Time lag in seconds between the latest record in DR and its replay. | Calculated as `targetTimestamp - replayedTimestamp` | false
+| `replicationStalledSeconds` | Duration in seconds that replication from PR to DR has made no forward progress. | 0 means replication is actively progressing. | false
+| `replayStalledSeconds` | Duration in seconds that replay within DR has made no forward progress. | 0 means replay is actively progressing. | false
+| `sourceOffset` | Latest offset available in the PR Kafka cluster. | Highest offset produced in the PR topic. | true
+| `replicatedOffset` | Offset up to which data has been replicated from PR to DR. | Highest offset confirmed written to the DR topic. | true
+| `targetOffset` | Latest offset available in the DR Kafka topic. | Highest offset physically present in the DR topic. | true
+| `replayedOffset` | Offset up to which the replay service in DR has processed records. | Highest offset successfully replayed in DR. | true
+| `sourceTimestamp` | Timestamp of the record at `sourceOffset` in PR. | Based on Kafka message timestamp. | true
+| `replicatedTimestamp` | Timestamp of the record at `replicatedOffset` in DR. | Based on Kafka message timestamp. | true
+| `targetTimestamp` | Timestamp of the record at `targetOffset` in DR. | Based on Kafka message timestamp. | true
+| `replayedTimestamp` | Timestamp of the record at `replayedOffset` in DR. | Based on Kafka message timestamp. | true
+|===
+
+[#openmetrics_integration]
+==  OpenMetrics Integration
+
+CRR topic metrics can also be collected in **OpenMetrics** format using the following API:
+
+[source,console]
+----
+curl http://localhost:14240/informant/metrics
+----
+
+=== OpenMetrics Definition
+
+|===
+| Type | Name | Label | Description
+
+| Metric | `tigergraph_crr_replication_lag_records` | topic | Replication lag (records)
+| Metric | `tigergraph_crr_replay_lag_records` | topic | Replay lag (records)
+| Metric | `tigergraph_crr_replication_lag_seconds` | topic | Replication lag (seconds)
+| Metric | `tigergraph_crr_replay_lag_seconds` | topic | Replay lag (seconds)
+| Metric | `tigergraph_crr_replication_stalled_seconds` | topic | Duration replication has stalled
+| Metric | `tigergraph_crr_replay_stalled_seconds` | topic | Duration replay has stalled
+| Metric | `tigergraph_crr_source_offset` | topic | Source offset in PR
+| Metric | `tigergraph_crr_replicated_offset` | topic | Replicated offset in DR
+| Metric | `tigergraph_crr_target_offset` | topic | Target offset in DR topic
+| Metric | `tigergraph_crr_replayed_offset` | topic | Replayed offset in DR
+| Metric | `tigergraph_crr_source_timestamp` | topic | Timestamp of source record in PR
+| Metric | `tigergraph_crr_replicated_timestamp` | topic | Timestamp of replicated record in DR
+| Metric | `tigergraph_crr_target_timestamp` | topic | Timestamp of target record in DR
+| Metric | `tigergraph_crr_replayed_timestamp` | topic | Timestamp of replayed record in DR
+|===
+
+[NOTE]
+====
+TigerGraph provides raw metrics for CRR topic replication and replay, but does not include built-in alerting capabilities.
+
+Replication and replay lag may vary depending on cluster configuration, network bandwidth, and latency. Users are advised to define alerting rules in their own monitoring systems (for example, Prometheus).
+
+A CRR topic can be considered abnormal if any of the following conditions occur:
+
+* `tigergraph_crr_replication_lag_records > 20`
+* `tigergraph_crr_replay_lag_records > 20`
+* `tigergraph_crr_replication_stalled_seconds > 60`
+* `tigergraph_crr_replay_stalled_seconds > 60`
+
+These thresholds can be adjusted according to the environment and operational requirements.
+====
+
+
