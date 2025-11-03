@@ -1,1 +1,310 @@
+:toc:
+:toclevels: 4
 = Load from Apache Iceberg
+
+TigerGraph 4.3 adds *Apache Iceberg* to its collection of high-speed built-in connectors. This connector allows you to load data stored in *AWS S3* or *MinIO* buckets that are managed by an *Iceberg REST Catalog*.
+
+This guide shows how to connect your data source, create a loading job, and manage it effectively.
+
+== Build Your Graph Schema
+
+Start by defining your graph schema in TigerGraph. This specifies vertex types (like person or post) and edge types (like friend or posted).
+Here’s a simple social network example:
+
+[source,gsql]
+.Sample social network schema
+----
+CREATE VERTEX person (PRIMARY_ID personId STRING, id STRING, gender STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+CREATE UNDIRECTED EDGE friend (FROM person, TO person)
+CREATE VERTEX post (PRIMARY_ID postId UINT, subject STRING, postTime DATETIME)
+CREATE DIRECTED EDGE posted (FROM person, TO post)
+CREATE DIRECTED EDGE liked (FROM person, TO post, actionTime DATETIME)
+----
+
+Adjust your schema as required for your data.
+
+== Create a Data Source Object
+
+Before loading data, create a *data source object* that specifies how TigerGraph connects to your Iceberg storage using JSON configuration parameters.
+
+You can supply the JSON configuration in two equivalent ways:
+
+* Inline (within triple quotes `""" ... """`), or
+* In an external `.json` file referenced by filename.
+
+[source,gsql]
+----
+CREATE DATA_SOURCE s1 = """
+{
+  "type": "iceberg",
+  "iceberg.catalog.type": "rest",
+  "iceberg.catalog.uri": "http://rest:8181",
+  "aws.s3.endpoint": "http://minio:9000",
+  "aws.s3.access_key": "accesskey",
+  "aws.s3.secret_key": "password",
+  "aws.client.region": "us-east-1"
+}""" FOR GRAPH socialNet
+----
+
+or, store the same JSON in `iceberg_config.json` and run:
+
+[source,gsql]
+----
+CREATE DATA_SOURCE s1 = "iceberg_config.json" FOR GRAPH socialNet
+----
+
+When you use an external JSON file, you **do not** wrap it in triple quotes — that matches how other TigerGraph connectors behave.
+
+=== Configuration Parameters
+
+|===
+| Parameter | Description | Required | Example
+| `type` | Connector type. Must be `iceberg`. | Yes | `iceberg`
+| `iceberg.catalog.type` | Catalog type (commonly `rest`). | Yes | `rest`
+| `iceberg.catalog.uri` | URI of the Iceberg REST catalog (for example: `http://rest:8181`). | Yes | `http://rest:8181`
+| `aws.s3.endpoint` | S3 or MinIO endpoint (required for MinIO). | Conditionally | `http://minio:9000`
+| `aws.s3.access_key` | Access key for S3/MinIO. | Yes | `accesskey`
+| `aws.s3.secret_key` | Secret key for S3/MinIO. | Yes | `password`
+| `aws.client.region` | AWS region name (optional for MinIO). | No | `us-east-1`
+| `iceberg.snapshot.id` | Optional snapshot id to read specific snapshot; default is latest. | No | `1234567890`
+| `tasks.max` | Default maximum parallel tasks for reading data (can be overridden per `FILENAME`). | No | `2`
+|===
+
+*Notes about `tasks.max`*:
+
+* `tasks.max` controls parallelism (number of worker tasks reading data).
+* You can set `tasks.max` at the `DATA_SOURCE` level (as a default) *or* at the `FILENAME` level. A `FILENAME`-level value overrides the `DATA_SOURCE` default for that specific file.
+* Default value (when unset) is `1`.
+
+[TIP]
+====
+* Small datasets — use `2` to add light parallelism while keeping overhead small.
+* Large datasets — use `8` (or higher) to increase throughput (adjust based on cluster and network capacity).
+* There is no fixed global maximum; practical limits depend on CPU, network, and object store throughput.
+====
+
+== Iceberg Setup Basics
+
+Configure the minimal set of properties needed for Iceberg:
+
+[cols="1,2,1",options="header"]
+|===
+| Configuration Property | Description | Required
+| type | Set to `"iceberg"`. | Yes
+| iceberg.catalog.type | Catalog type. Use `"rest"`. | Yes
+| iceberg.catalog.uri | Catalog endpoint (for example: `http://ip:port`). | Yes
+| iceberg.snapshot.id | Optional: specific snapshot to read. | No
+|===
+
+=== Storage Configuration
+
+[cols="1,2,1,1",options="header"]
+|===
+| Configuration Property | Description | Required for S3 | Required for MinIO
+| aws.s3.access_key | Access key | Yes | Yes
+| aws.s3.secret_key | Secret key | Yes | Yes
+| aws.s3.endpoint | Endpoint (optional for S3; required for MinIO) | No | Yes
+| aws.client.region | Region of bucket | Yes | Yes
+| iceberg.s3.enable.path.style.access | Path-style access (default: true) | No | Yes (must be true)
+|===
+
+=== Secure with OAuth2
+
+You can secure the Iceberg REST Catalog with OAuth2. TigerGraph supports both bearer-token and client-credentials-with-refresh flows.
+
+[cols="1,2,1,1",options="header"]
+|===
+| Property | Description (Token) | Required (Token) | Required (Credential Refresh)
+| iceberg.catalog.oauth2.token | Bearer token | Yes | No
+| iceberg.catalog.oauth2.token.expires | Expiration interval (ms) | No | No
+| iceberg.catalog.oauth2.token.refresh.enabled | Enable refresh (default: false) | Yes (false) | Yes (true)
+| iceberg.catalog.oauth2.token.endpoint.url | Token URL for refresh flow | No | Yes
+| iceberg.catalog.oauth2.client.id | Client ID for refresh flow | No | Yes
+| iceberg.catalog.oauth2.client.secret | Client secret for refresh flow | No | Yes
+| iceberg.catalog.oauth2.token.scopes | Optional OAuth scopes | No | No
+|===
+
+=== Connect to MinIO Using Inline JSON
+
+[source,gsql]
+----
+CREATE DATA_SOURCE s1 = """
+{
+  "type": "iceberg",
+  "iceberg.catalog.type": "rest",
+  "iceberg.catalog.uri": "http://rest:8181",
+  "aws.s3.endpoint": "http://minio:9000",
+  "aws.s3.access_key": "accesskey",
+  "aws.s3.secret_key": "password",
+  "aws.client.region": "us-east-1"
+}""" FOR GRAPH socialNet
+----
+
+=== Connect Using an External JSON File
+
+Put the same JSON into `iceberg_config.json`, then:
+
+[source,gsql]
+----
+CREATE DATA_SOURCE s1 = "iceberg_config.json" FOR GRAPH socialNet
+----
+
+== Iceberg and Graph Schema
+
+To understand loading examples, include both the source (Iceberg) schema and the target (TigerGraph) schema.
+
+The following example shows a simplified Iceberg table and its equivalent TigerGraph vertex schema.
+
+Example Iceberg table `iceberg_connector.person`:
+
+[cols="1,1,2", options="header"]
+|===
+| Column | Type | Description
+
+| personId | STRING | Unique person ID
+| id | STRING | Alternate ID
+| gender | STRING | Person gender
+|===
+
+Corresponding TigerGraph vertex:
+
+[source,gsql]
+----
+CREATE VERTEX person (
+  PRIMARY_ID personId STRING,
+  id STRING,
+  gender STRING
+) WITH PRIMARY_ID_AS_ATTRIBUTE="true";
+----
+
+== Set Up Your Loading Job
+
+Create a loading job to extract Iceberg data and map it to vertices/edges.
+
+=== Quick Loading Job Example
+[source,gsql]
+----
+CREATE LOADING JOB loadSocialNet FOR GRAPH socialNet {
+  DEFINE FILENAME f1 = "$s1:SELECT personId, id, gender FROM iceberg_connector.person WHERE gender = 'male'";
+  DEFINE FILENAME f2 = "$s1:SELECT fromF, toF FROM iceberg_connector.friend";
+  DEFINE FILENAME f3 = "$s1:SELECT postId, subject, postTime FROM iceberg_connector.post WHERE postId > 50";
+  DEFINE FILENAME f4 = "$s1:SELECT fromP, toP FROM iceberg_connector.posted";
+  DEFINE FILENAME f5 = "$s1:SELECT fromL, toL, actionTime FROM iceberg_connector.liked";
+  LOAD f1 TO VERTEX person VALUES ($0, $1, $2);
+  LOAD f2 TO EDGE friend VALUES ($0, $1);
+  LOAD f3 TO VERTEX post VALUES ($0, $1, $2);
+  LOAD f4 TO EDGE posted VALUES ($0, $1);
+  LOAD f5 TO EDGE liked VALUES ($0, $1, $2);
+}
+----
+
+`iceberg_connector` is a user-defined namespace/alias from your Iceberg catalog — it is not a built-in TigerGraph object. Use the names as they exist in your Iceberg catalog.
+
+=== Performance Tuning
+
+You can set `tasks.max` either in the `DATA_SOURCE` JSON (applies as a default) or per `FILENAME` (overrides the default for that filename).
+
+*Example — set a default in the data source (good for small/medium workloads):*
+
+[source,gsql]
+----
+CREATE DATA_SOURCE s1 = """
+{
+  "type":"iceberg",
+  "iceberg.catalog.type":"rest",
+  "iceberg.catalog.uri":"http://rest:8181",
+  "aws.s3.endpoint":"http://minio:9002",
+  "aws.s3.access_key":"admin",
+  "aws.s3.secret_key":"password",
+  "aws.client.region":"us-east-1",
+  "tasks.max": 2
+}""" FOR GRAPH socialNet
+----
+
+*Example — override per `FILENAME` for heavy load:*
+
+[source,gsql]
+----
+CREATE LOADING JOB loadPersonIceberg FOR GRAPH socialNet {
+  DEFINE FILENAME f1 = "$s1:{query: 'SELECT personId, id, gender FROM iceberg_connector.person', tasks.max: 8}";
+  LOAD f1 TO VERTEX person VALUES ($0, $1, $2);
+}
+----
+
+Adjust the `tasks.max` parameter for optimal performance:
+
+* Use `2` for smaller datasets to reduce overhead.
+* Use `8` or higher for large datasets to increase throughput.
+
+== Define Your Data Files
+
+Define `FILENAME` variables that point to Iceberg queries, inline JSON, or config files.
+Use *unique names* for each `FILENAME` to avoid conflicts.
+
+[source,gsql]
+----
+DEFINE FILENAME query_person_1 = "$s1:SELECT personId, id, gender FROM iceberg_connector.person";
+DEFINE FILENAME query_person_2 = "$s1:{query: 'SELECT personId, id, gender FROM iceberg_connector.person WHERE gender = ''male''', tasks.max: 2}";
+----
+
+[NOTE]
+====
+`query_person_1` and `query_person_2` are unique names to prevent reuse or accidental overwrite.
+====
+
+=== File Settings
+
+[cols="1,2,1,1",options="header"]
+|===
+| Configuration Property | Description | Required | Default
+| query | SQL query used to fetch data from Iceberg tables. | Yes | —
+| tasks.max | Max parallel tasks for this filename (overrides data-source default). | No | 1
+| batch.size | Rows per batch when polling. | No | 3000
+|===
+
+== Map Data to Your Graph
+
+Map query columns to vertex/edge attributes using `LOAD`. Column indexes start at `$0`.
+
+[source,gsql]
+----
+LOAD query_person_1 TO VERTEX person VALUES ($0, $1, $2) USING separator="|";
+----
+
+Apply transformations (for example, `SPLIT`, `TO_INT`) either in the query or in the `LOAD` statement.
+
+== Start the Loading Process
+
+Run the loading job. You can override filename definitions at runtime using the `USING` clause.
+
+[source,gsql]
+----
+RUN LOADING JOB loadPerson USING f1="$s1:SELECT personId, id, gender FROM iceberg_connector.person WHERE gender = 'female'"
+----
+
+=== Continuous Loading
+
+* One-time load: `EOF="true"` (default).
+* Continuous load: `EOF="false"` and set `poll.interval.ms` to control polling frequency.
+
+== Monitor and Control Your Job
+
+Use these commands to manage and inspect loading jobs:
+
+[source,gsql]
+----
+SHOW LOADING STATUS ALL
+ABORT LOADING JOB job_id
+RESUME LOADING JOB job_id
+SHOW LOADING ERROR job_id
+----
+
+For historical job details, use `SHOW LOADING STATUS job_id`. Use `SHOW LOADING ERROR job_id` to view the problematic input lines.
+
+=== Manage Multiple Jobs
+See xref:loading-concurrency.adoc[Loading Job Concurrency] for guidance on running multiple concurrent jobs.
+
+[NOTE]
+====
+Authentication for REST Catalogs isn’t supported in TigerGraph 4.3.
+====
