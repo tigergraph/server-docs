@@ -3,7 +3,8 @@
 
 This page lists all ports that TigerGraph uses.
 
-TigerGraph requires three external ports to be exposed: 22, 9000, and 14240. All other ports are used for internal communication within a cluster and must be open within the cluster.
+TigerGraph requires two external ports to be exposed: 22 and 14240. 
+All other ports, including port 9000 (internal since version 4.1), are used for internal communication within a cluster and must be open within the cluster.
 
 [options="header"]
 |===
@@ -49,7 +50,7 @@ TigerGraph requires three external ports to be exposed: 22, 9000, and 14240. All
 |
 |9000
 |Port of RESTPP to accept upstream Nginx requests
-|External use only
+|Internal use only since version 4.1. Do not use this port for external or custom applications to avoid conflicts.
 |9166
 |gRPC server port for Informant
 |
