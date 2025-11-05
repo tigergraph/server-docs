@@ -4,11 +4,10 @@
 :description: Monitor Cross-Region Replication (CRR) status and metrics collection in TigerGraph.
 :sectnums:
 
-Starting from version 4.3, TigerGraph Disaster Recovery (DR) clusters support monitoring Cross-Region Replication (CRR) status and metrics. This enhancement enables administrators to track replication and replay progress, identify potential delays, and integrate monitoring data with external observability systems.
-
-
+Starting from version 4.3, the TigerGraph Disaster Recovery (DR) cluster supports Cross-Region Replication (CRR) status, metrics collection and query capabilities. 
 
 The CRR metrics collection interval can be configured using the following command (default: `60s`):
+
 
 [source,console]
 ----
@@ -25,13 +24,14 @@ TigerGraph introduces a new `gadmin` sub-command to display detailed CRR metrics
 gadmin crr status [flags]
 ----
 
-Displays comprehensive CRR status information, including:
+The command provides comprehensive CRR status information, including:
 
 * Overall CRR system status
 * Topic replication and replay lag
 * MirrorMaker 2 connector status
 
 === Flags
+The following flags can be used with the `gadmin crr status` command.
 
 |===
 | Flag | Description
@@ -43,8 +43,8 @@ Displays comprehensive CRR status information, including:
 
 
 [#topic_metrics]
-=== Topic Metrics Definition
-
+=== CRR Topic Metrics 
+The following table provides the definitions of topic metrics.
 
 |===
 | Field Name | Description | Notes | Verbose
@@ -75,7 +75,8 @@ CRR topic metrics can also be collected in **OpenMetrics** format using the foll
 curl http://localhost:14240/informant/metrics
 ----
 
-=== OpenMetrics Definition
+The following table defines the CRR metrics available in OpenMetrics format.
+
 
 |===
 | Type | Name | Label | Description
@@ -98,11 +99,11 @@ curl http://localhost:14240/informant/metrics
 
 [NOTE]
 ====
-TigerGraph provides raw metrics for CRR topic replication and replay, but does not include built-in alerting capabilities.
+TigerGraph provides raw metrics for CRR topic **Replication** and **Replay**, but does not include built-in alerting.
 
 Replication and replay lag may vary depending on cluster configuration, network bandwidth, and latency. Users are advised to define alerting rules in their own monitoring systems (for example, Prometheus).
 
-A CRR topic can be considered abnormal if any of the following conditions occur:
+For example, a CRR topic can be considered abnormal if any of the following conditions occur:
 
 * `tigergraph_crr_replication_lag_records > 20`
 * `tigergraph_crr_replay_lag_records > 20`
