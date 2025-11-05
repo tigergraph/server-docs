@@ -47,6 +47,8 @@ gadmin crr stop --promote --force -y
 ----
 
 Use this option only during emergencies. Forced promotion may lead to data loss and will require a full backup and restore to re-establish the DR cluster.
+An *emergency* refers to scenarios where the Primary Cluster is not available or has experienced a critical failure, and requires immediate promotion of the Disaster Recovery (DR) cluster to Primary to maintain service continuity.
+
 
 [NOTE]
 ====
@@ -83,7 +85,7 @@ Validation outcomes:
 * **Validation passes:**
 Clusters were fully synchronized. A fast-switch occurs, converting the cluster to a DR instance instantly without data transfer.
 * **Validation fails:**
-The failover occurred during replication lag (e.g., when `--force` was used). A fast-switch is not possible, and a full backup and restore is required.
+The failover occurred during replication lag (e.g., when `--force` was used or when new data is inserted into the old Primary Cluster after the failover). A fast-switch is not possible, and a full backup and restore is required.
 
 === Method 1: Fast-Switch Using a Replication Checkpoint (Recommended)
 
