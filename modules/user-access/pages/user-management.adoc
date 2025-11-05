@@ -143,15 +143,16 @@ For more information, see xref:security:login-protection.adoc[]
 If the user running the command has the `READ_USER` privilege, information on all users is displayed.
 Otherwise, only the current user's information is displayed.
 
-== View privileges of a user
+== View privileges of a user or proxy group
 
-Users with the `READ_USER` privilege in a scope can view the RBAC privileges of the users in that scope.
+Users with the `READ_USER` privilege in a scope can view the RBAC privileges of users or proxy groups within that scope.
 
 === Syntax
 
 [source,gsql]
 ----
 SHOW PRIVILEGE ON USER <username> (, <username>)*
+SHOW PRIVILEGE ON USER <proxygroup> (, <proxygroup>)*
 ----
 
 === Required privilege
@@ -160,14 +161,19 @@ SHOW PRIVILEGE ON USER <username> (, <username>)*
 
 === Procedure
 
-. From the GSQL shell, run the `SHOW PRIVILEGE ON USER` command :
+. From the GSQL shell, run the `SHOW PRIVILEGE ON USER` command with either a username or proxy group name:
 +
 [source,gsql]
 ----
 GSQL > SHOW PRIVILEGE ON USER tigergraph
 ----
+or
+[source,gsql]
+----
+GSQL > SHOW PRIVILEGE ON USER proxy_group1
+----
 
-The above command will show the privileges of user `tigergraph`:
+The command displays the privileges assigned to the specified user or proxy group.
 
 [source,text]
 ----
@@ -198,10 +204,22 @@ User: "tigergraph"
     ACCESS_TAG
 ----
 
+When you run the command for a proxy group, it displays the privileges granted to that proxy group.
+
+[source,text]
+----
+ProxyGroup: "proxy_group1"
+  - Global Privileges:
+    READ_DATA
+    WRITE_DATA
+    READ_USER
+    READ_PROXYGROUP
+----
+
 To view xref:access-control-model.adoc#_access_control_lists[ACL privileges] of a user, see xref:acl-management.adoc#_view_acl_privileges_of_a_user_[View ACL privileges of a user].
 
 [#_grant_a_role_to_a_user]
-== Grant a role to a user/proxy group
+== Grant a role to a user or proxy group
 
 === Syntax
 
