@@ -1,1 +1,223 @@
 = SSO with Kerberos
+:description: Instructions to set up Kerberos-based Single Sign-On (SSO) for TigerGraph.
+
+== Overview
+
+TigerGraph supports *Kerberos-based Single Sign-On (SSO)* starting from version *4.3.0*.
+
+This feature allows users to log in to *GraphStudio* and *Admin Portal* without re-entering their credentials, as authentication is handled by a Kerberos Key Distribution Center (KDC).
+
+Kerberos provides secure, ticket-based authentication using symmetric-key cryptography.
+It integrates with enterprise KDC systems such as *Active Directory* or *MIT Kerberos*, enabling organizations to use their existing Kerberos infrastructure for user authentication.
+
+TigerGraph supports web-based Kerberos SSO through *SPNEGO (Simple and Protected GSSAPI Negotiation Mechanism)*.
+
+[NOTE]
+====
+Kerberos SSO can coexist with other SSO methods (SAML, OIDC, LDAP), but only one can be active at a time.
+====
+
+== Prerequisites
+
+* A configured Kerberos environment with access to a KDC (Active Directory or MIT Kerberos).
+* A service principal created for TigerGraph, for example:
++
+`HTTP/tg-host.example.com@REALM`
+* A Keytab file containing the service credentials.
+* A valid Kerberos configuration file (`krb5.conf`).
+* GSQL authentication is enabled. See xref:user-access:enabling-user-authentication.adoc[Enabling User Authentication].
+
+== How Kerberos SSO Works in TigerGraph
+
+1. The client (usually a browser) obtains a *Ticket Granting Ticket (TGT)* from the KDC.
+2. The client requests a *Service Ticket (ST)* for the TigerGraph service principal.
+3. The browser sends this ticket to the TigerGraph server for validation.
+4. TigerGraph validates the ticket with the KDC and grants access.
+5. If successful, the user is logged in to GraphStudio or Admin Portal automatically.
+
+== Configure Kerberos in TigerGraph
+
+You can configure Kerberos SSO using either *gadmin CLI* or the *Admin Portal*.
+
+=== Using gadmin CLI
+
+Use the following configuration parameters to enable and set up Kerberos SSO:
+
+|===
+|Configuration | Description | Default
+
+|`Security.Kerberos.EnableSSO`
+|Enables Kerberos-based SSO.
+|`false`
+
+|`Security.Kerberos.Keytab`
+|Specifies the content or path to the Keytab file containing service credentials. Use `@/path/to/keytab` to read from a file.
+|Empty
+
+|`Security.Kerberos.Krb5Config`
+|Specifies the content or path to the `krb5.conf` file. Use `@/path/to/krb5.conf` to read from a file.
+|Empty
+
+|`Security.Kerberos.Principal`
+|The service principal name used by TigerGraph. Example: `HTTP/tg-host.example.com@REALM`
+|Empty
+
+|`Security.SSO.EnableDefaultRole`
+|If true, assigns the `globalObserver` role to Kerberos users who match no proxy rule.
+|`false`
+|===
+
+.Example
+[,console]
+----
+gadmin config set Security.Kerberos.EnableSSO true
+gadmin config set Security.Kerberos.Principal HTTP/tg-host.example.com@EXAMPLE.COM
+gadmin config set Security.Kerberos.Keytab @/opt/tigergraph/config/tigergraph.keytab
+gadmin config set Security.Kerberos.Krb5Config @/etc/krb5.conf
+gadmin config apply
+----
+
+[NOTE]
+====
+The Keytab and krb5.conf files are stored internally in TigerGraph’s configuration store.
+You do not need to copy them manually across nodes.
+A restart is not required — GSQL automatically refreshes the configuration in memory.
+====
+
+=== Using the Admin Portal
+
+You can also enable Kerberos SSO from the Admin Portal.
+
+. Open the Admin Portal and go to **Management → Security → SSO**.
+. Turn on the **Enable Kerberos SSO** toggle.
+. Upload or specify the following:
+.. Kerberos Keytab file
+.. krb5.conf file
+.. Service principal name
+. Click **Save**.
+
+TigerGraph applies the configuration immediately. A restart is not required.
+
+== Verify Kerberos SSO Configuration
+
+You can verify the Kerberos configuration status using either `gadmin` or a REST API.
+
+=== Using gadmin
+[,console]
+----
+gadmin config list Security.Kerberos.*
+----
+
+=== Using REST API
+
+TigerGraph provides a unified SSO API to check which SSO methods are enabled:
+
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
+----
+curl -X GET http://<tigergraph-host>:14240/gsql/v1/sso/authnrequest
+----
+--
+Response::
++
+--
+[source,json]
+----
+{
+  "saml": {...},
+  "oidc": {...},
+  "krb5": true
+}
+----
+--
+====
+
+If `"krb5": true` appears in the response, Kerberos SSO is enabled.
+
+== User Role and Group Mapping
+
+Kerberos manages *authentication*, while TigerGraph handles *authorization* using proxy groups and roles.
+
+When a Kerberos user logs in, TigerGraph reads their Kerberos principal (for example, `alice/admin@example.com`) and checks proxy group rules to assign roles.
+
+You can match principals in two ways:
+
+* *Exact match*
++
+`principal=alice/admin@example.com`
+
+* *Regex match*
++
+`principal=.*/admin@example.com`
+
+.Example
+[,console]
+----
+GSQL > CREATE GROUP AdminGroup PROXY "principal=alice/admin@example.com"
+GSQL > GRANT ROLE superuser TO AdminGroup
+----
+
+If a Kerberos user does not match any proxy rule:
+
+* When `Security.SSO.EnableDefaultRole` = `true`, the user gets the `globalObserver` role.
+* When set to `false`, the user can still log in to GraphStudio but will have no privileges.
+
+[NOTE]
+====
+These proxy rules follow the same syntax and logic used in SAML and OIDC SSO setups.
+====
+
+== Test Kerberos Authentication
+
+Once Kerberos is configured, users can test authentication via REST API or browser.
+
+=== Test via REST API
+
+Ensure you have a valid Kerberos ticket using `kinit`, then run:
+
+[source.wrap,bash]
+----
+curl --negotiate --user : http://<tigergraph-host>:14240/gsql/v1/users
+----
+
+If authentication succeeds, this command returns the user information.
+
+=== Test via GraphStudio
+
+* Open GraphStudio or Admin Portal in a browser where Kerberos is active (for example, Chrome or Edge with Windows integrated authentication).
+* If Kerberos SSO is enabled, you will be logged in automatically without entering credentials.
+
+== Troubleshooting
+
+|===
+|Issue | Description
+
+|Authentication fails
+|Check if your Kerberos ticket has expired (`klist`). Renew it with `kinit`.
+
+|User logs in with no privileges
+|User’s principal does not match any proxy rule and `EnableDefaultRole=false`. Add a matching proxy group or set the default role to true.
+
+|REST API test fails
+|Ensure your curl version supports `--negotiate` and that Kerberos libraries are installed.
+
+|KDC connection error
+|Verify that the TigerGraph host can reach the KDC defined in krb5.conf.
+|===
+
+To enable debug logs for Kerberos authentication:
+[,console]
+----
+gadmin log gsql
+----
+Kerberos debug information is included when GSQL debug logging is active.
+
+[NOTE]
+====
+* Only one SSO type (Kerberos, SAML, OIDC, or LDAP) can be active at a time.
+* Kerberos SSO is supported in both REST API and the Admin Portal (web UI).
+====
