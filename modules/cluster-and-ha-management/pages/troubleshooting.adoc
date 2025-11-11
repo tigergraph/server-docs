@@ -9,21 +9,56 @@ If the problem persists, please open a support ticket.
 
 == Check data consistency between primary and DR
 
-To check data consistency, first make sure that the vertex and edge count is matching between primary and DR.
-You can check that in different ways:
+To check data consistency, first make sure that the vertex and edge counts match between the primary and DR clusters.
+You can check this in several ways:
 
-* Run a count query to check vertex count and edges and compare them between primary and DR.
-If you don't have a count query handy you can use the built-in endpoint reported xref:API:built-in-endpoints.adoc#_list_vertices[here] to list a specific vertex count
-* Check output of `gstatusgraph` command vertex count should match between primary and DR
+* Run a count query to compare the vertex and edge counts between the primary and DR.
+  If you don’t have a count query ready, you can use the built-in endpoint listed xref:API:built-in-endpoints.adoc#_list_vertices[here] to retrieve a specific vertex count.
+* Use the output of the `gstatusgraph` command. The vertex counts should match between the primary and DR.
 
-If you see inconsistencies, it's likely you are facing some issues with CRR.
+If you see inconsistencies, it’s likely there are issues with Cross-Region Replication (CRR).
 
-If you do this check while loading data, it expected that vertex and edge count will not match as DR will be catching up in the meantime.
-If that's your case, you can run multiple times the above query, API or command on DR and see if they are increasing, if that's the case then there is no issue.
+If you perform this check while data is loading, it’s expected that the vertex and edge counts may not match, as the DR will still be catching up.
+In that case, repeat the above checks multiple times on the DR to confirm that the counts are increasing. If they are, replication is functioning as expected.
 
-Another way to validate data integrity between primary and DR is to check `lastSeqId` which is the last replayed replica by GSQL from Kafka Metadata topic.
-If no data loading is happening on primary, the `lastSeqId` on primary and DR must match.
-To check that, run `curl -u tigergraph:<tigergraph_password> localhost:14240/gsql/v1/replication`
+Another way to validate data consistency between the primary and DR is to check the `lastSeqId`, which represents the last record replayed by GSQL from the Kafka Metadata topic.
+If no data loading is happening on the primary, the `lastSeqId` values on the primary and DR should match.
+
+In 4.2, you can use the following API to check the current replication status:
+
+[tabs]
+====
+Request::
++
+--
+[source,bash]
+----
+curl -u tigergraph:<tigergraph_password> localhost:14240/gsql/v1/internal/replication
+----
+--
+Response::
++
+--
+[source.wrap, json]
+----
+{
+  "numChangesToBeReplicated": 0,
+  "lastSeqId": 56,
+  "topicOffset": 78,
+  "error": false,
+  "message": ""
+}
+----
+--
+====
+
+* `lastSeqId`: The last sequence ID replayed by GSQL from the Kafka Metadata topic.
+* `topicOffset`: The current Kafka topic offset.
+** On the *Primary*, it represents the producer offset.  
+** On the *DR*, it represents the consumer offset.
+* `numChangesToBeReplicated`: The number of remaining changes that still need to be replicated.
+
+When replication is up to date, the `lastSeqId` and `topicOffset` values on the primary and DR should match.
 
 == Isolate the issue to a specific layer
 
