@@ -63,7 +63,7 @@ Use the following configuration parameters to enable and set up Kerberos SSO:
 |Empty
 
 |`Security.SSO.EnableDefaultRole`
-|If true, assigns the `globalObserver` role to Kerberos users who match no proxy rule.
+|If true, assigns the `globalObserver` role to SSO users (including Kerberos, SAML, OIDC, and LDAP) who match no proxy rule.
 |`false`
 |===
 
@@ -152,7 +152,7 @@ You can match principals in two ways:
 
 * *Regex match*
 +
-`principal=.*/admin@example.com`
+regex: principal=.*/admin@example.com
 
 .Example
 [,console]
