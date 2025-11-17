@@ -109,16 +109,15 @@ All `deleted vid` deltas with an origin `tid` smaller than this value (excluding
 Note: The `idmap` is cached in memory, and if the map size is small (configured in `GPE.BasicConfig.Env` as `DIMCacheLimitInMB`, set at `30MB`), it is not flushed to disk.
 Consequently, this `tid` may lag behind in such cases.
 
-¦`purged_deletedvid_curr_tid`
-¦ Periodically, TigerGraph purges the entries in RocksDB based on the `safe_persistent_tid`.
-This is because the CDC already used some of the `vid-uid` entries and wrote to external Kafka, hence we don’t need these entries anymore.
+¦ `purged_deletedvid_curr_tid`
+¦ Shows the transaction ID (`tid_origin`) of the latest purged "deleted vertex ID" record.  
+TigerGraph regularly removes old entries from RocksDB based on the `safe_persistent_tid`.  
 
-¦ `purged_deletedvid_next_tid`
-¦ Purges `deleted vid` delta’s `tid_origin`.
-The `tid_orgin` represents the `tid` of origin delta that contains the vertex deletion message.
-All `deleted vid-uid` entries with `tid_orgin` smaller than this already have been purged from RocksDB.
+These entries are no longer needed because the Change Data Capture (CDC) process has already used them and sent the data to external Kafka.  
+All "deleted vid–uid" entries with a smaller `tid_origin` value have already been purged from RocksDB.
 
-Configure this with `GPE.BasicConfig.Env: DIMPurgeIntervalInMin`), and update this `tid` if purging is actually performed.
+By default, this purging task runs every 30 minutes. You can change the interval by updating `GPE.BasicConfig.Env:DIMPurgeIntervalInMin`.
+
 |===
 
 == CDC Reset
