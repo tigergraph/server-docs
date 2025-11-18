@@ -266,6 +266,8 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Fixed issue where JWT token generation could become unresponsive during schema change operations caused by an unnecessary lock (GLE-11726).
 * Fixed issue where legacy token validation occasionally failed with a `NoSuchElementException` error (GLE-11714).
 * Fixed issue where engine logs displayed lower-than-actual CPU utilization in Docker and Kubernetes environments (CORE-5320).
+* Fixed issue where a user with `querywriter` permissions encountered a `query not found` error when attempting to Save As a query in GraphStudio (APPS-4066).
+* Fixed issue where a user with the `CREATE_QUERY` privilege failed to create a new query in GraphStudio, reporting a `query not found` error (APPS-4002).
 
 ==== Improvements
 
