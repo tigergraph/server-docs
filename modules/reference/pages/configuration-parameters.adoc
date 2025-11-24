@@ -530,11 +530,14 @@ This command is interactive and allows you to add, remove, or modify array items
 * Using `gadmin config set`:
 When using this command, wrap the entire JSON array in *single quotes* so the shell passes it as one argument.
 
-a|
-[source,bash]
-----
-gadmin config set GSQL.UDF.Policy.HeaderAllowlist '["stdlib.h","string","tuple","vector","list","deque","arrays","forward_list","queue","priority_queue","stack","set","multiset","map","multimap","unordered_set","unordered_multiset","unordered_map","unordered_multimap","iterator","sstream","algorithm","math.h"]'
-----
+|`gadmin config set GSQL.UDF.Policy.HeaderAllowlist '["stdlib.h", "string", "tuple",
+"vector", "list", "deque", "arrays", "forward_list",
+"queue", "priority_queue", "stack",
+"set", "multiset", "map", "multimap",
+"unordered_set", "unordered_multiset", "unordered_map", "unordered_multimap",
+"iterator",
+"sstream",
+"algorithm", "math.h"]'`
 
 |GSQL.UserInfoLimit.TokenSizeLimit |The max number of tokens allowed
 |`60000`
