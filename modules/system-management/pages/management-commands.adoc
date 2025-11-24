@@ -361,7 +361,11 @@ Global Flags:
 
 ==== gadmin config entry
 
-Change a configuration entry.
+Configure configuration entries *interactively*.
+
+This command is especially useful for parameters that accept *lists or arrays*, because you can add, remove, and modify entries step-by-step without needing to format JSON manually.
+
+You may also use patterns to filter the entries you want to configure.
 
 [source,console]
 ----
@@ -480,6 +484,22 @@ Global Flags:
 
 [#_gadmin_config_set]
 ==== gadmin config set
+
+Configure a configuration entry in a *non-interactive* way.
+
+Use this command when you want to set a value directly by providing the name and value in one line.
+
+[IMPORTANT]
+====
+For parameters that accept an *array*, wrap the entire JSON array in *single quotes* so the shell treats it as a single argument.
+
+Example:
+[source,bash]
+----
+gadmin config set GSQL.UDF.Policy.HeaderAllowlist \
+'["stdlib.h","string","tuple","vector","list","deque","arrays","forward_list","queue","priority_queue","stack","set","multiset","map","multimap","unordered_set","unordered_multiset","unordered_map","unordered_multimap","iterator","sstream","algorithm","math.h"]'
+----
+====
 
 [source,console]
 ----
