@@ -517,15 +517,22 @@ in seconds |`10800`
 |GSQL.UDF.Policy.Enable | Whether to enforce a policy on the contents of UDF files (see xref:security:index.adoc#_udf_file_scanning[UDF file scanning]).
 |`true`
 
-|GSQL.UDF.Policy.HeaderAllowlist | A default set of C{plus}{plus} headers that are allowed to be included in a UDF file.
-|`["stdlib.h", "string", "tuple",
-"vector", "list", "deque", "arrays", "forward_list",
-"queue", "priority_queue", "stack",
-"set", "multiset", "map", "multimap",
-"unordered_set", "unordered_multiset", "unordered_map", "unordered_multimap",
-"iterator",
-"sstream",
-"algorithm", "math.h"]`
+|GSQL.UDF.Policy.HeaderAllowlist
+a|A list of allowed C++ header files for UDF development.
+This parameter accepts an array.
+You can update it in two ways:
+
+* Using `gadmin config entry`:
+This command is interactive and allows you to add, remove, or modify array items step-by-step.
+
+* Using `gadmin config set`:
+When using this command, wrap the entire JSON array in *single quotes* so the shell passes it as one argument.
+
+a|
+[source,bash]
+----
+gadmin config set GSQL.UDF.Policy.HeaderAllowlist '["stdlib.h","string","tuple","vector","list","deque","arrays","forward_list","queue","priority_queue","stack","set","multiset","map","multimap","unordered_set","unordered_multiset","unordered_map","unordered_multimap","iterator","sstream","algorithm","math.h"]'
+----
 
 |GSQL.UserInfoLimit.TokenSizeLimit |The max number of tokens allowed
 |`60000`
