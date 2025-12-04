@@ -1,0 +1,258 @@
+= Node Replacement (V2)
+:description: This page describes how to replace a node in a TigerGraph high-availability (HA) cluster using the Node Replacement V2 workflow.
+
+Node Replacement V2 provides a safe and consistent way to replace a cluster node with minimal downtime.
+Compared to Node Replacement V1, V2 no longer requires a full system-wide service restart.
+Only the local services on the node being replaced are restarted, which significantly reduces downtime.
+
+This workflow applies to clusters installed using *hostname-based installation*.
+
+Node Replacement V2 is supported in TigerGraph *3.10.1 and later*.
+
+== Purpose of Node Replacement
+Use Node Replacement V2 when:
+
+* A machine running a TigerGraph node becomes unreliable or fails.
+* You need to migrate a node to new hardware or a new instance.
+* You want to replace a node without interrupting the entire cluster.
+* You want to minimize downtime by using a load balancer.
+
+Node Replacement is intended for node-level failures or maintenance tasks.
+If your goal is to permanently resize the cluster, consider xref:expand-a-cluster.adoc[cluster expansion] or xref:shrink-a-cluster.adoc[cluster shrinking].
+
+== Prerequisites
+Before replacing a node:
+
+* The cluster must be configured for high availability (replication factor ≥ 2).
+* All other nodes in the cluster must have their services in `RUNNING` status.
+* Hostname-based installation must be used.
+* The replacement machine must be prepared with the correct OS, configuration, and AWS credentials (if applicable).
+* If using AWS Route 53, ensure DNS updates are allowed for hostnames.
+
+If any service is down on the remaining nodes and cannot be restarted, please open a support ticket.
+
+== Workflow
+
+[WARNING]
+====
+Stopping services on the exiting node will interrupt any traffic sent directly to it.
+Make sure clients are not using this node before you continue.
+====
+
+Node Replacement V2 follows this sequence:
+
+. Stop local services on the node to be replaced.
+. Update DNS so the node's hostname points to the new machine.
+. Detach the storage volume from the old node.
+. Attach the volume to the new node.
+. Prepare the new machine (users, environment files, directories).
+. Start local TigerGraph services on the new node.
+. Verify all services reach `RUNNING`.
+
+Optionally, using an Application Load Balancer (ALB) can reduce downtime even further.
+
+[[replace-without-lb]]
+== Replace a Node Without a Load Balancer
+Use this method when clients connect directly to a node using its hostname.
+
+=== Preparation
+Before starting:
+
+* Ensure client or application traffic is routed away from the node being replaced.
+* Back up user environment files on the exiting node:
++
+[,console]
+----
+cp -pr ~/.ssh/ /data/backup/
+cp -p ~/.tg.cfg /data/backup
+cp -p ~/.bashrc /data/backup
+cp -p /etc/security/limits.d/98-tigergraph.conf /data/backup
+----
+
+[[on-exiting-node]]
+=== On the Exiting Node
+
+. Stop local services:
++
+[,console]
+----
+gadmin stop all --local -y
+----
+
+. Update the DNS record to point the node's hostname to the new machine's private IP.
+For AWS, use a Route 53 UPSERT action.
+
+. Unmount and detach the data volume:
++
+[,console]
+----
+sudo umount /data
+aws ec2 detach-volume --volume-id <volume-id>
+----
+
+[[on-new-node]]
+=== On the New Node
+
+. Attach the existing volume:
++
+[,console]
+----
+aws ec2 attach-volume --volume-id <volume-id> --instance-id <new-instance-id> --device /dev/sdf
+----
+
+. Mount the volume:
++
+[,console]
+----
+sudo mkdir -p /data
+sudo mount /dev/nvme1n1 /data
+----
+
+. Recreate and configure the TigerGraph user:
++
+[,console]
+----
+sudo useradd tigergraph
+sudo passwd tigergraph
+cp -r /data/backup/.ssh/ /home/tigergraph/
+cp /data/backup/.bashrc /home/tigergraph/
+cp /data/backup/.tg.cfg /home/tigergraph/
+sudo cp /data/backup/98-tigergraph.conf /etc/security/limits.d/
+----
+
+. Verify that DNS resolves the hostname to the new node:
++
+[,console]
+----
+nslookup <hostname>
+----
+
+. Start local services:
++
+[,console]
+----
+gadmin start all --local
+----
+
+Wait until all services reach `RUNNING`.
+The node has now been replaced.
+
+== Replace a Node With an Application Load Balancer
+
+Using an AWS Application Load Balancer (ALB) ensures traffic is routed only to healthy nodes during the replacement process.
+This minimizes or eliminates query failures and reduces downtime.
+
+=== Create an Application Load Balancer
+
+. Navigate to EC2:
++
+image::enter-into-ec2.png[]
+
+. Open the *Load Balancers* section:
++
+image::load-balancer-side-panel.png[]
+
+. Choose *Create load balancer*:
++
+image::create-load-balancer.png[]
+
+. Select *Application Load Balancer*:
++
+image::choose-application-load-balancer.png[]
+
+. Choose *Internal* and *IPv4*:
++
+image::internal-ipv4-selection.png[]
+
+=== Configure the Target Group
+
+. In the target group creation page, choose **IP addresses** and give the target group a name:
++
+image::target-group-ip-addresses.png[]
+
+. Set the target port to the RESTPP port:
++
+[,console]
+----
+gadmin config get restpp.nginxport
+----
+
+. Configure the health check path:
++
+image::health-check-echo.png[]
+
+Use `/echo` as the health check endpoint.
+
+=== Why Health Check Interval Matters
+If the health check interval is too long, the ALB may continue sending traffic to the node even after its services have stopped.
+
+For example:
+
+* Interval = 30 seconds
+* Services stop at second 31
+* ALB still considers the node healthy until the next check
+
+Set a shorter interval (for example, 5 seconds) to reduce routing delay.
+
+== Node Replacement with an ALB
+Once the ALB is configured:
+
+. Send all client traffic to the ALB's DNS name.
+. Follow the same replacement steps described in:
+* <<on-exiting-node>>
+* <<on-new-node>>
+
+. The ALB automatically stops routing traffic to the node once its health check fails.
+. After the new node comes online, the ALB routes traffic to it.
+
+=== Request Routing Diagram
+A simplified overview of how the ALB handles traffic:
+
+....
+           Client Requests
+                  |
+                  v
+       +-----------------------+
+       |  Application LB (ALB) |
+       +-----------------------+
+          |        |        |
+          v        v        v
+       Node A   Node B   New Node (after replacement)
+....
+
+== Verification
+When replacement completes:
+
+* All services on the new node should show `RUNNING`.
+* DNS should resolve the node hostname to the new machine.
+* The ALB target group should show the new node as **healthy**.
+* Queries routed through the ALB should succeed.
+
+== Troubleshooting
+
+If the node replacement process does not behave as expected, use the following checks to identify and resolve common issues.
+
+* Verify that all other nodes in the cluster are healthy (`gadmin status -v`).
+* Confirm that the data volume is correctly attached and mounted on the new node.
+* Ensure the replacement node has the correct system configuration, user environment files, and permissions.
+* Check that DNS changes have propagated:
++
+[,console]
+----
+nslookup <hostname>
+----
+
+If queries are still failing through the load balancer, review the following common issues and resolutions:
+
+* *Load balancer continues routing traffic to the old node*
++
+Lowering the health check interval (for example, to 5 seconds) helps the ALB detect the node change faster.
+However, shorter intervals send more frequent health checks to RESTPP, which may add minor overhead in high-QPS environments.
+
+* *The new node remains unhealthy in the target group*
++
+Ensure the data volume is mounted under `/data`, the RESTPP port matches the target group configuration, and all services on the new node are running.
+
+* *DNS does not update*
++
+Check the TTL value on the Route 53 record, verify the correct hostname was updated (UPSERT), and confirm the change with `nslookup`.
