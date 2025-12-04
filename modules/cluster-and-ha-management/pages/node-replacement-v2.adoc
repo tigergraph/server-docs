@@ -7,7 +7,7 @@ Only the local services on the node being replaced are restarted, which signific
 
 This workflow applies to clusters installed using *hostname-based installation*.
 
-Node Replacement V2 is supported in TigerGraph *4.1.1 and later*.
+Node Replacement V2 is supported in TigerGraph *3.10.1 and later*.
 
 == Purpose of Node Replacement
 Use Node Replacement V2 when:
@@ -246,8 +246,8 @@ If queries are still failing through the load balancer, review the following com
 
 * *Load balancer continues routing traffic to the old node*
 +
-The health check interval may be too long, or the old node is still marked healthy.
-Lower the interval (for example, to 5 seconds) and confirm the target group reflects the correct health state.
+Lowering the health check interval (for example, to 5 seconds) helps the ALB detect the node change faster.
+However, shorter intervals send more frequent health checks to RESTPP, which may add minor overhead in high-QPS environments.
 
 * *The new node remains unhealthy in the target group*
 +
