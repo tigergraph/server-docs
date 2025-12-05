@@ -371,6 +371,14 @@ bucket counts. |`5`
 |GPE.StopTimeoutMS |Stop GPE timeout. Default 300000 (300s) |`200000`
 
 |GPE.VertexDataMemoryLimit |The memory limit for vertex data in the topology.|`-1`
+
+|GPE.RetentionSizeGB
+|The maximum size (in GB) of Kafka data used by the GPE before triggering Kafka retention.  
+Retention begins when usage approaches this value.  
+If the GPE’s Kafka data grows beyond this limit, *graph updates will be disabled* until space is freed.  
+Default: `40`.
+|`40`
+
 |===
 
 == GSE
@@ -417,6 +425,13 @@ responsive after the TTL. |`30`
 |GSE.RLSPort |The serving port of GSE RLS |`8900`
 
 |GSE.StopTimeoutMS |Stop GSE timeout |`300000`
+
+|GSE.RetentionSizeGB
+|The maximum size (in GB) of Kafka data used by the GSE before triggering Kafka retention.  
+Retention begins when usage approaches this value.  
+Default: `20`.
+|`20`
+
 |===
 
 == GSQL
@@ -736,8 +751,7 @@ must acknowledge, when producer sets acks to `all' |`1`
 |Kafka.RetentionHours |The minimum age of a log file of Kafka to be
 eligible for deletion (hours) |`168`
 
-|Kafka.RetentionSizeGB |The minimum size of a log file of Kafka to be
-eligible for deletion (gigabytes) |`40`
+|Kafka.RetentionSizeGB |The minimum size (in GB) of Kafka log files for *infrastructure services* before they are eligible for deletion. This setting does not control retention for GPE or GSE data.|`40`
 
 |Kafka.StartTimeoutMS |Start kafka timeout |`300000`
 
