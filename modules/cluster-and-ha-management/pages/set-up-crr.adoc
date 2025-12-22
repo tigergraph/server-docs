@@ -1,5 +1,5 @@
 = Set Up Cross-Region Replication
-//:page-aliases: tigergraph-server:crr:set-up-crr.adoc
+//:page-aliases: crr:set-up-crr.adoc
 :description: Instruction on how to set up the DR cluster for cross-region replication.
 :sectnums:
 
@@ -9,11 +9,14 @@ Changes on the primary cluster are copied over to the DR cluster.
 When necessary, you can fail over to a DR cluster, making it the new primary cluster.
 
 
-== Before you begin
+[#before_you_begin]
+== Prerequsites
 
-* Install TigerGraph 3.10.0 or higher on both the primary cluster and the DR cluster *in the same version*.
-* Make sure that your DR cluster has the same number of partitions as the primary cluster.
-* Make sure the username and password of the TigerGraph database user created on the DR cluster during installation matches one of the users on the primary cluster who have the `superuser` role.
+* The DR cluster and the primary cluster are running the *same version of TigerGraph (3.10 or higher)*.
+* The DR cluster and the primary cluster have the *same partitioning factor*.
+* You have *access to the TigerGraph Linux user account on the DR cluster*.
+** The username and password of the TigerGraph database user creates on the DR cluster during installation *matches one of the superusers on the primary cluster*.
+* Initializing the DR cluster requires running a restore operation from a recent backup of the primary cluster; therefore, *xref:backup-and-restore:configurations.adoc[backup and restore must be configured] on the DR cluster*.
 * If you choose to enable CRR and your DR cluster is in a different Virtual Private Cloud (VPC) than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
 ** If you xref:installation:bare-metal-install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
 ** If you xref:installation:bare-metal-install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
@@ -32,12 +35,12 @@ The following setup is needed in order to enable Cross Region Replication.
 Retrieve the latest backup, for instance, `pr_latest_backup` from the Primary Cluster. How recent the backup is will determine how much the DR cluster lags behind and how long it will take to catch up with the Primary cluster.
 
 If there is no suitable backup, use `gadmin backup create <pr_latest_backup>` to create one.
-For more details refer to xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[].
+For more details refer to xref:backup-and-restore:backup-cluster.adoc[].
 
-For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:tigergraph-server:backup-and-restore:cross-cluster-backup.adoc[].
+For how to restore a cluster from a backup that was created from another database cluster (cross cluster), refer to xref:backup-and-restore:cross-cluster-backup.adoc[].
 
 For setting up a new DR cluster after failover, refer to
-xref:tigergraph-server:cluster-and-ha-management:fail-over.adoc#_set_up_a_new_dr_cluster_after_failover[].
+xref:fail-over.adoc#_set_up_a_new_dr_cluster_after_failover[].
 
 === Enable CRR on the DR cluster
 
@@ -97,7 +100,7 @@ However, note that these operations should be performed when there is no traffic
 gadmin backup restore --dr
 ----
 
-Specifically, when switching between PR and DR, before the switch, it is necessary to xref:tigergraph-server:crr:troubleshooting.adoc#_check_data_consistency_between_primary_and_dr[check data consistency between primary and DR]
+Specifically, when switching between PR and DR, before the switch, it is necessary to xref:troubleshooting.adoc#_check_data_consistency_between_primary_and_dr[check data consistency between primary and DR]
 
 [NOTE]
 ====
@@ -189,23 +192,33 @@ tasks.max=4
 Do not change the values of `name`, `topics`, as this will cause the CRR to work abnormally.
 ====
 
-== Updating a CRR system
+== Upgrading a CRR system
 
 From time to time, you may want to update the TigerGraph software on a CRR system.
 To perform this correctly, follow this sequence of steps.
 
-1. Stop CRR on your DR cluster.
+. Stop CRR on your DR cluster.
 +
-[source.wrap,console]
+[source,console]
 ----
-$ gadmin crr stop -y
+gadmin crr stop -y
 ----
-+
-2. xref:tigergraph-server:installation:upgrade.adoc[Upgrade] both the primary cluster and DR cluster.
 
-3. Start CRR on the DR cluster(From TigerGraph 3.10.0, no additional restart is required to start CRR).
+. Disable CRR on your DR cluster.
 +
-[source.wrap,console]
+[source,console]
 ----
-$ gadmin crr start
+gadmin config set System.CrossRegionReplication.Enabled false
+gadmin config apply -y
+gadmin restart all -y
 ----
+
+. xref:installation:upgrade.adoc[Upgrade] the cluster.
+
+. Start CRR on the new DR cluster.
++
+[source,console]
+----
+gadmin crr start
+----
+

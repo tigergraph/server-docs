@@ -41,8 +41,13 @@ TigerGraph on Docker is not supported for ARM processors, including M1 Macs.
   *** Ubuntu: https://docs.docker.com/install/linux/docker-ce/ubuntu/
  ** To install Docker for Windows OS, follow this video: https://www.youtube.com/watch?v=ymlWt1MqURY
 . Configure Docker Desktop with sufficient resources:
- ** Recommended: 4 cores and 16GB memory
- ** Minimum: 2 cores and 10GB memory
++
+Please see our xref:installation:hw-and-sw-requirements.adoc#_hardware_recommendations[hardware recommendations].
+The minimum sizes are for the TigerGraph software itself and a small amount of data.
+If your RAM is not large enough to hold all your data, plus some extra RAM for computation, you will experience slower performance, possibly significantly slower.
+
+ ** Recommended: 8 cores and 24GB memory, or about 80% of what your computer allows.
+ ** Minimum: 4 cores and 8 GB memory
  ** Click the Docker Desktop icon, click *Preferences* >> *Resources*, drag the CPU and Memory sliders to the desired configuration, save and restart Docker Desktop
 
 == Prepare a shared folder for your container
@@ -67,7 +72,7 @@ Run the following command to pull the TigerGraph Docker image, bind ports, map a
 
 [source.wrap,console]
 ----
-$ docker run -d \ <1>
+sudo docker run -d \ <1>
     -p 14022:22 \ <2>
     -p 9000:9000 \ <2>
     -p 14240:14240 \ <2>
@@ -75,8 +80,8 @@ $ docker run -d \ <1>
     --ulimit nofile=1000000:1000000 \ <4>
     -v ~/data:/home/tigergraph/mydata \ <5>
     -v tg-data:/home/tigergraph \ <6>
-    -t \ <7>
-    tigergraph/tigergraph:latest <8>
+    -t tigergraph/tigergraph:latest <7>
+
 ----
 <1> `-d`: make the container run in the background.
 <2> `-p`: map Docker port 22 to the host OS port 14022, 9000 to host OS 9000, and 14240 to host OS 14240.
@@ -89,21 +94,34 @@ For example, `c:\data`
 If the volume doesn't exist, Docker creates it automatically.
 This allows you to retain the data from your container.
 The next time you start up a new container with the same volume, all your changes are preserved.
-<7> `-t`: allocate a pseudo terminal.
-<8> `tigergraph/tigergraph:latest`:  download the latest Docker image from the TigerGraph Docker registry URL tigergraph/tigergraph.
+<7> `tigergraph/tigergraph:latest`:  download the latest Docker image from the TigerGraph Docker registry URL tigergraph/tigergraph.
 Replace "latest" with a specific version number if a dedicated version of TigerGraph is to be used.
 For example, if you want to get the 3.0.5 version, the URL should be:
 `tigergraph/tigergraph:3.0.5`.
 
-If you use Windows and have write permission issues with the above command,  try the following command instead (this command does not map the shared folder on your host machine to your container) :
+In Linux shells, a *backslash (\)* lets you split a long command across multiple lines. Our examples use it for readability. If you do the same, make sure the backslash is the very last character on the line with no space after it, or the command will fail with an *invalid reference format* error.
+If you see a permission denied error like:
 
 [source.wrap,console]
 ----
-$ docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 --name tigergraph --ulimit nofile=1000000:1000000 -t tigergraph/tigergraph:latest
+docker: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Head "http://%2Fvar%2Frun%2Fdocker.sock/_ping": dial unix /var/run/docker.sock: connect: permission denied
+----
+
+Run the command with `sudo` (as shown above), or configure your system so your user can run Docker without `sudo`.
+
+If you are on Windows and encounter file permission issues, you can run the command without mounting the shared folder:
+
+[source.wrap,console]
+----
+sudo docker run -d -p 14022:22 -p 9000:9000 -p 14240:14240 \
+    --name tigergraph --ulimit nofile=1000000:1000000 \
+    -t tigergraph/tigergraph:latest
 ----
 
 [NOTE]
-If you intend to have multiple instances of TigerGraph in the same Docker environment, whether they are the same version or not, we advise using unique <3> container names and <6> volume names for each one, to avoid accidental reuse or interference between volumes.
+====
+If you intend to have multiple instances of TigerGraph in the same Docker environment, whether they are the same version or not, we advise using unique <3> container names and <6> volume names for each one, to avoid conflicts and data overwrite.
+====
 
 == Connect to your container (via SSH or `docker exec`)
 
@@ -137,14 +155,14 @@ WARNING: Your TigerGraph image is preconfigured with a Linux user called `tigerg
 
 . Change the password of the Linux user `tigergraph`.
 
-.  xref:tigergraph-server:user-access:user-management.adoc#_change_a_users_password[Change the password] of the database user called `tigergraph`:
+.  xref:user-access:user-management.adoc#_change_a_users_password[Change the password] of the database user called `tigergraph`:
 +
 [source,console]
 ----
 $ gsql ALTER PASSWORD tigergraph
 ----
 
-. For additional TigerGraph security settings, see xref:tigergraph-server:security:index.adoc[].
+. For additional TigerGraph security settings, see xref:security:index.adoc[].
 
 Please follow best practices for securing and hardening the docker container especially when installing in a shared environment.
 
@@ -157,7 +175,7 @@ Please follow best practices for securing and hardening the docker container esp
 $ gadmin start all
 ----
 
-. Run the `gsql` command as shown below to start the GSQL shell. If you are new to TigerGraph, you can run the xref:gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101] tutorial now.
+. Run the `gsql` command as shown below to start the GSQL shell. If you are new to TigerGraph, you can run the xref:{page-component-version}@gsql-ref:tutorials:gsql-101/index.adoc[GSQL 101] tutorial now.
 +
 [source,console]
 ----

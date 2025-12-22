@@ -64,7 +64,7 @@ Features not yet supported:
 In summary, all necessary operations to set up VLAC graphs and users are supported in GSQL. Due to a known bug, standard users (with `querywriter` and `queryreader` roles) can run some DDL operations which they should not be able to.
 ====
 
-We'll use the graph xref:gsql-ref:appendix:example-graphs.adoc#_social_net[socialNet] as an example in the following sections.
+We'll use the graph xref:{page-component-version}@gsql-ref:appendix:example-graphs.adoc#_social_net[socialNet] as an example in the following sections.
 
 == Tag Management
 
@@ -259,10 +259,10 @@ There are three main options for tagging vertices in the base graph.
 
 === Add tags on existing data
 
-In GSQL, special vertex methods are provided to access and modify the tags of a vertex in a DML query (full list available on page xref:gsql-ref:querying:func/vertex-methods.adoc[Vertex Methods]).
+In GSQL, special vertex methods are provided to access and modify the tags of a vertex in a DML query (full list available on page xref:{page-component-version}@gsql-ref:querying:func/vertex-methods.adoc[Vertex Methods]).
 These functions are only available for vertex aliases (defined in the `FROM` clause of a `SELECT` statement); they cannot be applied to vertex variables in other contexts.
 
-There are xref:gsql-ref:querying:func/vertex-methods.adoc[8 DML-level tag-access functions] in the vertex-query block or edge-query block. Use the xref:gsql-ref:querying:func/vertex-methods.adoc#_addtags[addTags()] function to tag a vertex.
+There are xref:{page-component-version}@gsql-ref:querying:func/vertex-methods.adoc[8 DML-level tag-access functions] in the vertex-query block or edge-query block. Use the xref:{page-component-version}@gsql-ref:querying:func/vertex-methods.adoc#_addtags[addTags()] function to tag a vertex.
 
 ==== Required privilege
 
@@ -301,7 +301,7 @@ CREATE QUERY addTagsToPerson() {
 }
 ----
 
-Use xref:gsql-ref:querying:func/vertex-methods.adoc#_removetags[Remove tags] and xref:gsql-ref:querying:func/vertex-methods.adoc#_removealltags[Remove all tags] to remove tags from vertices:
+Use xref:{page-component-version}@gsql-ref:querying:func/vertex-methods.adoc#_removetags[Remove tags] and xref:{page-component-version}@gsql-ref:querying:func/vertex-methods.adoc#_removealltags[Remove all tags] to remove tags from vertices:
 
 [source,gsql]
 ----
@@ -532,7 +532,7 @@ The output of the query would be:
 Users with global `WRITE_SCHEMA` and `ACCESS_TAG` privileges can create, modify and drop tags, as well as create tag-based graphs for all graphs.
 
 [discrete]
-==== On the base graph
+=== On the base graph
 
 Users with roles on the base graph that have the `ACCESS_TAG` privilege (e.g.`admin` and `designer` roles) can create/drop tags, and tag vertices. Users that have both the `ACCESS_TAG` privilege and `WRITE_SCHEMA` privilege (e.g. `admin` and `designer` roles) can create/drop tag-based graphs of the base graph.
 
@@ -550,7 +550,7 @@ Users who are given roles on a tag-based graph have the privileges on the tag-ba
 == Sample Use Cases
 
 [discrete]
-==== *Scenario I*
+=== *Scenario I*
 
 *Problem*
 
@@ -567,7 +567,7 @@ The base graph admin can do the following security setup.
 . *Grant users permission to the tag-based graph*. On the tag-based graph B, grant roles that have the appropriate privileges for graph `B` to the target users.
 
 [discrete]
-==== *Scenario II*
+=== *Scenario II*
 
 *Problem*
 
@@ -584,7 +584,7 @@ The base graph `admin` user can do the following setup.
 . *Grant roles on the tag-based graph*. On the tag-based graph `B`, grant roles that have the appropriate privileges for the graph `B` to target users.
 
 [discrete]
-==== *Scenario III*
+=== *Scenario III*
 
 *Problem*
 

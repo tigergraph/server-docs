@@ -26,7 +26,7 @@ The software has been tested on the operating systems listed below:
 | RedHat (RHEL) 7.0 to 8.9
 | ✓
 
-| RedHat (RHEL) 9
+| RedHat (RHEL) 9.0 to 9.2/9.5
 | ✓
 
 
@@ -140,6 +140,9 @@ Other browser-based products, such as TigerGraph Insights, have their own browse
 == Hardware Recommendations
 Choosing the right hardware to host your TigerGraph system is crucial for the right balance of cost and performance.
 This page provides some general guidelines for hardware selection based on simple hypothetical assumptions, but your actual hardware requirements will vary based on your data size, workload, and performance requirements.
+
+The minimum sizes are for the TigerGraph software itself and a small amount of data.
+If your RAM is not large enough to hold all your data, plus some extra RAM for computation, you will experience slower performance, possibly significantly slower.
 
 The sizing recommendations below apply to each server node. If you have more than several hundred gigabytes of data, you should consider deploying a cluster of multiple nodes, to distribute your data.
 
@@ -262,6 +265,17 @@ Here is an example of how to specify different mount points in the `install_conf
 },
 ```
 TIP: To economize, you can opt to use a magnetic hard disk (HDD) for the logs; the remaining ones must be SSD.
+
+[WARNING]
+====
+Disks must be mounted with the *exec* option to AppRoot and DataRoot. Failure to do so will result in the inability to run any installed queries. Users can check the disk option by running the _mount_ command in a shell, e.g.
+
+```
+$ mount
+/dev/sda2 on / type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+```
+The *noexec* option will be shown when the disk is mounted without the *exec* option.
+====
 
 Another important point when choosing the Disk type is the disk IOPS capacity.
 We *strongly* suggest opting for ≥3000 IOPS.

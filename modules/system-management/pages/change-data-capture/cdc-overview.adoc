@@ -8,14 +8,14 @@ The Change Data Capture (CDC) equips TigerGraph users with the capability to aut
 * Maintains sequence of changes to facilitate reproduction of data updates for debugging.
 * Structured in JSON format, promoting readability and compatibility with third-party tools.
 
-== xref:tigergraph-server:system-management:change-data-capture/cdc-setup.adoc[]
-Learn about xref:tigergraph-server:system-management:change-data-capture/cdc-setup.adoc#_setup_configuration[setup configurations] and get started with the xref:tigergraph-server:system-management:change-data-capture/cdc-setup.adoc#_setup_tutorial[setup tutorial].
+== xref:change-data-capture/cdc-setup.adoc[]
+Learn about xref:change-data-capture/cdc-setup.adoc#_setup_configuration[setup configurations] and get started with the xref:change-data-capture/cdc-setup.adoc#_setup_tutorial[setup tutorial].
 
-== xref:tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc[]
-Deep dive into the xref:tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_format[CDC messages format] and showcased xref:tigergraph-server:system-management:change-data-capture/cdc-message-example.adoc#_message_examples[message examples].
+== xref:change-data-capture/cdc-message-example.adoc[]
+Deep dive into the xref:change-data-capture/cdc-message-example.adoc#_message_format_fields[CDC messages format] and showcased xref:change-data-capture/cdc-message-example.adoc#_message_examples[message examples].
 
-== xref:tigergraph-server:system-management:change-data-capture/cdc-state-monitoring.adoc[]
-Here users can delve into xref:tigergraph-server:system-management:change-data-capture/cdc-state-monitoring.adoc#_state_monitoring[state monitoring], including xref:tigergraph-server:system-management:change-data-capture/cdc-state-monitoring.adoc#_state_of_dim_service[DIM state monitoring] with the CDC service.
+== xref:change-data-capture/cdc-state-monitoring.adoc[]
+Here users can delve into xref:change-data-capture/cdc-state-monitoring.adoc#_state_monitoring[state monitoring], including xref:change-data-capture/cdc-state-monitoring.adoc#_state_of_dim_service[DIM state monitoring] with the CDC service.
 
 == CDC Reaction to Other Features
 
@@ -27,7 +27,7 @@ When that happens, TigerGraph CDC will skip all historical data updates.
 Some commands will call `gadmin reset gpe` implicitly, so the CDC will reset simultaneously with these commands:
 
 * `gadmin backup` and `gadmin restore`
-* node xref:tigergraph-server:cluster-and-ha-management:expand-a-cluster.adoc[expansion] and xref:tigergraph-server:cluster-and-ha-management:shrink-a-cluster.adoc[shrink].
+* node xref:cluster-and-ha-management:expand-a-cluster.adoc[expansion] and xref:cluster-and-ha-management:shrink-a-cluster.adoc[shrink].
 * gsql command: `clear graph store`
 * gsql command: `drop all`
 * gsql command: `import graph all`
@@ -51,6 +51,16 @@ If you wish to disable CDC High Availability (HA) in a multi-replica cluster and
 
 == CDC Limitations
 
+[WARNING]
+====
+The current version of CDC is unstable when:
+
+* The schema has edges with discriminators AND
+* A DELETE operation is performed on edges without specifying a discriminator.
+
+If CDC is being used, avoid performing this type of unrestricted deletion.
+====
+
 === Limitation on CDC Setup
 
 ==== Not applicable on DR cluster
@@ -61,9 +71,10 @@ DR clusters are replicas, not sources.
 When distinguishing between modification and insertion for vertex/edge attribute modification, the TigerGraph CDC message will have the `"operator": "insert"` key value pair, same as vertex/edge insertion.
 However, the `"content"` will only contain the field for the modified attribute.
 
-==== No CDC message for implicit edge deletion
-When a vertex is deleted, any edge that uses the vertex as source or target will be implicitly deleted.
-However, TigerGraph CDC currently does not generate a CDC message for such “implicit edge deletion”.
+==== No CDC message for implicit vertex insertion without `primary_id_as_attribute="true"`
+For insertion on undirected edge, or directed edge with reverse edge type, the TigerGraph database will implicitly insert source and target vertex if it does not exist (This behavior can be configured via `VERTEX_MUST_EXIST` in a loading job and `POST` data api).
+
+In this scenario, TigerGraph CDC will generate CDC messages with `"operator": "insert-only"` for new source and new target vertex, unless the corresponding vertex type does not have `primary_id_as_attribute="true"` (See the section “Extra CDC message for Edge Update“ ).
 
 ==== No CDC message for implicit source vertex insertion
 For insertion/modification on undirected edge, or directed edge with reverse edge type, the TigerGraph database will implicitly insert source and target vertex if it does not exist (This behavior can be configured via `VERTEX_MUST_EXIST` in a loading job and `POST` data api).

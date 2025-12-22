@@ -9,10 +9,15 @@ TigerGraph to TigerGraph {page-component-version}.
 
 [IMPORTANT]
 ====
-Always check the xref:release-notes:index.adoc[] for all the versions between your current version and your target version, for deprecated features, known issues, or other behavioral changes.
+Always check the xref:release-notes:index.adoc[] for all the versions between your current version and your target version, for deprecated features, known issues, new reserved words, or other behavioral changes.
 You may need to make migration changes to your TigerGraph application either before or after the upgrade.
+For example, change the name of schema elements and refactor queries if a new reserved word was introduced.
 If you have any questions or uncertainty, please contact TigerGraph Support.
 ====
+
+=== Review Upgrade-Related Issues
+See the list of xref:#_known_issues_and_workarounds[].
+In some cases, there are limitations with migrating data from one version to a newer version.
 
 ==== User-defined function (UDF) compatibility
 
@@ -52,11 +57,11 @@ System upgrade does not support version rollback at this time.
 
 === Prepare a pre-3.2 database
 
-. First perform a backup xref:backup-and-restore:index.adoc[using GBAR (Graph Backup and Restore)] on your existing installation.
-. *Restore* your installation with GBAR to rebuild it.
+. First perform a backup xref:backup-and-restore:index.adoc[backup] on your existing installation.
+. *Restore* your installation with `gadmin backup restore` to rebuild it.
 This step is necessary because TigerGraph 3.2 made major changes to the Graph Storage Engine and a restore is needed to remove certain files that would make the upgrade operation fail.
 . Ensure that the restore is completely finished and there are no pending graph modifications (schema change, insert, update, or delete) before starting the upgrade.
-You can do this by calling the xref:tigergraph-server:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint and waiting until there are no more PullDelta messages being printed in the logs.
+You can do this by calling the xref:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint and waiting until there are no more PullDelta messages being printed in the logs.
 
 === Ensure that the database is inactive
 
@@ -66,26 +71,53 @@ Ensure that the database will be inactive throughout the upgrade process.
 . Stop any new database requests.
 . Ensure that all previous operations such as queries, loading jobs, schema changes, and data updates and deletions are completely finished.
 Check the appropriate logs.
-Call the xref:tigergraph-server:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint to force the data store to consume all pending updates and then wait until there are no more PullDelta messages being printed in the logs.
+Call the xref:API:built-in-endpoints.adoc#_rebuild_graph_engine[/rebuildnow] endpoint to force the data store to consume all pending updates and then wait until there are no more PullDelta messages being printed in the logs.
 
 == Upgrading a CRR system
+
+[NOTE]
+====
+After upgrading to a newer version, you must perform a backup and restore on the newer version before enabling CRR, even if no data has changed. You cannot enable CRR using a backup from an earlier version.
+====
+
 To upgrade the TigerGraph software on a CRR system, follow this sequence of steps.
+
+. Stop CRR on your DR cluster.
++
+[source,console]
+----
+gadmin crr stop -y
+----
 
 . Disable CRR on your DR cluster.
 +
-[source.wrap,console]
+[source,console]
 ----
-$ gadmin config set System.CrossRegionReplication.Enabled false
-$ gadmin config apply -y
-$ gadmin restart all -y
+gadmin config set System.CrossRegionReplication.Enabled false
+gadmin config apply -y
+gadmin restart all -y
 ----
 
-. Upgrade both the primary cluster and DR cluster, according to the instructions on this page.
+. Upgrade the cluster.
 
-. Enable CRR on the DR cluster.
+. Start CRR on the new DR cluster.
++
+[source,console]
+----
+gadmin crr start
+----
+
 
 [[upgrading-from-v3x]]
 == Upgrading from v3.x
+
+Always upgrade from the most recent maintenance version in any minor release.
+If you are upgrading from a version that does not have the most recent patches applied to its minor version, upgrade to the most recent patches first before upgrading to another minor or major version.
+For example, if you are upgrading from 3.5.0 to 3.11.x, upgrade to 3.5.3 first using the installation script and then upgrade to 3.11.x.
+
+Additionally, versions upgrading from 3.0 or 3.1 must first go through 3.2.4.
+For example, if you are running version 3.1.3, you must first upgrade to 3.1.6, then 3.2.4, then to 3.10.x.
+
 
 [IMPORTANT]
 ====
@@ -107,14 +139,12 @@ $ ./install.sh -U
 ....
 
 [NOTE]
+.Known Issue - File Permissions
 ====
-Please upgrade from the most recent maintenance version in any minor release.
-If you are upgrading from a version that does not have the most recent patches applied to its minor version, upgrade to the most recent patches first before upgrading to another minor or major version.
-For example, if you are upgrading from 3.5.0 to 3.10.x, upgrade to 3.5.3 first using the installation script and then upgrade to 3.10.x.
+The `pre_upgrade_check.sh` script might encounter a permission-denied error for the destination directory.
+If this occurs, manually give permission to the `/var/tmp` folder.
+====
 
-Additionally, versions upgrading from 3.0 or 3.1 must first go through 3.2.4.
-For example, if you are running version 3.1.3, you must first upgrade to 3.1.6, then 3.2.4, then to 3.10.x.
-====
 
 Once binaries and config files are installed on local machine and also distributed to all the other machines, a message will be prompted to user:
 
@@ -203,7 +233,7 @@ link:https://tigergraph.zendesk.com/hc/en-us/articles/8173584319892-2-6-x-to-3-x
 
 === Upgrading from 3.x
 
-. xref:backup-and-restore:backup-and-restore.adoc[Back up] your TigerGraph instance using GBAR.
+. xref:backup-and-restore:backup-and-restore.adoc[Back up] your TigerGraph instance using `gadmin backup`.
 . Start a new instance from the latest cloud marketplace listing.
 . Use the backup files you generated earlier to xref:backup-and-restore:backup-and-restore.adoc[restore] the new instance.
 
@@ -224,7 +254,7 @@ In previous releases, `to_string()` was included in the default `ExprFunctions` 
 Users need to rename or remove UDFs that are called `to_string()`.
 Now, that it is added as a built-in function users are no longer needing to include it in the `ExprFunctions` file.
 
-For more reference on how to prepare for an upgrade please refer back to the section: xref:tigergraph-server:installation:upgrade.adoc#_before_you_begin[Before You Begin].
+For more reference on how to prepare for an upgrade please refer back to the section: xref:installation:upgrade.adoc#_before_you_begin[Before You Begin].
 
 === `tg_` is Now a Reserved Keyword
 
@@ -236,7 +266,7 @@ Users can either rename, remove, or comment out any functions in their `ExprFunc
 Additionally, users should avoid prefixing future functions with this reserved prefix.
 This is to avoid naming collisions with queries.
 
-For more reference on how to prepare for an upgrade please refer back to the section: xref:tigergraph-server:installation:upgrade.adoc#_before_you_begin[Before You Begin].
+For more reference on how to prepare for an upgrade please refer back to the section: xref:installation:upgrade.adoc#_before_you_begin[Before You Begin].
 
 === UDF File Policy
 
@@ -282,7 +312,7 @@ Sometimes users can encounter a issue with this policy after an upgrade.
 ==== What to do:
 Before (recommended) or after an upgrade users should change or use different constant paths for queries and loading jobs that do *not* violate policy.
 
-For more on file policy see xref:tigergraph-server:security:file-output-policy.adoc[] and/or xref:tigergraph-server:security:gsql-file-input-policy.adoc[].
+For more on file policy see xref:security:file-output-policy.adoc[] and/or xref:security:gsql-file-input-policy.adoc[].
 
 === Other issues
 

@@ -1,13 +1,19 @@
-= CDC Monitoring and Reset
+= CDC State Monitoring
 
 == State Monitoring
-.Check the state of CDC Service with this command:
+Check the state of CDC Service with this command:
+
 [console]
 ----
 grun_p gpe "cat $(gadmin config get System.DataRoot)/gstore/0/part/cdc.yaml"
 ----
 
-.The response will look like this:
+The cdc state file should only exist on GPE Replica 1 node of each partition:
+
+* `GPE_1#1`
+* `GPE_2#1`
+
+.Example Response
 [console]
 ----
 ------------------ Output example for cdc.yaml on 1x2 cluster -------------------
@@ -20,11 +26,7 @@ index: 0
 cat: /home/tigergraph/tigergraph/data/gstore/0/part/cdc.yaml: No such file or directory
 ----
 
-If xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc#_cdc_ha[CDC HA] is not enabled, the cdc state file should only exist on GPE Replica 1 node of each partition, such as `GPE_1#1` or `GPE_2#1`.
-
-If xref:tigergraph-server:system-management:change-data-capture/cdc-overview.adoc#_cdc_ha[CDC HA] is enabled (the default setting in multi-replica clusters), the CDC state file may reside on any node with GPE servers. For each partition, only the state file on the GPE leader is active; state files on other nodes may be missing or outdated. You can determine this by checking the tid in the file or the file's last update time.
-
-.For each CDC state field, see the table below:
+.Information Fields for CDC Status Report
 [cols="2", separator=¦ ]
 |===
 ¦ Field ¦ Meaning
@@ -37,7 +39,7 @@ For a transaction, it’s the tid of the last delta batch for the transaction (m
 ¦ The `safe_persistent_tid` is the tid of the earliest delta batch among all open transactions that are not committed/rolled-back in CDC.
 If there’s no open transactions, this is the same as tid.
 
-All delta batches with tid `<safe_persistent_tid>` must have been written to external kafka.
+All delta batches with `tid <safe_persistent_tid>` must have been written to external kafka.
 
 ¦ `split_index`
 ¦ For non-transaction, it’s always 0. For transactions, the split_index is the index of the delta batch that was most recently written to external kafka among all delta batches for the same transaction.
@@ -48,15 +50,13 @@ All delta batches with tid `<safe_persistent_tid>` must have been written to ext
 
 == State of DIM Service
 
-DIM (Deleted Id Map) is an internal service designed to assist the CDC service in processing data updates that involve vertices already deleted from the database.
-
-.Check the state of DIM(Deleted Id Map) service with this command:
+.Command to check the state of DIM(Deleted Id Map) service
 [console]
 ----
 grun_p gpe "cat $(gadmin config get System.DataRoot)/gstore/0/part/deleted_idmap_state.yaml"
 ----
 
-.Check disk usage of DIM(Deleted Id Map) service with this command:
+.Command to check disk usage of DIM(Deleted Id Map) service
 [console]
 ----
 grun_p gpe "du -sh $(gadmin config get System.DataRoot)/gstore/0/part/deletedID_store"
@@ -64,7 +64,7 @@ grun_p gpe "du -sh $(gadmin config get System.DataRoot)/gstore/0/part/deletedID_
 
 The dim state file exists on all GPE nodes, unlike the cdc state file.
 
-.The response will look like this:
+.Example response for DIM state
 [console]
 ----
 ------------ Output example for deleted_idmap_state.yaml on 1x2 cluster ------------
@@ -85,7 +85,7 @@ purged_deletedvid_curr_tid: 3752091
 The purging task runs every 30 minutes by default.
 ====
 
-.For each DIM state field, see the table below:
+.Information fields for DIM state report
 [cols="2", separator=¦ ]
 |===
 ¦ Field ¦ Meaning
@@ -108,16 +108,15 @@ All `deleted vid` deltas with an origin `tid` smaller than this value (excluding
 Note: The `idmap` is cached in memory, and if the map size is small (configured in `GPE.BasicConfig.Env` as `DIMCacheLimitInMB`, set at `30MB`), it is not flushed to disk.
 Consequently, this `tid` may lag behind in such cases.
 
-¦`purged_deletedvid_curr_tid`
-¦ Periodically, TigerGraph purges the entries in RocksDB based on the `safe_persistent_tid`.
-This is because the CDC already used some of the `vid-uid` entries and wrote to external Kafka, hence we don’t need these entries anymore.
+¦ `purged_deletedvid_curr_tid`
+¦ Shows the transaction ID (`tid_origin`) of the latest purged "deleted vertex ID" record.  
+TigerGraph regularly removes old entries from RocksDB based on the `safe_persistent_tid`.  
 
-¦ `purged_deletedvid_next_tid`
-¦ Purges `deleted vid` delta’s `tid_origin`.
-The `tid_orgin` represents the `tid` of origin delta that contains the vertex deletion message.
-All `deleted vid-uid` entries with `tid_orgin` smaller than this already have been purged from RocksDB.
+These entries are no longer needed because the Change Data Capture (CDC) process has already used them and sent the data to external Kafka.  
+All "deleted vid–uid" entries with a smaller `tid_origin` value have already been purged from RocksDB.
 
-Configure this with `GPE.BasicConfig.Env: DIMPurgeIntervalInMin`), and update this `tid` if purging is actually performed.
+By default, this purging task runs every 30 minutes. You can change the interval by updating `GPE.BasicConfig.Env:DIMPurgeIntervalInMin`.
+
 |===
 
 == CDC Reset

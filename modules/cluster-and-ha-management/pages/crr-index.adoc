@@ -1,5 +1,5 @@
 = Cross-Region Replication
-//:page-aliases: tigergraph-server:crr:cross-region-replication.adoc, tigergraph-server:crr:index.adoc
+//:page-aliases: crr:cross-region-replication.adoc, crr:index.adoc
 :description: Overview of cross-region replication for TigerGraph servers.
 
 TigerGraph's Cross-Region Replication (CRR) feature allows users to keep two or more TigerGraph clusters in different data centers or regions in sync.
@@ -41,7 +41,7 @@ Data loaded through a loading job is still replicated from the primary to the DR
 
 The following commands/actions and will *stop* syncing to the DR cluster:
 
-* `gbar restore` while the cross-region replication is enabled.
+* `gadmin backup restore` while the cross-region replication is enabled.
 * `gsql --reset` command
 * The following GSQL commands:
  ** `EXPORT` and `IMPORT` commands
@@ -68,7 +68,7 @@ CRR logic is divided into two layers:
 
 [NOTE]
 ====
-A "replica" in Kafka topic context is the committed operation of a write transaction ( `CREATE VETEX Person`) that happened successfully on the primary.
+A "replica" in Kafka topic context is the committed operation of a write transaction ( `CREATE VERTEX Person`) that happened successfully on the primary.
 Every replica has a unique identification which is consistent between primary and DR.
 
 Kafka MirrorMaker is a stand-alone tool (out-of-the-box from TigerGraph) for copying data between two Kafka, in this specific case between primary Kafka and DR Kafka.

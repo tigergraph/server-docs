@@ -1,190 +1,203 @@
 = Workload Management
 :description: Overview of workload management in TigerGraph.
 
-Certain TigerGraph operations, such as running online analytical processing (OLAP) queries that touch a lot of data, can be memory-intensive.
-TigerGraph provides the following mechanisms for you to manage workload in your TigerGraph instances.
+This page explains the different methods available to manage system workloads in TigerGraph.
 
-[#_workload_queue]
-== Workload Queue
-You can configure workload queues so that queries are routed to the appropriate queues during runtime.
-Each queue has a few properties, such as the maximum number of concurrent queries allowed and the maximum number of queries that can be queued so it can help prevent the system overload.
-You can grant workload queues to users based on their roles so that the users can submit queries to the appropriate workload queues to be managed.
+In distributed or replicated clusters, users have multiple processing units at their disposal. Depending on their needs, they can configure xref:#_query_routing_schemes[query routing schemes] such as round-robin or CPU load-aware routing. For replicated clusters, queries can also be xref:#_specify_replica_to_run_query_on[directed to specific replicas].
 
-=== What APIs are managed by the workload queue?
-The following types of requests will be routed to either the default workload queue or the one specified by the user:
 
-* Run installed queries.
-* Interpret queries.
-* Run heavy built-in queries, mostly used to "Explore Graph" in GraphStudio.
+[#_workload_queues]
+== Workload Queues
+Workload Queues help manage queries by routing them to predefined queues with specific configurations.
+Each queue can have properties like the maximum number of concurrent queries and delay queue size, preventing system overload.
+Queries can be assigned to queues based on user roles and permissions.
 
-=== Configurations
-You can toggle the workload queue feature on and off, and add, update, or delete workload queues as you need.
+In 3.10, *workload queues* were introduced. Multiple independent queues can be configured, allowing application designers to decide how specific operations are handled.
 
-==== Put Workload Queue
-[source.wrap]
-----
-POST /gsqlserver/gsql/workload-manager/configs
-----
-Upload the workload queue configs.
+Workload queues manage the following types of operations:
 
-===== Request Body
-The request body expects a JSON object with the following schema:
-[source, json]
-----
-{
-  "isEnabled": true,
-  "queues": {
-    "OLTP": {
-      "description": "OLTP queries",
-      "isDefault": false,
-      "maxConcurrentQueries": 100,
-      "maxDelayQueueSize": 200
-    },
-    "scheduled_jobs": {
-      "description": "Scheduled jobs",
-      "maxConcurrentQueries": 10,
-      "maxDelayQueueSize": 20
-    },
-    "AdHoc": {
-      "description": "Ad-hoc queries",
-      "isDefault": true,
-      "maxConcurrentQueries": 1,
-      "maxDelayQueueSize": 2
-    }
-  }
-}
-----
-The request body must have the following fields at the top level:
-[cols="20h,~,20h"]
-|===
-|Field|Description|Data type
+* Running an installed query.
+* Interpreting ad-hoc queries.
+* Executing heavy built-in queries, commonly used for "Explore Graph" in GraphStudio.
 
-|`isEnabled`|The feature flag to enable or disable the workload queue.|`BOOL`
-|`queues`|The map of the available workload queues.|`OBJECT`
-|===
-
-Objects under `queues` consist of queue ID (key) and properties (value).
-
-CAUTION: The queue ID must be a string of less than 64 characters including alphanumeric and underscore.
+=== Configure Workload Queues
+Workload queues help control how queries are executed within the system by defining limits such as the maximum number of concurrent queries and the maximum size of the delay queue.
+Administrators can configure workload queues by creating, modifying, or deleting them as needed.
 
 Each queue has the following properties:
 [cols="20h,~,~"]
 |===
 |Field|Description|Data type
-
 |`description`|The description of the queue.|`STRING` (< 256 characters)
 |`isDefault` (optional)|The flag to indicate if the queue is the default queue. Must be set to `true` for exactly one queue.|`BOOL`
 |`maxConcurrentQueries`|The maximum number of concurrent queries allowed in the queue.|`UINT` in the range of `(0, 131072)`
 |`maxDelayQueueSize`|The maximum number of queries that can be queued in the delay queue.|`UINT` in the range of `[0, 131072)`
 |===
-
 ==== maxConcurrentQueries and maxDelayQueueSize
 `maxConcurrentQueries` and `maxDelayQueueSize` are enforced on per machine level. More specifically, it puts a limit on how many requests ONE `GPE` process can handle.
-
 For example, in a TigerGraph cluster with `4` nodes (there will be `4` `GPE` processes), the total number of qureies allowed for a `WorkloadQueue` is `4*maxConcurrentQueries`.
 Similarly, the total number of queries can be put into the corresponding delay queue is `4*maxDelayQueueSize`.
-
 TigerGraph internally would try to evenly distribute queries evenly among the nodes, hence, the `WorkloadQueue` from each `GPE` would be filled at a similar pace.
 
-[WARNING]
+
+Before making changes, it’s a good practice to retrieve the current configuration using the *GET Workload Queue* command. After reviewing, you can update or apply new configurations using the *PUT Workload Queue* command.
+These commands are available both as GSQL commands and as REST endpoints.
+
+[NOTE]
 ====
-The query concurrency is also confined by the number of physical cores that the machine has.
-Therefore, `maxConcurrentQueries` of a `WorkloadQueue` is not recommended to be too large (i.e less than `3 * number of machine's physical cores`).
-
-Once the configurations change, GPE must be restarted to take effect.
+Use a JWT token with `-H "Authorization: Bearer <JWT-token>"` for RESTPP APIs in workload management to ensure secure authentication. `username:password` is supported only for GSQL APIs, not RESTPP.
 ====
 
-===== Examples
+*GSQL Commands*
 
-To modify the whole config:
-[source.warp, bash]
+* *Retrieve Current Configuration:*
+[source.wrap,gsql]
 ----
-curl -X POST -u tigergraph:tigergraph \
-  <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/configs \
-  -d '{"isEnabled":true,"queues":{"OLTP":{"description":"OLTP queries","isDefault":false,"maxConcurrentQueries":100,"maxDelayQueueSize":200},"scheduled_jobs":{"description":"Scheduled jobs","maxConcurrentQueries":10,"maxDelayQueueSize":20},"AdHoc":{"description":"Ad-hoc queries","isDefault":true,"maxConcurrentQueries":1,"maxDelayQueueSize":2}}}'
+GET WORKLOAD QUEUE TO "/path/to/queue.json"
 ----
 
-To just toggle the feature flag, simply skip `queues`:
-[source.warp, bash]
-----
-curl -X POST -u tigergraph:tigergraph \
-  <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/configs \
-  -d '{"isEnabled":true}'
-----
-
-To add, delete, or update the `queues` while keeping the feature flag untouched, simply skip `isEnabled`:
-[source.warp, bash]
-----
-curl -X POST -u tigergraph:tigergraph \
-  <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/configs \
-  -d '{"queues":{"OLTP":{"description":"OLTP queries","isDefault":false,"maxConcurrentQueries":100,"maxDelayQueueSize":200},"scheduled_jobs":{"description":"Scheduled jobs","maxConcurrentQueries":10,"maxDelayQueueSize":20},"AdHoc":{"description":"Ad-hoc queries","isDefault":true,"maxConcurrentQueries":1,"maxDelayQueueSize":2}}}'
-----
-
-===== Response Status Codes
-[cols="20h,~"]
-|===
-|Status Code|Description
-|200|The queue configs have been uploaded successfully.
-|400|The payload is ill-formed.
-|403|The user doesn't have the privilege `WRITE_WORKLOAD_QUEUE`.
-|===
-
-===== GSQL Command
-From a local file:
+* *Update Configuration:*
 [source.wrap,gsql]
 ----
 PUT WORKLOAD QUEUE FROM "/path/to/queue.json"
 ----
 
-From a raw string:
-[source.wrap,gsql]
-----
-PUT WORKLOAD QUEUE FROM "{\"queues\":{\"OLTP\":{\"description\":\"OLTP queries\",\"isDefault\":false,\"maxConcurrentQueries\":100,\"maxDelayQueueSize\":200},\"scheduled_jobs\":{\"description\":\"Scheduled jobs\",\"maxConcurrentQueries\":10,\"maxDelayQueueSize\":20},\"AdHoc\":{\"description\":\"Ad-hoc queries\",\"isDefault\":true,\"maxConcurrentQueries\":1,\"maxDelayQueueSize\":2}}}"
-----
+*REST Endpoints*
 
-==== Get Workload Queue
-
+* *Retrieve Current Configuration:*
 [source.wrap]
 ----
 GET /gsqlserver/gsql/workload-manager/configs
 ----
-Dump the queue configs so that the response would be the equivalent of the payload for `POST`.
-The purpose of this API is to retrieve the active configs and modify them on top of it.
-Other than the administrative purposes, one may use `SHOW WORKLOAD QUEUE` instead.
 
-===== Example Request
+* *Configure Workload Queues*
+[source.wrap]
+----
+POST /gsqlserver/gsql/workload-manager/configs
+----
+
+*Examples*
+
+1.  *Retrieve Current Configuration:*
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
+curl -X GET -H "Authorization: Bearer <token>" \
   <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/configs
 ----
 
-===== Response Status Codes
+2. *Modify Workload Queue Configuration:*
+[source.warp, bash]
+----
+curl -X POST -H "Authorization: Bearer <token>" \
+<hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/configs \
+-d '{"isEnabled":true,"queues":{"OLTP":{"description":"OLTP queries","isDefault":false,"maxConcurrentQueries":100,"maxDelayQueueSize":200}}}'
+----
+
+*Response Status Codes*
+
+*For GET Workload Queue*
 [cols="20h,~"]
 |===
 |Status Code|Description
-|200|The queue configs have been retrieved successfully.
-|403|The user doesn't have the privilege `READ_WORKLOAD_QUEUE`.
+|200|The queue configurations were successfully retrieved.
+|403|The user does not have the `READ_WORKLOAD_QUEUE` privilege.
+|500|Server error occurred while processing the request.
 |===
 
-===== GSQL Command
+*For PUT Workload Queue*
+[cols="20h,~"]
+|===
+|Status Code|Description
+|200|The queue configurations were successfully uploaded.
+|400|The payload is ill-formed.
+|403|The user does not have the `WRITE_WORKLOAD_QUEUE` privilege.
+|409|Conflict in the configuration, such as multiple queues set as default.
+|500|Server error occurred while processing the request.
+|===
+
+*maxConcurrentQueries and maxDelayQueueSize*
+Each workload queue has two critical properties to manage system resources:
+
+1. *maxConcurrentQueries:* Defines the maximum number of queries that can run simultaneously in a queue. This helps prevent resource contention and ensures that the system does not become overloaded.
+
+2. *maxDelayQueueSize:* Specifies the maximum number of queries that can wait in a queue when the current workload exceeds the concurrent query limit. If this limit is reached, new queries are rejected until the queue has capacity.
+
+[NOTE]
+====
+Both properties are enforced at the per-machine level in a cluster.
+Setting the values too high may degrade performance. It’s recommended to keep `maxConcurrentQueries` below three times the number of physical CPU cores in a machine.
+
+Any configuration changes require a GPE restart to take effect.
+====
+
+=== List Workload Queues
+Displays a list of all workload queues available to the current user, including their configurations and permissions.
+
+*GSQL Command*
 [source.wrap,gsql]
 ----
-GET WORKLOAD QUEUE
+LIST WORKLOAD QUEUE
 ----
 
-=== Permissions
+*REST Endpoints*
+[source.wrap]
+----
+GET /restpp/workload-manager/queue
+----
+
+*Example Request*
+[source.warp, bash]
+----
+curl -X GET -H "Authorization: Bearer <token>" \
+  <hostname>:<nginx-port>/restpp/workload-manager/queue
+----
+
+*Example Response*
+The response will include the information available to the general users.
+[source, json]
+----
+[
+  {
+    "id": "AdHoc",
+    "description": "Ad-hoc queries",
+    "isDefault": true
+  },
+  {
+    "id": "OLTP",
+    "description": "OLTP queries"
+  }
+]
+----
+
+*Response Status Codes*
+[cols="20h,~"]
+|===
+|Status Code|Description
+
+|200|The queue info has been retrieved successfully.
+|403|The user doesn't have the privilege `READ_DATA`.
+|===
+
+=== Grant/Revoke Workload Queue Access
 You can grant or revoke workload queues to a user based on its user name, groups, and/or roles.
 
-==== Grant/Revoke Workload Queue
+*GSQL Command*
+[source.wrap,gsql]
+----
+# GRANT
+GRANT WORKLOAD QUEUE <queue_name> TO USER <user1>, <user2>
 
+# REVOKE
+REVOKE WORKLOAD QUEUE <queue_name> FROM USER <user1>, <user2>
+----
+
+*REST Endpoint*
 [source.wrap]
 ----
 POST /gsqlserver/gsql/workload-manager/permission
 ----
-Grant a workload queue to users, groups, and/or roles.
 
-===== Request Body
+*Request Body*
 The request body expects a JSON object with the following schema:
 [source, json]
 ----
@@ -209,15 +222,18 @@ The request body must have the following fields at the top level:
 |`role` (optional)|The list of the role names to be granted/revoked.|`STRING` or `STRING[]`
 |===
 
-TIP:
-You can use the wildcard " * " to grant/revoke the queue to all users, groups, or roles.
-Note that " * " must be the only entry in the list when available.
+[TIP]
+====
+* You can use the wildcard " * " to grant/revoke the queue to all users, groups, or roles.
+* Note that " * " must be the only entry in the list when available.
+====
 
-===== Example Request
+*Example Request*
+
 Grant the queue `OLTP` to the user `u1` and `u2`:
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
+curl -X POST -H "Authorization: Bearer <JWT-token>" \
   <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/permission \
   -d '{"action": "grant", "queue": "OLTP", "user": ["u1", "u2"]}'
 ----
@@ -225,69 +241,59 @@ curl -X GET -u tigergraph:tigergraph \
 Revoke the queue `scheduled_jobs` from all users and the role `r1`:
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
+curl -X POST -H "Authorization: Bearer <JWT-token>" \
   <hostname>:<nginx-port>/gsqlserver/gsql/workload-manager/permission \
-  -d '{"action": "REVOKE" "queue": "scheduled_jobs", "user": "*", role": ["r1"]}'
+  -d '{"action": "revoke", "queue": "scheduled_jobs", "user": "*", "role": ["r1"]}'
 ----
 
-===== Response Status Codes
+*Response Status Codes*
 [cols="20h,~"]
 |===
 |Status Code|Description
 |200|The queue has been granted/revoked successfully.
 |400|The payload is ill-formed so none of the given entities could be granted/revoked.
-|403|The user doesn't have the privilege `WRITE_WORKLOAD_QUEUE``
+|403|The user doesn't have the privilege `WRITE_WORKLOAD_QUEUE`
 |===
 
-===== GSQL Command
+[NOTE]
+====
+Unlike REST API, the GSQL commands don't allow you to specify USER, GROUP, and ROLE in a command.
+You must use separate commands for each entity type.
+====
+
+=== Show Workload Queue Permissions
+
+The `SHOW WORKLOAD QUEUE` command lists detailed information about workload queues, including their permissions, descriptions, and limits. It is primarily used to inspect queue settings and permissions.
+
+*GSQL Command*
+To show the permission info of all queues:
 [source.wrap,gsql]
 ----
-# GRANT
-GRANT WORKLOAD QUEUE OLTP TO USER u1, u2
-GRANT WORKLOAD QUEUE OLTP TO GROUP g1, g2
-GRANT WORKLOAD QUEUE OLTP TO ROLE r1, r2
-GRANT WORKLOAD QUEUE OLTP TO ALL USERS
-GRANT WORKLOAD QUEUE OLTP TO ALL GROUPS
-GRANT WORKLOAD QUEUE OLTP TO ALL ROLES
-
-# REVOKE
-REVOKE WORKLOAD QUEUE OLTP FROM USER u1, u2
-REVOKE WORKLOAD QUEUE OLTP FROM GROUP g1, g2
-REVOKE WORKLOAD QUEUE OLTP FROM ROLE r1, r2
-REVOKE WORKLOAD QUEUE OLTP FROM ALL USERS
-REVOKE WORKLOAD QUEUE OLTP FROM ALL GROUPS
-REVOKE WORKLOAD QUEUE OLTP FROM ALL ROLES
+SHOW WORKLOAD QUEUE
 ----
 
-NOTE: Unlike REST API, the GSQL commands don't allow you to specify USER, GROUP, and ROLE in a command.
-You must use separate commands for each entity type.
-
-==== Show Workload Queue
-
+To show the permission info of a specific queue, for example `OLTP`:
+[source.wrap,gsql]
 ----
-GET gsqlserver/gsql/workload-manager/permission
+SHOW WORKLOAD QUEUE OLTP
 ----
-Show info on a specific workload queue or all.
 
-===== Query Parameters
-[cols="20h,~,20h"]
-|===
-|Parameter|Description|Data type
+*REST Endpoint*
+[source.wrap]
+----
+GET /gsqlserver/gsql/workload-manager/permission
+----
 
-|`id` (optional)|The ID of the queue to be shown.
-If not specified, all queues will be shown.
-|`STRING`
-|===
-
-===== Example Request
+*Example Request*
 To retrieve the permission info of the queue `OLTP`:
 [source.warp, bash]
 ----
-curl -X GET -u tigergraph:tigergraph \
-  localhost:14240/gsql/workload-manager/permission?id=OLTP
+curl -X GET -H "Authorization: Bearer <JWT-token>" \
+  localhost:14240/gsql/v1/workload-manager/permission?id=OLTP
 ----
 
-===== Example Response
+*Example Response*
+
 The response will be the combination of configs and permission, e.g.
 [source, json]
 ----
@@ -306,7 +312,7 @@ The response will be the combination of configs and permission, e.g.
 }
 ----
 
-===== Response Status Codes
+*Response Status Codes*
 [cols="20h,~"]
 |===
 |Status Code|Description
@@ -315,130 +321,22 @@ The response will be the combination of configs and permission, e.g.
 |403|The user doesn't have the privilege `READ_WORKLOAD_QUEUE`.
 |===
 
-===== GSQL Command
-To show the permission info of all queues:
-[source.wrap,gsql]
-----
-GET WORKLOAD QUEUE
-----
+[NOTE]
+====
+* Use `SHOW WORKLOAD QUEUE` to inspect queue configurations and access permissions.
+* This command focuses on *visibility of queue settings*, unlike `GET WORKLOAD QUEUE`, which exports configurations.
+====
 
-To show the permission info of a specific queue, for example `OLTP`:
-[source.wrap,gsql]
-----
-GET WORKLOAD QUEUE OLTP
-----
-
-==== List Workload Queue
-
-----
-GET restpp/workload-manager/queue
-----
-List all granted workload queues to the current user so the user can choose the appropriate queue from the list.
-
-===== Example Request
-[source.warp, bash]
-----
-curl -X GET -u tigergraph:tigergraph \
-  <hostname>:<nginx-port>/restpp/workload-manager/queue
-----
-
-===== Example Response
-The response will include the information available to the general users.
-[source, json]
-----
-[
-  {
-    "id": "AdHoc",
-    "description": "Ad-hoc queries",
-    "isDefault": true
-  },
-  {
-    "id": "OLTP",
-    "description": "OLTP queries"
-  }
-]
-----
-
-===== Response Status Codes
-[cols="20h,~"]
-|===
-|Status Code|Description
-
-|200|The queue info has been retrieved successfully.
-|403|The user doesn't have the privilege `READ_DATA`.
-|===
-
-==== Use Cases
-Suppose we have configured the following workload queues that are the output of the `SHOW WORKLOAD QUEUE` command:
-[source, json]
-----
-{
-  "OLTP": {
-    "description": "OLTP queries",
-    "isDefault": true,
-    "maxConcurrentQueries": 100,
-    "maxDelayQueueSize": 100,
-    "granted": {
-      "USER": [],
-      "GROUP": ["g1", "g2"],
-      "ROLE": []
-    }
-  },
-  "scheduled_jobs": {
-    "description": "Scheduled jobs",
-    "maxConcurrentQueries": 5,
-    "maxDelayQueueSize": 0,
-    "granted": {
-      "USER": ["u1"],
-      "GROUP": [],
-      "ROLE": ["r1"]
-    }
-  },
-  "AdHoc": {
-    "description": "Ad-hoc queries",
-    "isDefault": false,
-    "maxConcurrentQueries": 10,
-    "maxDelayQueueSize": 10,
-    "granted": {
-      "USER": [],
-      "GROUP": ["g3"],
-      "ROLE": ["r2"]
-    }
-  }
-}
-----
-===== Running a Query
-When running a query, you can specify the workload queue to run the query on.
-If the queue is not specified, the query will be routed to the default queue.
-To specify the queue in the GSQL shell, you can use the `-queue` option, e.g.
-----
-RUN QUERY -queue AdHoc q1()
-----
-or you can use the HTTP header `Workload-Queue`:
-----
-curl -X POST -u tigergraph:tigergraph \
-  -H "Workload-Queue: AdHoc" \
-  <hostname>:14240/restpp/query/ldbc_snb/q1"
-----
-
-If the given queue is not granted to the current user, the query will be rejected with the error code `REST-14000` and return `HTTP 422 Unprocessable Entity`.
-
-For example, if the user `tigergraph` who does not belong to the group `g3` or holds the role `r2` tries to run a query on the queue `AdHoc`, the query will be rejected.
-
-
-NOTE: If the queue is full of capacity, the query will be rejected.
-
-==== Monitoring
-
+=== Check Queue Status
 You can use the following API to check the status of the workload queues for monitoring purposes.
 
-===== Check Running Queries
+[source.wrap]
 ----
 POST /restpp/workload-manager/queuestatus
 ----
 Return the status of the given workload queue on each GPE instance.
 
-===== Request Body
+*Request Body*
 [cols="20h,~,20h"]
 |===
 |Field|Description|Data type
@@ -450,15 +348,15 @@ For `mode` field, if `stats` is specified, response only gives the numbers of qu
 
 If Request Body is not provided, response is generated as if both fields are using the default values.
 
-===== Example Request
+*Example Request*
 [source.warp, bash]
 ----
-curl -X POST -u tigergraph:tigergraph \
+curl -X POST -H "Authorization: Bearer <JWT-token>" \
   <hostname>:<nginx-port>/restpp/workload-manager/queuestatus \
-   -d '{"queuelist": ["AdHoc"], "mode": "verbose"}'
+  -d '{"queuelist": ["AdHoc"], "mode": "verbose"}'
 ----
 
-===== Example Response
+*Example Response*
 [source, json]
 ----
 {
@@ -523,9 +421,75 @@ curl -X POST -u tigergraph:tigergraph \
 }
 ----
 
-== Other Query Concurrency Control Methods
+=== Use Cases
+Suppose we have configured the following workload queues that are the output of the `SHOW WORKLOAD QUEUE` command:
+[source, json]
+----
+{
+  "OLTP": {
+    "description": "OLTP queries",
+    "isDefault": true,
+    "maxConcurrentQueries": 100,
+    "maxDelayQueueSize": 100,
+    "granted": {
+      "USER": [],
+      "GROUP": ["g1", "g2"],
+      "ROLE": []
+    }
+  },
+  "scheduled_jobs": {
+    "description": "Scheduled jobs",
+    "maxConcurrentQueries": 5,
+    "maxDelayQueueSize": 0,
+    "granted": {
+      "USER": ["u1"],
+      "GROUP": [],
+      "ROLE": ["r1"]
+    }
+  },
+  "AdHoc": {
+    "description": "Ad-hoc queries",
+    "isDefault": false,
+    "maxConcurrentQueries": 10,
+    "maxDelayQueueSize": 10,
+    "granted": {
+      "USER": [],
+      "GROUP": ["g3"],
+      "ROLE": ["r2"]
+    }
+  }
+}
+----
 
-=== Limit the number of current built-in heavy queries
+*Running a Query*
+
+When running a query, you can specify the workload queue to run the query on.
+If the queue is not specified, the query will be routed to the default queue.
+To specify the queue in the GSQL shell, you can use the `-queue` option, e.g.
+----
+RUN QUERY -queue AdHoc q1()
+----
+
+or you can use the HTTP header `Workload-Queue`:
+[source.warp, bash]
+----
+curl -X POST -H "Authorization: Bearer <JWT-token>" \
+  -H "Workload-Queue: AdHoc" \
+  <hostname>:14240/restpp/query/ldbc_snb/q1"
+----
+
+If the given queue is not granted to the current user, the query will be rejected with the error code `REST-14000` and return `HTTP 422 Unprocessable Entity`.
+
+For example, if the user `tigergraph` who does not belong to the group `g3` or holds the role `r2` tries to run a query on the queue `AdHoc`, the query will be rejected.
+
+[NOTE]
+====
+If the queue is full of capacity, the query will be rejected.
+====
+
+== Other Query Workload Management Methods
+
+=== Limit number of concurrent heavy queries
 
 WARNING: This configuration is deprecated as of TG 3.10.0 and will be removed in a future release.
 This is ignored once the xref:#_workload_queue[workload queue] feature is enabled.
@@ -571,19 +535,9 @@ $ gadmin config set RESTPP.WorkLoadManager.MaxDelayQueueSize 20
 
 You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the RESTPP service] for the change to take effect.
 
-=== Specify number of threads used by a query
-You can specify the limit of the number of threads that can be used by one query through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
-
-For example, to specify a limit of four threads that can be used by a query, use the `GSQL-THREAD-LIMIT` parameter and set its value to 4:
-
-.Specify that the query run with a limit of 4 threads
-[source.wrap,bash]
-----
-curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "http://localhost:9000/query/social/hello"
-----
-
 === Specify replica to run query on
-On a distributed cluster, you can specify on which replica you want a query to be run through the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
+
+On a distributed cluster, you can specify on which replica you want a query to be run through the xref:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
 
 For example, to run the query on the primary cluster, use the `GSQL-REPLICA` header when running a query and set its value to 1:
 
@@ -591,7 +545,7 @@ For example, to run the query on the primary cluster, use the `GSQL-REPLICA` hea
 [source.wrap,bash]
 ----
 curl -X POST -H "GSQL-REPLICA: 1" -d '{"p":{"id":"Tom","type":"person"}}'
-"http://localhost:9000/query/social/hello"
+"http://localhost:14240/restpp/query/social/hello"
 ----
 
 == Query Routing Schemes

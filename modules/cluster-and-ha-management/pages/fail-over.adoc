@@ -1,5 +1,5 @@
 = Fail over to the DR cluster
-//:page-aliases: tigergraph-server:crr:fail-over.adoc
+//:page-aliases: crr:fail-over.adoc
 
 In the event of catastrophic failure that has impacted the full cluster due to Data Center or Region failure, the user can initiate the failover to the Disaster Recovery (DR) cluster.
 This is a manual process.
@@ -8,8 +8,9 @@ Run the following commands to make configuration changes on the DR cluster to up
 
 [source,console]
 ----
-gadmin config set System.CrossRegionReplication.Enabled false
-gadmin config apply -y
+gadmin crr stop -y"
+gadmin config set System.CrossRegionReplication.Enabled false"
+gadmin config apply -y"
 gadmin restart -y
 ----
 
@@ -25,22 +26,17 @@ To set up a new DR cluster over the upgraded primary cluster:
 
 [source,console]
 ----
-# Enable Kafka Mirrormaker
-$ gadmin config set System.CrossRegionReplication.Enabled true
-
-# Kafka mirrormaker primary cluster's IPs, separator by ','
-$ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
-
-# Kafka mirrormaker primary cluster's KafkaPort
-$ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
-
-# The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
-$ gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
-
-# Apply the config changes, init Kafka, and restart
-$ gadmin config apply -y
-$ gadmin init kafka -y
-$ gadmin restart all -y
+ # Kafka mirrormaker primary cluster's IPs, separator by ','
+ $ gadmin config set System.CrossRegionReplication.PrimaryKafkaIPs PRIMARY_IP1,PRIMARY_IP2,PRIMARY_IP3
+ 
+ # Kafka mirrormaker primary cluster's KafkaPort
+ $ gadmin config set System.CrossRegionReplication.PrimaryKafkaPort 30002
+ 
+ # The prefix of GPE/GUI/GSQL Kafka Topic, by default is empty.
+ $ gadmin config set System.CrossRegionReplication.TopicPrefix Primary.Primary
+ 
+ # Enable CRR with the primary's backup created in step 1
+ $ gadmin backup restore <backup from the primary cluster> --dr
 ----
 
 There is no limit on the number of times a cluster can fail over to another cluster. When designating a new DR cluster, make sure that you set the `System.CrossRegionReplication.TopicPrefix` parameter correctly by adding an additional `.Primary` .

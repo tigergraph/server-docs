@@ -1,17 +1,17 @@
 = Database Import/Export All Graphs
 :description: This page details the instructions and requirements of importing and exporting a graph in TigerGraph.
-//:page-aliases: tigergraph-server:import-export:database-import-export.adoc
+//:page-aliases: import-export:database-import-export.adoc
 
 The GSQL `EXPORT GRAPH ALL` and `IMPORT GRAPH ALL` commands perform a logical backup and restore.
 A database `EXPORT` contains the database's data, and optionally some types of metadata.
 This data can be subsequently imported in order to recreate the same database, in the original or in a different TigerGraph platform instance.
 
-To see how to Export/Import selected individual graphs in a database refer to xref:tigergraph-server:backup-and-restore:single-graph-import-export.adoc[].
+To see how to Export/Import selected individual graphs in a database refer to xref:single-graph-import-export.adoc[].
 
 
 [IMPORTANT]
 ====
-Import/export is a complement to xref:tigergraph-server:backup-and-restore:index.adoc[], but not a substitute. See the xref:#_known_issues[] for additional considerations.
+Import/export is a complement to xref:backup-and-restore:index.adoc[], but not a substitute. See the xref:#_known_issues[] for additional considerations.
 ====
 
 == Import Prerequisite
@@ -21,7 +21,7 @@ To import an exported database, ensure that the export files are from a database
 [WARNING]
 ====
 * Running either `EXPORT GRAPH ALL` or `IMPORT GRAPH ALL` resets the TigerGraph superuser's password back to its default value.  After running either command, change the superuser's password to make it secure again.
-* User-defined loading jobs containing xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
+* User-defined loading jobs containing xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc#_delete_statement[`DELETE` statements] are not exported correctly.
 * If a graph contains vertex or edge types with a composite key, the graph data is exported in a nonstandard format that cannot be re-imported.
 * GSQL EXPORT GRAPH may fail and cause a GPE to crash when UDT type has a fixed STRING size.
 ====
@@ -248,11 +248,11 @@ Importing a new solution cannot be undone to restore the previous state, regardl
 Therefore, create a complete backup beforehand in case you need to restore the database: xref:backup-cluster.adoc[]
 
 For security purposes, TigerGraph has two `gadmin` commands, `GSQL.UDF.Policy.Enable` and `GSQL.UDF.Policy.HeaderAllowlist` to prevent malicious code execution during import.
-Please refer to the section on xref:gsql-ref:querying:func/query-user-defined-functions.adoc#udf-security[UDF Security] to ensure that UDFs comply with the security specifications. This will help you import the solution successfully.
+Please refer to the section on xref:{page-component-version}@gsql-ref:querying:func/query-user-defined-functions.adoc#udf-security[UDF Security] to ensure that UDFs comply with the security specifications. This will help you import the solution successfully.
 ====
 
 === Required privileges
-`WRITE_SCHEMA`, `WRITE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USERS`
+`WRITE_SCHEMA`, `WRITE_QUERY`, `WRITE_LOADINGJOB`, `EXECUTE_LOADINGJOB`, `DROP ALL`, `WRITE_USER`, `WRITE_ROLE`, `READ_DATA`, `CREATE_DATA`
 
 === Synopsis
 
@@ -369,7 +369,10 @@ Some files, including the data files, are exported to each server, while some fi
 
 The following are the steps to import an export file to a cluster.
 
-You may only import to a cluster that has the same number and configuration of servers as the data from which the export originated.
+If you're exporting from a single-node cluster, the `ExportedGraph.zip` can be directly imported, so you don't need the source and target clusters to have the same number of servers. 
+If you're exporting from a smaller cluster to a larger one, you must transfer the dataset files along with the zip file to the appropriate nodes in the target cluster. 
+
+For importing from a larger cluster to a smaller one, you’ll need to combine the dataset files, which can be easily done using GraphStudio. If you're using the `gsql CLI`, remember to combine all exported data from each node and transfer them to the new cluster before importing.
 
 ==== 1. Transfer files to new cluster
 

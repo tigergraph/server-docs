@@ -225,7 +225,7 @@ You can use this endpoint to read from TS3. You can filter for the data points y
 * metric: `what`
 * location: `where`
 
-Visualization of such metrics are available in Admin Portal - Dashboard - xref:gui:admin-portal:dashboard.adoc[Cluster Monitoring].
+Visualization of such metrics are available in Admin Portal - Dashboard - xref:{page-component-version}@gui:admin-portal:dashboard.adoc[Cluster Monitoring].
 
 On a TigerGraph cluster, this endpoint is only present on the `m1` node.
 
@@ -949,10 +949,10 @@ Response::
 `GET /rebuildnow/\{graph_name}` +
 `POST /rebuildnow/\{graph_name}`
 
-xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level READ DATA
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ DATA]
 
-When new data is being loaded into the graph (such as new vertices or edges), data is first stored in memory before it is saved to disk permanently.
-TigerGraph runs a rebuild of the Graph Processing Engine (GPE) to commit the data in memory to disk every 30 seconds, but you can also call this endpoint to trigger a rebuild immediately.
+When new data is being loaded into the graph (such as new vertices or edges), the data is initially stored in memory before being saved permanently to disk. 
+TigerGraph runs a rebuild of the Graph Processing Engine (GPE) to commit the data in memory to disk. You can also call this endpoint to trigger a rebuild immediately if necessary.
 
 ==== Parameters:
 
@@ -1010,7 +1010,7 @@ cat finished.summary.txt
 
 `GET /deleted_vertex_check`
 
-xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level READ DATA
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ DATA]
 
 In certain rare cases, TigerGraph's Graph Processing Engine (GPE) and Graph Storage Engine (GSE) might be out of sync on vertex deletion information. When this happens, some vertices might exist on one of the components, but not the other. Even though these errors are exceedingly rare, TigerGraph provides an endpoint that allows you to check the deleted vertices on GSE and GPE to see if they are out of sync.
 
@@ -1146,7 +1146,7 @@ curl -X GET 'http://localhost:9000/deleted_vertex_check?threadnum=10&verbose=0&v
 [IMPORTANT]
 ====
 As of 3.10.0, the use of plaintext tokens in authentication is deprecated.
-Use xref:tigergraph-server:user-access:jwt-token.adoc[] instead.
+Use xref:user-access:jwt-token.adoc[] instead.
 ====
 
 The endpoints in this subsection allow users to create, refresh and delete authentication tokens for requests made to the REST{pp} server.
@@ -1175,7 +1175,8 @@ The endpoint expects a JSON request body in the following format:
 {
     "secret": <secret_value>, <1>
     "graph": <graph_name>, <2>
-    "lifetime": <token_lifetime> <3>
+    "lifetime": <token_lifetime>, <3>
+    "allowExisting": <allow_existing_boolean> <4>
 }
 ----
 <1> User's secret to generate the token.
@@ -1183,20 +1184,7 @@ Required if the request body does not supply `graph`.
 <2> Name of the graph that the token is valid for.
 Required if the request body does not supply `secret`.
 <3> Period of time for which the token is valid measured in seconds. The default value is about 2.6 million (about a month).
-
-==== Parameters:
-[width="100%",cols="15%,10%,75%a",options="header",]
-|===
-|Name |Required |Description
-
-|`allowExisting` [v3.9.3+]
-|No
-|Boolean (default False). When True:
-(1) If an existing token has at least one day remaining before its expiration, refresh and return that token.
-(2) If there is no such existing token and the requester is a cross-region replica, then respond with a No Token Found error.
-(3) Otherwise, return a new token.
-
-|===
+<4> When True, checks for an existing valid token with ≥1 day remaining and refreshes and returns it. If no such token exists and the requester is a cross-region replica, it returns a "No Token Found" error. Otherwise, it generates a new token.The default value is false.(Optional)
 
 ==== Sample requests:
 The responses are slightly different between requests made with secrets and username-password pair.
@@ -1209,7 +1197,7 @@ With secret::
 [source.wrap,bash]
 ----
 curl -X POST http://localhost:9000/requesttoken \
-     -d '{"secret":"jiokmfqqfu2f95qs6ug85o89rpkneib3", "graph":"MyGraph", "lifetime":"100000"}'
+     -d '{"secret":"jiokmfqqfu2f95qs6ug85o89rpkneib3", "graph":"MyGraph", "lifetime":"100000", "allowExisting":"true"}'
 ----
 --
 Response::
@@ -1424,7 +1412,7 @@ This request requires the privilege `WRITE_USER`:
 
 [.wrap,console]
 ----
-curl -X DELETE "https://localhost:14240/expiredtoken"
+curl --user example_username:example_password -X DELETE https://localhost:14240/gsqlserver/gsql/expiredtoken
 ----
 
 The following request deletes all expired tokens that belong to users `u1` and `u2` as well as all tokens created with secrets `s1` and `s2`.
@@ -1466,9 +1454,9 @@ None
 
 `+POST /ddl/{graph_name}+`
 
-xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level EXECUTE_LOADINGJOB
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level EXECUTE LOADINGJOB]
 
-This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:gsql-ref:basics:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
+This endpoint is for loading data into a graph. It submits data as an HTTP request payload, to be loaded into the graph by the DDL Loader. The data payload can be formatted as generic CSV or JSON. For more details, please see xref:{page-component-version}@gsql-ref:basics:system-and-language-basics.adoc[GSQL Language Reference Part 1 - Defining Graphs and Loading Data].
 
 If the loading job references multiple files, multiple HTTP requests are needed to complete the loading job since you can only provide data for one filename variable at a time. The loading job will skip the `LOAD` statements referencing filename variables that the request didn't provide data for.
 
@@ -1903,13 +1891,13 @@ See xref:upsert-rest.adoc[].
 
 *Server*: GSQL-Server
 
-xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Global-level CLEAR_GRAPHSTORE
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Global-level CLEAR_GRAPHSTORE]
 
 This endpoint is available in v3.9.2+.
 
 This endpoint permanently deletes all the data out of the graph store (database), for all graphs.
 It does not delete the database schema, nor does it delete queries or loading jobs.
-It is equivalent to the GSQL command xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
+It is equivalent to the GSQL command xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_clear_graph_store[CLEAR GRAPH STORE].
 
 [WARNING]
 ====
@@ -2499,7 +2487,7 @@ GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type
 ----
 
 This endpoint returns the edge of a specified type between a source vertex and a target vertex.
-If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+If the edge type isn't defined with a xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
 If the edge type is defined with a discriminator, this endpoint returns all edges of the edge type between the source and target vertices.
 
 This endpoint requires the xref:user-access:access-control-model.adoc#_data_crud_privileges[`READ_DATA` privilege] on the types or attributes being queried.
@@ -2570,7 +2558,7 @@ GET /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_type
 ----
 
 This endpoint allows you to retrieve an edge by its source, target, edge type, and
-xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
 
 [NOTE]
 ====
@@ -2627,7 +2615,7 @@ DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_t
 ----
 
 Deletes an edge by its source vertex type and ID, target vertex type and ID, as well as edge type.
-If the edge type isn't defined with a xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
+If the edge type isn't defined with a xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator], the source, target and edge type uniquely identify an edge.
 
 If the edge type is defined with a discriminator, this endpoint deletes all edges of the edge type between the source and target vertices.
 If you want to delete a specific edge by its discriminator, see <<_delete_an_edge_by_source_target_edge_type_and_discriminator>>.
@@ -2718,7 +2706,7 @@ DELETE /graph/{graph_name}/edges/{source_vertex_type}/{source_vertex_id}/{edge_t
 ----
 
 This endpoint allows you to delete an edge by its source, target, edge type, and
-xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
+xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminator].
 
 [NOTE]
 ====
@@ -3172,7 +3160,7 @@ At the read committed level, it is guaranteed that any data read is committed at
 ==== Query parameter Passing
 
 When using a `POST` request to run an installed query, the query parameters are passed in through the request body and xref:API:index.adoc#_formatting_data_in_json[encoded in JSON format].
-The formatting rules for the JSON payload are the same as xref:gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
+The formatting rules for the JSON payload are the same as xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_parameter_json_object[using JSON to pass in parameters in the `RUN QUERY` command].
 
 [width="99%",cols="28%,36%,36%",options="header",]
 |===
@@ -3307,7 +3295,7 @@ curl -X POST -H "GSQL-THREAD-LIMIT: 4" -d '{"p":{"id":"Tom","type":"person"}}' "
 
 [NOTE]
 ====
-Installed queries can run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode].
+Installed queries can run in xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[Detached Mode].
 To do this, use the ``GSQL-ASYNC``header and set its value to `true`.
 
 The xref:built-in-endpoints.adoc#_check_query_status_detached_mode[results] and link:built-in-endpoints.adoc#_check_query_status_detached_mode[status] of the queries run in Detached Mode can be retrieved with a query ID, which is returned immediately when queries are executed in Detached Mode.
@@ -3528,7 +3516,7 @@ The `expirationTime` attribute is also not available.
 
 `+GET /abortquery/{graph_name}+`
 
-xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Graph-level DELETE_DATA
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level DELETE_DATA]
 
 This endpoint safely aborts a selected query by ID or all queries of an endpoint by endpoint URL of a graph.
 
@@ -3595,7 +3583,7 @@ Response::
 
 `GET /query_status`
 
-This endpoint allows you to check the status of a query run in xref:gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
+This endpoint allows you to check the status of a query run in xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
 If you are running a TigerGraph cluster, this endpoint only allows you to check the status of a query running on the node to which the request is sent, not all nodes on the cluster.
 
@@ -3885,7 +3873,7 @@ Response::
 
 `GET /data_consistency_check`
 
-xref:tigergraph-server:reference:list-of-privileges.adoc[*Required privilege*]: Global-level DELETE_DATA
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Global-level DELETE_DATA]
 
 In order to provide peace of mind for TigerGraph operation teams managing HA clusters, a new tool was introduced in version 3.6.3 (via a service endpoint) to check high level consistency of data on both HA and Distributed Clusters.
 This tool can be easily incorporated into the regular operational process to provide up-to-date summary info on the integrity of your data on all servers.

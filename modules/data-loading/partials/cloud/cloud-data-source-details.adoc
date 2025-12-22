@@ -8,21 +8,129 @@ Also, three data object formats are supported: CSV, JSON, and Parquet.
 
 === AWS S3
 
-AWS uses the standard IAM credential provider and uses your access key for authentication.
+The connector offers two methods for authentication:
+
+* The standard IAM credential provider using your access key
+* AWS Identity and Access Management (IAM) role associated with the EC2 instance
 
 Access keys can be used for an individual user or for an IAM role.
-See Using IAM Roles for Amazon EC2 for more information.
+For the access key method, include the following fields in the data source connection:
 
 [source,json]
 {
-"type": "s3",
-"access.key": "<access key>",
-"secret.key": "<secret key>"
+  "type": "s3",
+  "access.key": "<access key>",
+  "secret.key": "<secret key>"
 }
+
+For the IAM role method, you must attach an IAM role to all the EC2 instances which constitute your TigerGraph database cluster.
+Include the following fields in the data source connection:
+
+[source,json]
+{
+  "type": "s3",
+  "file.reader.settings.fs.s3a.aws.credentials.provider": "com.amazonaws.auth.InstanceProfileCredentialsProvider",
+  "access.key": "none",
+  "secret.key": "none"
+}
+
+NOTE: Beginning with v3.10.1, you may omit the `access.key` and `secret.key` fields if you are using the IAM role method.
+
+For more information, see Amazon documentation on using IAM roles for Amazon EC2.
+
+[#temporary-credentials]
+*Temporary Credentials*
+
+In addition, AWS temporary credentials are supported.
+A temporary credential can be generated from the AWS CLI. For example:
+[source,bash]
+aws sts assume-role --role-arn arn:aws:iam::<account-id>:role/<role> --role-session-name "<session-name>"
+
+For more details on temporary credentials, please refer to AWS documentation on  https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html[temporary security credentials in IAM].
+
+To use the temporary credential, add the below configurations in the data source definition:
+[source,json]
+{
+    "type": "s3",
+    "file.reader.settings.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.TemporaryAWSCredentialsProvider",
+    "access.key": "The <AccessKeyId> in credential",
+    "secret.key": "The <SecretAccessKey> in credential",
+    "file.reader.settings.fs.s3a.session.token": "The <SessionToken> in credential"
+}
+
+Example temporary credential from AWS
+[source,json]
+{
+    "Credentials": {
+        "AccessKeyId": "ASIA...X4M3A",
+        "SecretAccessKey": "/wSVO...WUZYv0",
+        "SessionToken": "IQoJb3J...O1k=",
+        "Expiration": "2024-10-10T23:00:00+00:00"
+    },
+    "AssumedRoleUser": {
+        "AssumedRoleId": "A...1",
+        "Arn": "arn:aws:sts::<acount>:assumed-role/<role-name>/<session-name>"
+    }
+}
+
+==== Using MinIO (S3-Compatible Storage)
+
+TigerGraph also supports loading data from https://min.io[MinIO], which is fully S3-compatible.
+When using MinIO instead of AWS S3, additional configuration is required.
+
+*Specify the MinIO Endpoint*
+
+Configure the S3A endpoint to point to your MinIO service:
+
+[source,json]
+----
+"file.reader.settings.fs.s3a.endpoint": "<your_minio_endpoint>"
+----
+
+The endpoint should resolve to your MinIO server and include the correct port if it is not using the default.
+
+*Enable Path-Style Access*
+
+MinIO typically requires path-style access instead of virtual-hosted–style access.
+Enable this option explicitly:
+
+[source,json]
+----
+"file.reader.settings.fs.s3a.path.style.access": "true"
+----
+
+*Import MinIO TLS Certificates (Non-Public or Custom CA)*
+
+If your MinIO deployment uses non-public TLS certificates, such as:
+
+* Self-signed certificates
+* Certificates issued by an internal or private Certificate Authority (CA)
+* Certificates not included in the default Java trust store
+
+you must import the MinIO root or CA certificate into TigerGraph’s Java trust store on *all* TigerGraph nodes.
+
+Run the following command on each node:
+
+[source,bash]
+----
+JAVA_HOME=$(gadmin config get System.AppRoot)/.syspre/usr/lib/jvm/java-openjdk
+$JAVA_HOME/bin/keytool -import -trustcacerts -alias certalias \
+  -noprompt \
+  -file /path/to/minio-root-cert \
+  -keystore $JAVA_HOME/lib/security/cacerts \
+  -storepass changeit
+----
+
+[NOTE]
+====
+* `changeit` is the default password for the Java `cacerts` keystore.
+* Replace `/path/to/minio-root-cert` with the actual path to your MinIO root or CA certificate.
+* After importing the certificate, restart the TigerGraph `KAFKACONN` service for the change to take effect.
+====
 
 === Azure Blob Storage
 
-We support two types of authentication:
+The connector supports two types of authentication:
 
 *Shared key authentication*:
 
@@ -31,22 +139,22 @@ TigerGraph can automatically extract the account name from the file URI, so ther
 
 [source,json]
 {
-"type" : "abs",
-"account.key" : "<account key>"
+    "type" : "abs",
+    "account.key" : "<account key>"
 }
 
 image::data-loading:azure-storage-account.png[Azure Access Keys tab]
 
-**S**ervice principal authentication*:
+*Service principal authentication*:
 
 To use service principal authentication, you must first register your TigerGraph instance as an application and grant it access to your storage account.
 
 [source,json]
 {
-"type" : "abs",
-"client.id" : "<client id>",
-"client.secret" : "<client secrect>",
-"tenant.id" : "<tenant id>"
+    "type" : "abs",
+    "client.id" : "<client id>",
+    "client.secret" : "<client secrect>",
+    "tenant.id" : "<tenant id>"
 }
 
 === Google Cloud Storage
@@ -55,11 +163,11 @@ For GCS, the TigerGraph data source configuration object is based on the _GCS se
 
 [source,json]
 {
-"type": "gcs",
-"project_id": "<project id>",
-"private_key_id": "<private key id>",
-"private_key": "<private key>",
-"client_email": "<email address>"
+    "type": "gcs",
+    "project_id": "<project id>",
+    "private_key_id": "<private key id>",
+    "private_key": "<private key>",
+    "client_email": "<email address>"
 }
 
 You can follow Google Cloud's instructions for creating a service account key, and then replace the `"type"` value with `"gcs"`.

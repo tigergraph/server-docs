@@ -1,17 +1,19 @@
-= Single Sign-On
-:description: Instructions to set up single sign-on for TigerGraph with verified identity providers. 
+= SSO with SAML
+:description: Instructions to set up single sign-on for TigerGraph with verified identity providers.
+:page-aliases: sso.adoc
 :experimental:
 :sectnums:
 
 Single sign-on (SSO) enables you to use your organization's identity provider (IDP) to authenticate users to access TigerGraph GraphStudio and Admin Portal UI.
+We also have instructions for xref:user-access:sso-with-oidc.adoc[SSO with OIDC].
 
 We have verified the following IDPs that support SAML 2.0 protocol:
 
-* https://www.okta.com/[Okta]
-* https://auth0.com/[Auth0]
-* https://docs.microsoft.com/en-us/azure/active-directory/[Azure Active Directory (Azure AD)]
-* https://docs.pingidentity.com/bundle/pingfederate-110/page/ikr1564002999528.html[PingFederate]
-* https://learn.microsoft.com/en-us/windows-server/identity/active-directory-federation-services[Active Directory Federation Services (AD FS)]
+* https://www.okta.com/[Okta.com]
+* https://auth0.com/[Auth0.com]
+* https://docs.microsoft.com/en-us/azure/active-directory/[Azure Active Directory (Azure AD at microsoft.com)]
+* https://docs.pingidentity.com/bundle/pingfederate-110/page/ikr1564002999528.html[PingFederate.com]
+* https://learn.microsoft.com/en-us/windows-server/identity/active-directory-federation-services[Active Directory Federation Services (AD FS at microsoft.com)]
 
 For supporting additional IDPs, please contact sales@tigergraph.com and submit a feature request.
 
@@ -209,7 +211,7 @@ image::adfs-sso-step-6.png[]
 ==== Configure TigerGraph
 
 After configuring AD FS as described previously, you must now configure TigerGraph to accept the connection.
-This is handled in Admin Portal on the SSO page. xref:gui:admin-portal:security/sso.adoc[]
+This is handled in Admin Portal on the SSO page. xref:{page-component-version}@gui:admin-portal:security/sso.adoc[]
 
 * In the field btn:[Identity Provider's X509 certificate], use the certificate exported in Step #4 above.
 
@@ -295,7 +297,15 @@ Refer to your identity provider's documentation to determine which options to us
 Besides providing the SSO information in the UI, you also have the option of providing the information using `gadmin config` through the command-line.
 
 Below is the list of parameters you need to configure.
-You can run xref:system-management:management-with-gadmin.adoc#_gadmin_config_set[`gadmin config set`] to configure their value non-interactively, or run `gadmin config entry Security.SSO.SAML` to configure their values interactively in the terminal.
+You can run xref:system-management:management-commands.adoc#_gadmin_config_set[`gadmin config set`] to configure their value non-interactively, or run `gadmin config entry Security.SSO.SAML` to configure their values interactively in the terminal.
+
+After changing these configuration values, you must run the following `gadmin` commands:
+
+[,console]
+----
+gadmin config apply
+gadmin restart gsql
+----
 
 |===
 |Name | Description | Example

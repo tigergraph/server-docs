@@ -7,9 +7,10 @@ This troubleshooting guide is only up to date for v2.6 and below. +
 Additional guidance for v3.0+ is in development.
 ====
 
-== Introduction
+The Troubleshooting Guide teaches you how to monitor the status of your TigerGraph system, and when needed, find the log files in order to get a better understanding of why certain errors are occurring. This guide covers log file debugging for data loading and querying.
 
-The Troubleshooting Guide teaches you how to monitor the status of your TigerGraph system, and when needed, find the log files in order to get a better understanding of why certain errors are occurring. This section covers log file debugging for data loading and querying.
+For a overview of available log files, their locations, and what information they contain, please refer to the xref:troubleshooting:log-files.adoc#_available_log_files[Log Files] documentation page.
+
 
 == General
 
@@ -29,36 +30,6 @@ $ dmesg -T | tail      (Make sure there are no Out of Memory, or any other error
 
 $ grun all "date"      (Make sure the time across all nodes are synchronized
                         with time difference under 2 seconds. )
-----
-
-=== Location of Log Files
-
-The following command reveals the location of the log files:
-
-[source,console]
-----
-gadmin log
-----
-
-You will be presented with a list of log files. The left side of the resulting file paths is the component for which the respective log file is logging information.
-The majority of the time, these files will contain what you are looking for. You may notice that there are multiple files for each TigerGraph component.
-
-[NOTE]
-====
-The .out file extension is for errors. +
-The .INFO file extension is for normal behaviors.
-====
-
-In order to diagnose an issue for a given component, you'll want to check the .out log file extension for that component.
-
-image::https://lh5.googleusercontent.com/6MnNakec5fKh5faCoWdZwfzprqXyguDZXt15nz0QAG1M3vW1t0nmwo7oYr3DgwVsgJoIEjub-5tSA81UtOQ-Ot-9m30zZ9Zr5tRG077dgfZ7KaE3tMMafUK63oi6fILQeM-kQw6fKqc[]
-
-Other log files that are not listed by the *`gadmin log`* command are those for Zookeeper and Kafka, which can be found here:
-
-[source,console]
-----
-zookeeper : ~/tigergraph/zk/zookeeper.out.*
-kafka     : ~/tigergraph/kafka/kafka.out
 ----
 
 === Synchronize time across nodes in a cluster
@@ -121,8 +92,9 @@ From calling a query to returning the result, here is how the information flows:
 grep <QUERY_NAME> /home/tigergraph/tigergraph/logs/nginx/ngingx_1.access.log
 ----
 
-image::https://lh5.googleusercontent.com/n2ehgN21jrvzuXUj2JJmg-xxqwj4o7Dlc_f1oPAAJDAmxv-1KLwyblrfS4FkWq2vOwHsAVbxYYt2qI_EcG9e4sWEGOSvVjCXtb5yFObazfzBEnVh5juPICoUA2Rc0iseifiCHfDllrE[]
+image::terminal-nginx-log-grep.png[]
 
+[start=2]
 . Nginx sends the request to Restpp.
 
 [source,console]
@@ -150,6 +122,7 @@ grep <REQUEST_ID> /home/tigergraph/tigergraph/logs/GSE_1_1/log.INFO
 
 image::screen-shot-2020-03-24-at-5.22.23-pm.png[]
 
+[start=3]
 . Restpp sends the result back to Nginx.
 
 [source,console]
@@ -157,8 +130,9 @@ image::screen-shot-2020-03-24-at-5.22.23-pm.png[]
 grep <REQUEST_ID> /home/tigergraph/tigergraph/logs/RESTPP_1_1/log.INFO
 ----
 
-image::https://lh6.googleusercontent.com/idUWKQ_1kIkOjwGmjSM7VzbkJGGJaWYrLtExpkTvOuXsDnv5wvDch31dnzsvFy7DZ_T28hWY-BKMJSbmitH6BRjTjXqA27FPXLVyFWDKlUJHdZqlVT5_XePil7TlMPM7HxUpdBpGjzM[]
+image::terminal-restpp-log-grep.png[]
 
+[start=4]
 . Nginx sends the response.
 
 [source,console]
@@ -287,7 +261,7 @@ System_GSystem|GSystemWatcher|Health|ProcMaxGB|0|ProcAlertGB|0|
 CurrentGB|1|SysMinFreePct|10|SysAlertFreePct|30|FreePct|69
 ----
 
-When free memory drops below 10 percent (`SysMinFreePct`), all queries are aborted. This threshold is adjustable through xref:tigergraph-server:system-management:management-with-gadmin.adoc[`gadmin config`].
+When free memory drops below 10 percent (`SysMinFreePct`), all queries are aborted. This threshold is adjustable through xref:system-management:management-with-gadmin.adoc[`gadmin config`].
 
 ==== *How to retrieve information on queries aborted due to memory usage*
 
@@ -520,13 +494,13 @@ If your system has unexpectedly high memory usage, here are possible causes:
 
 If your browser crashes or freezes (shown below), please refresh your browser.
 
-image::https://lh6.googleusercontent.com/3vmIx6BF3S0YuwLQ9-PrKip5c-Bh15NymmAlGh83cILcMGu7v3wzc23cnMlKAlSuFDjz7ZOGmhg82wUZgeIlG7xb1F0OC6yhstBQEcmRN3rl95O_s1qoGbwiqnaczvg1Y63DTDbYtN4[]
+image::browser-aw-snap-error.png[]
 
 === GraphStudio Crash
 
 If you suspect GraphStudio has crashed, first run `gadmin status` to verify all the components are in good shape. Two known causes of GraphStudio crashes are:
 
-* *Huge JSON response* User-written queries can return very large JSON responses. If GraphStudio often crashes on large query responses, you can try reducing the size limit for JSON responses by changing the `GUI.RESTPPResponseMaxSizeBytes` configuration using xref:tigergraph-server:system-management:management-with-gadmin.adoc[`gadmin config`]. The default limit is 33554432 bytes.
+* *Huge JSON response* User-written queries can return very large JSON responses. If GraphStudio often crashes on large query responses, you can try reducing the size limit for JSON responses by changing the `GUI.RESTPPResponseMaxSizeBytes` configuration using xref:system-management:management-with-gadmin.adoc[`gadmin config`]. The default limit is 33554432 bytes.
 
 [source, console]
 ----
@@ -552,9 +526,9 @@ VIS : /home/tigergraph/tigergraph/logs/gui/gui_INFO.log
 
 Allowing GraphStudio DEBUG mode will print out more information to the log files. To allow DEBUG mode, please edit the following file : `/home/tigergraph/tigergraph/visualization/server/src/config/local.json`
 
-image::https://lh3.googleusercontent.com/pVTzOYUGWao0YuAjKYr_r1tQNQ9y1zknf8txPThPNJm0nyTaBDok3kBvJ8a3RS2Dr7GnGPcX3HrKu47fbKfPuPWOqjvy12CkXCdYYZLrNvNtjCczwqJayk-QxXTuC5vZ72OSx3KE6BE[]
+image::config-enable-debug.png[]
 
-image::https://lh5.googleusercontent.com/VQiOsJ1ez9s21h9QxtwqEAEbI28f6RNFlYt7UqCyVjKHfr2xgi9YbvksZYR1HETttrSLaFPr25FiP995ZRRSPdvb-UH8pjn2yp4w-8ODMpcvS52n1U3VoI70nFE5l0j1kelQRm6_hlI[]
+image::config-loglevel-debug.png[]
 
 After editing the file, run `gadmin restart gui -y` to restart the GraphStudio service. Follow along the log file to see what is happening : `tail -f /home/tigergraph/tigergraph/logs/gui/gui_INFO.log`
 
@@ -562,7 +536,7 @@ Repeat the error-inducing operations in GraphStudio and view the logs.
 
 ==== Known Issues
 
-There is a list of known GraphStudio issues xref:gui:graphstudio:known-issues.adoc[here].
+There is a list of known GraphStudio issues xref:{page-component-version}@gui:graphstudio:known-issues.adoc[here].
 
 == Further Debugging
 

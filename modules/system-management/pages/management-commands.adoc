@@ -134,7 +134,7 @@ Flags:
 
 [NOTE]
 ====
-See xref:tigergraph-server:backup-and-restore:backup-cluster.adoc[] for more examples.
+See xref:backup-and-restore:backup-cluster.adoc[] for more examples.
 ====
 
 === gadmin backup list
@@ -361,7 +361,11 @@ Global Flags:
 
 ==== gadmin config entry
 
-Change a configuration entry.
+Configure configuration entries *interactively*.
+
+This command is especially useful for parameters that accept *lists or arrays*, because you can add, remove, and modify entries step-by-step without needing to format JSON manually.
+
+You may also use patterns to filter the entries you want to configure.
 
 [source,console]
 ----
@@ -480,6 +484,22 @@ Global Flags:
 
 [#_gadmin_config_set]
 ==== gadmin config set
+
+Configure a configuration entry in a *non-interactive* way.
+
+Use this command when you want to set a value directly by providing the name and value in one line.
+
+[IMPORTANT]
+====
+For parameters that accept an *array*, wrap the entire JSON array in *single quotes* so the shell treats it as a single argument.
+
+Example:
+[source,bash]
+----
+gadmin config set GSQL.UDF.Policy.HeaderAllowlist \
+'["stdlib.h","string","tuple","vector","list","deque","arrays","forward_list","queue","priority_queue","stack","set","multiset","map","multimap","unordered_set","unordered_multiset","unordered_map","unordered_multimap","iterator","sstream","algorithm","math.h"]'
+----
+====
 
 [source,console]
 ----
@@ -741,7 +761,7 @@ Flags:
 Global Flags:
       --debug   enable debug log output to stdout
 ----
-
+[#_gadmin_restart]
 === gadmin restart
 
 The `gadmin restart` command is used to restart one, many, or all TigerGraph services. You will need to confirm the restarting of services by either entering y (yes) or n (no). To bypass this prompt, you can use the -y flag to force confirmation.
@@ -783,7 +803,7 @@ $ gadmin restart all -y
 [   Info] Starting CTRL
 [   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 IFM GUI
 ----
-
+[#_gadmin_start]
 === gadmin start
 
 The `gadmin start` command can be used to start one, many, or all services.
@@ -826,6 +846,9 @@ $ gadmin start all
 [   Info] Starting CTRL
 [   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN TS3SERV GSQL TS3 IFM GUI
 ----
+
+When xref:reference:configuration-parameters.adoc#_controller[`Controller.ServiceManager.AutoRestart`] is set to `true`, TigerGraph automatically restarts all services if they crash during `gadmin start` or `gadmin restart`.
+The default value is `false`. It does not restart services that are manually stopped.
 
 [#_gadmin_status]
 === gadmin status

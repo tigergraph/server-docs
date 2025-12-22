@@ -124,9 +124,10 @@ Edges, on the other hand, are first grouped by source vertex type, then vertex I
 
 === Examples
 
+.Upsert Example Data 1: Two User vertices
+
 The first example below shows two `User` vertices having an attribute called `age`:
 
-.Upsert Example Data 1: Two User vertices
 [source,json]
 ----
 {
@@ -147,12 +148,13 @@ The first example below shows two `User` vertices having an attribute called `ag
 }
 ----
 
-The second example starts with one `User` vertex.
-Since `id6` contains no attributes, it will remain the same it if already exists.
-If it doesn't yet exist, the request will create a vertex with ID `id6` with default attribute values.
-Then two edges are created: a `Liked` edge from `id1` to `id6`, and then a `Liked_By` edge from `id6` to `id1`.
+.Upsert Example Data 2: Adding Vertices and Edges
 
-.Upsert Example Data 2:add_id6.json
+This example starts with one `User` vertex (`id6`). Since `id6` contains no attributes, it will remain unchanged if it already exists. If it doesn’t yet exist, the request will create a vertex with ID `id6` with default attribute values. Two edges are created:
+
+* A `Liked` edge from `id1` to `id6`.
+* A `Liked_By` edge from `id6` to `id1`.
+
 [source,json]
 ----
 {
@@ -314,26 +316,156 @@ curl -X POST "localhost:9000/graph/Person_Movie" -d '
 '
 ----
 
+== Upserting regular edges 
+
+Regular edges do not have discriminators and must be uniquely defined by their source and target vertex IDs.
+To upsert a regular edge, use the following JSON format:
+
+[source,json]
+----
+{
+  "edges": {
+    "<source_vertex_type>": {
+      "<source_vertex_id>": {
+        "<edge_type>": {
+          "<target_vertex_type>": {
+            "<target_vertex_id>": {
+              "<attribute>": {
+                "value": <value>
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+----
+
+=== Examples
+
+Upserting a `Liked` edge from a `User` vertex (`id1`) to another `User` vertex (`id6`):
+
+[source,json]
+----
+{
+  "edges": {
+    "User": {
+      "id1": {
+        "Liked": {
+          "User": {
+            "id6": {
+              "weight": {
+                "value": 5.0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+----
+
 == Upserting edges with discriminators
 
-Some edge types are defined with xref:gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminators], which allow multiple instances of the same edge type between two vertices.
+Some edge types are defined with xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc#_discriminator[discriminators], which allow multiple instances of the same edge type between two vertices.
 
-To upsert an edge that was defined with a discriminator, insert them as a regular edge.
-However, the following rules apply:
+=== Rules for upserting edges with discriminators
 
-* You cannot leave off discriminator attributes when inserting an edge whose type was defined with discriminator attributes.
-* If you are updating an existing edge, you cannot update the attributes that are defined as part of the edge type discriminator.
+1. *Discriminator attributes are required:*
+* You must include all attributes defined in the discriminator when inserting an edge.
 
-For example, if you have the following edge type definition:
+2. *Discriminator attributes cannot be updated:*
+* Discriminator attributes are immutable and cannot be changed once the edge is created.
+
+3. *Support for multi-edges with JSON arrays:*
+* When upserting multiple edges with discriminators between the same source and target vertices, you can use a JSON array format..
+
+=== Example: Edge type definition
 
 [source.wrap,console]
 ----
-CREATE DIRECTED EDGE Study_At(From Person, To University, DISCRIMINATOR(class_year INT, class_month INT), major STRING))
+CREATE DIRECTED EDGE Liked (  
+  FROM User,  
+  TO User,  
+  DISCRIMINATOR(actionId STRING),  
+  weight FLOAT  
+);  
 ----
 
-When inserting an edge of type `Study_AT`, you cannot omit the `class_year` attribute or the `class_month` attribute.
-You cannot update these two attributes either.
+==== JSON Format for Edges with Discriminators
 
+To upsert edges with discriminators, use the following JSON format:
+
+[source,json]
+----
+{
+  "edges": {
+    "User": {
+      "id1": {
+        "Liked": {
+          "User": {
+            "id6": {
+              "actionId": {
+                "value": "uuid-1"
+              },
+              "weight": {
+                "value": 5.0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+----
+
+1. *"actionId" is the discriminator:*
+* The `actionId` uniquely identifies each edge instance of type `Liked` between the same source (id1) and target (id6) vertices.
+* Discriminators are required when upserting edges of this type and must be included in the JSON payload.
+
+2. *Other attributes, like "weight":*
+* Attributes not part of the discriminator (e.g., `weight`) can be updated when upserting.
+
+3. *Nested Structure:*
+* The JSON groups the edge by source vertex type (User) and source vertex ID (id1).
+* Inside, the edge type (Liked) connects the source to the target vertex type (User) and target vertex ID (id6).
+* The `value` field holds the attribute value for each edge attribute.
+
+[NOTE]
+====
+* This format is the only supported way to upsert edges with discriminators in the current version.
+* Discriminator attributes are required for creating edges and cannot be updated after the edge is created.
+* A future version will introduce support for upserting multiple edges with discriminators using JSON arrays.
+====
+
+== General rules for JSON formatting
+
+1. *Escaped quotes:*
+* If the payload is enclosed in double quotes (`"`), internal double quotes must be replaced with escaped single quotes (`\'`).
+* Example:
+
+[source,json]
+----
+'{"edges":{"User":{"id1":{"Liked":{"User":{"id6":{"weight":{"value":5.0}}}}}}}}'  
+----
+
+2. *Lists and Sets:*
+* For attributes that store lists or sets, use the following format:
+
+[source,json]
+----
+{
+  "measurements": {
+    "value": {
+      "keyList": ["chest", "waist", "hip"],
+      "valueList": [35, 30, 35]
+    }
+  }
+}
+----
 
 == Valid data types
 

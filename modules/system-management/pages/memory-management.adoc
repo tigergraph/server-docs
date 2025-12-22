@@ -16,7 +16,7 @@ Most database operations require more memory the more data you have.
 * Queries
 ** Queries that read or write a high volume of data use more memory.
 ** In a distributed cluster, a non-distributed query can be memory-intensive for the node where the query is run.
-See xref:gsql-ref:querying:distributed-query-mode.adoc[].
+See xref:{page-component-version}@gsql-ref:querying:distributed-query-mode.adoc[].
 
 == Monitor memory usage
 You can monitor memory usage by query and by machine.
@@ -122,7 +122,7 @@ grun all 'grep -i "<request id>" $(gadmin config get System.LogRoot)/gpe/INFO.* 
 === Monitor system free memory percentage
 
 ==== Through Admin Portal
-If you have access to Admin Portal, you can monitor memory usage by node through the cluster monitoring tool in the xref:gui:admin-portal:dashboard.adoc[Dashboard].
+If you have access to Admin Portal, you can monitor memory usage by node through the cluster monitoring tool in the xref:{page-component-version}@gui:admin-portal:dashboard.adoc[Dashboard].
 
 ==== Through Linux commands
 The following is a list of Linux commands to measure system memory and check for out-of-memory errors:
@@ -230,7 +230,7 @@ You must xref:manage-services.adoc#_start_stop_or_restart_a_service[restart the 
 
 === By HTTP header
 
-Another way to limit the query memory usage is to specify the memory limit at the time of the request through the HTTP header `GSQL-QueryLocalMemLimitMB` when using the xref:tigergraph-server:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
+Another way to limit the query memory usage is to specify the memory limit at the time of the request through the HTTP header `GSQL-QueryLocalMemLimitMB` when using the xref:API:built-in-endpoints.adoc#_run_an_installed_query_post[Run Query REST endpoint].
 This applies to the specific request being run only, and overrides the system configuration.
 
 For example, to set the limit to 100 MB, make the following request:

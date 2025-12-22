@@ -12,11 +12,11 @@ TigerGraph provides a comprehensive set of security features, including authenti
 
 * xref:user-access:enabling-user-authentication.adoc#_enable_restpp_authentication[RESTPP authentication]
 * xref:user-access:enabling-user-authentication.adoc#_enable_gsql_authentication[GSQL authentication]
-* xref:user-access:sso.adoc[SSO with SAML 2.0]
-** xref:user-access:sso.adoc#_azure_ad[Azure AD]
-** xref:user-access:sso.adoc#_okta[Okta]
-** xref:user-access:sso.adoc#_auth0[Auth0]
-** xref:user-access:sso.adoc#_pingfederate[PingFederate]
+* xref:user-access:sso-with-saml.adoc[SSO with SAML 2.0]
+** xref:user-access:sso-with-saml.adoc#_azure_ad[Azure AD]
+** xref:user-access:sso-with-saml.adoc#_okta[Okta]
+** xref:user-access:sso-with-saml.adoc#_auth0[Auth0]
+** xref:user-access:sso-with-saml.adoc#_pingfederate[PingFederate]
 * xref:user-access:ldap.adoc[LDAP authentication]
 * xref:password-policy.adoc[Strong password policy enforcement](TigerGraph 3.7+)
 
@@ -30,7 +30,6 @@ TigerGraph provides a comprehensive set of security features, including authenti
 * xref:encrypting-connections.adoc[Data in-transit encryption (TLS 1.2)]
 * xref:encrypting-data-at-rest.adoc[Data at-rest encryption]
 * <<_pgp_key,PGP key-signed download package>>
-* xref:tigergraph-server:data-loading:kafka-ssl-security-guide.adoc[]
 
 == Operational compliance
 TigerGraph Server meets the following security compliance standards as certified by third-party audits:
@@ -72,7 +71,7 @@ You can also find our key on link:https://pgp.mit.edu[].
 
 Available in TigerGraph 3.9+
 
-TigerGraph users can upload xref:gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined function (UDF) files] to the server and run them as part of a query or loading job.
+TigerGraph users can upload xref:{page-component-version}@gsql-ref:querying:func/query-user-defined-functions.adoc[user-defined function (UDF) files] to the server and run them as part of a query or loading job.
 In order to prevent security issues with code execution, TigerGraph Server disables this ability by default and requires it to be enabled manually by an administrator.
 
 In addition, the UDF files are scanned to make sure they comply with the file policy. The scanning process, by default, consists of three parts.

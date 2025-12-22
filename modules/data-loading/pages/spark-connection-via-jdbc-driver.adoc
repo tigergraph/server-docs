@@ -2,7 +2,7 @@
 
 [NOTE]
 ====
-Please see xref:tigergraph-server:data-loading:load-from-spark-dataframe.adoc[] for information on the Spark connector.
+Please see xref:load-from-spark-dataframe.adoc[] for information on the Spark connector.
 ====
 
 Apache Spark is a popular big data distributed processing system which is frequently used in data management ETL process and Machine Learning applications.
@@ -102,7 +102,7 @@ The loading job above, `load_Social` loads the 1st, 2nd, and 3rd columns of sour
 //http://host:port/restpp/ddl/Social?tag=load_Social&filename=file1
 //--data <delimited_data>
 
-See the pages xref:gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[], xref:gsql-ref:ddl-and-loading:running-a-loading-job.adoc[] and xref:tigergraph-server:API:built-in-endpoints.adoc#_loading_jobs[Loading Jobs as a REST Endpoint] for more information about loading jobs in TigerGraph.
+See the pages xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[], xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc[] and xref:API:built-in-endpoints.adoc#_loading_jobs[Loading Jobs as a REST Endpoint] for more information about loading jobs in TigerGraph.
 
 == Advanced Usages with Spark
 
@@ -187,9 +187,9 @@ To bypass the disk IO limitation, it is better to put the raw data file on a dif
 | `url` | (none) |The JDBC URL to connect to: `jdbc:tg:http(s)://ip:port`, this port is the one used by GraphStudio.| Yes
 | `graph` | (none)| The graph name.| Yes
 | `version` | 3.9.0 |The TigerGraph version. |Yes
-| `username` | tigergraph | TigerGraph username. | If xref:tigergraph-server:user-access:enabling-user-authentication.adoc[REST++ authentication] is enabled, a username/password or token is required.
-| `password` | tigergraph | TigerGraph password. | If xref:tigergraph-server:user-access:enabling-user-authentication.adoc[REST++ authentication] is enabled, a username/password or token is required.
-| `token` | (none) | A token used to authenticate RESTPP requests. Request a token| If xref:tigergraph-server:user-access:enabling-user-authentication.adoc[REST++ authentication] is enabled, a username/password or token is required.
+| `username` | tigergraph | TigerGraph username. | If xref:user-access:enabling-user-authentication.adoc[REST++ authentication] is enabled, a username/password or token is required.
+| `password` | tigergraph | TigerGraph password. | If xref:user-access:enabling-user-authentication.adoc[REST++ authentication] is enabled, a username/password or token is required.
+| `token` | (none) | A token used to authenticate RESTPP requests. Request a token| If xref:user-access:enabling-user-authentication.adoc[REST++ authentication] is enabled, a username/password or token is required.
 | `jobid` (TG version >= 3.9.0) | (none) | A unique ID for tracing aggregated loading statistics. | No
 | `max_num_error` (TG version >= 3.9.0) | (none) | The threshold of the error objects count within the `jobid`. The loading job will be aborted when reaching the limit. `jobid` is required. | No
 | `max_percent_error` (TG version >= 3.9.0) | (none) |The threshold of the error objects percentage within the `jobid`. The loading job will be aborted when reaching the limit. `jobid` is required. | No
