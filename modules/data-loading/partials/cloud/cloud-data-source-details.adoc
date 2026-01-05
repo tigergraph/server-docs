@@ -73,6 +73,61 @@ Example temporary credential from AWS
     }
 }
 
+==== Using MinIO (S3-Compatible Storage)
+
+TigerGraph also supports loading data from https://min.io[MinIO], which is fully S3-compatible.
+When using MinIO instead of AWS S3, additional configuration is required.
+
+*Specify the MinIO Endpoint*
+
+Configure the S3A endpoint to point to your MinIO service:
+
+[source,json]
+----
+"file.reader.settings.fs.s3a.endpoint": "<your_minio_endpoint>"
+----
+
+The endpoint should resolve to your MinIO server and include the correct port if it is not using the default.
+
+*Enable Path-Style Access*
+
+MinIO typically requires path-style access instead of virtual-hosted–style access.
+Enable this option explicitly:
+
+[source,json]
+----
+"file.reader.settings.fs.s3a.path.style.access": "true"
+----
+
+*Import MinIO TLS Certificates (Non-Public or Custom CA)*
+
+If your MinIO deployment uses non-public TLS certificates, such as:
+
+* Self-signed certificates
+* Certificates issued by an internal or private Certificate Authority (CA)
+* Certificates not included in the default Java trust store
+
+you must import the MinIO root or CA certificate into TigerGraph’s Java trust store on *all* TigerGraph nodes.
+
+Run the following command on each node:
+
+[source,bash]
+----
+JAVA_HOME=$(gadmin config get System.AppRoot)/.syspre/usr/lib/jvm/java-openjdk
+$JAVA_HOME/bin/keytool -import -trustcacerts -alias certalias \
+  -noprompt \
+  -file /path/to/minio-root-cert \
+  -keystore $JAVA_HOME/lib/security/cacerts \
+  -storepass changeit
+----
+
+[NOTE]
+====
+* `changeit` is the default password for the Java `cacerts` keystore.
+* Replace `/path/to/minio-root-cert` with the actual path to your MinIO root or CA certificate.
+* After importing the certificate, restart the TigerGraph `KAFKACONN` service for the change to take effect.
+====
+
 === Azure Blob Storage
 
 The connector supports two types of authentication:
