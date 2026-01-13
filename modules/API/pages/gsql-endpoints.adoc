@@ -5137,6 +5137,173 @@ Sample Response::
 
 '''
 
+=== Create a proxy user
+
+`POST /gsql/v1/proxyusers`
+
+Create a proxy user for SSO authentication.
+Proxy users do not have local passwords and cannot authenticate using username/password.
+
+==== Required privilege
+`WRITE_USER`
+
+==== Parameters
+None
+
+==== Request body
+[cols="1,1,3",options="header"]
+|===
+|Field |Required |Description
+|username |Yes |Proxy user name. Must match the SSO identity.
+|auth_methods |No |Allowed SSO authentication methods (`KERBEROS`, `OIDC`, `SAML`). If omitted, all enabled SSO methods are allowed.
+|roles |No |Roles to grant to the proxy user after creation.
+|===
+
+==== Example
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -u tigergraph:tigergraph \
+-X POST "http://localhost:14240/gsql/v1/proxyusers" \
+-H "Content-Type: application/json" \
+-d '{
+  "username": "test_user",
+  "auth_methods": ["OIDC"],
+  "roles": ["role1"]
+}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+  "error": false,
+  "message": "Successfully created proxy user test_user"
+}
+----
+--
+====
+
+=== Delete a proxy user
+
+`DELETE /gsql/v1/proxyusers/{username}`
+
+Delete an existing proxy user.
+
+==== Required privilege
+`WRITE_USER`
+
+==== Example
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -u tigergraph:tigergraph \
+-X DELETE "http://localhost:14240/gsql/v1/proxyusers/test_user"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+  "error": false,
+  "message": "Successfully deleted proxy user test_user"
+}
+----
+--
+====
+
+=== Retrieve proxy users
+
+`GET /gsql/v1/proxyusers`
+
+Retrieve all proxy users.
+
+==== Required privilege
+`READ_USER`
+
+==== Example
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -u tigergraph:tigergraph \
+-X GET "http://localhost:14240/gsql/v1/proxyusers"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+  "error": false,
+  "users": [
+    {
+      "name": "test_user",
+      "roles": ["role1"],
+      "authMethods": ["OIDC"],
+      "groups": ["group1"]
+    }
+  ]
+}
+----
+--
+====
+
+=== Retrieve a single proxy user
+
+`GET /gsql/v1/proxyusers/{username}`
+
+Retrieve details of a specific proxy user.
+
+==== Required privilege
+`READ_USER` (unless requesting the current user)
+
+==== Example
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -u tigergraph:tigergraph \
+-X GET "http://localhost:14240/gsql/v1/proxyusers/test_user"
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+  "error": false,
+  "name": "test_user",
+  "roles": ["role1"],
+  "authMethods": ["OIDC"],
+  "groups": ["group1"],
+  "disabled": false,
+  "lastSuccessLogin": "Wed Nov 12 17:01:30 PST 2025"
+}
+----
+--
+====
+
 === retrieve users using gsql format
 
 `GET /gsql/v1/users`
