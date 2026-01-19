@@ -308,7 +308,8 @@ You can specify the response size limit of an HTTP request with the following he
 curl -X <GET/POST> -H "RESPONSE-LIMIT: <size limit in byte>" '<request_URL>'
 ----
 
-If the response size is larger than the given limit, an error message will be returned instead of the actual query result:
+* If the `RESPONSE-LIMIT` header is not set, TigerGraph uses the value configured in `GSQL.QueryResponseMaxSizeByte` as the default response size limit.
+* If the response size is larger than the given limit, an error message will be returned instead of the actual query result:
 
 [source,bash]
 ----
