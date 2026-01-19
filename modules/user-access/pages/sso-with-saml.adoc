@@ -68,6 +68,17 @@ If a proxy user does not exist, login fails with the following error:
 
 `Automatic creation of proxy user is disabled.`
 
+=== Allowed authentication methods for proxy users
+
+A proxy user can optionally restrict which SSO authentication methods are allowed.
+
+If allowed authentication methods are defined for a proxy user:
+
+* The user can log in only using one of the specified SSO methods.
+* If the user authenticates using a different SSO method, the login fails.
+
+If no authentication methods are specified, the proxy user can authenticate using any enabled SSO method.
+
 :sectnums:
 == Configure Identity Provider
 :sectnums!:
