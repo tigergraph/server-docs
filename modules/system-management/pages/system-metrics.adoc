@@ -39,8 +39,6 @@ The following command reports CPU usage by all services for m1 and m2:
 $ gadmin metric gui -t cpu -m m1,m2
 ----
 
-
-
 == Report memory usage
 
 Use command `gadmin metric -t mem` to report memory usage on a cluster or a node in the cluster.
@@ -61,13 +59,65 @@ The following command reports memory usage by the `GUI` service for m1 and m2:
 $ gadmin metric gui -t mem -m m1,m2
 ----
 
-
 The following command reports memory usage by all services for m1 and m2:
 
 [.wrap,console]
 ----
 $ gadmin metric -t mem -m m1,m2
 ----
+
+[NOTE]
+====
+Memory usage reported by `gadmin metric -t mem` may appear higher when TigerGraph runs in containers than when it runs directly on a host.
+This difference is expected and is caused by how memory usage is measured in container environments.
+====
+
+=== Memory usage differences between container and host deployments
+
+TigerGraph reports memory usage based on the underlying runtime environment.
+Container-based deployments and host-based deployments use different memory accounting models.
+
+[cols="2,2,3",options="header"]
+|===
+|Deployment type |Memory metric used |How memory is counted
+
+|Container (Kubernetes)
+|Working set memory
+|Includes active page cache. Cached memory is counted as used memory.
+
+|Host (non-container)
+|Resident/used memory
+|Active page cache is typically excluded and treated as reclaimable.
+|===
+
+*Container (Kubernetes) deployments*
+
+* Kubernetes monitoring tools typically report **working set memory**.
+* The working set **includes active page cache**.
+* For example, `kubectl top pods` reports working set memory.
+* As a result, memory usage values appear higher.
+
+**Host (non-container) deployments**
+
+* Host-level tools such as `free -g` and `top` usually **do not count active page cache as used memory**.
+* Cached memory is excluded from “used” memory totals.
+
+*TigerGraph memory metrics behavior*
+
+TigerGraph follows the same approach as the underlying environment:
+
+* In **container environments**, `gadmin metric -t mem` reports working set memory, including active page cache.
+* In **host environments**, the reported memory usage excludes active page cache.
+
+Because of this difference, memory usage reported by:
+
+----
+$ gadmin metric -t mem -m m1,m2,m3,m4
+----
+
+may look higher in container-based deployments than in host-based deployments, even when the actual workload and data volume are similar.
+
+This behavior is expected and does not indicate higher real memory pressure.
 
 == Report disk space usage
 
