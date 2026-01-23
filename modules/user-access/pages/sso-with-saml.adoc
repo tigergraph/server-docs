@@ -7,6 +7,9 @@
 Single sign-on (SSO) enables you to use your organization's identity provider (IDP) to authenticate users to access TigerGraph GraphStudio and Admin Portal UI.
 We also have instructions for xref:user-access:sso-with-oidc.adoc[SSO with OIDC].
 
+When users authenticate through SSO, TigerGraph represents them as *proxy users*.
+Proxy users do not have local passwords and can authenticate only through supported SSO methods.
+
 We have verified the following IDPs that support SAML 2.0 protocol:
 
 * https://www.okta.com/[Okta.com]
@@ -34,6 +37,46 @@ If you don't enable GSQL authentication, SSO configuration will not work and any
 WARNING: During the SSO authentication process, TigerGraph sends a response with a large header to confirm the result of the authentication request.
 If you use any middleware such as an Nginx load balancer between TigerGraph and your IDP, make sure that your middleware is able to handle the size of the responses.
 For example, if using Nginx, make sure proxy buffering is turned on.
+
+== Proxy users and SSO login behavior
+
+When a user logs in through SAML-based SSO, TigerGraph authenticates the user as a *proxy user*.
+
+A proxy user:
+
+* Does not have a local password
+* Cannot log in using a username and password
+* Can authenticate only through SSO
+* Receives privileges from:
+** Roles directly granted to the proxy user
+** Roles inherited from proxy groups matched by IDP attributes
+
+=== Automatic proxy user creation
+
+By default, TigerGraph automatically creates a proxy user when an SSO user logs in for the first time.
+
+This behavior is controlled by the Boolean configuration parameter
+xref:reference:configuration-parameters.adoc#_security[`Security.SSO.EnableAutomaticCreation`]
+
+* `true` (default):
+Proxy users are created automatically during the first SSO login.
+
+* `false`:
+Proxy users must already exist.
+If a proxy user does not exist, login fails with the following error:
+
+`Automatic creation of proxy user is disabled.`
+
+=== Allowed authentication methods for proxy users
+
+A proxy user can optionally restrict which SSO authentication methods are allowed.
+
+If allowed authentication methods are defined for a proxy user:
+
+* The user can log in only using one of the specified SSO methods.
+* If the user authenticates using a different SSO method, the login fails.
+
+If no authentication methods are specified, the proxy user can authenticate using any enabled SSO method.
 
 :sectnums:
 == Configure Identity Provider
@@ -371,8 +414,11 @@ used when returning a <Response> message.
 
 == Create user groups with proxy rules to authorize single sign-on users
 
-In order to authorize single sign-on users, you need create user groups with proxy rules and grant roles on graphs for the user groups.
-Proxy rules assign users who log in through SSO into proxy groups based on the attributes of the user from the identity provider's response.
+In order to authorize single sign-on users, you need to create user groups with proxy rules and grant roles on graphs for those groups.
+Proxy rules assign users who log in through SSO to proxy groups based on attributes returned by the identity provider.
+
+Starting from 4.3.0, proxy users can be created and managed explicitly.
+However, proxy user group membership is still determined dynamically during SSO login based on proxy rules and identity provider (IDP) attributes.
 
 === Required privilege
 
@@ -426,8 +472,8 @@ As of 3.10.1, the match strategy has been extended to allow matches via regular 
 The original match strategy has not changed.
 ====
 
-For a regular expression match users need to add a prefix `regex:`
-a space after the `:` is allowed. (Ex. `regex:nameid=abc, regex:   nameid=abc`)
+For a regular expression match, users need to add the prefix `regex:`.
+A space after the `:` is allowed (for example, `regex:nameid=abc`, `regex:   nameid=abc`).
 
 [NOTE]
 ====
@@ -515,8 +561,7 @@ Below are a few common SSO errors and how to resolve them.
 
 === "Login failed. Please contact system admin."
 
-* If your single sign-on fails with the above error message, it usually means the configuration are inconsistent between TigerGraph and your identity provider.
-
+* If your single sign-on fails with the above error message, it usually means the configuration is inconsistent between TigerGraph and your identity provider.
 
 You can check your GSQL log to investigate.
 First, find your GSQL log file with the following:

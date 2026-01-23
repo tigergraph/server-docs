@@ -141,6 +141,60 @@ For more information, see xref:security:login-protection.adoc[]
 If the user running the command has the `READ_USER` privilege, information on all users is displayed.
 Otherwise, only the current user's information is displayed.
 
+== Show proxy users
+
+Proxy users represent users authenticated through Single Sign-On (SSO).
+They do not have local passwords and authenticate only through SSO.
+
+The `SHOW PROXY USER` command displays metadata about the given proxy user(s).
+
+=== Syntax
+
+[source,gsql]
+----
+SHOW PROXY USER <proxy_user_name> (, <proxy_user_name>)*
+----
+
+=== Required privilege
+`READ_USER` (unless showing the current user)
+
+=== Example
+
+[source,gsql]
+----
+GSQL > SHOW PROXY USER Alice
+----
+
+[source,text]
+----
+Users:
+  - Name: Alice
+    - Global Roles: role1
+    - Groups: group1
+    - AllowedAuthMethod: SAML
+    - Disabled: false
+    - LastSuccessLogin: Wed Nov 12 17:01:30 PST 2025
+    - FailedAttempts: 0
+----
+
+[NOTE]
+====
+Proxy group membership is determined during SSO login based on identity provider attributes.
+Group information may not be available until the proxy user has logged in successfully.
+====
+
+== View users and login activity
+
+The `SHOW USER` command displays both local users and proxy users.
+
+[source,gsql]
+----
+SHOW USER
+----
+
+If the current user has the`READ_USER` privilege, information for all users (local and proxy) is displayed.
+Otherwise, only the current user is shown.
+
 == View privileges of a user or proxy group
 
 Users with the `READ_USER` privilege in a scope can view the RBAC privileges of users or proxy groups within that scope.
