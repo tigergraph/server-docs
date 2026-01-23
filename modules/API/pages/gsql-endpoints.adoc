@@ -5155,7 +5155,7 @@ None
 |===
 |Field |Required |Description
 |username |Yes |Proxy user name. Must match the SSO identity.
-|auth_methods |No |Allowed SSO authentication methods (`KERBEROS`, `OIDC`, `SAML`). If specified, the proxy user can log in only using these methods. Login fails if a different SSO method is used.
+|auth_methods |No |Allowed SSO authentication methods (`KERBEROS`, `OIDC`, `SAML`). If specified, the proxy user can log in only using these methods. If not specified, all supported SSO methods (`KERBEROS`, `OIDC`, `SAML`) are allowed. This field accepts a JSON array, allowing multiple authentication methods.
 |roles |No |Roles to grant to the proxy user after creation.
 |===
 
@@ -5167,13 +5167,14 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -u tigergraph:tigergraph \
--X POST "http://localhost:14240/gsql/v1/proxyusers" \
--H "Content-Type: application/json" \
+curl -u <admin-username>:<admin-password>
+-X POST "http://localhost:14240/gsql/v1/proxyusers
+"
+-H "Content-Type: application/json"
 -d '{
-  "username": "test_user",
-  "auth_methods": ["OIDC"],
-  "roles": ["role1"]
+"username": "qatest",
+"auth_methods": ["OIDC", "SAML"],
+"roles": ["role1", "role2"]
 }'
 ----
 --
@@ -5184,7 +5185,7 @@ Sample Response::
 ----
 {
   "error": false,
-  "message": "Successfully created proxy user test_user"
+  "message": "Successfully created proxy user qatest"
 }
 ----
 --
@@ -5198,6 +5199,9 @@ Delete an existing proxy user.
 
 ==== Required privilege
 `WRITE_USER`
+
+==== Parameters
+None
 
 ==== Example
 [,tabs]
@@ -5232,6 +5236,9 @@ Retrieve all proxy users.
 
 ==== Required privilege
 `READ_USER`
+
+==== Parameters
+None
 
 ==== Example
 [,tabs]
@@ -5273,6 +5280,9 @@ Retrieve details of a specific proxy user.
 
 ==== Required privilege
 `READ_USER` (unless requesting the current user)
+
+==== Parameters
+None
 
 ==== Example
 [,tabs]
