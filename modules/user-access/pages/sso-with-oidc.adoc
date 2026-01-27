@@ -12,41 +12,22 @@ This guide will help you set up PingFederate for OIDC and integrate it with Tige
 
 When a user logs in through OIDC-based SSO, TigerGraph authenticates the user as a *proxy user*.
 
-A proxy user:
+Proxy users do not have local passwords and can authenticate only through SSO.
+They receive privileges through a combination of directly assigned roles and roles inherited from proxy groups.
 
-* Does not have a local password
-* Cannot log in using a username and password
-* Can authenticate only through SSO (for example, OIDC)
-* Receives privileges from:
-** Roles directly granted to the proxy user
-** Roles inherited from proxy groups matched by identity provider (IdP) attributes
+Proxy user creation, login behavior, role assignment, and proxy group mapping follow the same rules for all SSO methods.
 
-=== Automatic proxy user creation
+For details about:
 
-By default, TigerGraph automatically creates a proxy user when an OIDC user logs in for the first time.
+* Automatic proxy user creation
+* The `Security.SSO.EnableAutomaticCreation` configuration
+* Allowed authentication methods for proxy users
+* How roles and proxy groups are applied during login
 
-This behavior is controlled by the Boolean configuration parameter
-xref:reference:configuration-parameters.adoc#_security[`Security.SSO.EnableAutomaticCreation`]
+see
+xref:user-access:sso-with-saml.adoc#_proxy_users_and_sso_login_behavior[Proxy users and SSO login behavior].
 
-* `true` (default):
-If the proxy user does not already exist, TigerGraph creates it automatically during the first successful OIDC login.
-
-* `false`:
-The proxy user must already exist.
-If the proxy user does not exist, the OIDC login fails with the following error:
-
-`Automatic creation of proxy user is disabled.`
-
-=== Allowed authentication methods for proxy users
-
-A proxy user can optionally restrict which SSO authentication methods are allowed.
-
-If allowed authentication methods are defined for a proxy user:
-
-* The user can log in only using one of the specified methods (for example, `OIDC`).
-* If the user attempts to authenticate using a different SSO method, the login fails.
-
-If no authentication methods are specified for the proxy user, all enabled SSO methods are allowed.
+This page focuses on OIDC-specific configuration and setup.
 
 == Prerequisites
 
