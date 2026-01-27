@@ -645,6 +645,26 @@ System.TempRoot) |`gui`
 
 |GUI.TempFileMaxDurationDay |GUI temp file max duration time in days
 |`7`
+
+|GUI.EnableCORS
+a|Controls whether the GUI (GraphStudio and Admin Portal) accepts cross-origin requests.
+
+Supported values:
+* `DISABLE` – Disable all CORS requests (default).
+* `ENABLE_ALL` – Allow requests from any origin.
+* `ENABLE_WHITE_LIST` – Allow requests only from origins specified in `GUI.WhiteListCORS`.
+
+When CORS is enabled, CORS-related HTTP headers are managed automatically by TigerGraph.
+|`DISABLE`
+
+|GUI.WhiteListCORS
+|A list of allowed origins when `GUI.EnableCORS` is set to `ENABLE_WHITE_LIST`.
+Each origin must include the scheme and host (for example, https://example.com).
+If a non-default port is used, include it explicitly.
+
+This setting is ignored unless `GUI.EnableCORS=ENABLE_WHITE_LIST`.
+|`["https://example.com"]`
+
 |===
 
 == Gadmin
