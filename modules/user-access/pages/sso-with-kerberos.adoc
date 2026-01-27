@@ -17,6 +17,27 @@ TigerGraph supports web-based Kerberos SSO through *SPNEGO (Simple and Protected
 Kerberos SSO can coexist with other SSO methods (SAML, OIDC, LDAP), but only one can be active at a time.
 ====
 
+== Proxy users and Kerberos login behavior
+
+When a user logs in through Kerberos-based SSO, TigerGraph authenticates the user as a *proxy user*.
+
+Proxy users do not have local passwords and can authenticate only through SSO.
+They receive privileges through a combination of directly assigned roles and roles inherited from proxy groups.
+
+Proxy user creation, login behavior, role assignment, and proxy group mapping follow the same rules for all SSO methods.
+
+For details about:
+
+* Automatic proxy user creation
+* The `Security.SSO.EnableAutomaticCreation` configuration
+* Allowed authentication methods for proxy users
+* How roles and proxy groups are applied during login
+
+see
+xref:user-access:sso-with-saml.adoc#_proxy_users_and_sso_login_behavior[Proxy users and SSO login behavior].
+
+This page focuses on Kerberos-specific configuration and setup.
+
 == Prerequisites
 
 * A configured Kerberos environment with access to a KDC (Active Directory or MIT Kerberos).
