@@ -48,7 +48,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph"
+curl -X GET -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -88,7 +88,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph"
+curl -X GET -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -133,7 +133,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
+curl -X POST -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/vertices?gsql=true" -d '{"gsql":["CREATE VERTEX UserA (PRIMARY_ID user_id UINT, name STRING)", "CREATE VERTEX UserB (PRIMARY_ID user_id UINT, name STRING)"]}'
 ----
 --
 Sample Response::
@@ -176,7 +176,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph" -d '{"addVertices":["UserA","UserB"]}'
+curl -X POST -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/vertices?graph=financialGraph" -d '{"addVertices":["UserA","UserB"]}'
 ----
 --
 Sample Response::
@@ -209,7 +209,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices" -d '{
+curl -X POST -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/vertices" -d '{
     "createVertices": [
         {
             "Config": {
@@ -298,7 +298,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices?vertex=user5,user4"
+curl -X DELETE -H "content-type: text/plain" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/vertices?vertex=user5,user4"
 ----
 --
 Sample Response::
@@ -341,7 +341,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/userB?graph=financialGraph"
+curl -X DELETE -H "content-type: text/plain" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/vertices/userB?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -383,7 +383,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph" -d '{"dropAttributes":["isBlocked"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
+curl -X PUT -H "content-type: application/json" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/vertices/Account?graph=financialGraph" -d '{"dropAttributes":["isBlocked"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr1"}]}'
 ----
 --
 Sample Response::
@@ -424,7 +424,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph"
+curl -X GET -H "content-type: text/plain" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -464,7 +464,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/index_type_name?graph=financialGraph"
+curl -X GET -H "content-type: text/plain" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/indexes/index_type_name?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -504,7 +504,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph" -d '{"vertex":"Account","addIndexAttributes":[{"indexName":"nameIndex","attributeName":"name"}]}'
+curl -X POST -H "content-type: text/plain" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph" -d '{"vertex":"Account","addIndexAttributes":[{"indexName":"nameIndex","attributeName":"name"}]}'
 ----
 --
 Sample Response::
@@ -548,7 +548,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes/nameIndex?vertex=Account"
+curl -X DELETE -H "content-type: text/plain" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/indexes/nameIndex?vertex=Account"
 ----
 --
 Sample Response::
@@ -596,7 +596,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph&vertex=Account&index=nameIndex"
+curl -X DELETE -H "content-type: text/plain" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/indexes?graph=financialGraph&vertex=Account&index=nameIndex"
 ----
 --
 Sample Response::
@@ -637,7 +637,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph"
+curl -X GET -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -677,7 +677,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/isLocatedIn?graph=financialGraph"
+curl -X GET -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/edges/isLocatedIn?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -723,7 +723,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from Account, to City, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from Account, to Phone, attr2 float)"]}'
+curl -X POST -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/edges?gsql=true" -d '{"gsql":["CREATE UNDIRECTED EDGE edge1 (from Account, to City, attr1 float)", "CREATE UNDIRECTED EDGE edge2 (from Account, to Phone, attr2 float)"]}'
 ----
 --
 Sample Response::
@@ -765,7 +765,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph" -d '{"addEdges":["has_account"]}'
+curl -X POST -H "content-type: application/json" -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/edges?graph=financialGraph" -d '{"addEdges":["has_account"]}'
 ----
 --
 Sample Response::
@@ -798,7 +798,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges" -d ' {"createEdges":["IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}]}'
+curl -X POST -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/edges" -d ' {"createEdges":["IsDirected":true,"ToVertexTypeName":"City","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"isLocatedIn"},"IsDirected":true,"ToVertexTypeName":"Phone","Config":{},"Attributes":[],"FromVertexTypeName":"Account","Name":"hasPhone"}]}'
 ----
 --
 Sample Response::
@@ -844,7 +844,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges?edge=hasPhone&graph=financialGraph"
+curl -X DELETE -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/edges?edge=hasPhone&graph=financialGraph"
 ----
 --
 Sample Response::
@@ -884,7 +884,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X DELETE -H "content-type: text/plain" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/hasPhone?graph=financialGraph"
+curl -X DELETE -H "content-type: text/plain" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/edges/hasPhone?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -924,7 +924,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X PUT -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/edges/Transfer?graph=financialGraph" -d '{"dropAttributes":["date"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr"}]}'
+curl -X PUT -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/edges/Transfer?graph=financialGraph" -d '{"dropAttributes":["date"],"addAttributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"attr"}]}'
 ----
 --
 Sample Response::
@@ -957,7 +957,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H 'Content-Type: application/json' -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/graphs"
+curl -X GET -H 'Content-Type: application/json' -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/graphs"
 ----
 --
 Sample Response::
@@ -990,7 +990,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/graphs/financialGraph"
+curl -X GET -H "content-type: application/json" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/graphs/financialGraph"
 ----
 --
 Sample Response::
@@ -1369,7 +1369,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph" -d '
+curl -X POST -H "content-type: application/json" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/jobs/test5?graph=financialGraph" -d '
 {
     "dropVertexTypes": [
         "LocalPhone"
@@ -1559,7 +1559,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X POST -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/change" -d '
+curl -X POST -H "content-type: application/json" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/change" -d '
  {"addVertexTypes":[{"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User5"},
 {"Config":{"STATS":"OUTDEGREE_BY_EDGETYPE"},"Attributes":[{"AttributeType":{"Name":"STRING"},"AttributeName":"name"}],"PrimaryId":{"AttributeType":{"Name":"UINT"},"AttributeName":"user_id"},"Name":"User4"}
 ]}'
@@ -1793,7 +1793,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -u tigergraph:tigergraph 'http://<tigergraph-host>:14240/gsql/v1/schema/version'
+curl -u user1:pwd123 'http://<tigergraph-host>:14240/gsql/v1/schema/version'
 ----
 --
 
@@ -1848,7 +1848,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -X GET -H "content-type: application/json" -u tigergraph:tigergraph "http://localhost:14240/gsql/v1/schema/jobs?graph=financialGraph"
+curl -X GET -H "content-type: application/json" -u user1:pwd123 "http://localhost:14240/gsql/v1/schema/jobs?graph=financialGraph"
 ----
 --
 Sample Response::
@@ -2207,7 +2207,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -u tigergraph:tigergraph 'http://<tigergraph-host>:14240/gsql/v1/loading-jobs/listrunning?graph=graphName'
+curl -u user1:pwd123 'http://<tigergraph-host>:14240/gsql/v1/loading-jobs/listrunning?graph=graphName'
 ----
 --
 Sample Response::
@@ -3392,7 +3392,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -u tigergraph:tigergraph 'http://<tigergraph-host>:14240/gsql/v1/queries/listrunning?graph=graphName'
+curl -u user1:pwd123 'http://<tigergraph-host>:14240/gsql/v1/queries/listrunning?graph=graphName'
 ----
 --
 Sample Response::
@@ -5167,7 +5167,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -u <admin-username>:<admin-password>
+curl -u user1:pwd123
 -X POST "http://localhost:14240/gsql/v1/proxyusers
 "
 -H "Content-Type: application/json"
@@ -5211,7 +5211,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -u tigergraph:tigergraph \
+curl -u user1:pwd123 \
 -X DELETE "http://localhost:14240/gsql/v1/proxyusers/test_user"
 ----
 --
@@ -5248,7 +5248,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -u tigergraph:tigergraph \
+curl -u user1:pwd123 \
 -X GET "http://localhost:14240/gsql/v1/proxyusers"
 ----
 --
@@ -5292,7 +5292,7 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -u tigergraph:tigergraph \
+curl -u user1:pwd123 \
 -X GET "http://localhost:14240/gsql/v1/proxyusers/test_user"
 ----
 --
