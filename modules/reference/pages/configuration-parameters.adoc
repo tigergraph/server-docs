@@ -607,12 +607,24 @@ and AdminPortal before inactivity logout |`604800`
 |GUI.Cookie.SameSite |Default mode: 1; Lax mode: 2; Strict mode: 3; None
 mode: 4 |`3`
 
+|GUI.DataDirRelativePath |The relative path of gui data folder (to the
+System.DataRoot) |`gui`
+
 |GUI.EnableConcurrentSession |Enable or disable concurrent sessions for GUI. Setting to `false` will disable concurrent sessions.The default value is `true`.
 
 |`true`
 
-|GUI.DataDirRelativePath |The relative path of gui data folder (to the
-System.DataRoot) |`gui`
+|GUI.EnableCORS
+a|Controls whether the GUI (GraphStudio and Admin Portal) accepts cross-origin requests.
+
+Supported values:
+
+* `DISABLE` – Disable all CORS requests (default).
+* `ENABLE_ALL` – Allow requests from any origin.
+* `ENABLE_WHITE_LIST` – Allow requests only from origins specified in `GUI.WhiteListCORS`.
+
+When CORS is enabled, CORS-related HTTP headers are managed automatically by TigerGraph.
+|`DISABLE`
 
 |GUI.EnableDarkTheme |The boolean value on whether or not GUI should
 enable dark theme |`true`
@@ -645,6 +657,14 @@ System.TempRoot) |`gui`
 
 |GUI.TempFileMaxDurationDay |GUI temp file max duration time in days
 |`7`
+
+|GUI.WhiteListCORS
+|JSON list of allowed origin server URLs when `GUI.EnableCORS` is set to `ENABLE_WHITE_LIST`.
+Each origin must include the scheme and host (for example, https://example.com).
+If a non-default port is used, include it explicitly.
+
+|`["https://example.com"]`
+
 |===
 
 == Gadmin
