@@ -22,6 +22,25 @@ or
 gadmin license set @textfile
 ----
 
+==== Example:
+
+[source,bash]
+----
+$ gadmin license set
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+$ gadmin config apply
+[Warning] No difference from staging config, config apply is skipped.
+[   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+$ gadmin restart all
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL IFM GUI
+[   Info] Stopping CTRL
+[   Info] Stopping EXE
+[   Info] Starting EXE
+[   Info] Starting CTRL
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN CTRL GSQL IFM GUI
+
+----
 If you have a version 2.0 file-type license key which is linked to a specific machine or cluster:
 
 * If this is the initial installation or you are updating a previous key file, then please see the document xref:installation:license.adoc[]
@@ -49,6 +68,12 @@ If you are running TigerGraph v3.0+, run the following command:
 [source,text]
 ----
 gadmin license status
+----
+==== Example:
+
+[source,bash]
+----
+[Warning] License will expire in 0 days
 ----
 
 [discrete]
@@ -87,14 +112,67 @@ The following command tells you the basic summary of each component:
 ----
 gadmin status
 ----
+==== Example:
 
+[source,bash]
+----
+$ gadmin status
++--------------------+-------------------------+-------------------------+
+|    Service Name    |     Service Status      |      Process State      |
++--------------------+-------------------------+-------------------------+
+|       ADMIN        |         Online          |         Running         |
+|        CTRL        |         Online          |         Running         |
+|        DICT        |         Online          |         Running         |
+|        ETCD        |         Online          |         Running         |
+|        EXE         |         Online          |         Running         |
+|        GPE         |         Online          |         Running         |
+|        GSE         |         Online          |         Running         |
+|        GSQL        |         Online          |         Running         |
+|        GUI         |         Online          |         Running         |
+|        IFM         |         Online          |         Running         |
+|       KAFKA        |         Online          |         Running         |
+|     KAFKACONN      |         Online          |         Running         |
+|    KAFKASTRM-LL    |         Online          |         Running         |
+|       NGINX        |         Online          |         Running         |
+|       RESTPP       |         Online          |         Running         |
+|         ZK         |         Online          |         Running         |
++--------------------+-------------------------+-------------------------+
+
+
+----
 If you want to know more, including process information, memory/cpu usage information of each component, use the -v option for verbose output.
 
 [source,text]
 ----
 gadmin status -v
 ----
+==== Example:
 
+[source,bash]
+----
+$ gadmin status -v
++--------------------+-------------------------+-------------------------+-------------------------+-------------------------+
+|    Service Name    |     Service Status      |      Process State      |       Process ID        |          Role           |
++--------------------+-------------------------+-------------------------+-------------------------+-------------------------+
+|      ADMIN#1       |         Online          |         Running         |          99872          |           NA            |
+|       CTRL#1       |         Online          |         Running         |          11323          |           NA            |
+|       DICT#1       |         Online          |         Running         |          98901          |           NA            |
+|       ETCD#1       |         Online          |         Running         |          33061          |           NA            |
+|       EXE_1        |         Online          |         Running         |          11299          |           NA            |
+|      GPE_1#1       |         Online          |         Running         |          99944          |         Leader          |
+|      GSE_1#1       |         Online          |         Running         |          99897          |         Leader          |
+|       GSQL#1       |         Online          |         Running         |         100711          |         Leader          |
+|       GUI#1        |         Online          |         Running         |         100895          |           NA            |
+|       IFM#1        |         Online          |         Running         |          34908          |           NA            |
+|      KAFKA#1       |         Online          |         Running         |          76909          |           NA            |
+|    KAFKACONN#1     |         Online          |         Running         |         100192          |           NA            |
+|   KAFKASTRM-LL_1   |         Online          |         Running         |         100035          |           NA            |
+|      NGINX#1       |         Online          |         Running         |          99929          |           NA            |
+|      RESTPP#1      |         Online          |         Running         |          99973          |           NA            |
+|        ZK#1        |         Online          |         Running         |          11365          |           NA            |
++--------------------+-------------------------+-------------------------+-------------------------+-------------------------+
+
+----
 [discrete]
 === How can I find out the port of a service?
 
@@ -104,19 +182,73 @@ To find out the port of a service, use the `gadmin config get <port_name>` comma
 ----
 $ gadmin config get RESTPP.NginxPort
 ----
+==== Example:
 
+[source,bash]
+----
+9000
+----
 To list and edit all ports, use the following command:
 
 [source,text]
 ----
 gadmin config group port
 ----
+==== Example:
+[source,bash]
+----
+$ gadmin config group port
+
+Security.LDAP.Port [ 389 ]: Configure LDAP server port: default 389
+New: 389
+[   Info] no changes for Security.LDAP.Port
+
+System.SSH.Port [ 22 ]: SSH port
+New: 22
+[   Info] no changes for System.SSH.Port
+
+System.CrossRegionReplication.PrimaryKafkaPort [ 30002 ]: Kafka mirrormaker primary cluster's KafkaPort
+New: 30002
+[   Info] no changes for System.CrossRegionReplication.PrimaryKafkaPort
+
+Executor.Port [ 9177 ]: The serving port for Executor
+New: 9177
+[   Info] no changes for Executor.Port
+
+Executor.FileTransferPort [ 9178 ]: The port for Executor to do file transfer
+New: 9178
+[   Info] no changes for Executor.FileTransferPort
+
+----
+NOTE: Actual values may vary depending on cluster configuration.
 
 To change the port number of one service, use the following command:
 
 [source,text]
 ----
 gadmin config set <port_name> <port_number>
+----
+==== Example:
+[source,bash]
+----
+gadmin config set RESTPP.NginxPort 9001
+[   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
+$ gadmin config apply
+[   Note] Changes:
+RESTPP.NginxPort: 9000 -> 9001
+Proceed to apply? (y/N)y
+[   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+$ gadmin restart all
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL IFM GUI
+[   Info] Stopping CTRL
+[   Info] Stopping EXE
+[   Info] Starting EXE
+[   Info] Starting CTRL
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN CTRL GSQL IFM GUI
+$ gadmin config get RESTPP.NginxPort
+9001
+
 ----
 
 [discrete]
@@ -130,7 +262,22 @@ To back up the current system:
 ----
 gadmin backup create <tag_of_the_backup>
 ----
+==== Example:
 
+[source,bash]
+----
+[   Info] [Mon Jan 26 08:17:41 UTC 2026] Tag is qa_test_backup_01-2026-01-26T081741.607
+[   Info] [Mon Jan 26 08:17:41 UTC 2026] Backup timeout is 18000 seconds
+[   Info] [Mon Jan 26 08:17:41 UTC 2026] Backup path: /home/tigergraph/backup/qa_test_backup_01-2026-01-26T081741.607
+[   Info] [Mon Jan 26 08:17:41 UTC 2026] Created backup directories
+[   Info] [Mon Jan 26 08:17:42 UTC 2026] Exporting GSQL data... (async)
+[   Info] [Mon Jan 26 08:17:42 UTC 2026] Exporting GSE data... (async)
+[   Info] [Mon Jan 26 08:17:42 UTC 2026] Exporting GPE data... (async)
+...
+
+[   Info] [Mon Jan 26 08:18:25 UTC 2026] Backup completes, backup files are under the path:
+       /home/tigergraph/backup/qa_test_backup_01-2026-01-26T081741.607
+----
 Please be advised that `backup` only backs up data and configuration. No logs or binaries will be backed up.
 
 [discrete]
@@ -141,6 +288,47 @@ To restore an existing backup:
 [source,text]
 ----
 gadmin backup restore <tag of the backup>
+----
+==== Example:
+
+[source,bash]
+----
+$ gadmin backup restore --help
+Restore a cluster from backup
+
+Usage:
+  gadmin backup restore <tag/time point> [flags]
+
+Description:
+
+  Restores a backup of cluster data.
+
+  Example:
+  gadmin backup restore my-backup-2021-11-04T120000
+
+Flags:
+      --dr                     Enable cross-region replication (CRR) and set the cluster as a disaster recovery (DR) cluster after restore.
+                               Note: all CRR-related configs must be populated before running the restore.
+                               This flag can be used in the following ways:
+                               1. 'gadmin backup restore <tag> --dr'
+                                Restore from a backup and initialize the cluster as a DR cluster.
+                               2. 'gadmin backup restore --dr --dr-checkpoint <crr_checkpoint_json>'
+                                Switch an existing cluster directly into the DR role which was previously in Primary role.
+                                To ensure data consistency, the <crr_checkpoint_json> file must be provided for data validation.
+                                This file can be generated when promoting the old DR cluster to Primary by running 'gadmin crr stop --promote'.
+                               3. 'gadmin backup restore --dr'
+                                Set up both a Primary cluster and a DR cluster on freshly installed clusters.
+      --dr-checkpoint string   The path of the JSON CRR checkpoint file dumped by 'gadmin crr stop --promote'. This file is used to ensure data consistency when switching the old Primary cluster to the DR role without performing a full backup and restore.
+  -h, --help                   help for restore
+      --ignore-space-check     Ignore the space check during the backup/restore.
+      --keep-users             The keep-users flag can be used to retain the current cluster GSQL users instead of being overwritten by the backup ones.
+      --staging-path string    The path used to store the graph data during backup/restore. Defaults to dataroot.
+      --time-point             this flag indicates whether to restore to a specific point in time, rather than from a certain backup.
+  -y, --y                      yes to all questions
+
+Global Flags:
+      --debug   enable debug log output to stdout
+
 ----
 
 Please be advised that running restore will STOP the service and ERASE existing data.
@@ -158,6 +346,7 @@ gstatusgraph [-s <node_name>]
 
 using -s to do statistics for one node
 ----
+
 
 [source,text]
 ----
@@ -187,7 +376,14 @@ TigerGraph provides a RESTful API to tell request statistics. Assuming REST port
 ----
 curl -l http://localhost:14240/restpp/statistics
 ----
+==== Example:
 
+[source,bash]
+----
+$ curl http://localhost:14240/restpp/statistics?seconds=60
+{"POST /restppkafkaloader/{graph_name}":{"CompletedRequests":1,"QPS":0.01666666666666667,"TimeoutRequests":0,"AverageLatency":1,"MaxLatency":1,"MinLatency":1,"LatencyPercentile":[2,2,2,2,2,2,2,2,2,2]},"GET /statistics/{graph_name}":{"CompletedRequests":1,"QPS":0.01666666666666667,"TimeoutRequests":0,"AverageLatency":0,"MaxLatency":0,"MinLatency":0,"LatencyPercentile":[1,1,1,1,1,1,1,1,1,1]}}
+
+----
 [discrete]
 === How do I restart a service?
 
@@ -197,12 +393,60 @@ If you need to restart everything, use the following:
 ----
 gadmin restart
 ----
+==== Example:
 
+[source,bash]
+----
+$ gadmin restart
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping DICT ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL GUI
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN CTRL GSQL GUI
+
+
+----
 If you know which component(s) you want to restart,you can list them:
 
 [source,text]
 ----
 gadmin restart <component_name(s)>
+----
+==== Example:
+
+[source,bash]
+----
+$ gadmin restart
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping DICT ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL GUI
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN CTRL GSQL GUI
+
+$ gadmin restart gse
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping GSE
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE
+
+
+gadmin restart all
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL IFM GUI
+[   Info] Stopping CTRL
+[   Info] Stopping EXE
+[   Info] Starting EXE
+[   Info] Starting CTRL
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN CTRL GSQL IFM GUI
+
+
+
+$ gadmin stop
+[   Info] If no serviceID is specified, it only stops services excluding the infrastructure. Use 'gadmin stop all' to stop all services.
+[   Note] Stop the service(s)? (y/N)y
+[   Info] Stopping DICT ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL GUI
+
+
+$  gadmin stop gpe
+[   Note] Stop the service(s)? (y/N)y
+[   Info] Stopping GPE
+
+
 ----
 
 Multiple component names are separated by spaces.
@@ -240,14 +484,68 @@ Use following command to figure out where are log files for each component:
 ----
 gadmin log
 ----
+==== Example:
 
+[source,bash]
+----
+$ gadmin log
+ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN#1.out
+ADMIN  : /home/tigergraph/tigergraph/log/admin/ADMIN.INFO
+CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.log
+CTRL   : /home/tigergraph/tigergraph/log/controller/CTRL#1.out
+DICT   : /home/tigergraph/tigergraph/log/dict/DICT#1.out
+DICT   : /home/tigergraph/tigergraph/log/dict/DICT.INFO
+ETCD   : /home/tigergraph/tigergraph/log/etcd/ETCD#1.out
+EXE    : /home/tigergraph/tigergraph/log/executor/EXE_1.log
+EXE    : /home/tigergraph/tigergraph/log/executor/EXE_1.out
+GPE    : /home/tigergraph/tigergraph/log/gpe/GPE_1#1.out
+GPE    : /home/tigergraph/tigergraph/log/gpe/log.INFO
+GSE    : /home/tigergraph/tigergraph/log/gse/GSE_1#1.out
+GSE    : /home/tigergraph/tigergraph/log/gse/log.INFO
+GSQL   : /home/tigergraph/tigergraph/log/auditlog/log.AUDIT-GSQL
+GSQL   : /home/tigergraph/tigergraph/log/gsql/GSQL#1.out
+GSQL   : /home/tigergraph/tigergraph/log/gsql/log.INFO
+GUI    : /home/tigergraph/tigergraph/log/gui/GUI#1.out
+IFM    : /home/tigergraph/tigergraph/log/informant/IFM#1.log
+IFM    : /home/tigergraph/tigergraph/log/informant/IFM#1.out
+KAFKA  : /home/tigergraph/tigergraph/log/kafka/KAFKA#1.out
+KAFKA  : /home/tigergraph/tigergraph/log/kafka/controller.log
+KAFKA  : /home/tigergraph/tigergraph/log/kafka/kafka-request.log
+KAFKA  : /home/tigergraph/tigergraph/log/kafka/kafka.log
+KAFKA  : /home/tigergraph/tigergraph/log/kafka/server.log
+KAFKA  : /home/tigergraph/tigergraph/log/kafka/state-change.log
+KAFKA-LOADER: /home/tigergraph/tigergraph/log/kafkaLoader
+KAFKACONN: /home/tigergraph/tigergraph/log/kafkaconn/KAFKACONN#1.out
+KAFKACONN: /home/tigergraph/tigergraph/log/kafkaconn/kafkaconn.log
+KAFKASTRM-LL: /home/tigergraph/tigergraph/log/kafkastrm-ll/KAFKASTRM-LL_1.out
+KAFKASTRM-LL: /home/tigergraph/tigergraph/log/kafkastrm-ll/kafkastrm-ll.log
+NGINX  : /home/tigergraph/tigergraph/log/nginx/logs/NGINX#1.out
+NGINX  : /home/tigergraph/tigergraph/log/nginx/logs/error.log
+RESTPP : /home/tigergraph/tigergraph/log/auditlog/log.AUDIT-RESTPP
+RESTPP : /home/tigergraph/tigergraph/log/restpp/RESTPP#1.INFO
+RESTPP : /home/tigergraph/tigergraph/log/restpp/RESTPP#1.out
+RESTPP-LOADER: /home/tigergraph/tigergraph/log/fileLoader
+ZK     : /home/tigergraph/tigergraph/log/zk/ZK#1.out
+ZK     : /home/tigergraph/tigergraph/log/zk/zookeeper.log
+gadmin : /home/tigergraph/tigergraph/log/auditlog/log.AUDIT-GADMIN
+
+----
 To log at the log file for a particular component:
 
 [source,text]
 ----
 gadmin log <component>
 ----
+==== Example:
 
+[source,bash]
+----
+
+$ gadmin log gpe
+GPE    : /home/tigergraph/tigergraph/log/gpe/GPE_1#1.out
+GPE    : /home/tigergraph/tigergraph/log/gpe/log.INFO
+
+----
 [discrete]
 === Why has my request timed out?
 
@@ -259,7 +557,28 @@ If you knows that your query will run longer than the value, configure all relat
 ----
 gadmin config entry RESTPP.Factory.DefaultQueryTimeoutSec
 ----
+==== Example:
 
+[source,bash]
+----
+$ gadmin config entry RESTPP.Factory.DefaultQueryTimeoutSec
+
+RESTPP.Factory.DefaultQueryTimeoutSec [ 16 ]: The default query timeout (s) for RESTPP
+New: 16
+[   Info] no changes for RESTPP.Factory.DefaultQueryTimeoutSec
+$ gadmin config apply
+[Warning] No difference from staging config, config apply is skipped.
+[   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
+$ gadmin restart all
+[   Note] Restart the service(s)? (y/N)y
+[   Info] Stopping ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL IFM GUI
+[   Info] Stopping CTRL
+[   Info] Stopping EXE
+[   Info] Starting EXE
+[   Info] Starting CTRL
+[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN CTRL GSQL IFM GUI
+
+----
 Input a value you expected, the unit is in second. Then apply the config to the system and restart the service.
 
 [source,text]
