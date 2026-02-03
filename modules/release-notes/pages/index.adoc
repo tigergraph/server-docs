@@ -268,6 +268,14 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Fixed an issue where CPU utilization in engine logs appeared lower than expected in Docker and Kubernetes environments (CORE-5320).
 * Fixed an issue where users with `querywriter` permissions encountered a `query not found` message when using Save As in GraphStudio (APPS-4066).
 * Fixed an issue where users with the `CREATE_QUERY` privilege were unable to create new queries in GraphStudio (APPS-4002).
+* Fixed an issue where service auto-restart skipped required pre- and post-actions during restart operations (TP-9098).
+* Fixed an issue where cluster resize commands could return before the controller reboot completed, leading to inconsistent subsequent operations (TP-8588).
+* Fixed an issue where backups failed when uploading to an S3 bucket with both object lock and default retention enabled (TP-8556).
+* Fixed an issue where Kafka write operations were unavailable during leadership elections in certain cluster conditions (TP-8554).
+* Fixed an issue where password policies intended for native users were incorrectly enforced on LDAP proxy users (GLE-11848).
+* Fixed an issue where the `UserCatalog.yaml` file could grow unexpectedly after upgrade in environments with many users and queries (GLE-11158).
+* Fixed an issue where certain upgrade validation checks were performed after upgrade instead of during pre-upgrade checks (GLE-10854).
+* Fixed an issue where Kafka retention could be blocked by a remote segment associated with a deleted vertex type (CORE-5435).
 
 ==== Improvements
 
@@ -276,6 +284,8 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Improved overall accessibility in GraphStudio, including navigation consistency, color contrast, and interactive element behavior (APPS-4076).
 * Added support for configuring file permissions when exporting results using `PRINT TO_CSV`, providing more flexibility than fixed defaults (GLE-11320).
 * Improved upgrade logs with clearer messaging during version installation steps (TP-8428).
+* Improved ZooKeeper stability by introducing a configurable snapshot count with a safer default value (TP-8134).
+* Improved CRR observability by enhancing logs when sequence IDs are forcefully updated on the disaster recovery cluster (GLE-10439).
 
 ==== Security
 
