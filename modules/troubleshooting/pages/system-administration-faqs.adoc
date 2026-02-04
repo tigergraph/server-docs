@@ -27,6 +27,7 @@ gadmin license set @textfile
 [source,bash]
 ----
 $ gadmin license set
+<key>
 [   Info] Configuration has been changed. Please use 'gadmin config apply' to persist the changes.
 $ gadmin config apply
 [Warning] No difference from staging config, config apply is skipped.
@@ -346,6 +347,17 @@ gstatusgraph [-s <node_name>]
 
 using -s to do statistics for one node
 ----
+==== Example:
+
+[source,bash]
+----
+$ gstatusgraph -s m1
+=== graph ===
+[GRAPH  ] Graph was loaded (/home/tigergraph/tigergraph/data/gstore):
+[m1     ] Partition size: 0B, IDS size: 0B, Vertex count: 18897065, Edge count: 215246699, NumOfDeletedVertices: 2, NumOfSkippedVertices: 0, Vector size: 0B, Graph size: 0B
+[WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
+----
+
 
 
 [source,text]
@@ -359,7 +371,17 @@ $ gstatusgraph
 [m4     ] Partition size: 44GiB, IDS size: 16GiB, Vertex count: 262030593, Edge count: 1191498785, NumOfDeletedVertices: 130964790 NumOfSkippedVertices: 0
 [WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
 ----
+==== Example:
 
+[source,bash]
+----
+$ gstatusgraph
+=== graph ===
+[GRAPH  ] Graph was loaded (/home/tigergraph/tigergraph/data/gstore):
+[m1     ] Partition size: 2.8GiB, IDS size: 157MiB, Vertex count: 18897065, Edge count: 215246699, NumOfDeletedVertices: 2, NumOfSkippedVertices: 0, Vector size: 0B, Graph size: 2.8GiB
+[WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
+
+----
 [WARNING]
 ====
 Due to a known bug, *gstatusgraph* command will count each undirected edge as two edges. To get an accurate number of undirected edges,  user should use the built-in queries instead. The message below is sent as a warning to users when *gstatusgraph* is used.
