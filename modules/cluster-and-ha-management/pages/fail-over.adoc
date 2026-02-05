@@ -4,7 +4,7 @@
 
 In the event of catastrophic failure that has impacted the full cluster due to Data Center or Region failure, the user can initiate the failover to the Disaster Recovery (DR) cluster.
 
-Starting from TigerGraph 4.3.0, failover to a Disaster Recovery (DR) cluster is simplified into a single command.
+Starting from TigerGraph 4.3, failover to a Disaster Recovery (DR) cluster is simplified into a single command.
 The new `--promote` flag for `gadmin crr stop` replaces the previous multi-step manual process, making DR promotion faster and more reliable.
 Update existing failover scripts to use this new command.
 
@@ -65,7 +65,7 @@ This update improves safety, reduces operational complexity, and ensures more re
 :description: Procedure for re-establishing high availability after DR promotion using fast-switch or backup restore.
 
 === Overview
-TigerGraph v4.3 introduces a new **fast-switch** capability that allows administrators to quickly convert the former Primary cluster into a new DR cluster.
+TigerGraph 4.3 introduces a new **fast-switch** capability that allows administrators to quickly convert the former Primary cluster into a new DR cluster.
 This method leverages the replication checkpoint generated during failover, reducing downtime and avoiding a full backup and restore.
 
 After promoting the DR cluster to Primary, the former Primary becomes offline.
