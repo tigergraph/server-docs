@@ -2185,8 +2185,11 @@ Sample Response::
 
 `GET /gsql/v1/loading-jobs/status`
 
-Get the status of one or more loading jobs that have been started, equivalent to GSQL
+Get the status of one or more loading jobs that have been started. This endpoint is equivalent to the GSQL command.
 xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_status[SHOW LOADING STATUS].
+
+The `graph` parameter is required because loading job run IDs are scoped to a specific graph.
+If the `graph` parameter is missing, the request will fail even if valid `jobIds` are provided.
 
 ==== Parameters:
 
@@ -2195,9 +2198,13 @@ xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc
 |===
 | Name | Required | Description
 
+| `graph`
+| Yes
+| Name of the graph on which the loading jobs were executed.
+
 | `jobIds`
-| yes
-| ID of the loading job
+| Yes
+| One or more loading job run IDs, separated by commas.
 |===
 
 ==== Example
