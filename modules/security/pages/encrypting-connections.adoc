@@ -165,3 +165,100 @@ $ curl --cacert /home/tigergraph/nginx-selfsigned.crt https://localhost:14240
 
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>GraphStudio</title><base href="/"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/x-icon" href="favicon.ico"><link href="styles.d67299ba9f5d73aecbe2.bundle.css" rel="stylesheet"/></head><body class="mat-typography"><app-root></app-root><script type="text/javascript" src="inline.4aae6a8088c30a61d5b0.bundle.js"></script><script type="text/javascript" src="polyfills.c9b879328f3396b2bbe8.bundle.js"></script><script type="text/javascript" src="vendor.5392e4ea4f904cd1658c.bundle.js"></script><script type="text/javascript" src="main.a39087227fcdf478cd2a.bundle.js"></script></body></html>
 ----
+
+== Configuring TLS for Internal Kafka.
+
+This feature introduces SSL/TLS encryption for TigerGraph’s internal Kafka. It addresses the lack of native encryption and authentication for data in transit within the TigerGraph cluster.
+
+=== Basic Setup Workflow
+
+. set certificate-chain in PEM format
++
+[source,bash]
+----
+gadmin config set Kafka.Security.SSL.Certificate @/path/to/cert.pem
+----
+
+. set private-key in PEM format
++
+[source,bash]
+----
+gadmin config set Kafka.Security.SSL.PrivateKey @/path/to/prikey.pem
+----
+
+. set passphrase for private key. Java keystore requires passphrase.
++
+[source,bash]
+----
+gadmin config set Kafka.Security.SSL.Passphrase @/path/to/passphrase
+----
+
+. Enable SSL for Kafka to ensure encrypted communication.
++
+[source,bash]
+----
+gadmin config set Kafka.Security.SSL.Enable true
+----
+
+. Apply the updated Kafka security configurations to the system.
++
+[source,bash]
+----
+gadmin config apply -y
+----
+
+. Restart Kafka and the corresponding client services.
++
+[source,bash]
+----
+gadmin restart all -y
+----
+
+
+
+=== Configuration Reference
+
+[cols="1,2,1", options="header"]
+|===
+| Parameter | Description | Default Value
+
+| Kafka.Security.SSL.Certificate
+| Kafka broker certificate in PEM format
+|
+
+| Kafka.Security.SSL.Enable
+| Enable Kafka TLS encryption
+| false
+
+| Kafka.Security.SSL.ExternalListener.ClientAuth
+| Enable SSL client authentication for external listeners, the root certificate of Kafka.Security.SSL.Certificate will be used to trust client certificate.
+| false
+
+| Kafka.Security.SSL.Passphrase
+| Kafka broker private key passphrase. Should not be empty.
+|
+
+| Kafka.Security.SSL.Port
+| Kafka SSL listening port
+| 30001
+
+| Kafka.Security.SSL.PrivateKey
+| Kafka broker private key in PEM format
+|
+
+| Kafka.Security.ClientConf.ProtocolForAllClients
+| If specified, all clients must use the specified protocol. Legal values include: empty-string (not specified), ssl, plaintext. If it's not specified, clients can choose a preferred protocol
+|
+
+| Kafka.Security.ClientConf.EngineProtocol
+| It is the protocol for engine-kafka communication. The value can be an empty-string or "plaintext", "ssl". It's overridden by Kafka.Security.ClientConf.ProtocolForAllClients.
+|
+
+| Kafka.Security.ClientConf.InfraProtocol
+| It is the protocol for infra-kafka communication. The value can be an empty-string or "plaintext", "ssl". It's overridden by Kafka.Security.ClientConf.ProtocolForAllClients.
+|
+
+| Kafka.Security.ClientConf.InterBrokerProtocol
+| It is the protocol for inter-broker communication. The value can be an empty-string or "plaintext", "ssl". It's overridden by Kafka.Security.ClientConf.ProtocolForAllClients.
+|
+|===
