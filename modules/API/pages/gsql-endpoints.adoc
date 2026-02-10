@@ -2185,8 +2185,11 @@ Sample Response::
 
 `GET /gsql/v1/loading-jobs/status`
 
-Get the status of one or more loading jobs that have been started, equivalent to GSQL
+Get the status of one or more loading jobs that have been started. This endpoint is equivalent to the GSQL command.
 xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_status[SHOW LOADING STATUS].
+
+The `graph` parameter is required because loading job run IDs are scoped to a specific graph.
+If the `graph` parameter is missing, the request will fail even if valid `jobIds` are provided.
 
 ==== Parameters:
 
@@ -2195,9 +2198,13 @@ xref:{page-component-version}@gsql-ref:ddl-and-loading:managing-loading-job.adoc
 |===
 | Name | Required | Description
 
+| `graph`
+| Yes
+| Name of the graph on which the loading jobs were executed.
+
 | `jobIds`
-| yes
-| ID of the loading job
+| Yes
+| One or more loading job run IDs, separated by commas.
 |===
 
 ==== Example
@@ -2210,7 +2217,7 @@ Sample Request::
 [source,bash]
 ----
 curl -H 'Content-Type: application/json' -X GET
-'http://localhost:14240/gsql/v1/loading-jobs/status/jobIds=financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
+'http://localhost:14240/gsql/v1/loading-jobs/status?graph=financialGraph&jobIds=financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
 ----
 --
 Sample Response::
@@ -2239,9 +2246,13 @@ The behavior of this endpoint is the same as that of `GET /gsql/v1/loading-jobs/
 |===
 | Name | Required | Description
 
+| `graph`
+| Yes
+| Name of the graph on which the loading job was executed.
+
 | `jobId`
-| yes
-| ID of the loading job
+| Yes
+| ID of the loading job run.
 |===
 
 ==== Example
@@ -2254,7 +2265,7 @@ Sample Request::
 [source,bash]
 ----
 curl -H 'Content-Type: application/json' -X GET
-'http://localhost:14240/gsql/v1/loading-jobs/status/financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
+'http://localhost:14240/gsql/v1/loading-jobs/status/financialGraph.load_ldbc_snb.jdbc.all.1111111111121?graph=financialGraph'
 ----
 --
 Sample Response::
