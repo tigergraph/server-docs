@@ -2246,9 +2246,13 @@ The behavior of this endpoint is the same as that of `GET /gsql/v1/loading-jobs/
 |===
 | Name | Required | Description
 
+| `graph`
+| Yes
+| Name of the graph on which the loading job was executed.
+
 | `jobId`
-| yes
-| ID of the loading job
+| Yes
+| ID of the loading job run.
 |===
 
 ==== Example
@@ -2261,7 +2265,7 @@ Sample Request::
 [source,bash]
 ----
 curl -H 'Content-Type: application/json' -X GET
-'http://localhost:14240/gsql/v1/loading-jobs/status/financialGraph.load_ldbc_snb.jdbc.all.1111111111121'
+'http://localhost:14240/gsql/v1/loading-jobs/status/financialGraph.load_ldbc_snb.jdbc.all.1111111111121?graph=financialGraph'
 ----
 --
 Sample Response::
