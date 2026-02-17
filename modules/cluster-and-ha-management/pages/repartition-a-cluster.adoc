@@ -11,6 +11,8 @@ You can also change the replication factor when you expand or shrink a cluster. 
 Cluster repartitioning requires several minutes of cluster downtime.
 The exact amount of downtime varies depending on the size of your cluster.
 
+During cluster repartition, the system enforces *locking* among other cluster-critical operations (including backup/restore, `CONFIG APPLY`, and upgrades). Only one such operation can hold the lock at a time; other operations will be rejected or canceled.
+
 == Before you begin
 
 [IMPORTANT]

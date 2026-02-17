@@ -278,6 +278,8 @@ Use "gadmin config [command] --help" for more information about a command.
 
 Apply the configuration changes.
 
+Note that while running this command, the system enforces *locking* among other cluster-critical operations ( backup/restore, cluster resizing and upgrade). One operation will be granted the lock and others will be rejected or canceled.
+
 [source,console]
 ----
 $ gadmin config apply -h

@@ -8,6 +8,8 @@ This page walks you through the process of restoring a cluster from a backup tha
 Restoring is an off-line operation.
 Your cluster is offline during the restore process.
 
+While restoring a backup, the system enforces *locking* among other cluster-critical operations (including cluster resizing, `CONFIG APPLY`, and upgrades). Only one such operation can hold the lock at a time; other operations will be rejected or canceled.
+
 == Prerequisites
 * Your new cluster has the same xref:cluster-and-ha-management:ha-cluster.adoc[partitioning factor] as the cluster from which the backup file was created.
 * TigerGraph is installed on the new cluster in the exact same version as the previous cluster.
