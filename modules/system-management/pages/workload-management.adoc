@@ -35,9 +35,9 @@ Each queue has the following properties:
 |===
 ==== maxConcurrentQueries and maxDelayQueueSize
 `maxConcurrentQueries` and `maxDelayQueueSize` are enforced on per machine level. More specifically, it puts a limit on how many requests ONE `GPE` process can handle.
-For example, in a TigerGraph cluster with `4` nodes (there will be `4` `GPE` processes), the total number of qureies allowed for a `WorkloadQueue` is `4*maxConcurrentQueries`.
+For example, in a TigerGraph cluster with `4` nodes (there will be `4` `GPE` processes), the total number of queries allowed for a `WorkloadQueue` is `4*maxConcurrentQueries`.
 Similarly, the total number of queries can be put into the corresponding delay queue is `4*maxDelayQueueSize`.
-TigerGraph internally would try to evenly distribute queries evenly among the nodes, hence, the `WorkloadQueue` from each `GPE` would be filled at a similar pace.
+TigerGraph internally would try to evenly distribute queries among the nodes, hence, the `WorkloadQueue` from each `GPE` would be filled at a similar pace.
 
 
 Before making changes, it’s a good practice to retrieve the current configuration using the *GET Workload Queue* command. After reviewing, you can update or apply new configurations using the *PUT Workload Queue* command.
