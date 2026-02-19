@@ -5,7 +5,7 @@ An *incremental backup* is designed to save storage space and to run more quickl
 TigerGraph's incremental backup feature also has an option to let you specify a backup tag other the default base.
 
 *Incremental backups* are related to but different than *differential backups*.
-A differential backup saves since the most recent backup or restore event.
+A differential backup saves all the changes since the most recent *full backup* or restore event.
 
 Internally, incremental backup saves the Kafka messages that have changed since the base event.
 
