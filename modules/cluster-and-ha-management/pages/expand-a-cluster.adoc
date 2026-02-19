@@ -15,6 +15,9 @@ Expanding a cluster may make sense for several reasons:
 Cluster expansion requires several minutes of cluster downtime.
 The exact amount of downtime varies depending on the size of your cluster.
 
+During cluster expansion, the system enforces *locking* among other cluster-critical operations (including backup/restore, `CONFIG APPLY`, and upgrades). Only one such operation can hold the lock at a time; other operations will be rejected or canceled.
+
+
 WARNING: If your TigerGraph cluster uses a seeded license, please contact mailto:support@tigergraph[TigerGraph support] to obtain an unseeded temporary license before expanding your cluster.
 
 == Before you begin

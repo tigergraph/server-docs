@@ -8,6 +8,8 @@ The process also applies to single-server instances.
 Backing up a cluster is an online operation.
 Your database remains available during the backup.
 
+While database reads and writes can take place during backup, the system enforces *locking* among other cluster critical operations (  cluster resizing, `CONFIG APPLY` and upgrade). One operation will be granted the lock and others will be rejected or canceled.
+
 Consult xref:system-management:management-commands.adoc[the gadmin Command Glossary] to view the help files for the `gadmin backup` commands.
 
 == Prerequisites

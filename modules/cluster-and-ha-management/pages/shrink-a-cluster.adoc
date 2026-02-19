@@ -15,6 +15,8 @@ If a node has failed in your cluster and needs to be removed, see xref:remove-fa
 Cluster shrinking requires several minutes of cluster downtime.
 The exact amount of downtime varies depending on the size of your cluster.
 
+During cluster shrinking, the system enforces *locking* among other cluster-critical operations (including backup/restore, `CONFIG APPLY`, and upgrades). Only one such operation can hold the lock at a time; other operations will be rejected or canceled.
+
 == Before you begin
 
 [IMPORTANT]
