@@ -138,6 +138,7 @@ Even if you skip them, mTLS will still validate the client certificate’s signa
 *DN Attribute Validation*
 [source,console]
 ----
+gadmin config set Nginx.SSL.Client.DN.Verify true
 gadmin config set Nginx.SSL.Client.DN.Country '["US", "UK"]'
 gadmin config set Nginx.SSL.Client.DN.Organization '["MyOrg"]'
 gadmin config set Nginx.SSL.Client.DN.CommonName '["client1.example.com"]'
@@ -146,6 +147,7 @@ gadmin config set Nginx.SSL.Client.DN.CommonName '["client1.example.com"]'
 *SAN Attribute Validation*
 [source,console]
 ----
+gadmin config set Nginx.SSL.Client.SAN.Verify true
 gadmin config set Nginx.SSL.Client.SAN.DNS '["clientdomain.com"]'
 gadmin config set Nginx.SSL.Client.SAN.Email '["user@email.com"]'
 gadmin config set Nginx.SSL.Client.SAN.URI '["spiffe://client/uri"]'
