@@ -123,6 +123,19 @@ DEFINE FILENAME file_Person="""$s1:{
 }""";
 ----
 
+[NOTE]
+====
+You can increase `tasks.max` to enable parallel consumption across Kafka partitions and improve loading throughput.
+
+By default, `tasks.max` is set to `1` to avoid resource contention when other workloads or concurrent loading jobs are running in the cluster.
+
+The effective number of tasks is limited by the number of topic partitions:
+
+[source]
+----
+task_count = min(tasks.max, partition_number)
+----
+====
 
 [NOTE]
 For Avro data with schema registry, you must set both `value.converter.schema.registry.url` when defining the DATA_SOURCE and `value.converter` when defining a FILENAME.
