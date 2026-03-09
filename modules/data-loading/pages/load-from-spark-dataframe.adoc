@@ -797,3 +797,197 @@ The counts of malformed or invalid data of the batch will be logged.
 ¦ `invalidVertexType` ¦ Number of token lists where at least one of the tokens corresponding to an edge type's source/target vertex type is invalid.
 ¦ `tokenBankException` ¦ Counts how many times a user-defined token function has thrown an exception during data loading.
 |===
+
+== Direct Upsert from Spark DataFrame
+
+
+The Direct Upsert feature enables you to upsert data directly from a Spark DataFrame into vertices and edges in TigerGraph without the need to define a GSQL loading job.
+The connector sends data in batches to TigerGraph's REST++ upsert endpoint.
+
+=== Upserting Vertices
+
+To upsert vertices, specify the vertex type and the field in the DataFrame corresponding to the vertex primary ID.
+
+.Upsert vertices of type `Person`
+[source, scala]
+----
+df.write
+  .format("tigergraph")
+  .mode("append")
+  .option("graph", "my_graph")
+  .option("upsert.vertex.type", "Person")
+  .option("upsert.vertex.id.field", "person_id")
+  .option("upsert.vertex.new_only", "true")
+  .save()
+----
+
+=== Upserting Edges
+
+To upsert edges, specify the edge type, the source and target vertex types, and the fields in the DataFrame that correspond to the source and target vertex primary IDs.
+
+.Upsert edges of type `Follows`
+[source, scala]
+----
+df.write
+  .format("tigergraph")
+  .mode("append")
+  .option("graph", "my_graph")
+  .option("upsert.edge.type", "Follows")
+  .option("upsert.edge.source.type", "User")
+  .option("upsert.edge.source.id.field", "follower_id")
+  .option("upsert.edge.target.type", "User")
+  .option("upsert.edge.target.id.field", "followee_id")
+  .option("upsert.edge.vertex_must_exist", "true")
+  .save()
+----
+
+=== Attribute Mapping and Operations
+
+By default, the connector maps DataFrame column names to TigerGraph vertex or edge attribute names.
+Custom mappings and operations can be specified using `upsert.attribute.mapping` and `upsert.attribute.op`.
+
+.Upsert vertices with attribute mapping and operations
+[source, scala]
+----
+df.write
+  .format("tigergraph")
+  .mode("append")
+  .option("graph", "my_graph")
+  .option("upsert.vertex.type", "Person")
+  .option("upsert.vertex.id.field", "pid")
+  .option("upsert.attribute.mapping", "name:fullName, years:age, scoreDelta:score")
+  .option("upsert.attribute.op", "score:+, age:max")
+  .save()
+----
+
+== Connector Options
+
+The direct upsert feature is configured through options passed to the Spark DataFrame writer.
+
+=== Vertex Upsert Options
+[separator=¦]
+|===
+¦ Key ¦ Required ¦ Default Value ¦ Description
+
+¦ `upsert.vertex.type`
+¦ Yes
+¦ (none)
+¦ The target vertex type.
+
+¦ `upsert.vertex.id.field`
+¦ Yes
+¦ (none)
+¦ The field in the DataFrame to be used as the vertex ID.
+
+¦ `upsert.vertex.new_only`
+¦ No
+¦ false
+¦ If true, only insert new vertices (no updates).
+
+¦ `upsert.vertex.update_only`
+¦ No
+¦ false
+¦ If true, only update existing vertices (no inserts).
+|===
+
+=== Edge Upsert Options
+[separator=¦]
+|===
+¦ Key ¦ Required ¦ Default Value ¦ Description
+
+¦ `upsert.edge.type`
+¦ Yes
+¦ (none)
+¦ The edge type to upsert into.
+
+¦ `upsert.edge.source.type`
+¦ Yes
+¦ (none)
+¦ The source vertex type.
+
+¦ `upsert.edge.source.id.field`
+¦ Yes
+¦ (none)
+¦ The field for the source vertex ID.
+
+¦ `upsert.edge.target.type`
+¦ Yes
+¦ (none)
+¦ The target vertex type.
+
+¦ `upsert.edge.target.id.field`
+¦ Yes
+¦ (none)
+¦ The field for the target vertex ID.
+
+¦ `upsert.edge.vertex_must_exist`
+¦ No
+¦ false
+¦ If true, insert the edge only if both vertices exist.
+
+¦ `upsert.edge.source_vertex_must_exist`
+¦ No
+¦ false
+¦ Require only the source vertex to exist.
+
+¦ `upsert.edge.target_vertex_must_exist`
+¦ No
+¦ false
+¦ Require only the target vertex to exist.
+|===
+
+=== Common Upsert Options
+[separator=¦]
+|===
+¦ Key ¦ Required ¦ Default Value ¦ Description
+
+¦ `upsert.attribute.mapping`
+¦ No
+¦ None
+¦ A comma-separated string that defines how DataFrame field names map to TigerGraph attribute names.
+Each entry follows the format `field_name:attribute_name`.
+If not set, attribute names must exactly match the DataFrame field names.
+
+¦ `upsert.attribute.op`
+¦ No
+¦ =
+¦ A comma-separated string specifying the update operation for each target attribute.
+Each entry follows the format `attribute_name:op`.
+If not specified, attributes default to `=` (overwrite).
+
+¦ `upsert.ack`
+¦ No
+¦ all
+¦ `"all"` (wait for GPEs) or `"none"` (fire and forget).
+
+¦ `upsert.atomic`
+¦ No
+¦ false
+¦ If true, make each request atomic.
+
+¦ `upsert.batch.size.in.rows`
+¦ No
+¦ 1000
+¦ Maximum number of rows per batch request.
+
+¦ `upsert.timeout.ms`
+¦ No
+¦ 0
+¦ Timeout per request in milliseconds. A value of 0 means no timeout.
+
+¦ `upsert.retry.interval.ms`
+¦ No
+¦ 5000
+¦ Initial retry interval after failure.
+
+¦ `upsert.max.retry.interval.ms`
+¦ No
+¦ 300000
+¦ Maximum retry interval after backoff.
+
+¦ `upsert.max.retry.attempts`
+¦ No
+¦ 10
+¦ Maximum number of retry attempts.
+|===
+
