@@ -98,8 +98,21 @@ gadmin config set System.CrossRegionReplication.Enabled false
 gadmin config apply -y
 gadmin restart all -y
 ----
++
+Disabling this flag ensures that CRR services remain inactive during the upgrade process.
 
 . Upgrade the cluster.
+
+. Restore the backup on the DR cluster using the `--dr` flag.
++
+[source,console]
+----
+gadmin backup restore <backup_name> --dr
+----
++
+Restoring the backup with the `--dr` flag automatically enables the
+`System.CrossRegionReplication.Enabled` configuration. This flag cannot be
+manually set to `true` using `gadmin config set`.
 
 . Start CRR on the new DR cluster.
 +
