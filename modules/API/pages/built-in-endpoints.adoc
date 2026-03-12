@@ -3577,6 +3577,8 @@ Response::
 
 `GET /query_status`
 
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ_DATA]
+
 This endpoint allows you to check the status of a query run in xref:{page-component-version}@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[detached mode].
 
 If you are running a TigerGraph cluster, this endpoint only allows you to check the status of a query running on the node to which the request is sent, not all nodes on the cluster.
@@ -3658,6 +3660,8 @@ If a query ID is marked as unknown, it means either the query does not exist or 
 === Check query results (Detached Mode)
 
 `GET /query_result`
+
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ_DATA]
 
 This endpoint allows you to check the results of queries run in Detached Mode if they have finished running. If the query is still running, the endpoint will respond with an error and a message saying `"Unable to retrieve result for query <requestid>"`.  Ensure that the query is finished before checking its result.
 
