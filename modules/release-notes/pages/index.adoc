@@ -191,11 +191,11 @@ Third-party Vulnerability impacting TigerGraph: None
 * Fixed the MaxFlow algorithm to return correct results, consistent with documented examples (GLE-10737).
 * Fixed a UDF parsing error that failed to detect user-defined function names which conflict with built-in functions (GLE-10326).
 * Fixed an issue where the system would throw a NullPointerException and fail to create or install a query during code validation (GLE-10501).
-* Fixed an issue where authentication was skipped when replaying requests in a Disaster Recovery cluster (GLE-10702).
 * Improved the upgrade process by performing query and token bank compilation checks during pre‑upgrade instead of post-upgrade (GLE‑9459).
 * Fixed GSQL startup failures during upgrade caused by errors while verifying dictionary and UDF files (GLE-11224).
 * Fixed: If an interpreted non-procedural query contained an error but the text prior to the error was valid, the partial query would run and ignore the error (GLE-10295).
 * Fixed an issue that could cause false negatives or false positives during license checks caused by an underflow in the vertex count reporting (CORE-5117).
+* Fixed an Out-of-Memory (OOM) issue that caused RESTPP to crash during timeout checks on asynchronous queries (CORE-4994).
 
 ==== Improvements
 
