@@ -276,6 +276,10 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Fixed an issue where the `UserCatalog.yaml` file could grow unexpectedly after upgrade in environments with many users and queries (GLE-11158).
 * Fixed an issue where certain upgrade validation checks were performed after upgrade instead of during pre-upgrade checks (GLE-10854).
 * Fixed an issue where Kafka retention could be blocked by a remote segment associated with a deleted vertex type (CORE-5435).
+* Fixed a UDF parsing error that failed to detect user-defined function names which conflict with built-in functions (GLE-10385).
+* Fixed an issue where the system would throw a NullPointerException and fail to create or install a query during code validation (GLE-10500).
+* Fixed an issue where certain upgrade validation checks were performed after upgrade instead of during pre-upgrade checks (GLE-10854).
+* Fixed an Out-of-Memory (OOM) issue that caused RESTPP to crash during timeout checks on asynchronous queries (CORE-4993).
 
 ==== Improvements
 
