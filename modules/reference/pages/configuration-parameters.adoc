@@ -1420,9 +1420,10 @@ database source folder |`ts3/db`
 |TS3.Metrics |The metrics TS3 will be collecting
 |`cpu,mem,diskspace,qps,servicestate,network,connection`
 
-|TS3.RetentionPeriodDay |The period in days for local data records
-to be kept, set to -1 for forever (not advised).
-Longer retention results in higher disk space usage and slower search for historical status
+|TS3.RetentionPeriodDay |The period in days for local data records to be kept. Set to -1 to retain data indefinitely (not recommended).
+Longer retention results in higher disk space usage and slower search for historical status.
+
+If you reduce the retention period, existing data is not deleted immediately. Cleanup is performed by a scheduled job, which may take up to 24 hours after restarting TS3 to remove older records.
 |`7` (default. Prior to v3.9.2, the default was 30.)
 |===
 
