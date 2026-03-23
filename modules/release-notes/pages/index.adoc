@@ -18,7 +18,7 @@ TigerGraph 4.3's feature set builds upon the capabilities introduced in 4.2.x.
 * *xref:4.3@tigergraph-server:security:encrypting-connections.adoc[Mutual TLS (mTLS) Authentication]*:
 Enables both the client and server to authenticate each other using certificates, improving connection security for external applications and services.
 
-* *xref:4.3@tigergraph-server:user-access:sso:kerberos.adoc[Kerberos SSO Authentication]*:
+* *xref:4.3@tigergraph-server:user-access:sso-with-kerberos.adoc[Kerberos SSO Authentication]*:
 Enables Single Sign-On (SSO) using Kerberos for seamless and secure user authentication.
 
 ** Supports ticket-based authentication using Kerberos
@@ -28,20 +28,20 @@ Enables Single Sign-On (SSO) using Kerberos for seamless and secure user authent
 * *xref:4.3@tigergraph-server:data-loading:load-from-iceberg.adoc[Load Data from Apache Iceberg (Preview)]*:
 Load data from Iceberg-based data lakehouses using a built-in connector with support for Iceberg REST Catalogs and S3 or MinIO storage backends.
 
-* *xref:4.3@tigergraph-server:user-access:proxy-user-management.adoc[Proxy User Management Revamp]*:
-Proxy users can now be explicitly created, dropped, and listed, rather than being created implicitly at first login. This allows administrators to pre-provision and manage proxy user accounts as part of standard user lifecycle management.
+* *xref:4.3@tigergraph-server:user-access:user-management.adoc#_show_proxy_users[Proxy User Management]*:
+Proxy users can now be explicitly created, dropped, and listed, rather than being created implicitly at *xref:4.3@tigergraph-server:API:gsql-endpoints.adoc#_create_a_proxy_user[first login]*. This allows administrators to pre-provision and manage proxy user accounts as part of standard user lifecycle management.
 
 == Detailed List of New and Modified Features
 
 === System Management Enhancements
 
-* Improved *xref:4.3@tigergraph-server:user-access:proxy-user-management.adoc[proxy user management]* by introducing support to create, drop, and view proxy users directly, providing better control over externally authenticated users.
+* Improved *xref:4.3@tigergraph-server:user-access:user-management.adoc#_show_proxy_users[proxy user management]* by introducing support to create, drop, and view proxy users directly, providing better control over externally authenticated users.
 
 === Security and Access Control Enhancements
 
 * *xref:4.3@tigergraph-server:security:encrypting-connections.adoc[Mutual TLS (mTLS) Authentication]* enables certificate-based mutual authentication between clients and the server, strengthening connection security for external applications and services.
 
-* TigerGraph now supports *xref:4.3@tigergraph-server:user-access:sso:kerberos.adoc[Kerberos]* as an SSO authentication option, alongside existing SAML, OIDC, and LDAP methods.
+* TigerGraph now supports *xref:4.3@tigergraph-server:user-access:sso-with-kerberos.adoc[Kerberos]* as an SSO authentication option, alongside existing SAML, OIDC, and LDAP methods.
 Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO authentication methods
 
 === Integration Enhancements
@@ -75,7 +75,7 @@ By default, TigerGraph automatically selects the appropriate mode.
 
 === Data Streaming/Connector Enhancements
 
-* *xref:4.3@tigergraph-server:data-loading/load-from-iceberg.adoc[Load data from Apache Iceberg]* (Preview) enables loading data from Iceberg-based data lakehouses using SQL-based queries and REST catalog integration.
+* *xref:4.3@tigergraph-server:data-loading:load-from-iceberg.adoc[Load data from Apache Iceberg]* (Preview) enables loading data from Iceberg-based data lakehouses using SQL-based queries and REST catalog integration.
 
 === GraphStudio, Admin Portal, and Insights
 
