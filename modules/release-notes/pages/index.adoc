@@ -37,6 +37,14 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 
 * Improved *xref:4.3@tigergraph-server:user-access:user-management.adoc#_show_proxy_users[proxy user management]* by introducing support to create, drop, and view proxy users directly, providing better control over externally authenticated users.
 
+* New *xref:4.3@tigergraph-server:API:built-in-endpoints.adoc#_license_expiration_metric[open metric]* `tigergraph_license_days_left` for days remaining until license expiration.
+
+* *xref:4.3@tigergraph-server:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[Amazon Linux 2023]* officially supported.
+
+* GSQL audit-log improvements with *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_configuration_parameters[new configuration]* `System.Audit.DiscreteJsonFormat`  and additional *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_gsql_service_audit_log_fields[log fields]* (actionType, objectType, graphName).
+
+
+
 === Security and Access Control Enhancements
 
 * *xref:4.3@tigergraph-server:security:encrypting-connections.adoc[Mutual TLS (mTLS) Authentication]* enables certificate-based mutual authentication between clients and the server, strengthening connection security for external applications and services.
@@ -76,6 +84,10 @@ By default, TigerGraph automatically selects the appropriate mode.
 === Data Streaming/Connector Enhancements
 
 * *xref:4.3@tigergraph-server:data-loading:load-from-iceberg.adoc[Load data from Apache Iceberg]* (Preview) enables loading data from Iceberg-based data lakehouses using SQL-based queries and REST catalog integration.
+
+* Added new *xref:4.3@tigergraph-server:data-loading:read-to-spark-dataframe.adoc#_common_options[SSL keystore configurations]*(ssl.keystore, ssl.keystore.type, ssl.keystore.password)  for the Spark Connector.
+
+* Spark Connector now supports direct *xref:4.3@tigergraph-server:data-loading:load-from-spark-dataframe.adoc#_direct_upsert_from_spark_dataframe[upsert of vertices and edges]* from a Spark DataFrame, without the need to define a GSQL loading job.
 
 === GraphStudio, Admin Portal, and Insights
 
