@@ -342,6 +342,84 @@ If the user doesn't have these privileges, they are not able to create new edges
 [source.wrap,gsql]
 REVOKE CREATE, UPDATE ON EDGE Friendship ATTRIBUTE startdata IN GRAPH Social FROM role1, role2
 
+== Grant default roles
+
+Use `GRANT DEFAULT` to add one or more user-defined roles to the default list for a specific query-level privilege.
+
+=== Syntax
+[source.wrap,gsql]
+GRANT DEFAULT <privilege_name1> (, <privilege_name2>)*
+ON ALL QUERIES
+IN GRAPH <graph_name> TO <role_or_user_name1> (, <role_or_user_name2>)*
+
+=== Required privilege
+`WRITE_ROLE`
+
+=== Example
+
+. The following command grants default `READ` privileges on all newly created queries in a graph to a specified role:
++
+[source,gsql]
+----
+GSQL > GRANT DEFAULT READ ON ALL QUERIES IN GRAPH MyGraph TO ROLE analytics_reader
+----
+This allows `analytics_reader` to automatically receive query-level `READ` access on any new query created in `MyGraph`, without requiring additional `GRANT` commands.
+
+. The following command grants default `EXECUTE` privileges on all newly created queries in a graph to multiple roles:
++
+[source,gsql]
+----
+GSQL > GRANT DEFAULT EXECUTE ON ALL QUERIES IN GRAPH MyGraph TO ROLE data_scientist, app_service
+----
+This allows `data_scientist` and `app_service` to automatically receive query-level `EXECUTE` access on any new query created in `MyGraph`, without requiring additional `GRANT` commands.
+
+
+
+
+== Revoke default roles
+
+Use `REVOKE DEFAULT` to remove roles from the default list for a specific query-level privilege.
+
+=== Syntax
+[source.wrap,gsql]
+REVOKE DEFAULT <privilege_name1> (, <privilege_name2>)*
+ON ALL QUERIES
+IN GRAPH <graph_name> FROM <role_or_user_name1> (, <role_or_user_name2>)*
+
+=== Required privilege
+`WRITE_ROLE`
+
+=== Example
+
+. The following command revokes default `READ` privileges on all newly created queries in a graph from a specified role:
++
+[source,gsql]
+----
+GSQL > REVOKE DEFAULT READ ON ALL QUERIES IN GRAPH MyGraph FROM ROLE analytics_reader
+----
+This prevents `analytics_reader` from automatically receiving query-level `READ` access on any new query created in `MyGraph`. Existing queries where `analytics_reader` already has `READ` remain unchanged.
+
+== Show default roles
+
+Use `SHOW DEFAULT ROLES` to inspect which roles are currently configured as defaults for each supported query-level privilege.
+
+=== Syntax
+[source.wrap,gsql]
+SHOW DEFAULT ROLES (IN GRAPH <graph_name>)?
+
+=== Required privilege
+`READ_ROLE`
+
+=== Example
+
+. The following command shows which roles currently receive default query-level privileges in `MyGraph`:
++
+[source,gsql]
+----
+GSQL > SHOW DEFAULT ROLES IN GRAPH MyGraph
+----
+This displays all roles and users configured to automatically receive `READ` or `EXECUTE` privileges on newly created queries in `MyGraph`.
+
 == Drop a role
 
 === Syntax
