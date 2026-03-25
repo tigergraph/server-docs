@@ -163,6 +163,19 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 
 == Fixed issues
 
+=== Fixed and Improved in 4.2.3
+
+==== Functionality
+
+* Fixed an issue where binary files were still written during segment rebuild even after the segment was deleted, causing unnecessary disk usage (CORE-5356).
+* Fixed an issue where gcollect could panic when encountering malformed NGINX log entries during log processing (TP-9128).
+* Fixed an issue where repeated backups took progressively longer despite minimal data growth, caused by inefficient processing of schema changes (CORE-5360).
+* Fixed an issue where partition configuration recovery could result in schema inconsistencies when config.yaml was missing but segment data existed (CORE-5376, CORE-5381).
+* Fixed an issue that caused intermittent errors during legacy token validation (GLE-11715).
+* Fixed an issue where token generation could become unresponsive during schema change operations by optimizing the workflow (GLE-11727).
+* Fixed an issue where requests on port 14240 could not be routed directly to a specific RESTPP node when direct node-level access was required (TP-9198).
+* Fixed an issue where password policies intended for native users were incorrectly enforced on LDAP proxy users (GLE-11850).
+
 === Fixed and Improved in 4.2.2
 
 ==== Functionality
