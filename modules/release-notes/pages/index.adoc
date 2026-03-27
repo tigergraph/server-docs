@@ -60,9 +60,9 @@ Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO a
 
 === API Enhancements
 
-* Added a xref:4.3@tigergraph-server:API:gsql-endpoints.adoc#_get_latest_schema_version[REST endpoint `GET /gsql/v1/schema/version`] to retrieve the current committed schema version. The endpoint returns the latest schema version as an integer.
+* Added a *xref:4.3@tigergraph-server:API:gsql-endpoints.adoc#_get_latest_schema_version[REST endpoint `GET /gsql/v1/schema/version`]* to retrieve the current committed schema version. The endpoint returns the latest schema version as an integer.
 
-* xref:4.3@tigergraph-server:API:built-in-endpoints.adoc[RESTPP endpoints `/query_status`, `/query_result`, `/showprocesslist/{graph_name}`, and `/showprocesslistall`]* now report query status and results across all server nodes in a distributed cluster, not just the node receiving the request. Use the optional `disallow_redirect` parameter to query only the local node, if desired.
+* *xref:4.3@tigergraph-server:API:built-in-endpoints.adoc[RESTPP endpoints `/query_status`, `/query_result`, `/showprocesslist/{graph_name}`, and `/showprocesslistall`]* now report query status and results across all server nodes in a distributed cluster, not just the node receiving the request. Use the optional `disallow_redirect` parameter to query only the local node, if desired.
 
 === Query Language Enhancements
 
@@ -75,7 +75,7 @@ Added support for a *xref:4.3@gsql-ref:querying:query-operations.adoc#_interpret
 
 By default, TigerGraph automatically selects the appropriate mode.
 
-* *Configuration parameter `GSQL.AllowInterpretedQueries`* allows enabling or disabling interpreted queries, helping enforce an installed-queries-only policy in production environments.
+* *xref:4.3@tigergraph-server:reference:configuration-parameters.adoc#_gsql[Configuration parameter `GSQL.AllowInterpretedQueries`]* allows enabling or disabling interpreted queries, helping enforce an installed-queries-only policy in production environments.
 
 * *xref:4.3@gsql-ref:querying:accumulators.adoc#_bitwiseandaccum_bitwiseoraccum[Bitwise Accumulators]*: Added support for dynamic-length BitwiseAccums, allowing lengths to be defined using query parameters or variables. Also introduced a `.clear()` function for improved memory management during query execution.
 
