@@ -330,6 +330,29 @@ gadmin restart all -y
 |
 |===
 
+== TLS Versions and Cipher Suites
+
+TigerGraph's Nginx supports TLS 1.2 and TLS 1.3. By default, TLS 1.3 is used for both client-facing and internal cluster communication, offering stronger security and faster connection establishment.
+
+=== TLS 1.2 Cipher Suites (configured in template)
+
+* `ECDHE-ECDSA-AES128-GCM-SHA256`
+* `ECDHE-RSA-AES128-GCM-SHA256`
+* `ECDHE-ECDSA-AES256-GCM-SHA384`
+* `ECDHE-RSA-AES256-GCM-SHA384`
+* `ECDHE-ECDSA-CHACHA20-POLY1305`
+* `ECDHE-RSA-CHACHA20-POLY1305`
+
+=== TLS 1.3 Cipher Suites
+
+TLS 1.3 cipher suites are not explicitly configured and use OpenSSL's built-in defaults:
+
+* `TLS_AES_256_GCM_SHA384`
+* `TLS_CHACHA20_POLY1305_SHA256`
+* `TLS_AES_128_GCM_SHA256`
+
+
+
 === Customizing TLS Versions and Cipher Suites
 
 TLS versions and cipher suites can be customized by modifying the `Nginx.ConfigTemplate`. These settings control which protocols and encryption standards are used for secure communication.
@@ -409,4 +432,3 @@ Use `openssl s_client` to verify the negotiated TLS version and cipher suites at
 ----
 openssl s_client -connect <host>:<port> -tls1_3
 ----
-
