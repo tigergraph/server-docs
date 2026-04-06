@@ -92,14 +92,11 @@ If one filename contains much more data than others, consider using a larger par
 
 [NOTE]
 ====
-You can increase `tasks.max` to process multiple files in parallel and improve loading throughput.
-
-By default, `tasks.max` is set to `1` to avoid resource contention when other workloads or concurrent loading jobs are running in the cluster.
-
-The effective number of tasks is limited by the number of input files:
-
-[source]
+* You can increase `tasks.max` to process multiple files in parallel and improve loading throughput. By default, `tasks.max` is set to `1` to avoid resource contention when other workloads or concurrent loading jobs are running in the cluster. The effective number of tasks is limited by the number of input files:
++
 ----
 task_count = min(tasks.max, total_file_number)
 ----
+
+* `num.partitions` determines the consumption parallelism of the TigerGraph Loader process. You can increase this value to improve loading performance when handling large data volumes.
 ====
