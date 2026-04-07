@@ -2402,11 +2402,11 @@ The JSON response object contains three fields:
 |===
 
 [#_install_a_query]
-=== Install a query
+=== Install one or more queries
 
 `POST /gsql/v1/queries/install`
 
-Once queries has been created for a graph, the user can use the `POST /gsql/v1/queries/install` endpoint to make a request to install one or multiple queries.
+Once queries has been created for a graph, the user can use the `POST /gsql/v1/queries/install` endpoint to install one or multiple queries.
 
 Once the GSQL server has received the `POST` request, it creates an installation request and returns a request location containing a request ID, with which you can <<_check_query_installation_status,check the installation status of all the queries in the request>>.
 An installation request will wait in the background for any currently running processes to complete.
@@ -2457,6 +2457,35 @@ Response::
 ----
 <1> URI where the request can be found.
 `1234` is the ID of the request.
+--
+====
+
+==== Installing multiple queries
+
+You can install multiple queries by passing the `queries` parameter multiple times in the request.
+
+[tabs]
+====
+Request::
++
+--
+[source.wrap,console]
+----
+curl --user tigergraph:tigergraph -X POST "http://localhost:14240/gsql/v1/queries/install?graph=social&queries=query1&queries=query2&queries=query3"
+----
+--
+Response::
++
+--
+[source.wrap,json]
+----
+{
+    "location": "/gsql/queries/install/5678",
+    "error": false,
+    "message": "Request 5678 successfully created",
+    "results": ""
+}
+----
 --
 ====
 
