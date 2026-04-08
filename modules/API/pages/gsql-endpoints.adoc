@@ -1724,6 +1724,54 @@ Sample Response::
 --
 ====
 
+==== Example: Create a reverse edge type
+
+You can automatically create a reverse edge type when adding a directed edge by specifying the `REVERSE_EDGE` option in the `Config` field.
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=exampleGraph" -d '
+{
+    "addEdgeTypes": [
+        {
+            "IsDirected": true,
+            "FromVertexTypeName": "User5",
+            "ToVertexTypeName": "User4",
+            "Name": "edge1",
+            "IsLocal": true,
+            "Config": {
+                "REVERSE_EDGE": "edge1_rev"
+            },
+            "Attributes": [
+                {
+                    "AttributeType": {
+                        "Name": "DATETIME"
+                    },
+                    "AttributeName": "live_date"
+                }
+            ]
+        }
+    ]
+}'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{"error":false,"message":"Schema change job runs successfully"}
+----
+--
+====
+
+This creates both the forward edge `edge1` and the reverse edge `edge1_rev`.
+
 '''
 === run an existing schema change job
 
