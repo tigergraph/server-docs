@@ -39,7 +39,7 @@ It inherits  xref:database-import-export.adoc#_export_all_options[Export All opt
 
 .*It will NOT export:*
 * Packages
-* Additionally, by default, it will *NOT* export, unless specified option `--user`:
+* Additionally, by default, it will *NOT* export, unless specified option `----USERS`:
 ** Users
 ** Roles
 ** Secrets
@@ -107,18 +107,35 @@ EXPORT GRAPH (ALL|GraphNameList) to "/path/to/export"
 EXPORT GRAPH (ALL|GraphNameList) [<export_options>] TO "<directory_name>"
 
 exportOptions ::=
+
 (-S | --SCHEMA | -T | --TEMPLATE | -D | --DATA | -U | --USERS | -P | --PASSWORD pwd)
 
+    -S, --SCHEMA        Only schema and attribute indices will be exported
 
-    -S, --SCHEMA        Only Schema will be exported
-    -T, --TEMPLATE      Only Schema, Queries, Loading Jobs, UDFs
-    -D, --DATA          Only Data Sources will be exported
-    -U, --USERS         Includes Permissions, Secrets, and Tokens
+    -T, --TEMPLATE      Schema, Queries, Loading Jobs, UDFs, and Data Sources
+                        will be exported (no data or users)
+
+    -D, --DATA          Include vertex and edge data export (must be used with -S or -T)
+
+    -U, --USERS         Include Users, Permissions, Secrets, and Tokens
+                        (must be used with -S or -T)
+
     -P, --PASSWORD      Encrypt with password. User will be prompted
+
         --SEPARATOR     Specify a column separator
+
         --EOL           Specify a line separator
 
 ----
+
+[NOTE]
+====
+* `-S` and `-T` cannot be used together.
+
+* `-D` and `-U` must be used with either `-S` or `-T`. Using them alone will result in an error.
+
+* If none of `-S`, `-T`, `-D`, or `-U` are specified, all content is exported, including schema, data sources, loading jobs, queries, UDFs, data, and users.
+====
 
 === Output
 
