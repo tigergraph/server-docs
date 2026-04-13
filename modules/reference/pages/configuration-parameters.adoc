@@ -1462,6 +1462,10 @@ as needed, if the amount of data managed by ZooKeeper is large |`30`
 |ZK.QuorumPort |The port for Zookeeper to do peer communication |`2888`
 
 |ZK.StartTimeoutMS |Start zookeeper timeout |`120000`
+
+|ZK.SnapCount |The number of committed transactions written to the log file that triggers a snapshot to be saved to disk. After the snapshot is saved, ZooKeeper starts a new transaction log file.
+
+This helps prevent the system from running out of memory due to a large backlog of transactions |`100000`
 |===
 
 == Environment Variables
