@@ -81,6 +81,8 @@ Previously, Replica 1 needed to remain operational.
 Ensures backup processes can continue even during service failures, such as GPE or GSE downtime.
 // However, backups may still be impacted if an entire node fails. Tolerating node failures will be addressed in the 4.2 release.
 
+* [4.1.4] xref:4.1@tigergraph-server:reference:configuration-parameters.adoc#_zk[New ZK.SnapCount configuration] enables users to fine-tune the number of committed ZooKeeper transactions that trigger a ZK log file, enhancing memory management and stability under high transaction loads.
+
 === Data Streaming/Connector Enhancements
 
 * **xref:4.1@gsql-ref:ddl-and-loading:managing-loading-job.adoc#_show_loading_error[Malformed Loading Data Inspector]**:
@@ -113,6 +115,8 @@ xref:4.1@tigergraph-server:system-management:management-commands.adoc#_gadmin_co
 * **xref:4.1@tigergraph-server:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics_format[Enhanced Metrics Reports]**: Total and available capacity for CPU and memory are now reported by the `/informant/metrics` endpoint.
 
 * **xref:4.1@tigergraph-server:reference:configuration-parameters.adoc#_restpp[Two new RESTPP Configuration Parameters]** to control how long the result files for xref:4.1@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[asynchronous queries] are retained.
+
+* [4.1.4] Added endpoints to *xref:4.1@tigergraph-server:API:gsql-endpoints.adoc#_list_running_queries[list running queries]* and *xref:4.1@tigergraph-server:API:gsql-endpoints.adoc#_list_running_loading_jobs[list running loading jobs]* for a specific graph. Each endpoint shows currently running queries or loading jobs, plus a `hasRunning` indicator.
 
 
 === Kubernetes Operator Enhancements
