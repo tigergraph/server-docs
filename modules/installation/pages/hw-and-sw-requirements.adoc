@@ -86,6 +86,7 @@ Before offline installation, the TigerGraph system needs a few basic software pa
 * `crontab`
 * `curl`
 * `ip`
+* `ld` (only required for Ubuntu 24.04 and later)
 * `more`
 * `netcat`
 * `netstat`
@@ -102,23 +103,15 @@ Contact your system administrator to have them installed on your target system. 
 # Centos or RedHat:
 sudo yum install tar curl cronie iproute util-linux-ng net-tools nc coreutils openssh-clients openssh-server sshpass
 
-# Ubuntu or Debian (Except Ver 18.04):
-sudo apt install tar curl cron iproute util-linux net-tools netcat coreutils openssh-client openssh-server sshpass
-
-# Ubuntu or Debian (Ver. 18.04):
-sudo apt install tar curl cron iproute2 util-linux net-tools netcat coreutils openssh-client openssh-server sshpass
+# Ubuntu or Debian:
+sudo apt install tar curl cron iproute2 util-linux net-tools netcat coreutils openssh-client openssh-server sshpass binutils
 ----
 
 [NOTE]
 ====
-For Ubuntu 24.04 and later, the `binutils` package is required.
+For Ubuntu 24.04 and later, the `ld` tool is required, which is provided by the `binutils` package.
 
-If it is not already installed, install it using:
-
-[source,console]
-----
-sudo apt install binutils
-----
+The `binutils` package is included in the above installation command but is only required for Ubuntu 24.04 and later.
 ====
 
 [#_ntp]
