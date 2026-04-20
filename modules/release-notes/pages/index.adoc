@@ -49,8 +49,6 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 
 * GSQL audit-log improvements with *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_configuration_parameters[new configuration]* `System.Audit.DiscreteJsonFormat`  and additional *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_gsql_service_audit_log_fields[log fields]* (actionType, objectType, graphName).
 
-*  *xref:4.3@tigergraph-server:user-access:query-privilege-migration.adoc#_migrate_acl_privileges[ACL privilege migrations]* are prevented if the ACL catalog contains the query contents.
-
 *  Added support for *xref:4.3@tigergraph-server:installation:hw-and-sw-requirements.adoc#_certified_operating_systems [Ubuntu 24.04]*. Installation on Ubuntu 24.04 and later requires the `binutils` package.
 
 === Security and Access Control Enhancements
@@ -58,7 +56,10 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 * *xref:4.3@tigergraph-server:security:encrypting-connections.adoc[Mutual TLS (mTLS) Authentication]* enables certificate-based mutual authentication between clients and the server, strengthening connection security for external applications and services.
 
 * TigerGraph now supports *xref:4.3@tigergraph-server:user-access:sso-with-kerberos.adoc[Kerberos]* as an SSO authentication option, alongside existing SAML, OIDC, and LDAP methods.
-Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO authentication methods
+Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO authentication methods.
+
+*  *xref:4.3@tigergraph-server:user-access:query-privilege-migration.adoc#_migrate_acl_privileges[ACL privilege migrations]* are prevented if the ACL catalog contains the query contents.
+
 
 === Integration Enhancements
 
