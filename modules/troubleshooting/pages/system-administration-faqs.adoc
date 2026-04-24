@@ -399,13 +399,16 @@ The `gstatusgraph` command provides statistics for each graph partition on every
 | Storage used by the internal ID mapping system, which maps external vertex IDs to internal IDs.
 
 | Vertex count
-| Approximate number of vertices in the partition.
+| Approximate number of vertices stored on disk in the partition. 
+Note that in a running system, there may be additional in-memory data that has not yet been persisted to disk, so the actual count may be slightly higher.
 
 | Edge count
-| Approximate number of edges in the partition.
+| Approximate number of edges stored on disk in the partition.
+In a running system, some edge data may still reside in memory and not yet be written to disk, so the actual count may be slightly higher.
 
 | NumOfDeletedVertices
-| Number of vertices marked as deleted but not yet cleaned up.
+| Number of vertices that have been logically (soft) deleted. These vertices are marked as deleted but are not immediately removed from storage. 
+Cleanup may occur only in specific cases, such as when all vertices in a segment are deleted.
 
 | NumOfSkippedVertices
 | Number of vertices skipped during processing due to errors or inconsistencies.
