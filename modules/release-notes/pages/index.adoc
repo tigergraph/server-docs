@@ -63,6 +63,8 @@ Audit logs now include `gadmin` activity, for more complete audit coverage.
 
 * [4.1.3] Added the `Security.JWT.JWKS.URL` xref:4.1@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[configuration parameter], to allow JWT certificates to be fetched using the Key ID (kid) from a JWKS (JSON Web Key Set) URL.
 
+* [4.1.4]  *xref:4.1@tigergraph-server:user-access:query-privilege-migration.adoc#_migrate_acl_privileges[ACL privilege migrations]* are prevented if the ACL catalog contains the query contents.
+
 === High Availability (HA) Enhancements
 
 * **xref:4.1@tigergraph-server:data-loading:data-loading-v2.adoc[Data Loading HA (Beta)]**:
@@ -80,6 +82,8 @@ Previously, Replica 1 needed to remain operational.
 * **Backup HA**:
 Ensures backup processes can continue even during service failures, such as GPE or GSE downtime.
 // However, backups may still be impacted if an entire node fails. Tolerating node failures will be addressed in the 4.2 release.
+
+* [4.1.4] xref:4.1@tigergraph-server:reference:configuration-parameters.adoc#_zk[New ZK.SnapCount configuration] enables users to fine-tune the number of committed ZooKeeper transactions that trigger a ZK log file, enhancing memory management and stability under high transaction loads.
 
 === Data Streaming/Connector Enhancements
 
@@ -113,6 +117,10 @@ xref:4.1@tigergraph-server:system-management:management-commands.adoc#_gadmin_co
 * **xref:4.1@tigergraph-server:API:built-in-endpoints.adoc#_monitor_system_metrics_openmetrics_format[Enhanced Metrics Reports]**: Total and available capacity for CPU and memory are now reported by the `/informant/metrics` endpoint.
 
 * **xref:4.1@tigergraph-server:reference:configuration-parameters.adoc#_restpp[Two new RESTPP Configuration Parameters]** to control how long the result files for xref:4.1@gsql-ref:querying:query-operations.adoc#_detached_mode_async_option[asynchronous queries] are retained.
+
+* [4.1.4] Added endpoints to *xref:4.1@tigergraph-server:API:gsql-endpoints.adoc#_list_running_queries[list running queries]* and *xref:4.1@tigergraph-server:API:gsql-endpoints.adoc#_list_running_loading_jobs[list running loading jobs]* for a specific graph. Each endpoint shows currently running queries or loading jobs, plus a `hasRunning` indicator.
+
+* [4.1.4] Added support for *xref:4.1@tigergraph-server:installation:hw-and-sw-requirements.adoc#_certified_operating_systems [Ubuntu 24.04]*. Installation on Ubuntu 24.04 and later requires the `binutils` package.
 
 
 === Kubernetes Operator Enhancements
@@ -197,6 +205,9 @@ Introduces a more complete and standard set of REST APIs:
 
 * [4.1.3] Added *xref:4.1@gsql-ref:querying:func/query-user-defined-functions.adoc#_use_github_to_store_udfs[Configuation parameter `GSQL.Github.Enabled`]* to enable retrieving UDFs from a Github repository.
 
+* [4.1.4] File objects can now be created with an optional xref:4.1@gsql-ref:querying:declaration-and-assignment-statements.adoc#_file_objects[file permission parameter], allowing users to specify permissions using a Linux octal-encoded file permission code.
+
+* [4.1.4] Added two new timestamp conversion functions, *xref:4.1@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_legacy.adoc[gsql_ts_to_epoch_seconds_legacy()]* and *xref:4.1@gsql-ref:ddl-and-loading:functions/token/gsql_ts_to_epoch_signed.adoc[gsql_ts_to_epoch_seconds_signed()]*, providing enhanced flexibility for date handling in loading jobs, including support for pre-1970 dates.
 
 ////
 * **xref:4.1@gsql-ref:querying:accumulators.adoc#_edge_attached_accumulators[Edge Accumulators in Multi-hop Queries]**
@@ -257,6 +268,52 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 
 == Fixed issues
 
+=== Fixed and Improved in 4.1.4
+
+==== Functionality
+
+* Fixed an issue that affected GSQL startup reliability during upgrades by addressing a library loading condition (GLE-11223).
+* Fixed an issue in GraphStudio that prevented the Proxy Group tab under All Users from loading correctly (APPS-3973).
+* Fixed an issue where token generation could become unresponsive during schema change operations by optimizing the workflow (GLE-11726).
+* Fixed an issue that caused intermittent errors during legacy token validation (GLE-11714).
+* Fixed an issue where CPU utilization in engine logs appeared lower than expected in Docker and Kubernetes environments (CORE-5320).
+* Fixed an issue where users with `querywriter` permissions encountered a `query not found` message when using Save As in GraphStudio (APPS-4066).
+* Fixed an issue where users with the `CREATE_QUERY` privilege were unable to create new queries in GraphStudio (APPS-4002).
+* Fixed an issue where service auto-restart skipped required pre- and post-actions during restart operations (TP-9098).
+* Fixed an issue where cluster resize commands could return before the controller reboot completed, leading to inconsistent subsequent operations (TP-8588).
+* Fixed an issue where backups failed when uploading to an S3 bucket with both object lock and default retention enabled (TP-8556).
+* Fixed an issue where Kafka write operations were unavailable during leadership elections in certain cluster conditions (TP-8554).
+* Fixed an issue where password policies intended for native users were incorrectly enforced on LDAP proxy users (GLE-11848).
+* Fixed an issue where the `UserCatalog.yaml` file could grow unexpectedly after upgrade in environments with many users and queries (GLE-11158).
+* Fixed an issue where certain upgrade validation checks were performed after upgrade instead of during pre-upgrade checks (GLE-10854).
+* Fixed an issue where Kafka retention could be blocked by a remote segment associated with a deleted vertex type (CORE-5435).
+* Fixed a UDF parsing error that failed to detect user-defined function names which conflict with built-in functions (GLE-10385).
+* Fixed an issue where the system would throw a NullPointerException and fail to create or install a query during code validation (GLE-10500).
+* Fixed an issue where certain upgrade validation checks were performed after upgrade instead of during pre-upgrade checks (GLE-10854).
+* Fixed an Out-of-Memory (OOM) issue that caused RESTPP to crash during timeout checks on asynchronous queries (CORE-4993).
+
+==== Improvements
+
+* Improved the accuracy of license-related alerts by refining vertex count calculations (CORE-5116).
+* Improved accessibility in GraphStudio with enhanced keyboard navigation and screen-reader support (APPS-4078).
+* Improved overall accessibility in GraphStudio, including navigation consistency, color contrast, and interactive element behavior (APPS-4076).
+* Improved upgrade logs with clearer messaging during version installation steps (TP-8428).
+* Improved ZooKeeper stability by introducing a configurable snapshot count with a safer default value (TP-8134).
+* Improved CRR observability by enhancing logs when sequence IDs are forcefully updated on the disaster recovery cluster (GLE-10439).
+
+==== Security
+
+* Refined loading job summary output by replacing detailed error information with line numbers for invalid entries (TP-8627).
+* Improved configuration security by masking AWS credential values in `gadmin` outputs (TP-8532).
+* Strengthened API behavior for `/auth/simple` and `/internal/info` by limiting unnecessary metadata visibility (GLE-10745).
+* Improved system behavior during cluster changes by addressing a condition affecting GPE when replica counts varied (CORE-4966).
+* Improved MaxFlow algorithm consistency to ensure results match documented examples (GLE-10736).
+* Third-party Vulnerabilities NOT impacting TigerGraph: 
++
+Fixed the following security vulnerabilities: CVE-2021-21409, CVE-2022-31160, CVE-2023-44981, CVE-2023-5678, CVE-2023-7008, CVE-2024-0727, CVE-2024-13009, CVE-2024-23944, CVE-2024-47535, CVE-2024-47554, CVE-2024-6763, CVE-2024-8184, CVE-2025-0913, CVE-2025-11226, CVE-2025-22233, CVE-2025-22871, CVE-2025-22874, CVE-2025-24970, CVE-2025-25193, CVE-2025-27817, CVE-2025-27818, CVE-2025-27819, CVE-2025-33042, CVE-2025-41234, CVE-2025-41242, CVE-2025-41249, CVE-2025-4673, CVE-2025-46701, CVE-2025-47907, CVE-2025-47914, CVE-2025-48734, CVE-2025-48924, CVE-2025-48988, CVE-2025-48989, CVE-2025-49125, CVE-2025-49146, CVE-2025-52520, CVE-2025-53057, CVE-2025-53066, CVE-2025-53506, CVE-2025-55163, CVE-2025-58056, CVE-2025-58057, CVE-2025-58181, CVE-2025-58457, CVE-2025-61726, CVE-2025-61727, CVE-2025-61728, CVE-2025-61729, CVE-2025-61730, CVE-2025-67735, CVE-2025-68121, CVE-2025-68160, CVE-2025-69418, CVE-2025-69419, CVE-2025-69420, CVE-2025-69421, CVE-2026-22795, CVE-2026-22796, and CVE-2026-33186.
+
+* Third-party Vulnerability impacting TigerGraph: None
+
 === Fixed and Improved in 4.1.3
 
 ==== Functionality
@@ -278,8 +335,8 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Third-party Vulnerabilities NOT impacting TigerGraph: 
 +
 Fixed the following security vulnerabilities: CVE-2020-29582, CVE-2020-8908, CVE-2023-2976, CVE-2023-45288, CVE-2023-45289, CVE-2023-45290, CVE-2024-23454, CVE-2024-23944, CVE-2024-24783, CVE-2024-24784, CVE-2024-24785, CVE-2024-24789, CVE-2024-24790, CVE-2024-24791, CVE-2024-34155, CVE-2024-34156, CVE-2024-34158, CVE-2024-45336, CVE-2024-45341, CVE-2024-51744, CVE-2024-56406, CVE-2024-6763, CVE-2025-22228, CVE-2025-22234, CVE-2025-22866, CVE-2025-22870, CVE-2025-22871, CVE-2025-22872, CVE-2025-23022, CVE-2025-27496, CVE-2025-30204, and CVE-2025-32728.
-+
-Third-party Vulnerability impacting TigerGraph: None
+
+* Third-party Vulnerability impacting TigerGraph: None
 
 
 === Fixed and Improved in 4.1.2
@@ -304,8 +361,8 @@ Third-party Vulnerability impacting TigerGraph: None
 * Third-party Vulnerabilities NOT impacting TigerGraph: 
 +
 Fixed the following security vulnerabilities: CVE-2023-44981, CVE-2024-45337, CVE-2024-8184, and CWE-639.
-+
-Third-party Vulnerability impacting TigerGraph: None
+
+* Third-party Vulnerability impacting TigerGraph: None
 
 === Fixed and Improved in 4.1.1
 
@@ -328,8 +385,8 @@ Third-party Vulnerability impacting TigerGraph: None
 * Third-party Vulnerabilities NOT impacting TigerGraph: 
 +
 Fixed the following security vulnerabilities: CVE-2017-5645, CVE-2019-10172, CVE-2019-10202, CVE-2021-44228, CVE-2021-45046, CVE-2021-45105, CVE-2022-31692, CVE-2022-45143, CVE-2022-45685, CVE-2023-1346, CVE-2023-20860, CVE-2023-20883, CVE-2023-34034, CVE-2023-44487, CVE-2023-46589, CVE-2023-50387, CVE-2023-50868, CVE-2024-1597, CVE-2024-22243, CVE-2024-22257, CVE-2024-22259, CVE-2024-23672, CVE-2024-24549, CVE-2024-25638, CVE-2024-34750, CVE-2024-38286, CVE-2024-38816, CVE-2024-47561, CWE-20, CWE-116, CWE-284, CWE-285, CWE-400, CWE-444, CWE-502, CWE-601, CWE-613, CWE-755, CWE-770, CWE-917, and CWE-918.
-+
-Third-party Vulnerability impacting TigerGraph: None
+
+* Third-party Vulnerability impacting TigerGraph: None
 
 //==== Performance
 //==== Improvements

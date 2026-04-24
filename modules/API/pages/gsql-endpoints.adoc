@@ -2149,6 +2149,62 @@ We have details of the xref:{page-component-version}@gsql-ref:ddl-and-loading:ru
 
 '''
 
+=== List running loading jobs
+
+`GET /gsql/v1/loading-jobs/listrunning`
+
+This endpoint retrieves all currently running loading jobs that the user has permission to view. 
+It also includes a `hasRunning` field in the response. If there are running jobs, even if the user does not have permission to view them, `hasRunning` will still be true.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| yes
+| If provided, shows running loading jobs for the specified graph. If omitted, shows jobs for all graphs the user has access to.
+|===
+
+==== Permissions:
+
+* Requires *READ Loading Job* privilege on the graph.
+* If the user has *READ Loading Job* on a specific job only (not the whole graph), the API still returns information about that job.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -u tigergraph:tigergraph 'http://<tigergraph-host>:14240/gsql/v1/loading-jobs/listrunning?graph=graphName'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+   "result":{
+      "graph1.load_kafka.kafka.k1.1.1750837177278":"RUNNING",
+      "graph2.load_kafka.kafka.k1.1.1750837174322":"RUNNING"
+   },
+   "hasRunning":true,
+   "error":false,
+   "message":""
+}
+----
+--
+====
+
+'''
+
 === Get loading job run statuses (multiple jobs)
 
 `GET /gsql/v1/loading-jobs/status`
@@ -3224,6 +3280,78 @@ Sample Response::
 {"error":false,"message":"","results":{"error":false,"message":"","version":{"schema":1,"edition":"enterprise","api":"v2"},"results":
 ["name":"Fred", "age":35,
 "neighbors":["Mr. McFeely","Daniel Tiger"]]}}
+----
+--
+====
+
+'''
+
+=== list running queries
+
+`GET /gsql/v1/queries/listrunning`
+
+This endpoint retrieves all currently running queries that the user has permission to view. 
+It also includes a `hasRunning` field in the response. If there are running queries, even if the user does not have permission to view them, `hasRunning` will still be true.
+
+==== Parameters:
+
+//[width="100%",cols="25%,25%,50%",options="header",]
+[%autowidth]
+|===
+| Name | Required | Description
+
+| `graph`
+| no
+| If provided, shows running queries for the specified graph. If omitted, shows queries for all graphs the user has access to.
+|===
+
+==== Permissions:
+
+* Requires *READ Query* privilege on the graph.
+* If the user has *READ Query* on a specific query only (not the whole graph), the API still returns information about that query.
+
+==== Example
+
+[,tabs]
+====
+Sample Request::
++
+--
+[source,bash]
+----
+curl -u tigergraph:tigergraph 'http://<tigergraph-host>:14240/gsql/v1/queries/listrunning?graph=graphName'
+----
+--
+Sample Response::
++
+--
+[source.wrap,console]
+----
+{
+   "error":false,
+   "message":"",
+   "hasRunning":true,
+   "results":[
+      {
+         "requestid":"16973825.RESTPP_1_1.1750902900072.N",
+         "expirationTime":"2025-06-26 10:25:00.72",
+         "startTime":"2025-06-26 09:55:00.72",
+         "user":"user1",
+         "url":"/query/graph1/queryName",
+         "elapsedTime":956793,
+         "status":"running"
+      },
+      {
+         "requestid":"16973826.RESTPP_1_2.1750902900073.N",
+         "expirationTime":"2025-07-10 11:30:00.15",
+         "startTime":"2025-07-10 11:00:00.15",
+         "user":"user2",
+         "url":"/query/graph2/queryName2",
+         "elapsedTime":123456,
+         "status":"running"
+      }
+   ]
+}
 ----
 --
 ====
