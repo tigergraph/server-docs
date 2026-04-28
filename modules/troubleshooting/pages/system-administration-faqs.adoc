@@ -156,7 +156,7 @@ Syntax:
 
 gstatusgraph [-s <node_name>]
 
-using -s to do statistics for one node
+Use `-s` to retrieve statistics for a specific node.
 ----
 
 [source,text]
@@ -171,11 +171,64 @@ $ gstatusgraph
 [WARN   ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information
 ----
 
+==== gstatusgraph output
+
+The `gstatusgraph` command provides statistics for each graph partition on every node. 
+
+[%header,cols="1,3"]
+|===
+| Field | Description
+
+| Partition size
+| Total disk space used by the graph partition on the node. Includes graph data, indexes, and internal storage.
+
+| Graph size
+| Actual size of the graph data (vertices and edges) within the partition. Typically a subset of the partition size.
+
+| IDS size
+| Storage used by the internal ID mapping system, which maps external vertex IDs to internal IDs.
+
+| Vertex count
+| Approximate number of vertices stored on disk in the partition. 
+Note that in a running system, there may be additional in-memory data that has not yet been persisted to disk, so the actual count may be slightly higher.
+
+| Edge count
+| Approximate number of edges stored on disk in the partition.
+In a running system, some edge data may still reside in memory and not yet be written to disk, so the actual count may be slightly higher.
+
+| NumOfDeletedVertices
+| Number of vertices that have been logically (soft) deleted. These vertices are marked as deleted but are not immediately removed from storage. 
+Cleanup may occur only in specific cases, such as when all vertices in a segment are deleted.
+
+| NumOfSkippedVertices
+| Number of vertices skipped during processing due to errors or inconsistencies.
+
+| Vector size
+| Storage used for vector data (if vector attributes are enabled).
+|===
+
+==== Relationship between key metrics
+
+* *Partition size vs Graph size*:
+** Graph size represents only the graph data.
+** Partition size includes graph data plus indexes, metadata, and internal storage.
+** Therefore, partition size is usually equal to or larger than graph size.
+
+* *Partition size vs IDS size*:
+** IDS size is a component of partition storage.
+** Larger graphs with more vertices typically have larger IDS size due to ID mappings.
+
 [WARNING]
 ====
-Due to a known bug, *gstatusgraph* command will count each undirected edge as two edges. To get an accurate number of undirected edges,  user should use the built-in queries instead. The message below is sent as a warning to users when *gstatusgraph* is used.
+Due to a known bug, *gstatusgraph* command will count each undirected edge as two edges. To get an accurate number of undirected edges, use built-in queries instead. 
+The following warning message is displayed when using *gstatusgraph*:
 
 `"[WARN ] Above vertex and edge counts are for internal use which show approximate topology size of the local graph partition. Use DML to get the correct graph topology information"`
+====
+
+[NOTE]
+====
+All counts and sizes reported by `gstatusgraph` are approximate and intended for internal diagnostics. For accurate graph statistics, use GSQL queries.
 ====
 
 [discrete]
