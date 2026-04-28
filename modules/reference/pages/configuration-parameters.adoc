@@ -1336,6 +1336,12 @@ input/output queue |`offset`
 |`MetricsQueue`
 
 |System.HostList |The aliases and hostnames/IPs for nodes
+To switch from IP addresses to hostnames, update the `Hostname` field values accordingly.
+
+After making changes, run:
+`gadmin config apply -y`
+`gadmin restart IFM -y`
+
 |`[{"ID":"m1","Hostname":"192.168.1.1","Region":"r1"},{"ID":"m2","Hostname":"192.168.1.2","Region":"r2"}]`
 
 |System.License |The license key for TigerGraph system |`nan`
