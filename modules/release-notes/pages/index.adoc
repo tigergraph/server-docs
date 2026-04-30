@@ -58,6 +58,8 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 * TigerGraph now supports *xref:4.3@tigergraph-server:user-access:sso-with-kerberos.adoc[Kerberos]* as an SSO authentication option, alongside existing SAML, OIDC, and LDAP methods.
 Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO authentication methods.
 
+* *xref:4.3@gsql-ref:querying:write-output-to-cloud.adoc#_use_gsql_session_parameters[S3 Authentication via AWS Role ARN]*: Added support for AWS Role Assumption when writing query output to S3 storage, enabling authentication via the `s3_assume_role` session parameter as an alternative to AWS access keys.
+
 *  *xref:4.3@tigergraph-server:user-access:query-privilege-migration.adoc#_migrate_acl_privileges[ACL privilege migrations]* are prevented if the ACL catalog contains the query contents.
 
 
