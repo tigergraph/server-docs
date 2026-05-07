@@ -75,6 +75,10 @@ Scalable storage and similarity search for vector attributes associated with ver
 ** When set to `0` (default), the system uses the default value of 64 KB.
 ** Requests exceeding the configured limit now return HTTP status `431 Request Header Fields Too Large` instead of `400 Bad Request`.
 
+* [4.2.3] *xref:4.2@gsql-ref:querying:query-operations.adoc#_log_output[Query installation logs]* now include a completion summary, elapsed time, and a failure report listing any skipped or failed queries. These logs are also shown during a TigerGraph upgrade. 
+
+
+
 === Security and Access Control Enhancements
 
 * *xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_user_guide_overview[
@@ -86,6 +90,8 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * [4.2.1] Added the `Security.JWT.JWKS.URL` *xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[configuration parameter]*, to allow JWT certificates to be fetched using the Key ID (kid) from a JWKS (JSON Web Key Set) URL.
 * [4.2.1] xref:4.2@tigergraph-server:user-access:query-privilege-migration.adoc#_migrate_acl_privileges[ACL privilege migrations] are prevented if the the ACL catalog contains the query contents.
+* [4.2.3] Added support for configuring *xref:4.2@tigergraph-server:user-access:fine-grained-query-privileges.adoc#_default_roles_for_query_level[default READ and EXECUTE roles]* at the graph level for query privileges. 
+* [4.2.3] Added graph-level  *xref:4.2@tigergraph-server:api:built-in-endpoints.adoc#_abort_a_query[READ_DATA]* privilege requirement for the `/query_result` and `/query_status` endpoints. 
 
 === Integration Enhancements
 
