@@ -492,6 +492,16 @@ server when trying to download/upload/delete catalog. Default value: 20 | 20
 |GSQL.MaxAuthTokenLifeTimeSec |The maximum lifetime of auth token in
 seconds, 0 means unlimited |`0`
 
+|GSQL.MaxHttpRequestHeaderSizeKB
+|Maximum allowed HTTP request header size (in KB) for GSQL endpoints.
+
+When set to `0` (default), the system uses the built-in default of `64 KB`.
+
+Supported range: `0` to `1048576`.
+
+Increase this value for scenarios with large request headers (for example, LDAP/SSO). Requests exceeding the configured limit return HTTP status `431 Request Header Fields Too Large`.
+|`0`
+
 |GSQL.OutputTokenBufferSize |The buffer size for output token from GSQL
 |`16000000`
 
