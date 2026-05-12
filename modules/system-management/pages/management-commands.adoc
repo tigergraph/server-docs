@@ -164,8 +164,7 @@ Global Flags:
 
 === gadmin backup retain
 
-The `retain` command does storage cleaning for backups whose tags match the given <TagPrefix>.
-
+The `retain` command cleans up backup files based on a specified tag prefix.
 
 [source, console]
 ----
@@ -176,28 +175,33 @@ Usage:
 
 Description:
 
-  The 'retain' command performs backup storage cleanup to backups that have
-  the given <TagPrefix>. Backups with a tag other than <TagPrefix> are unaffected.
+ The 'retain' command performs cleanup only on backups whose tags match the given <TagPrefix>.
+  Backups with a different prefix are NOT affected.
 
-  Specifically, the cleanup is done by keeping only those backup files that satisfy the
-  following conditions:
-  (1) Backups that do NOT contain the given tag prefix, OR
-  (2) Backups that contain the given tag prefix AND
-  (a) it is one of the most recent 'count' backups within the same prefix group AND
-  (b) the age of backup is within 'duration'.
-  E.g. the following command keeps the most recent 10 backups within 10 days for
-  backups starting with the prefix "week":
+  For backups with the specified prefix, only those that meet BOTH of the following conditions are kept:
+
+  (1) They are among the most recent <count> backups (if -c is specified), AND
+  (2) Their age is within the specified <duration> (if -d is specified).
+  
+Backups with the given prefix that do NOT meet these conditions will be removed.
+
+Example:
+
+  The following command keeps only the most recent 10 backups within the last 10 days
+  for backups whose names start with the prefix "week":
+
   gadmin backup retain week -c 10 -d 240h
-  Other backups with a name starting with the prefix "week" will be removed.
+
+  All other backups with the prefix "week" that do not meet these conditions will be deleted.
+  Backups with other prefixes are not affected.
 
 Flags:
-  -c, --count int         Being one of the most recent <count> backups. (default -1, meaning do not cleanup based on count)
-      --dry-run           dry run and output the retain result
+  -c, --count int         Keep only the most recent <count> backups (default: -1, no limit)
+      --dry-run           Show which backups would be removed without deleting them
   -d, --duration string
-                          The age of backup is within <duration>.
-                          A duration string should be an unsigned sequence of decimal numbers,
-                          each with an optional fraction and a unit suffix, such as "300ms", "1.5h" or "2h45m".
-                          Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+                          Keep backups newer than the specified duration.
+                          Format examples: "300ms", "1.5h", "2h45m"
+                          Supported units: "ns", "us" (or "µs"), "ms", "s", "m", "h"
   -h, --help              help for retain
   -y, --y                 yes to all questions
 
