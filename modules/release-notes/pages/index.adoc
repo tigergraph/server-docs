@@ -6,11 +6,9 @@
 :toc:
 :to
 
-TigerGraph Server 4.3.0 Preview is scheduled for release in 2026.
-
 [NOTE]
 ====
-TigerGraph 4.3's feature set builds upon the capabilities introduced in 4.2.x.
+TigerGraph 4.3's feature set builds upon the capabilities introduced in 4.2.2.
 ====
 
 == Key New Features
@@ -45,15 +43,14 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 
 * New *xref:4.3@tigergraph-server:API:built-in-endpoints.adoc#_license_expiration_metric[open metric]* `tigergraph_license_days_left` for days remaining until license expiration.
 
-* *xref:4.3@tigergraph-server:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[Amazon Linux 2023]* officially supported.
+* Added support for *xref:4.3@tigergraph-server:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[Amazon Linux 2023]* and *xref:4.3@tigergraph-server:installation:hw-and-sw-requirements.adoc#_certified_operating_systems[Ubuntu 24.04]*.
+
+** Installation on Ubuntu 24.04 and later requires the `binutils` package.
 
 * GSQL audit-log improvements with *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_configuration_parameters[new configuration]* `System.Audit.DiscreteJsonFormat`  and additional *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_gsql_service_audit_log_fields[log fields]* (actionType, objectType, graphName).
 
-*  Added support for *xref:4.3@tigergraph-server:installation:hw-and-sw-requirements.adoc#_certified_operating_systems [Ubuntu 24.04]*. Installation on Ubuntu 24.04 and later requires the `binutils` package.
+* Increased the default maximum HTTP request header size from 20 KB to 64 KB to better support large request headers (such as LDAP/SSO scenarios). The new configuration parameter xref:4.3@tigergraph-server:reference:configuration-parameters.adoc#_gsql[`GSQL.MaxHttpRequestHeaderSizeKB`] allows customization.
 
-* Increased the default maximum HTTP request header size from 20 KB to 64 KB to better support large request headers (such as LDAP/SSO scenarios), and introduced a new configuration parameter `GSQL.MaxHttpRequestHeaderSizeKB`.
-
-** You can use xref:4.3@tigergraph-server:reference:configuration-parameters.adoc#_gsql[`GSQL.MaxHttpRequestHeaderSizeKB`] to customize the maximum HTTP request header size.
 ** When set to `0` (default), the system uses the default value of 64 KB.
 ** Requests exceeding the configured limit now return HTTP status `431 Request Header Fields Too Large` instead of `400 Bad Request`.
 
@@ -61,7 +58,7 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 
 * *xref:4.3@tigergraph-server:security:encrypting-connections.adoc[Mutual TLS (mTLS) Authentication]* enables certificate-based mutual authentication between clients and the server, strengthening connection security for external applications and services.
 
-* TigerGraph now supports *xref:4.3@tigergraph-server:user-access:sso-with-kerberos.adoc[Kerberos]* as an SSO authentication option, alongside existing SAML, OIDC, and LDAP methods.
+* Added *xref:4.3@tigergraph-server:user-access:sso-with-kerberos.adoc[Kerberos]* as an SSO authentication option, alongside existing SAML, OIDC, and LDAP methods.
 Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO authentication methods.
 
 * *xref:4.3@gsql-ref:querying:write-output-to-cloud.adoc#_use_gsql_session_parameters[S3 Authentication via AWS Role ARN]*: Added support for AWS Role Assumption when writing query output to S3 storage, enabling authentication via the `s3_assume_role` session parameter as an alternative to AWS access keys.
@@ -69,11 +66,11 @@ Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO a
 *  *xref:4.3@tigergraph-server:user-access:query-privilege-migration.adoc#_migrate_acl_privileges[ACL privilege migrations]* are prevented if the ACL catalog contains the query contents.
 
 
-=== Integration Enhancements
+=== Output to Cloud Enhancements
 
 * Writing *xref:4.3@gsql-ref:querying:write-output-to-cloud.adoc[query output]* to S3-compatible storage (such as Ceph, MinIO, and Wasabi) is now supported using a configurable `s3_endpoint`, enabling integration with non-AWS storage systems.
 
-* Added support for specifying the S3 region using the *xref:savanna:graph-development:advanced-features/write2-s3.adoc[`s3_region`]* session parameter when running *xref:4.3@gsql-ref:querying:write-output-to-cloud.adoc[queries]*.
+* Added support for specifying the S3 region using the *xref:savanna:graph-development:advanced-features/write2-s3.adoc[`s3_region`]* session parameter when writing *xref:4.3@gsql-ref:querying:write-output-to-cloud.adoc[query output]* to S3-compatible storage.
 
 === API Enhancements
 
