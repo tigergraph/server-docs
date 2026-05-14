@@ -760,6 +760,164 @@ Response::
 
 '''
 
+=== Get license info and usage
+
+`GET /informant/licenseinfo`
+
+*Server*: Informant
+
+This endpoint returns the license information and usage. By default, the response is in JSON format. To receive the response in OpenMetrics format, use the header `Accept: application/openmetrics-text`.
+
+==== Parameters
+
+None
+
+==== Sample request (JSON)
+
+.Request
+[source,console]
+----
+curl -X GET "http://localhost:14240/informant/licenseinfo"
+----
+
+.Response
+[source,json]
+----
+{
+  "License": {
+    "Issuer": "TigerGraph Inc.",
+    "Audience": "MyCompany",
+    "StartTime": 0,
+    "EndTime": 1771524779,
+    "IssueTime": 1770315179,
+    "Edition": "Enterprise",
+    "Version": "",
+    "Host": {
+      "MaxCPUCore": 16,
+      "MaxPhysicalMemoryBytes": 9007199254740991,
+      "AllowedHardwareSignatures": [],
+      "AllowedOSSignatures": [],
+      "MaxClusterNodeNumber": 1024,
+      "AllowedAzureInstanceID": [],
+      "AllowedGCPInstanceID": [],
+      "AllowedAWSInstanceID": [],
+      "AllowedK8SInstanceID": [],
+      "MaxTotalCPUs": 32
+    },
+    "Topology": {
+      "MaxVertexNumber": 9007199254740991,
+      "MaxEdgeNumber": 9007199254740991,
+      "MaxGraphNumber": 9007199254740991,
+      "MaxTopologyBytes": 9007199254740991
+    },
+    "GPE": null,
+    "GSE": null,
+    "GST": null,
+    "MLWB": null,
+    "Insights": { "Enable": true },
+    "GSQLShell": { "Enable": true },
+    "GraphQL": { "Enable": true },
+    "RuntimeMemory": {
+      "ProcessRSS": null,
+      "MaxUserResidentSetBytes": 549755813888
+    },
+    "Vector": {
+      "MaxVectorBytes": 9007199254740991
+    },
+    "CRR": { "Enable": false },
+    "DataHA": { "Enable": true },
+    "Penalty": null
+  },
+  "Usage": {
+    "Host": {
+      "CPUCore": {
+        "m1": "16",
+        "m2": "16"
+      },
+      "TotalCPUs": "32"
+    },
+    "Topology": {
+      "VertexNumber": 59,
+      "EdgeNumber": 82,
+      "TopologyBytes": 2457
+    },
+    "Vector": {
+      "VectorBytes": 7867221
+    },
+    "RuntimeMemory": {
+      "UserResidentSetBytes": {
+        "m1": 3457558138,
+        "m2": 4811103300
+      },
+      "TotalUserRSS": 8268661438
+    },
+    "CRR": { "Enabled": false },
+    "DataHA": { "Enabled": false }
+  }
+}
+----
+
+==== Sample request (OpenMetrics)
+
+.Request
+[source,console]
+----
+curl -X GET "http://localhost:14240/informant/licenseinfo" \
+  -H 'Accept: application/openmetrics-text'
+----
+
+.Response
+[source,text]
+----
+# HELP tigergraph_license_limit_topology_bytes License limit for topology storage in bytes.
+# TYPE tigergraph_license_limit_topology_bytes gauge
+tigergraph_license_limit_topology_bytes 1e+15
+# HELP tigergraph_license_limit_total_cpu License limit for total CPU.
+# TYPE tigergraph_license_limit_total_cpu gauge
+tigergraph_license_limit_total_cpu 100
+# HELP tigergraph_license_limit_total_runtime_memory_bytes License limit for total runtime memory in bytes.
+# TYPE tigergraph_license_limit_total_runtime_memory_bytes gauge
+tigergraph_license_limit_total_runtime_memory_bytes 1e+15
+# HELP tigergraph_license_limit_vector_bytes License limit for vector storage in bytes.
+# TYPE tigergraph_license_limit_vector_bytes gauge
+tigergraph_license_limit_vector_bytes 1e+15
+# HELP tigergraph_license_usage_cpu_cores License usage for CPU cores per host.
+# TYPE tigergraph_license_usage_cpu_cores gauge
+tigergraph_license_usage_cpu_cores{host="m1"} 16
+tigergraph_license_usage_cpu_cores{host="m2"} 16
+# HELP tigergraph_license_usage_ratio_topology_and_vector_bytes Ratio of (topology + vector) usage to (topology + vector) limit.
+# TYPE tigergraph_license_usage_ratio_topology_and_vector_bytes gauge
+tigergraph_license_usage_ratio_topology_and_vector_bytes 3.93484e-09
+# HELP tigergraph_license_usage_ratio_total_cpu Ratio of total CPU usage to limit.
+# TYPE tigergraph_license_usage_ratio_total_cpu gauge
+tigergraph_license_usage_ratio_total_cpu 0.32
+# HELP tigergraph_license_usage_ratio_total_runtime_memory_bytes Ratio of total runtime memory usage to limit.
+# TYPE tigergraph_license_usage_ratio_total_runtime_memory_bytes gauge
+tigergraph_license_usage_ratio_total_runtime_memory_bytes 8.26866e-06
+# HELP tigergraph_license_usage_runtime_memory_bytes License usage for runtime memory in bytes per host.
+# TYPE tigergraph_license_usage_runtime_memory_bytes gauge
+tigergraph_license_usage_runtime_memory_bytes{host="m1"} 3.45756e+09
+tigergraph_license_usage_runtime_memory_bytes{host="m2"} 4.8111e+09
+# HELP tigergraph_license_usage_topology_bytes License usage for topology storage in bytes.
+# TYPE tigergraph_license_usage_topology_bytes gauge
+tigergraph_license_usage_topology_bytes 2457
+# HELP tigergraph_license_usage_topology_edge_number License usage for topology edge count.
+# TYPE tigergraph_license_usage_topology_edge_number gauge
+tigergraph_license_usage_topology_edge_number 82
+# HELP tigergraph_license_usage_topology_vertex_number License usage for topology vertex count.
+# TYPE tigergraph_license_usage_topology_vertex_number gauge
+tigergraph_license_usage_topology_vertex_number 59
+# HELP tigergraph_license_usage_total_cpu License usage for total CPU.
+# TYPE tigergraph_license_usage_total_cpu gauge
+tigergraph_license_usage_total_cpu 32
+# HELP tigergraph_license_usage_total_runtime_memory_bytes License usage for total runtime memory in bytes.
+# TYPE tigergraph_license_usage_total_runtime_memory_bytes gauge
+tigergraph_license_usage_total_runtime_memory_bytes 8.26866e+09
+# HELP tigergraph_license_usage_vector_bytes License usage for vector storage in bytes.
+# TYPE tigergraph_license_usage_vector_bytes gauge
+tigergraph_license_usage_vector_bytes 7.86722e+06
+----
+
 === Rebuild graph engine
 
 `GET /restpp/rebuildnow/\{graph_name}` +
