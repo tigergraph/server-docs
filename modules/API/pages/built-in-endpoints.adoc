@@ -772,15 +772,21 @@ This endpoint returns the license information and usage. By default, the respons
 
 None
 
-==== Sample request (JSON)
+==== Sample request:
 
-.Request
-[source,console]
+[tabs]
+====
+Request::
++
+--
+[.wrap.console]
 ----
 curl -X GET "http://localhost:14240/informant/licenseinfo"
 ----
-
-.Response
+--
+Response::
++
+--
 [source,json]
 ----
 {
@@ -856,17 +862,25 @@ curl -X GET "http://localhost:14240/informant/licenseinfo"
   }
 }
 ----
+--
+====
 
-==== Sample request (OpenMetrics)
+==== Sample request(OpenMetrics format):
 
-.Request
-[source,console]
+[tabs]
+====
+Request::
++
+--
+[.wrap.console]
 ----
 curl -X GET "http://localhost:14240/informant/licenseinfo" \
   -H 'Accept: application/openmetrics-text'
 ----
-
-.Response
+--
+Response::
++
+--
 [source,text]
 ----
 # HELP tigergraph_license_limit_topology_bytes License limit for topology storage in bytes.
@@ -917,6 +931,8 @@ tigergraph_license_usage_total_runtime_memory_bytes 8.26866e+09
 # TYPE tigergraph_license_usage_vector_bytes gauge
 tigergraph_license_usage_vector_bytes 7.86722e+06
 ----
+--
+====
 
 === Rebuild graph engine
 
