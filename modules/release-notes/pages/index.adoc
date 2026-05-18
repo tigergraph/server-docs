@@ -93,11 +93,15 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 * [4.2.3] Added support for configuring *xref:4.2@tigergraph-server:user-access:fine-grained-query-privileges.adoc#_default_roles_for_query_level[default READ and EXECUTE roles]* at the graph level for query privileges. 
 * [4.2.3] Added graph-level  *xref:4.2@tigergraph-server:api:built-in-endpoints.adoc#_abort_a_query[READ_DATA]* privilege requirement for the `/query_result` and `/query_status` endpoints. 
 
-=== Integration Enhancements
+=== Output to Cloud Enhancements
 
 * *xref:4.2@gsql-ref:querying:data-types.adoc#_s3_object[Writing query output to an S3 object]* can now be configured at the user session level instead at the system administration level, for better alignment of roles and privileges.
 
 * Updated Kafka from 2.5.1 to 3.6.2. Updated Zookeeper from 3.6.3 to 3.8.4.
+
+* [4.2.1] Writing *xref:4.2@gsql-ref:querying:write-output-to-cloud.adoc[query output]* to S3-compatible storage (such as Ceph, MinIO, and Wasabi) is now supported using a configurable `s3_endpoint`, enabling integration with non-AWS storage systems.
+
+* [4.2.3] Added support for specifying the S3 region using the *xref:savanna:graph-development:advanced-features/write2-s3.adoc[`s3_region`]* session parameter when writing *xref:4.2@gsql-ref:querying:write-output-to-cloud.adoc[query output]* to S3-compatible storage.
 
 === API Enhancements
 
