@@ -1,63 +1,84 @@
 :toc:
-= Data Loading Overview
-:description: Overview of available loading methods and supported features.
+= Data Connector Overview
+:description: Overview of available data connectors, sources, and loading workflows.
 :page-aliases: data-loading:kafka-loader/index.adoc
 
-Once you have xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc[defined a graph schema], you can load data into the graph. This section focuses on how to configure TigerGraph for the different data sources, as well as different data formats and transport schemes.
+Once you have xref:{page-component-version}@gsql-ref:ddl-and-loading:defining-a-graph-schema.adoc[defined a graph schema], you can load data into the graph. 
 
-== Loading System Architecture
+This section provides an overview of how to configure TigerGraph to connect to different data sources, including data warehouses, cloud storage, streaming systems, and lakehouse platforms.
 
-This diagram shows the supported data sources, which connector to use, and which TigerGraph component manages the data loading.
+== Connector Architecture Overview
 
-.TigerGraph Data Loading Options
-image::data-loading:loading-arch_3.11-rev2.png[Architectural diagram showing supported data sources, which connector to use, and which TigerGraph component manages the data loading]
+This diagram shows the supported data source categories, the connectors used to access them, and the TigerGraph components responsible for ingesting the data.
+
+.TigerGraph Data Connector Architecture
+image::data-loading:loading-arch_3.11-rev2.png[Architectural diagram showing supported data sources, connectors, and data ingestion components]
 //  source file: https://graphsql.atlassian.net/wiki/..../Data+Loading+Architecture+with+New+Spark+Connector
 
-== Data Sources
+== Data Source Categories
 
-You have several options for data sources:
+TigerGraph supports multiple categories of data sources, each accessed through a specific connector or integration method.
 
-* *Local Files*: Files residing on a TigerGraph server can be loaded without the need to create a GSQL DATA_SOURCE object. This option can have the highest performance.
+* *Local Files*: Files located on the TigerGraph server can be loaded directly without defining a `DATA_SOURCE` object. This option typically provides the highest performance.
 
-* *Outside Sources*: Loading data from an outside source, such as cloud storage, requires one additional step to first define a DATA_SOURCE object, which uses the https://docs.confluent.io/platform/current/connect/index.html[Kafka Connect] framework.
-Kafka offers a distributed, fault-tolerant, real-time data pipeline with concurrency.
-By encapsulating the details of the data source connection in a DATA_SOURCE object, GSQL can treat the source like it treats a local file.
-You can use this approach for the following data sources:
+* *External Sources (via Kafka Connect)*: External systems are accessed by defining a `DATA_SOURCE` object, which uses the https://docs.confluent.io/platform/current/connect/index.html[Kafka Connect] framework. Kafka Connect provides a distributed and fault-tolerant data pipeline.
+
++
+Using this approach, TigerGraph can treat external sources similarly to local files. Supported sources include:
 +
 ** Cloud storage (Amazon S3, Azure Blob Storage, Google Cloud Storage)
-** Data warehouse query results (Google BigQuery, Snowflake, PostgreSQL)
-** External Kafka cluster
-+
-See the pages for the specific method that fits your data source.
+** Data warehouses (Google BigQuery, Snowflake, PostgreSQL)
+** External Kafka clusters
+** Lakehouse platforms such as Apache Iceberg (via Kafka Connect)
 
-* *Spark*: The TigerGraph xref:data-loading:load-from-spark-dataframe.adoc[Spark Connector] is used with Apache Spark to read data from a Spark DataFrame (or Data Lake) and write to TigerGraph.
-Users can leverage it to connect TigerGraph to the Spark ecosystem and load data from any Spark data sources
++
+See the pages for each connector for detailed configuration steps.
+
+* *Lakehouse (via Spark or Kafka Connect)*: Lakehouse platforms combine features of data lakes and data warehouses.
+
++
+TigerGraph supports:
++
+** Apache Iceberg via Kafka Connect
+** Apache Iceberg, DeltaLake (and other Spark-supported sources) via the Spark Connector
++
+See xref:load-from-iceberg.adoc[Load from Apache Iceberg] for details.
+
+* *Spark*: The TigerGraph xref:data-loading:load-from-spark-dataframe.adoc[Spark Connector] integrates with Apache Spark to load data from Spark DataFrames or lakehouse storage systems into TigerGraph.
+
++
+This approach allows you to leverage the broader Spark ecosystem and its supported data sources.
 
 == Loading Workflow
 
-TigerGraph uses the same workflow for both local file and Kafka Connect loading:
+TigerGraph follows a consistent workflow for loading data, regardless of the source:
 
 . *Specify a graph*.
-Data is always loading to exactly one graph (though that graph could have global vertices and edges which are shared with other graphs). For example:
+Data is always loaded into a single graph. For example:
 +
 [source,gsql]
+----
 USE GRAPH ldbc_snb
+----
 
-. If you are using Kafka Connect, *define a `DATA_SOURCE` object*.
-See the details on the pages for
-xref:load-from-cloud.adoc[cloud storage],
+. If using an external connector, *define a `DATA_SOURCE` object*.
++
+See:
++
+xref:load-from-cloud.adoc[Cloud Storage],
 xref:load-from-warehouse.adoc#_bigquery[BigQuery],
 xref:load-from-warehouse.adoc#_snowflake[Snowflake],
-xref:load-from-warehouse.adoc#_postgresql[PostgreSQL] or
-xref:load-from-kafka.adoc#_configure_the_kafka_source[Kafka]
-
+xref:load-from-warehouse.adoc#_postgresql[PostgreSQL],
+xref:load-from-kafka.adoc[Kafka], or
+xref:load-from-iceberg.adoc[Apache Iceberg].
 
 . *Create a xref:#_loading_jobs[loading job]*.
 
-. *Run your loading job*.
+. *Run the loading job*.
 
 == Loading Jobs
-A loading job tells the database how to construct vertices and edges from data sources.
+
+A loading job defines how data is transformed into vertices and edges in the graph.
 
 [source,gsql]
 .CREATE LOADING JOB syntax
@@ -67,16 +88,16 @@ CREATE LOADING JOB <job_name> FOR GRAPH <graph_name> {
   <LOAD statements>
 }
 ----
-The opening line does some naming:
 
-* assigns a name to this job: (`<job_name>`)
-* associates this job with a graph (`<graph_name>`)
+The loading job definition includes:
 
-The loading job body has two parts:
+* A job name (`<job_name>`)
+* A target graph (`<graph_name>`)
 
-. DEFINE statements create variables to refer to data sources.
-These can refer to actual files or be placeholder names. The actual data sources can be given when running the loading job.
+The body of the loading job consists of:
 
-. LOAD statements specify how to take the data fields from files to construct vertices or edges.
+. *DEFINE statements*: Create variables that reference data sources. These can represent files or external queries.
 
-NOTE: Refer to the xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Creating a Loading Job] documentation for full details
+. *LOAD statements*: Specify how input data fields map to vertices and edges.
+
+NOTE: For detailed syntax and examples, see xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[Creating a Loading Job].
