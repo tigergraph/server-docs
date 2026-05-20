@@ -1,0 +1,50 @@
+= Load from Data Lakehouse
+:description: Overview of TigerGraph support for loading data from Data Lakehouse platforms.
+
+A data lakehouse combines the scalability and flexibility of data lakes with the data management capabilities of data warehouses. 
+TigerGraph supports loading data from lakehouse platforms through Kafka Connect-based connectors and Apache Spark integrations.
+
+== Supported Lakehouse Integrations
+
+TigerGraph currently supports the following lakehouse integrations:
+
+[cols="2,2,4",options="header"]
+|===
+| Lakehouse Platform
+| Integration Method
+| Details
+
+| Apache Iceberg
+| Kafka Connect
+| Load Iceberg tables stored in S3 or MinIO through the Iceberg connector and Iceberg REST Catalog.
+See xref:load-from-iceberg.adoc[Load from Apache Iceberg].
+
+| Apache Iceberg
+| Spark Connector
+| Read Iceberg tables into Apache Spark and write the data to TigerGraph using the Spark Connector.
+See xref:load-from-spark-dataframe.adoc#_load_data_from_iceberg[from Spark].
+
+| DeltaLake
+| Spark Connector
+| Read DeltaLake tables into Apache Spark and write the data to TigerGraph using the Spark Connector.
+See xref:load-from-spark-dataframe.adoc#_load_data_from_delta_lake[from Spark].
+
+| Apache Hudi
+| Spark Connector
+| Read Hudi datasets into Apache Spark and write the data to TigerGraph using the Spark Connector.
+See xref:load-from-spark-dataframe.adoc#_load_data_from_hudi[from Spark].
+|===
+
+== Loading Workflow Overview
+
+The overall loading workflow for lakehouse integrations is similar to other TigerGraph loading methods:
+
+. Define your graph schema.
+. Configure the external data connection.
+. Create a loading job or Spark-based ingestion pipeline.
+. Load data into TigerGraph.
+. Monitor and manage loading operations.
+
+For Kafka Connect-based integrations such as Iceberg, TigerGraph uses `DATA_SOURCE` objects and loading jobs.
+
+For Spark-based integrations, TigerGraph uses the xref:load-from-spark-dataframe.adoc[Spark Connector] to write Spark DataFrames into TigerGraph.
