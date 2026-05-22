@@ -378,17 +378,12 @@ Retention begins when usage approaches this value. +
 If the GPE’s Kafka data grows beyond this limit, *graph updates will be disabled* until space is freed. +
 Default: `40`. +
 
-* Use the following command to identify the directories considered for this retention threshold:
-
+Use the following command to identify the directories considered for this retention threshold:
+----
 [source,bash]
 ----
-grun_p all "find $(gadmin config get System.DataRoot)/\
-$(gadmin config get Kafka.DataRelativePath) \
--maxdepth 1 -type d \
--name '*deltaQ_GPE_*' \
--exec du -sh {} \;"
+grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) -maxdepth 1 -type d -name '*deltaQ_GSE_*' -exec du -sh {} \;"
 ----
-
 
 | 40
 |`40`
