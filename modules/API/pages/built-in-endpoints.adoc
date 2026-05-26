@@ -19,6 +19,25 @@ This also applies to previously created cloud solutions that are resized on or a
 For all TigerGraph Server solutions not on TigerGraph Cloud, or for TigerGraph Cloud solutions created before June 20, 2022, ports 9000 and 14240 remain correct.
 ====
 
+== RESTPP Reload Behavior
+
+RESTPP reload refreshes RESTPP configurations and endpoint metadata when catalog changes affect RESTPP functionality.
+
+RESTPP reload may be triggered by operations such as:
+
+* User authentication or privilege changes
+* Endpoint changes
+* Schema changes
+* Workload queue configuration changes
+* Datasource removals
+
+For example, installing a query triggers a RESTPP reload because a new REST endpoint is added for the query.
+However, creating a query without installing it does not trigger a RESTPP reload because no REST endpoint is added.
+
+During RESTPP reload, RESTPP dynamically refreshes configurations and endpoints without requiring a manual service restart.
+
+Requests that have already been accepted are not affected during the reload process. However, new requests may not be accepted temporarily until the RESTPP reload process finishes.
+
 == System Utilities
 
 === Echo
