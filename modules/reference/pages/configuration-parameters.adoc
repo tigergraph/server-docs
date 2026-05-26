@@ -379,11 +379,8 @@ If the GPE’s Kafka data grows beyond this limit, *graph updates will be disabl
 Default: `40`. +
 
 Use the following command to identify the directories considered for this retention threshold:
-----
-[source,bash]
-----
-grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) -maxdepth 1 -type d -name '*deltaQ_GSE_*' -exec du -sh {} \;"
-----
+
+`grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) -maxdepth 1 -type d -name '*deltaQ_GPE_*' -exec du -sh {} \;"`
 
 | 40
 |`40`
@@ -440,14 +437,10 @@ a| The maximum size (in GB) of Kafka data used by the GSE before triggering Kafk
 Retention begins when usage approaches this value. +
 Default: `20`. +
 
-* Use the following command to identify the directories considered for this retention threshold:
+Use the following command to identify the directories considered for this retention threshold:
 
-[source,bash]
-----
-grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) \
--maxdepth 1 -type d -name '*GSE_journal_*' \
--exec du -sh {} \;"
-----
+`grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) -maxdepth 1 -type d -name '*GSE_journal_*' -exec du -sh {} \;"`
+
 
 |`20`
 
@@ -740,14 +733,9 @@ informant database source folder |`informant/db`
 a| The period in days for local data records to be kept, set to -1 for forever (not advised). +
 Longer retention results in higher disk space usage and slower search for historical status. +
 
-* Use the following command to identify the directories considered for this retention threshold:
+Use the following command to identify the directories considered for this retention threshold:
 
-[source,bash]
-----
-grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Informant.DBRelativePath) \
--maxdepth 1 -type d \
--exec du -sh {} \;"
-----
+`grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Informant.DBRelativePath) -maxdepth 1 -type d -exec du -sh {} \;"`
 
 |`7` (default. Prior to v3.9.2, the default was 30.)
 |===
@@ -800,29 +788,20 @@ must acknowledge, when producer sets acks to `all' |`1`
 | Kafka.RetentionHours
 a| The minimum age of a log file of Kafka to be eligible for deletion (hours). +
 
-* Use the following command to identify the directories considered for this retention threshold:
+Use the following command to identify the directories considered for this retention threshold:
 
-[source,bash]
-----
-grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) \
--maxdepth 1 -mindepth 1 -type d \
-! -name '*deltaQ_GPE_*' ! -name '*GSE_journal_*' ! -name 'data-stream-dlq*' \
--exec du -sh {} \;"
-----
+`grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) -maxdepth 1 -mindepth 1 -type d ! -name '*deltaQ_GPE_*' ! -name '*GSE_journal_*' ! -name 'data-stream-dlq*' -exec du -sh {} \;"`
 
 |`168`
 
 | Kafka.RetentionSizeGB
 a| The minimum size (in GB) of Kafka log files for *infrastructure services* before they are eligible for deletion. This setting does not control retention for GPE or GSE data. +
 
-* Use the following command to identify the directories considered for this retention threshold:
+Use the following command to identify the directories considered for this retention threshold:
 
-[source,bash]
-----
-grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Informant.DBRelativePath) \
--maxdepth 1 -type d \
--exec du -sh {} \;"
-----
+`grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) -maxdepth 1 -mindepth 1 -type d ! -name '*deltaQ_GPE_*' ! -name '*GSE_journal_*' ! -name 'data-stream-dlq*' -exec du -sh {} \;"`
+
+
 |`40`
 
 |Kafka.StartTimeoutMS |Start kafka timeout |`300000`
