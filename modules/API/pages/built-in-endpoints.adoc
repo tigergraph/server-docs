@@ -31,7 +31,9 @@ RESTPP reload may be triggered by operations such as:
 For example, installing a query triggers a RESTPP reload because a new REST endpoint is added for the query.
 However, creating a query without installing it does not trigger a RESTPP reload because no REST endpoint is added.
 
-RESTPP reload updates RESTPP runtime configurations without requiring a manual service restart.
+During RESTPP reload, RESTPP dynamically refreshes configurations and endpoints without requiring a manual service restart.
+
+Requests that have already been accepted are not affected during the reload process. However, new requests may not be accepted temporarily until endpoint registration completes.
 
 == System Utilities
 
