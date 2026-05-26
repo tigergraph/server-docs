@@ -1724,54 +1724,6 @@ Sample Response::
 --
 ====
 
-==== Example: Create a reverse edge type
-
-You can automatically create a reverse edge type when adding a directed edge by specifying the `REVERSE_EDGE` option in the `Config` field.
-
-[,tabs]
-====
-Sample Request::
-+
---
-[source,bash]
-----
-curl -X POST -H "content-type: application/json" "http://localhost:14240/gsql/v1/schema/change?graph=exampleGraph" -d '
-{
-    "addEdgeTypes": [
-        {
-            "IsDirected": true,
-            "FromVertexTypeName": "User5",
-            "ToVertexTypeName": "User4",
-            "Name": "edge1",
-            "IsLocal": true,
-            "Config": {
-                "REVERSE_EDGE": "edge1_rev"
-            },
-            "Attributes": [
-                {
-                    "AttributeType": {
-                        "Name": "DATETIME"
-                    },
-                    "AttributeName": "live_date"
-                }
-            ]
-        }
-    ]
-}'
-----
---
-Sample Response::
-+
---
-[source.wrap,console]
-----
-{"error":false,"message":"Schema change job runs successfully"}
-----
---
-====
-
-This creates both the forward edge `edge1` and the reverse edge `edge1_rev`.
-
 '''
 === run an existing schema change job
 
@@ -2123,114 +2075,18 @@ xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.ado
 | name of the graph that this job belongs to
 |===
 
-The request body is a JSON array of job objects. Each element runs one loading job; multiple elements run multiple jobs in a single call.
+The details of the loading job should be specified in the payload.
+They include the job name, the path to the data sources, and any desired options for running the loading job.
+There may also be parameters specify to the data source.
+Below are some examples:
 
-==== Job object
+* *Kafka*: `[{"name":"load_kafka","streaming":false,"dataSources":[{"filename":"f1","name":"k1","path":"","config":{"topic":"regress7715","partition_list":[{"start_offset":-2,"partition":0}]}}]}]`
 
-Each job object supports the following fields:
+* *S3*: `[{"name":"load_comment","streaming":true,"dataSources":[{"filename":"file_Comment","name":"s1","path":"s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment"}]}]`
 
-[%autowidth]
-|===
-| Field | Type | Description
+* *Local files*: `[{"name":"load_job","sys.data_root":"/tmp","dataSources":[{"filename":"f","path":"./data","name":"file"}]}]`
 
-| `name`
-| string
-| Loading job name. Required.
-
-| `options`
-| object
-| Optional. CLI-style flags. See options table below.
-
-| `parameters`
-| object
-| Optional. GSQL USING key/value clauses: `EOF`, `CONCURRENCY`, `BATCH_SIZE`.
-
-| `dataSources`
-| array
-| One entry per data source referenced by the job. See dataSources table below.
-|===
-
-==== options
-
-Use these flags to control loading behavior:
-
-[%autowidth]
-|===
-| Field | Type | Description
-
-| `verbose`
-| bool
-| Verbose logging.
-
-| `dryrun`
-| bool
-| Validate without loading.
-
-| `maxNumError`
-| integer
-| Stop after this many bad records.
-
-| `maxPercentError`
-| integer
-| Stop when error rate exceeds this percent.
-|===
-
-==== dataSources
-
-Each `data source` entry uses the following fields:
-
-[%autowidth]
-|===
-| Field | Type | Description
-
-| `name`
-| string
-| For local files: `file`, `file:any`, `file:all`, `file:<machine>`, or `file:<m1>\|<m2>\|<m3>`. Otherwise, the name of a data source created via `CREATE DATA_SOURCE`.
-
-| `path`
-| string
-| Shorthand value — a file path, Kafka topic name, or SQL query string. Use either `path` or `config`, not both.
-
-| `config`
-| object
-| Full JSON config for the data source. Use when you need more than a single shorthand value (e.g., multiple URIs, reader overrides, `tasks.max`). Use either `config` or `path`, not both.
-|===
-
-==== Examples
-
-.Snowflake loading using a query string as path
-[source,json]
-----
-[
-  {
-    "name": "load_member_sf",
-    "dataSources": [
-      { "filename": "f", "name": "sf1", "path": "SELECT id, name FROM members LIMIT 1000" }
-    ]
-  }
-]
-----
---
-.Kafka loading using additional config options
-[source,json]
-----
-[
-  {
-    "name": "load_member_kafka_full",
-    "dataSources": [
-      {
-        "filename": "f",
-        "name": "kfka1",
-        "config": {
-          "topic": "members-topic",
-          "partition.list": "0,1,2",
-          "offset": "-2"
-        }
-      }
-    ]
-  }
-]
-----
+==== Example
 
 [,tabs]
 ====
@@ -2239,22 +2095,22 @@ Sample Request::
 --
 [source,bash]
 ----
-curl -H 'Content-Type: application/json' -X POST \
-  -d '[{"name":"load_member","options":{"verbose":true,"maxNumError":100},"parameters":{"BATCH_SIZE":10000},"dataSources":[{"filename":"f","name":"file:m1","path":"/data/members.csv"}]}]' \
-  'http://localhost:14240/gsql/v1/loading-jobs/run?graph=financialGraph'
+curl -H 'Content-Type: application/json' -X POST -d @header.json
+'http://localhost:14240/gsql/v1/loading-jobs/run?graph=financialGraph'
 ----
+where the file `header.json` contains
+
+`[{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1,"dataSources":[{"filename":"f","path":"./data","name":"file"}],"configs":{"CONCURRENCY":2,"eof":"false","BATCH_SIZE":3}}]`
 --
 Sample Response::
 +
 --
 [source.wrap,console]
 ----
-{"error":false,"message":"","messages":"Successfully ran loading job(s): [load_member].","jobIds":["financialGraph.load_member.file.m1.1779266068037"]}
+{"error": false,"message":"Successfully ran loading job(s): [jobName]", "jobIds": ["jobId"]}
 ----
 --
 ====
-
-'''
 
 [NOTE]
 ====
