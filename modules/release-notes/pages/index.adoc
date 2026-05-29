@@ -136,6 +136,8 @@ By default, TigerGraph automatically selects the appropriate mode.
 
 * Fixed an issue where tooltips in GraphStudio could be partially hidden when hovering near the edge of the viewport (APPS-4378).
 
+* Fixed an issue where log access in the Admin Portal required both `APP_ACCESS_LOG` and `APP_ACCESS_DATA privileges`. Users with only `APP_ACCESS_LOG` can now search and read logs in the Admin Portal (APPS-3253).
+
 * Fixed an issue where binary files were written during segment rebuild even when the segment had already been deleted (CORE-4578).
 
 * Fixed an issue where repeated backups took progressively longer despite minimal data growth, caused by inefficient processing of schema changes (CORE-5000).
