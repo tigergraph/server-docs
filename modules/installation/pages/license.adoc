@@ -59,17 +59,12 @@ $ gadmin license set @<path_to_license_file>
 Please use 'gadmin config apply' to persist the changes.
 ----
 
-. Finally, run the following commands to apply the license key and restart services:
+. Finally, run the following commands to apply the license key. Services will be automatically restarted:
 +
 ----
 $ gadmin config apply
 [Warning] No difference from staging config, config apply is skipped.
 [   Info] Successfully applied configuration change. Please restart services to make it effective immediately.
-
-$ gadmin restart
-[   Note] Restart the service(s)? (y/N)y
-[   Info] Stopping DICT ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL GUI
-[   Info] Starting ZK ETCD DICT KAFKA ADMIN GSE NGINX GPE RESTPP KAFKASTRM-LL KAFKACONN GSQL GUI
 ----
 
 If the installation completes successfully, the message "install license successfully" will be displayed in the console.
