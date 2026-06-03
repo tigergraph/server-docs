@@ -352,9 +352,11 @@ Third-party Vulnerability impacting TigerGraph: None
 
 
 ¦When performing a rolling upgrade from a version between 4.2.0 and 4.2.2 to a later 4.2.x version with `Nginx.SSL.Enable=true`, the upgrade may fail while blocking GSQL long-running operations due to an internal HTTPS request failure.
+¦4.2.0~4.2.2
+a¦Since rolling upgrade is a preview feature in 4.2.x, users with `Nginx.SSL.Enable=true` should use a regular upgrade as the recommended upgrade path. Regular upgrade works with SSL enabled and does not require disabling any security configuration.
+
+If users still choose to use rolling upgrade, temporarily disable `Nginx.SSL.Enable`, apply the configuration, and restart GSQL and NGINX services before performing the rolling upgrade. After the upgrade completes successfully, re-enable SSL, apply the configuration, and restart GSQL and NGINX services.
 ¦4.2.3
-a¦Temporarily disable `Nginx.SSL.Enable`, apply the configuration, and restart GSQL and NGINX services before performing the rolling upgrade. After the upgrade completes successfully, re-enable SSL, apply the configuration, and restart GSQL and NGINX services.
-¦TBD
 
 ¦If a non-procedural query has a syntax error, the GSQL interpreter ignored the invalid portion and executed the partial query before the error, without raising an error.
 ¦4.2.0
