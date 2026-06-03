@@ -164,7 +164,7 @@ Without SSL/TLS, user credentials, API requests, and query results are transmitt
 ----
 $ gadmin config entry ssl <1>
 ----
-<1> Interactively configures `Nginx.SSL.Enable`, `Nginx.SSL.Key`, and `Nginx.SSL.Cert`. See xref:encrypting-connections.adoc[Encrypting Connections] for the full configuration steps.
+<1> Interactively configures `Nginx.SSL.Enable`, `Nginx.SSL.Key`, and `Nginx.SSL.Cert`. This configuration secures both external connections and intra-cluster communication. See xref:encrypting-connections.adoc[Encrypting Connections] for the full configuration steps.
 
 [IMPORTANT]
 ====
@@ -174,14 +174,6 @@ Run `chmod 600 <cert-file>` before applying your certificate with `gadmin`.
 
 * Use certificates issued by a *trusted Certificate Authority (CA)*.
 Ensure certificates are chained to a CA root embedded in your clients and browsers.
-
-* In clustered deployments, enable *intra-cluster communication encryption*.
-+
-See xref:encrypting-connections.adoc[Encrypting Connections].
-
-* If your deployment loads data from external Kafka, secure all *Kafka broker connections with SSL*.
-+
-See xref:data-loading:kafka-ssl-security-guide.adoc[Kafka SSL Security Guide].
 
 === Encryption of Data At Rest
 
@@ -275,7 +267,7 @@ Perform the following checks on a regular, scheduled basis.
 
 === Patch Management
 
-* Monitor TigerGraph https://docs.tigergraph.com/tigergraph-server/current/release-notes/[release notes] and security alerts.
+* Monitor TigerGraph xref:release-notes:index.adoc[release notes] and security alerts.
 Apply product patches promptly, prioritizing critical and high-severity issues first.
 
 * Apply OS and library updates to all cluster nodes on a regular schedule.
