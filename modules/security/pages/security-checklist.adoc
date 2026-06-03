@@ -1,0 +1,312 @@
+= Security Checklist
+:description: A pre-production and operational checklist for securing a self-managed TigerGraph deployment.
+:toc:
+
+This checklist helps administrators verify that authentication, authorization, network protection, encryption, auditing, and backup controls are properly configured before a TigerGraph deployment is exposed to production workloads.
+
+Use this page as a final security review before deployment and as a recurring reference during operational security audits.
+
+[NOTE]
+====
+This page applies to self-managed TigerGraph deployments (on-premises and cloud-hosted).
+Fully managed deployments on TigerGraph Savanna are secured and maintained by TigerGraph.
+====
+
+== Security Checklist Summary
+
+Use this table as a quick verification guide before deploying TigerGraph to production.
+
+[cols="2,3"]
+|===
+|Security Area |Verification
+
+|Authentication
+|User authentication enabled for all TigerGraph services
+
+|Password Security
+|Password policy and login protection configured
+
+|Authorization
+|Roles, privileges, and row policies reviewed
+
+|Network Security
+|Firewall rules reviewed and unnecessary ports blocked
+
+|Encryption in Transit
+|SSL/TLS enabled for all external connections
+
+|Encryption at Rest
+|Disk and backup storage encrypted
+
+|File Policies
+|File input and output policies configured
+
+|UDF Security
+|UDF execution reviewed and restricted
+
+|Auditing
+|Audit logging enabled and monitored
+
+|Backup Security
+|Backups protected and recovery procedures verified
+
+|Ongoing Maintenance
+|Patch management and access reviews scheduled
+|===
+
+== Common Security Risks
+
+The following issues are among the most common causes of insecure database deployments:
+
+* Leaving default administrative credentials unchanged.
+* Exposing client-facing services directly to the public Internet.
+* Operating without SSL/TLS encryption.
+* Granting users broader privileges than required.
+* Disabling or failing to monitor audit logs.
+* Storing backups without encryption or access controls.
+
+The checklist in this page helps reduce these risks before a deployment is exposed to production workloads.
+
+== Pre-Production Checklist
+
+=== Initial Administrative Setup
+
+[IMPORTANT]
+====
+Complete all steps in this section immediately after installation, before any user is onboarded or any service is exposed.
+====
+
+* Change the *default GSQL administrator password* immediately after installation.
+
+* Create a *dedicated user administrator account* before onboarding additional users.
+Avoid using the default `tigergraph` superuser account for day-to-day administration.
++
+See xref:user-access:user-management.adoc[User Management].
+
+=== Authentication
+
+* Enable user authentication for *all* TigerGraph components: GSQL, RESTPP, Admin Portal, and GraphStudio.
++
+See xref:user-access:enabling-user-authentication.adoc[Enabling User Authentication].
+
+* Enable a *password policy* that enforces minimum length, complexity, and rotation requirements.
++
+To enable the password policy:
++
+[source,console]
+----
+$ gadmin config set Security.UserPasswordPolicy.Enable true <1>
+$ gadmin config apply
+$ gadmin restart gsql
+----
+<1> Enforces password complexity and expiration rules for all TigerGraph database users. See xref:password-policy.adoc[Password Policy] for the full list of configurable rules.
+
+* Configure login protection to limit failed login attempts.
++
+Login protection helps reduce the risk of password-guessing and brute-force attacks against administrative accounts.
+The default threshold is five consecutive failures before a lockout period is applied.
+To adjust:
++
+[source,console]
+----
+$ gadmin config set GSQL.LoginLimit.InitialThreshold 3 <1>
+$ gadmin config apply
+$ gadmin restart gsql
+----
+<1> Triggers login protection after three consecutive failed login attempts. See xref:login-protection.adoc[Login Policy] for all configurable parameters.
+
+* If your organization requires federated or directory-based authentication, configure one of the supported methods:
+** xref:user-access:sso-with-saml.adoc[SSO with SAML 2.0] (Azure AD, Okta, Auth0, PingFederate)
+** xref:user-access:sso-with-oidc.adoc[SSO with OIDC]
+** xref:user-access:jwt-token.adoc[OIDC JWT Authentication]
+** xref:user-access:ldap.adoc[LDAP Authentication]
+
+=== Authorization and Access Control
+
+* Apply the *principle of least privilege* when assigning roles.
+Review permissions at both global and graph levels before granting access.
++
+See xref:user-access:access-control-model.adoc[Access Control Model].
+
+* Assign each user and application a *unique identity*. Do not use shared accounts.
+
+* Use xref:user-access:role-management.adoc[Role Management] to define custom roles scoped to specific graphs where built-in roles are broader than needed.
+
+* Review xref:user-access:fine-grained-query-privileges.adoc[Fine-Grained Query Privileges] for each role before granting query execution access.
+
+* If your deployment requires data-level access control, evaluate and configure xref:user-access:rbac-row-policy/row-policy-overview.adoc[Row Policies] to restrict which rows a user can read or write within a graph.
++
+Row policies provide an additional layer of protection when users should only access a subset of graph data.
+
+=== Network Security
+
+* Deploy TigerGraph within a trusted, network-segmented environment.
++
+Limit access to TigerGraph services to trusted networks and authorized clients whenever possible.
+
+* Configure network and host-based firewalls to *block all external access* to internal communication ports (Kafka, ZooKeeper, and inter-node service ports).
++
+See xref:reference:ports.adoc[List of Ports] for the full list of ports used by TigerGraph services.
+
+* Restrict client-facing ports (such as *14240*) to *trusted IP ranges only*.
+
+* Disable *remote root login* on all cluster hosts.
+
+* For clustered deployments, verify that internal service ports are accessible only between authorized cluster nodes.
+
+=== Encryption of Data In Transit
+
+* Enable *SSL/TLS* on all external-facing channels: GSQL Server, RESTPP, GraphStudio, and Admin Portal.
++
+Without SSL/TLS, user credentials, API requests, and query results are transmitted in plaintext and may be exposed to anyone with access to the network path between clients and the TigerGraph server.
++
+[source,console]
+----
+$ gadmin config entry ssl <1>
+----
+<1> Interactively configures `Nginx.SSL.Enable`, `Nginx.SSL.Key`, and `Nginx.SSL.Cert`. This configuration secures both external connections and intra-cluster communication. See xref:encrypting-connections.adoc[Encrypting Connections] for the full configuration steps.
+
+[IMPORTANT]
+====
+SSL certificate files must have file permission `600` or stricter.
+Run `chmod 600 <cert-file>` before applying your certificate with `gadmin`.
+====
+
+* Use certificates issued by a *trusted Certificate Authority (CA)*.
+Ensure certificates are chained to a CA root embedded in your clients and browsers.
+
+=== Encryption of Data At Rest
+
+* Enable disk or file-system encryption on all volumes that store:
+** Graph data
+** Logs
+** Backups
+** Configuration files
++
+See xref:encrypting-data-at-rest.adoc[Encrypting Data At Rest].
+
+* Store backup files on *encrypted, access-controlled storage*.
+Restrict restore operations to authorized cluster nodes only.
+
+=== File Policies
+
+* Configure the *file output policy* to restrict GSQL query output to authorized directories only.
+By default, TigerGraph allows output to all files. Change this before production.
++
+This prevents users from writing query output to arbitrary locations on the server file system.
++
+See xref:file-output-policy.adoc[File Output Policy].
+
+* Configure the *file input policy* to restrict which files GSQL queries can read.
++
+This prevents queries from reading files outside approved locations on the server.
++
+See xref:gsql-file-input-policy.adoc[File Input Policy].
+
+=== User-Defined Functions (UDF) Security
+
+UDF execution is *disabled by default*.
+Only enable it if your deployment requires UDFs.
+
+Because UDFs execute custom C++ code on the server, they should be enabled only when required and reviewed before deployment.
+
+. Confirm that `GSQL.UDF.Policy.Enable` is set to `true` to activate file scanning before UDFs are accepted.
+. Validate all UDF code against the xref:index.adoc#_udf_file_scanning[UDF file scanning policy].
+Only C++ headers present in the allowlist are permitted.
+Macros with replacement (for example, `#define TABLE_SIZE 100`) are not allowed.
+. Store UDF files with *restrictive OS-level permissions*.
+
+[NOTE]
+====
+To customize the allowed C++ header list, use the `gadmin` parameter `GSQL.UDF.Policy.HeaderAllowlist`.
+`ExprUtil.hpp` and `tg_ExprUtil.hpp` are always permitted and do not need to be declared in the allowlist.
+====
+
+=== System and Configuration Hardening
+
+* Run all TigerGraph services under a *dedicated OS user* with the minimum required system permissions.
+
+* Apply *restrictive file-system permissions* to configuration files, binaries, and data directories.
+
+* Restrict GSQL query file output and input to authorized paths using the file policies described above.
+
+* Disable any unused service endpoints or extension points.
+
+* Exclude TigerGraph data directories from real-time antivirus or file-scanning tools to prevent data corruption.
+
+=== Logging and Auditing
+
+* Confirm that *audit logging is active* and capturing:
+** Authentication attempts (successful and failed)
+** User requests
+** System and administrative operations
++
+Audit logs provide a record of user and administrative activity that can be used to investigate security incidents and verify compliance requirements.
++
+See xref:audit-privileged-actions.adoc[Auditing Privileged User Actions].
+
+* Integrate audit logs into a centralized *SIEM platform* for real-time monitoring and alerting.
+
+* Verify audit log retention and storage settings according to your deployment requirements.
+
+=== Backup and Recovery Security
+
+* Verify that all backups are stored on *encrypted, access-controlled storage*.
++
+Backups can contain graph data, user information, and configuration data that should be protected with the same level of security as the production deployment.
+
+* Limit restore operations to *authorized cluster nodes* only.
+
+* Periodically verify backup integrity to ensure backups are usable and have not been tampered with.
++
+See xref:backup-and-restore:backup-cluster.adoc[Back Up a Database Cluster].
+
+== Ongoing Security Checks
+
+Perform the following checks on a regular, scheduled basis.
+
+=== Patch Management
+
+* Monitor TigerGraph xref:release-notes:index.adoc[release notes] and security alerts.
+Apply product patches promptly, prioritizing critical and high-severity issues first.
+
+* Apply OS and library updates to all cluster nodes on a regular schedule.
+
+=== Access Review
+
+* Reassess all user accounts and roles periodically.
+Remove or deactivate accounts for users who no longer require access.
++
+See xref:user-access:user-management.adoc[User Management].
+
+* Rotate *passwords, certificates, and access tokens* on a defined schedule.
+
+* Re-evaluate xref:user-access:fine-grained-query-privileges.adoc[Fine-Grained Query Privileges] and xref:user-access:rbac-row-policy/row-policy-overview.adoc[Row Policies] for continued accuracy.
+
+=== Network and Configuration Review
+
+* Revalidate firewall rules and network segmentation.
+
+* Verify *TLS certificate expiration dates* and renew certificates before they expire.
+
+* Review file input and output policies for any unauthorized changes.
+
+=== Log Review
+
+* Review audit logs regularly for anomalies, unauthorized access attempts, or unexpected privilege escalations.
++
+See xref:audit-privileged-actions.adoc[Auditing Privileged User Actions].
+
+== Before Going Live
+
+Before exposing your deployment to production traffic, verify that:
+
+* Authentication is enabled.
+* Default passwords have been changed.
+* SSL/TLS is configured and tested.
+* User roles and privileges have been reviewed.
+* Audit logging is enabled.
+* Backups are protected and recoverable.
+* Network access restrictions have been validated.
+
+If any item remains incomplete, address it before making the deployment available to end users.
