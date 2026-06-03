@@ -65,15 +65,16 @@ $ gadmin config set RESTPP.Factory.EnableAuth true
 +
 
 
-. Run the following commands to save the configuration and restart system services:
+. Apply the configuration and restart the services that depend on it:
 +
 .Enabling REST{pp} Authentication
 +
 [source,bash]
 ----
-$ gadmin config apply
-$ gadmin restart restpp nginx gui gsql -y
+$ gadmin config apply --restart-deps -y
 ----
++
+This command restarts `restpp`, `nginx`, `gui`, and `gsql`, which depend on the `RESTPP.Factory.EnableAuth` configuration parameter. The services are restarted automatically in the correct dependency order.
 
 After enabling user authentication, the xref:API:gsql-endpoints.adoc#_create_new_jwt_token[`/requesttoken` endpoint] becomes available for you to generate tokens used to authenticate your REST requests to the REST++ server.
 
