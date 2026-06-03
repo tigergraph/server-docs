@@ -91,7 +91,8 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 * [4.2.1] Added the `Security.JWT.JWKS.URL` *xref:4.2@tigergraph-server:user-access:jwt-token.adoc#_setup_jwt_token_gadmin_configuration[configuration parameter]*, to allow JWT certificates to be fetched using the Key ID (kid) from a JWKS (JSON Web Key Set) URL.
 * [4.2.1] xref:4.2@tigergraph-server:user-access:query-privilege-migration.adoc#_migrate_acl_privileges[ACL privilege migrations] are prevented if the the ACL catalog contains the query contents.
 * [4.2.3] Added support for configuring *xref:4.2@tigergraph-server:user-access:fine-grained-query-privileges.adoc#_default_roles_for_query_level[default READ and EXECUTE roles]* at the graph level for query privileges. 
-* [4.2.3] Added graph-level  *xref:4.2@tigergraph-server:api:built-in-endpoints.adoc#_abort_a_query[READ_DATA]* privilege requirement for the `/query_result` and `/query_status` endpoints. 
+* [4.2.3] Added graph-level  *xref:4.2@tigergraph-server:API:built-in-endpoints.adoc#_abort_a_query[READ_DATA]* privilege requirement for the `/query_result` and `/query_status` endpoints. 
+* [4.2.3] xref:4.2@gui:admin-portal:security/sso.adoc#_x509_certificate_and_private_key[SAML SSO] now supports full X.509 certificate chains for both Service Provider (SP) and Identity Provider (IdP) certificates. Certificate chains can include server, intermediate, and root certificates in a single uploaded file.
 
 === Output to Cloud Enhancements
 
