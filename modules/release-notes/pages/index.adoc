@@ -73,11 +73,11 @@ Scalable storage and similarity search for vector attributes associated with ver
 
 * [4.2.3] Increased the default maximum HTTP request header size from 20 KB to 64 KB to better support large request headers (such as LDAP/SSO scenarios), and introduced a new configuration parameter `GSQL.MaxHttpRequestHeaderSizeKB`.
 
-* [4.2.3] Upgraded embedded NGINX to version 1.28.2 for upstream security and reliability fixes.
-
 ** You can use xref:4.2@tigergraph-server:reference:configuration-parameters.adoc#_gsql[`GSQL.MaxHttpRequestHeaderSizeKB`] to customize the maximum HTTP request header size.
 ** When set to `0` (default), the system uses the default value of 64 KB.
 ** Requests exceeding the configured limit now return HTTP status `431 Request Header Fields Too Large` instead of `400 Bad Request`.
+
+* [4.2.3] Upgraded embedded NGINX to version 1.28.2 for upstream security and reliability fixes.
 
 * [4.2.3] *xref:4.2@gsql-ref:querying:query-operations.adoc#_log_output[Query installation logs]* now include a completion summary, elapsed time, and a failure report listing any skipped or failed queries. These logs are also shown during a TigerGraph upgrade. 
 
