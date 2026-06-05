@@ -201,3 +201,29 @@ Forbidden legacy RBAC privilege syntax usages are no longer supported even if `A
 * `REVOKE WRITE ON ALL QUERIES IN [GRAPH <graph_name> | GLOBAL] FROM <role_name>`
 
 ** Directly revoking `WRITE` on all existing query objects in a graph or in all graphs is no longer supported.
+
+== Default Roles for Query-level Privileges
+
+In version 4.2.3, administrators can configure default roles to automatically grant query-level privileges on newly created queries, without requiring manual `GRANT` commands after each query creation.
+
+* Default roles support `READ` and `EXECUTE` query-level privileges, which can be configured independently.
+* Applies only to queries created after the defaults are configured. They do not retroactively modify privileges for existing queries.
+* Default roles apply consistently across all query creation paths, including:
+** REST APIs
+** GSQL shell
+** Tools or integrations that call the query creation interfaces
+
+== Required Privileges
+
+To manage default roles for query-level privileges, users must have the following privileges:
+
+* xref:role-management.adoc#_grant_default_roles[GRANT DEFAULT]: requires `WRITE_ROLE` when granting to a role, or `WRITE_USER` when granting to a user.
+* xref:role-management.adoc#_revoke_default_roles[REVOKE DEFAULT]: requires `WRITE_ROLE` when revoking from a role, or `WRITE_USER` when revoking from a user.
+* xref:role-management.adoc#_show_default_roles[SHOW DEFAULT ROLES]: requires `READ_ROLE` and `READ_USER`.
+
+
+[NOTE]
+====
+* Only user-defined roles and users are allowed in default role configuration. Attempts to configure built-in roles as defaults are rejected.
+* If a user does not have the required privilege, the corresponding command will be rejected.
+====

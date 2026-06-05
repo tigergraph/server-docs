@@ -440,6 +440,53 @@ If the user doesn't have these privileges, they are not able to create new edges
 [source.wrap,gsql]
 REVOKE CREATE, UPDATE ON EDGE Friendship ATTRIBUTE startdata IN GRAPH Social FROM user1, user2
 
+== Grant default roles to a user
+
+Use `GRANT DEFAULT` to add one or more users to the default list for a specific query-level privilege.
+
+=== Syntax
+[source.wrap,gsql]
+GRANT DEFAULT <privilege_name1> (, <privilege_name2>)*
+ON ALL QUERIES
+IN GRAPH <graph_name> TO <role_or_user_name1> (, <role_or_user_name2>)*
+
+=== Required privilege
+`WRITE_USER`
+
+=== Example
+
+. The following command grants default `READ` privileges on all newly created queries in a graph to a specified user:
++
+[source,gsql]
+----
+GSQL > GRANT DEFAULT READ ON ALL QUERIES IN GRAPH MyGraph TO USER john_smith
+----
+This allows `john_smith` to automatically receive query-level `READ` access on any new query created in `MyGraph`, without requiring additional `GRANT` commands.
+
+== Revoke default roles from a user
+
+Use `REVOKE DEFAULT` to remove a user from the default list for a specific query-level privilege.
+
+=== Syntax
+[source.wrap,gsql]
+REVOKE DEFAULT <privilege_name1> (, <privilege_name2>)*
+ON ALL QUERIES
+IN GRAPH <graph_name> FROM <role_or_user_name1> (, <role_or_user_name2>)*
+
+=== Required privilege
+`WRITE_USER`
+
+=== Example
+
+. The following command revokes default `READ` privileges on all newly created queries in a graph from a specified user:
++
+[source,gsql]
+----
+GSQL > REVOKE DEFAULT READ ON ALL QUERIES IN GRAPH MyGraph FROM USER john_smith
+----
+This prevents `john_smith` from automatically receiving query-level `READ` access on any new query created in `MyGraph`. Existing queries where `john_smith` already has `READ` remain unchanged.
+
+
 == Change a user's password
 
 Users can change their own passwords used for login without needing any privilege.

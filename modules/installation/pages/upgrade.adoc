@@ -160,6 +160,29 @@ For recommendations on how to reduce the risk of query failures during rolling u
 
 Before starting the upgrade, always review the xref:upgrade.adoc#_check_release_notes_for_changes_in_functionality[general prerequisites] for all versions between your current and target version.
 
+[NOTE]
+====
+When performing a rolling upgrade from a version between 4.2.0 and 4.2.2 to a later 4.2.x version, the upgrade may fail if `Nginx.SSL.Enable=true`.
+
+As a workaround, temporarily disable SSL before starting the rolling upgrade:
+
+[source.wrap,bash]
+----
+gadmin config set Nginx.SSL.Enable false
+gadmin config apply -y
+gadmin restart gsql nginx -y
+----
+
+After the upgrade completes successfully, re-enable SSL and restart the services:
+
+[source.wrap,bash]
+----
+gadmin config set Nginx.SSL.Enable true
+gadmin config apply -y
+gadmin restart gsql nginx -y
+----
+====
+
 ==== Best Practices to Minimize Query Failures
 
 To minimize query failures and keep your database highly available during a rolling upgrade, follow these recommendations:
