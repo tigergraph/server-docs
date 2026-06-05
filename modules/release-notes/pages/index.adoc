@@ -112,10 +112,9 @@ By default, TigerGraph automatically selects the appropriate mode.
 
 * Updated access control for the *xref:4.3@gui:admin-portal:monitoring/queries.adoc#_access_control[Query Monitoring]* page to use privilege-based access instead of role-based access.
 
-** The *Monitor > Queries* menu is visible to all users
-** Users with `READ_DATA` privilege can access query information for a graph
-** Users with `READ_QUERY` privilege can view specific queries
-** Users with `DELETE_DATA` privilege can abort queries running on a graph
+** `READ_DATA` privilege controls query visibility across all or specific graphs; users without access see an appropriate error message.
+** Users with `DELETE_DATA` privilege can abort queries running on a graph.
+
 
 == Fixed issues
 
