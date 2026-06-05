@@ -86,11 +86,18 @@ Adding `--dr` to `gadmin backup restore <backup tag>` enables CRR in a regular r
 
 Enabling Cross-Region Replication (CRR) with a backup is always recommended, as the Disaster Recovery (DR) cluster will be restored to the state of the backup. This can help avoid data inconsistency problems caused by unexpected operations or requests before the cluster becomes a DR.
 
-For special cases, such as enabling Cross-Region Replication (CRR) for a new cluster or switching between PR and DR, backup can be omitted.
+For special cases, such as enabling Cross-Region Replication (CRR) for a new cluster, you can omit the backup.
 
-However, note that these operations should be performed when there is no traffic, because `gadmin backup restore --dr` won't overwrite the data of the cluster before it is set to be a DR.
-+
-.Instead, simply run:
+However, this applies only when setting up a new DR cluster in an empty state. Both the Primary and DR clusters must not contain any existing data (for example, after a fresh installation or after running `DROP ALL`).
+
+The command `gadmin backup restore --dr` does not overwrite existing data in the cluster.
+
+[WARNING]
+====
+Do not use this command on a cluster with existing data. It will not overwrite existing data and may lead to an inconsistent state.
+====
+
+.Instead, run:
 [source.wrap,console]
 ----
 gadmin backup restore --dr
@@ -130,8 +137,13 @@ After being set up, the DR cluster will be read-only and all data update operati
 ** User-defined function operations
 * Data-loading operations
 ** Loading job operations
-** RESTPP calls that modify graph data
+** RESTPP endpoints that modify graph data:
+*** Run loading job 
+*** Upsert operations for vertices or edges
+*** Delete operations for vertices and edges
+* *xref:pytigergraph:core-functions:index.adoc[pyTigerGraph functions]* that modify data or metadata
 * Queries that modify the graph
+
 
 == Sync an outdated DR cluster
 
@@ -208,8 +220,21 @@ gadmin config set System.CrossRegionReplication.Enabled false
 gadmin config apply -y
 gadmin restart all -y
 ----
++
+Disabling this flag ensures that CRR services remain inactive during the upgrade process.
 
 . xref:installation:upgrade.adoc[Upgrade] the cluster.
+
+. Restore the backup on the DR cluster using the `--dr` flag.
++
+[source,console]
+----
+gadmin backup restore <backup_name> --dr
+----
++
+Restoring the backup with the `--dr` flag automatically enables the
+`System.CrossRegionReplication.Enabled` configuration. This flag cannot be
+manually set to `true` using `gadmin config set`.
 
 . Start CRR on the new DR cluster.
 +
