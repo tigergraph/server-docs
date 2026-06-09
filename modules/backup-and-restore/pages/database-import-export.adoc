@@ -160,6 +160,13 @@ If the file is password-protected, it can only be unzipped using the GSQL comman
 The security features prevent users from directly unzipping it.
 ====
 
+[NOTE]
+====
+Sensitive information included in exported graph files, such as passwords, access keys, secret keys, and tokens, is encrypted before being written to the export package.
+
+As a result, exported files may contain encrypted credential values that are required for import operations and do not expose the original plain-text credentials.
+====
+
 * A `DBImportExport_<Graph_Name>.gsql` for each graph called `Graph_Name` in a multigraph database that contains a series of GSQL DDL statements that do the following:
 ** Create the exported graph, along with its local vertex, edge, and tuple types,
 ** Create the loading jobs from the exported graphs
