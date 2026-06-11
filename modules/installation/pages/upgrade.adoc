@@ -572,6 +572,15 @@ It is recommended that users consult with the entire policy and adjust the UDF f
 For more reference please see:
 https://docs.tigergraph.com/tigergraph-server/current/security/#_udf_file_scanning[UDF File Scanning].
 
+[IMPORTANT]
+====
+If an upgrade changes built-in UDFs or if you update custom UDFs, some queries may be disabled.
+
+After the upgrade, review any disabled queries and reinstall them as needed.
+
+For more information, see xref:{page-component-version}@gsql-ref:querying:func/query-user-defined-functions.adoc#_upload_udfs[Query reactivation required if UDFs are modified].
+====
+
 === File Output Policy
 
 GSQL restricts where a query can produce output to files through a file output policy.
