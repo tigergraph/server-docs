@@ -517,6 +517,15 @@ link:https://tigergraph.zendesk.com/hc/en-us/articles/8173584319892-2-6-x-to-3-x
 
 If you want to upgrade your Cloud Marketplace image from v2.x on any cloud platform, please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket]. for instructions and assistance.
 
+== Post-Upgrade Checks
+
+After the upgrade completes, verify that your queries are installed and enabled.
+
+If built-in UDFs or custom UDFs changed during the upgrade, some queries may be disabled and require reinstallation.
+
+For more information, see xref:{page-component-version}@gsql-ref:querying:func/query-user-defined-functions.adoc#_upload_udfs[Query reactivation required if UDFs are modified].
+
+
 == Known Issues and Workarounds
 
 Several things may have changed between your current release and 3.9.x and these steps should help to upgrade the UDF file before starting the upgrade process or prepare users to address anything that may come up as a result of the upgrade.
@@ -579,14 +588,6 @@ It is recommended that users consult with the entire policy and adjust the UDF f
 
 For more reference please see:
 https://docs.tigergraph.com/tigergraph-server/current/security/#_udf_file_scanning[UDF File Scanning].
-
-=== Post-Upgrade Checks
-
-After the upgrade completes, verify that your queries are installed and enabled.
-
-If built-in UDFs or custom UDFs changed during the upgrade, some queries may be disabled and require reinstallation.
-
-For more information, see xref:{page-component-version}@gsql-ref:querying:func/query-user-defined-functions.adoc#_upload_udfs[Query reactivation required if UDFs are modified].
 
 === File Output Policy
 
