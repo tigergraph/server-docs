@@ -126,6 +126,56 @@ The default value of `System.CrossRegionReplication.Enabled` is `false`.  User c
 
 Run the `INSTALL QUERY -force ALL` command on the primary cluster. After the command is finished, all other metadata operations on the primary cluster will start syncing to the DR cluster.
 
+== Cross-Region Replication topology limitations
+
+Cross-Region Replication (CRR) supports multiple Disaster Recovery (DR) clusters replicating from a single Primary (PR) cluster. However, chained replication is not supported.
+
+=== Supported topology
+
+A single Primary cluster can replicate to multiple DR clusters in parallel.
+
+[source,text]
+----
+          +-------------+
+          |   Primary   |
+          +-------------+
+            /    |    \
+           /     |     \
+      +------+ +------+ +------+
+      | DR-1 | | DR-2 | | DR-3 |
+      +------+ +------+ +------+
+----
+
+In this configuration, each DR cluster independently receives replication data directly from the Primary cluster.
+
+=== Unsupported topology (chained replication)
+
+Chained replication, where a DR cluster serves as the replication source for another DR cluster, is not supported.
+
+[source,text]
+----
++-------------+       +--------+       +--------+
+|   Primary   | ----> |  DR-1  | ----> |  DR-2  |
++-------------+       +--------+       +--------+
+----
+
+A DR cluster cannot act as the source of replication for another DR cluster.
+
+=== Performance considerations
+
+Each DR cluster consumes replication data directly from the Primary cluster. As the number of DR clusters increases, the load on the Primary cluster also increases.
+
+Factors that can affect replication performance include:
+
+* Network egress bandwidth
+* Disk I/O and CPU utilization on the Primary cluster
+* Kafka connection overhead
+* Cross-region network latency and bandwidth
+
+The maximum number of supported DR clusters depends on workload characteristics, hardware resources, network capacity, and replication volume.
+
+In most deployments, two to three DR clusters can replicate from the same Primary cluster without significant replication delay.
+
 == Restrictions on the DR cluster
 
 After being set up, the DR cluster will be read-only and all data update operations will be blocked. This includes the following operations:
