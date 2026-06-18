@@ -371,7 +371,11 @@ used when returning a <Response> message.
 
 === Bypass certificate validation
 
-You can set the `DISABLE_SAML_CERTIFICATE_CHECK` environment variable to bypass certificate validation for SAML-based SSO.
+TigerGraph validates the X509 certificate of SAML-based SSO. If the 
+certificate is invalid or expired, GSQL will fail to load the SAML 
+configuration and SSO will not work.
+
+You can set the `DISABLE_SAML_CERTIFICATE_CHECK` environment variable to bypass certificate validation.
 When this variable is enabled, GSQL will treat invalid certificates, including expired ones, as valid.
 
 Run the following commands to enable this setting:
