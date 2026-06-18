@@ -369,6 +369,21 @@ used when returning a <Response> message.
 
 |===
 
+=== Bypass certificate validation
+
+You can set the `DISABLE_SAML_CERTIFICATE_CHECK` environment variable to bypass certificate validation for SAML-based SSO.
+When this variable is enabled, GSQL will treat invalid certificates, including expired ones, as valid.
+
+Run the following commands to enable this setting:
+
+[source,console]
+----
+$ gadmin config set GSQL.BasicConfig.Env "$(gadmin config get GSQL.BasicConfig.Env) DISABLE_SAML_CERTIFICATE_CHECK=true; "
+$ gadmin config apply -y
+$ gadmin restart gsql -y
+----
+
+
 == Create user groups with proxy rules to authorize single sign-on users
 
 In order to authorize single sign-on users, you need create user groups with proxy rules and grant roles on graphs for the user groups.
@@ -539,3 +554,9 @@ Usually the text is self-descriptive.
 Follow the error message and try to fix TigerGraph or your identity provider's configuration.
 
 If the problem persists or if you encounter any errors that are not clear, please https://tigergraph.zendesk.com/hc/en-us/[open a support ticket].
+
+=== SAML configuration could not be loaded
+
+If your SAML configuration fails to load, check your certificates, metadata, and required parameters in your SAML settings.
+To bypass certificate validation errors, set `DISABLE_SAML_CERTIFICATE_CHECK=true` using the configuration commands in
+xref:_Bypass_certificate_validation[Bypass certificate validation].
