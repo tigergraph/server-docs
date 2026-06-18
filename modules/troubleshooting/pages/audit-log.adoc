@@ -255,6 +255,60 @@ This field indicates how many times this user failed to provide the correct cred
 }
 ----
 
+*Filtering Audit Logs by `userAgent` and `actionName`*
+
+When reviewing audit logs, the `userAgent` and `actionName` fields can help identify the source of an operation and the action performed.
+
+The `userAgent` field identifies the client that initiated the request. Common values include:
+
+[cols="1,2",options="header"]
+|===
+| userAgent | Description
+
+| `GraphStudio`
+| Request initiated from GraphStudio or Admin Portal.
+
+| `GSQL Shell`
+| Request initiated from the GSQL command-line shell.
+
+| `curl`
+| Request initiated through a REST API call.
+|===
+
+You can use the `userAgent` field to filter audit logs and focus on activity from a specific client. For example, to list all actions initiated from GraphStudio:
+
+[source,bash]
+----
+grep 'userAgent":"GraphStudio"' <AUDIT-GSQL-FILE> | awk -F 'actionName":"' '{print $2}' | cut -d '"' -f1 | sort
+----
+
+The `actionName` field identifies the operation performed. Common values include:
+
+[cols="1,2",options="header"]
+|===
+| Category | actionName Values
+
+| Login
+| `login`
+
+| User Management
+| `createUser`, `dropUser`, `changeUserPassword`
+
+| Permission Management
+| `grantRole`, `revokeRole`
+
+| Schema and Metadata Changes
+| `createGraph`, `dropGraph`, `schemaChange`, `runLocalSchemaChangeJob`
+
+| Loading Job Operations
+| `createLoadingJob`, `dropLoadingJob`, `runLoadingJob`
+
+| Query Operations
+| `createQuery`, `dropQuery`, `runQuery`, `showQuery`
+|===
+
+By combining `userAgent` and `actionName`, administrators can trace user workflows and investigate activity more efficiently.
+
 === REST++ API Call Audit Logs
 
 Audit logs for REST++ calls are found in the `log.Audit-RESTPP` file.
