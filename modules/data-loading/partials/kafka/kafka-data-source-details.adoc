@@ -66,14 +66,14 @@ If the value is set to an empty string, this will disable server host name verif
 | The password for the trust store file.
 |===
 
-===== Component Prefix
+==== Component Prefix
 Replace the `<prefix>` with the appropriate identifier:
 
 * `[admin | producer | consumer]`
 * `[source | target].cluster`
 * `[source | target].cluster.[admin | producer | consumer]`
 
-===== Security Protocols
+==== Security Protocols
 
 If the source cluster is configured for SSL or SASL protocols, you need to provide the following SSL/SASL credentials in order to communicate with the source cluster.
 
@@ -101,7 +101,7 @@ For example, user can set: `target.cluster.ssl.truststore.password="/password/fo
 Note: SSL is now well supported by TigerGraph, we recommend users to set up regular SSL rather than SASL + PlainText/SSL.
 
 ==== Supported Configuration Examples
-===== PLAINTEXT
+==== PLAINTEXT
 [source,json,linenum]
 ----
 {
@@ -110,7 +110,7 @@ Note: SSL is now well supported by TigerGraph, we recommend users to set up regu
 }
 ----
 
-===== SSL
+==== SSL
 Need to configure:
 
 * `<prefix>.security.protocol`
@@ -148,7 +148,7 @@ Need to configure:
 }
 ----
 
-===== SASL_PLAINTEXT
+==== SASL_PLAINTEXT
 Need to configure:
 
 * `<prefix>.security.protocol`
@@ -174,7 +174,7 @@ Need to configure:
 }
 ----
 
-===== SASL_SSL
+==== SASL_SSL
 Need to configure:
 
 * `<prefix>.security.protocol`
@@ -219,7 +219,7 @@ Need to configure:
 }
 ----
 
-===== Third Party SASL Mechanism
+==== Third Party SASL Mechanism
 For both `SASL` and `SASL_SSL` when a third party mechanism it is necessary to:
 
 * Include the `<prefix>.sasl.jaas.config` in addition to the `<prefix>.sasl.client.callback.handler.class` in the configuration
