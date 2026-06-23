@@ -236,6 +236,52 @@ GRANT READ, CREATE ON VERTEX Person IN GRAPH G1 TO role1, role2
 This allows users with `role1` and `role2` to read all attribute values of type `Person` vertices.
 However, to insert new vertices, the user must also have `UPDATE_DATA` on all attributes of vertex type `Person`.
 
+=== Type-level access control example
+
+Consider the following schema and a user account called `user1`:
+
+[source,gsql]
+----
+CREATE VERTEX person(id UINT PRIMARY KEY, name STRING)
+CREATE VERTEX city(id UINT PRIMARY KEY, name STRING)
+CREATE GRAPH G1(person, city)
+----
+
+To run the query below, `user1` needs `READ_DATA` privilege on vertex type `city`,
+because `PRINT Seed` outputs all details for that type.
+
+[source,gsql]
+----
+USE GRAPH G1
+CREATE QUERY q1() FOR GRAPH G1 {
+  Seed = {city.*};
+  PRINT Seed;
+}
+----
+
+Without the privilege, running this query returns the following error:
+
+[source,console]
+----
+User 'user1' does not have the permission to run the command
+Required Data Privileges:
+  - Graph 'G1' Privileges:
+    - Type 'city' Privileges:
+      READ_DATA [MISSING]
+Please rewrite the query, or ask for the [MISSING] privileges
+----
+
+To fix this, create a role with `READ_DATA` on vertex type `city` in graph `G1` and grant it to `user1`:
+
+[source,gsql]
+----
+CREATE ROLE role1 ON GLOBAL
+GRANT PRIVILEGE READ_DATA ON VERTEX G1.city TO role1
+GRANT ROLE role1 TO user1
+----
+
+`user1` can now run `q1` successfully.
+
 == Grant attribute-level privilege to a role
 
 You can grant certain privileges (`READ_DATA`, `CREATE_DATA`, `UPDATE_DATA`) on an attribute level to a role.
@@ -261,6 +307,51 @@ GRANT READ ON VERTEX person ATTRIBUTE id, age IN GRAPH G1 TO example_role
 
 This allows users with `example_role` to read the `id` and `age` attribute values of `Person` vertices.
 However, if the type `Person` has other attributes, such as an `SSN` attribute with their social security number, users who don't have the `READ_DATA` privilege on that attribute are not able to access its attribute value.
+
+=== Attribute-level access control example
+
+To run the query below, `user1` needs `READ_DATA` privilege on the attribute `name` and its primary key `id` of vertex type `person` in graph `G1`.
+
+* The privilege on `id` is required because the primary key is needed to traverse the type.
+* The privilege on `name` is required because the attribute `name` is added into the global SetAccum `@@personNames`.
+
+[source,gsql]
+----
+USE GRAPH G1
+CREATE QUERY q2() FOR GRAPH G1 {
+  SetAccum<STRING> @@personNames;
+  vSet = SELECT s FROM person:s
+         POST-ACCUM
+           @@personNames += s.name;
+  PRINT @@personNames;
+}
+----
+
+Without the privilege, running this query returns the following error:
+
+[source,console]
+----
+User 'user1' does not have the permission to run the command
+Required Data Privileges:
+  - Graph 'G1' Privileges:
+    - Type 'person' Privileges:
+      - Attribute 'id' Privileges:
+        READ_DATA [MISSING]
+      - Attribute 'name' Privileges:
+        READ_DATA [MISSING]
+Please rewrite the query, or ask for the [MISSING] privileges
+----
+
+To fix this, create a role with `READ_DATA` on attributes `id` and `name` of vertex type `person` in graph `G1` and grant it to `user1`:
+
+[source,gsql]
+----
+CREATE ROLE role2 ON GLOBAL
+GRANT PRIVILEGE READ_DATA ON VERTEX G1.person(id, name) TO role2
+GRANT ROLE role2 TO user1
+----
+
+`user1` can now run `q2` successfully.
 
 The following command grants the `READ_DATA` privilege on the `to` attribute of the edge type `Knows` to `example_role`:
 
