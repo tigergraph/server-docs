@@ -2162,7 +2162,15 @@ Each data source entry uses the following fields:
 
 | `name`
 | string
-| For local files: `file`, `file:any`, `file:all`, `file:<machine>`, or `file:<m1>\|<m2>\|<m3>`. Otherwise, the name of a data source created via `CREATE DATA_SOURCE`.
+a|
+For local files, use one of the following formats:
+
+* `file` or `file:any` to load from any node (default behavior).
+* `file:all` to require the file to be available on all nodes.
+* `file:<machine>` (for example, `file:m1`) to load from a specific node.
+* `file:<m1>\|<m2>\|<m3>` to allow loading from any of the listed nodes.
+
+For all other data sources, specify the name of a data source created with `CREATE DATA_SOURCE`.
 
 | `path`
 | string
@@ -2172,6 +2180,18 @@ Each data source entry uses the following fields:
 | object
 | Full JSON config for the data source. Use when you need more than a single shorthand value (e.g., multiple URIs, reader overrides, `tasks.max`). Use either `config` or `path`, not both.
 |===
+
+[NOTE]
+====
+For local file loading in a cluster:
+
+* `file:any` (or simply `file`) loads the file from any node where it is available.
+* `file:all` requires the file to be present on every node.
+* `file:<machine>` loads the file from the specified node (for example, `file:m1`).
+* `file:<m1>\|<m2>\|<m3>` allows loading from any of the listed nodes.
+
+Choosing the appropriate node specification can help distribute loading across cluster nodes for parallel loading.
+====
 
 ==== Examples
 
