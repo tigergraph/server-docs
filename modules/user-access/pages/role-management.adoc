@@ -276,7 +276,7 @@ To fix this, create a role with `READ_DATA` on vertex type `city` in graph `G1` 
 [source,gsql]
 ----
 CREATE ROLE role1 ON GLOBAL
-GRANT PRIVILEGE READ_DATA ON VERTEX G1.city TO role1
+GRANT READ ON VERTEX city IN GRAPH G1 TO role1
 GRANT ROLE role1 TO user1
 ----
 
@@ -347,7 +347,7 @@ To fix this, create a role with `READ_DATA` on attributes `id` and `name` of ver
 [source,gsql]
 ----
 CREATE ROLE role2 ON GLOBAL
-GRANT PRIVILEGE READ_DATA ON VERTEX G1.person(id, name) TO role2
+GRANT READ ON VERTEX city ATTRIBUTE id, name IN GRAPH G1 TO role2
 GRANT ROLE role2 TO user1
 ----
 
