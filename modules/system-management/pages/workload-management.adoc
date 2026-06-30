@@ -578,3 +578,22 @@ If no GPE satisfies the CPU threshold condition, REST++ falls back to the defaul
 [source, console]
 $ gadmin config entry RESTPP.QueryRouting.TargetSelectionCPUThreshold 40
 $ gadmin config entry RESTPP.QueryRouting.Mode 1
+
+
+
+=== Local GPE Routing
+
+When this query routing mode is selected, REST++ forwards each query directly to the GPE co-located on the same node as the receiving RESTPP instance.
+
+This removes the network hop between RESTPP and a remote GPE, reducing query latency for high QPS workloads.
+
+You can target a specific GPE by directing your requests to the RESTPP instance running on that GPE's node.
+
+.Example: Enable Local GPE routing
+[source, console]
+----
+$ gadmin config set RESTPP.QueryRouting.Mode 2
+$ gadmin config apply
+$ gadmin restart RESTPP -y
+----
+
