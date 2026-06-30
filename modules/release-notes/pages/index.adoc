@@ -197,6 +197,18 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 
 == Fixed issues
 
+=== Fixed and Improved in 4.2.4
+
+==== Functionality
+
+* Fixed an issue where custom NGINX configuration changes could be overwritten during cluster upgrades instead of being preserved automatically (CORE-5785).
+* Fixed an issue where long-running query installation requests submitted through a follower node could appear to hang if the client connection timed out before the operation completed (GLE-13080).
+* Fixed an issue where failed query installation or reinstallation could leave the query lock unreleased, preventing subsequent query operations until the service was restarted (GLE-13094).
+
+==== Security
+
+* Fixed an issue where SAML SSO certificate validation could not be bypassed when explicitly configured for environments requiring certificate verification to be disabled (GLE-13060).
+
 === Fixed and Improved in 4.2.3
 
 ==== Functionality
