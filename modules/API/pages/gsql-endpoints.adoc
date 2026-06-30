@@ -2162,7 +2162,19 @@ Each data source entry uses the following fields:
 
 | `name`
 | string
-| For local files: `file`, `file:any`, `file:all`, `file:<machine>`, or `file:<m1>\|<m2>\|<m3>`. Otherwise, the name of a data source created via `CREATE DATA_SOURCE`.
+a|
+For local files, use one of the following formats:
+
+* `file` or `file:any` to load from any node (default behavior).
+* `file:all` to require the file to be available on all nodes.
+* `file:<machine>` (for example, `file:m1`) to load from a specific node.
+* `file:<m1>\|<m2>\|<m3>` to allow loading from any of the listed nodes.
+
+For all other data sources, specify the name of a data source created with `CREATE DATA_SOURCE`.
+
+| `hostname`
+| string
+| Optional. Legacy way to specify the node that performs local file loading (for example, `m1`). If both `name` (for example, `file:m1`) and `hostname` are specified, the value in `name` takes precedence. If neither is specified, the loader uses `any`.
 
 | `path`
 | string
@@ -2172,6 +2184,16 @@ Each data source entry uses the following fields:
 | object
 | Full JSON config for the data source. Use when you need more than a single shorthand value (e.g., multiple URIs, reader overrides, `tasks.max`). Use either `config` or `path`, not both.
 |===
+
+[NOTE]
+====
+For local file loading in a cluster:
+
+* Specify the node in the `name` field using `file:any`, `file:all`, `file:<machine>`, or `file:<m1>|<m2>|<m3>`.
+* The optional `hostname` field is also supported for backward compatibility.
+* If both `name` and `hostname` specify a node, the value in `name` takes precedence.
+* If neither is specified, the loader treats the host as `any`.
+====
 
 ==== Examples
 
