@@ -2172,6 +2172,10 @@ For local files, use one of the following formats:
 
 For all other data sources, specify the name of a data source created with `CREATE DATA_SOURCE`.
 
+| `hostname`
+| string
+| Optional. Legacy way to specify the node that performs local file loading (for example, `m1`). If both `name` (for example, `file:m1`) and `hostname` are specified, the value in `name` takes precedence. If neither is specified, the loader uses `any`.
+
 | `path`
 | string
 | Shorthand value — a file path, Kafka topic name, or SQL query string. Use either `path` or `config`, not both.
@@ -2185,12 +2189,10 @@ For all other data sources, specify the name of a data source created with `CREA
 ====
 For local file loading in a cluster:
 
-* `file:any` (or simply `file`) loads the file from any node where it is available.
-* `file:all` requires the file to be present on every node.
-* `file:<machine>` loads the file from the specified node (for example, `file:m1`).
-* `file:<m1>\|<m2>\|<m3>` allows loading from any of the listed nodes.
-
-Choosing the appropriate node specification can help distribute loading across cluster nodes for parallel loading.
+* Specify the node in the `name` field using `file:any`, `file:all`, `file:<machine>`, or `file:<m1>|<m2>|<m3>`.
+* The optional `hostname` field is also supported for backward compatibility.
+* If both `name` and `hostname` specify a node, the value in `name` takes precedence.
+* If neither is specified, the loader treats the host as `any`.
 ====
 
 ==== Examples
