@@ -2084,9 +2084,18 @@ Below are some examples:
 
 * *S3*: `[{"name":"load_comment","streaming":true,"dataSources":[{"filename":"file_Comment","name":"s1","path":"s3-loading-test/tg_ldbc_snb/sf0.1_csv/dynamic/Comment"}]}]`
 
-* *Local files*: `[{"name":"load_job","sys.data_root":"/tmp","dataSources":[{"filename":"f","path":"./data","name":"file"}]}]`
+* *Local files*: `[{"name":"load_job","sys.data_root":"/tmp","dataSources":[{"filename":"f","path":"./data","name":"file:m1"}]}]`
 
 * *GCS*: `[{"name":"stream_csv","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1,"dataSources":[{"filename":"file_Comment","name":"s1","path":"$s1:gs://tg_ldbc_snb/sf0.1_csv/dynamic/Comment"}],"configs":{"CONCURRENCY":2,"eof":"false","BATCH_SIZE":3}}]`
+
+For local file loading in a cluster, the `name` field in `dataSources` can be used to specify where the file is located:
+
+* `file` or `file:any` loads from any node (default behavior).
+* `file:all` requires the file to be available on all nodes.
+* `file:<machine>` (for example, `file:m1`) loads from a specific node.
+* `file:<m1>\|<m2>\|<m3>` allows loading from any of the listed nodes.
+
+The optional `hostname` field is also supported for backward compatibility. If both `name` and `hostname` specify a node, the value in `name` takes precedence. If neither is specified, the loader treats the host as `any`.
 
 ==== Example
 
@@ -2102,7 +2111,7 @@ curl -H 'Content-Type: application/json' -X POST -d @header.json
 ----
 where the file `header.json` contains
 
-`[{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1,"dataSources":[{"filename":"f","path":"./data","name":"file"}],"configs":{"CONCURRENCY":2,"eof":"false","BATCH_SIZE":3}}]`
+`[{"name":"load_job","sys.data_root":"/tmp","verbose":true,"dryrun":true,"interval":1,"maxNumError":1,"maxPercentError":1,"dataSources":[{"filename":"f","path":"./data","name":"file:m1"}],"configs":{"CONCURRENCY":2,"eof":"false","BATCH_SIZE":3}}]`
 --
 Sample Response::
 +
