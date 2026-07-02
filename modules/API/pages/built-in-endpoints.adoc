@@ -1674,33 +1674,26 @@ The deleted data cannot be recovered.
 
 `POST /restpp/graph/{graph_name}/data_query`
 
-**Required privilege**: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ DATA]
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ DATA]
 
-This endpoint retrieves multiple vertices and edges in a single request, given their types and IDs.
+This endpoint retrieves multiple vertices and edges in a single request.
+
+Below is a table of the fields in the request body.
+
+[cols="1,2,4"]
+|===
+| Key | Type | Description
+
+| vertices
+| vertex array
+| List of vertices to retrieve. Each vertex is specified by its vertex `type` and `id`.
+
+| edges
+| edge array
+| List of edges to retrieve. Each edge is specified by its edge `type`, `source`, and `target`. If the edge type has a discriminator, `discriminator` must also be provided.
+|===
 
 If a specified vertex or edge does not exist, or is blocked by a row policy, it is omitted from the `collected` results and listed under `skipped` instead.
-
-==== Request body:
-
-[source,javascript]
-----
-{
-  "vertices": [                                          (1)
-    { "type": "<vertex_type>", "id": "<vertex_id>" }
-  ],
-  "edges": [                                              (2)
-    {
-      "type": "<edge_type>",
-      "source": { "type": "<source_vertex_type>", "id": "<source_vertex_id>" },
-      "target": { "type": "<target_vertex_type>", "id": "<target_vertex_id>" },
-      "discriminator": { "<attribute_name>": "<value>" }  (3)
-    }
-  ]
-}
-----
-<1> `vertices`: list of vertices to retrieve, each identified by `type` and `id`.
-<2> `edges`: list of edges to retrieve, each identified by edge `type`, `source` (vertex type and ID), and `target` (vertex type and ID).
-<3> `discriminator`: required only if the edge type has a discriminator.
 
 ==== Sample request:
 
@@ -1746,7 +1739,7 @@ curl -X POST "http://localhost:14240/restpp/graph/socialNet/data_query" -d '
 Response::
 +
 --
-[source,javascript]
+[source,json]
 ----
 {
   "version": {
