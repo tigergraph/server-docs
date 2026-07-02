@@ -172,7 +172,7 @@ gadmin config set "System.Backup.S3.AccessKeyID" "<access-key-id>"
 gadmin config set "System.Backup.S3.SecretAccessKey" "<secret-access-key>"
 ----
 +
-.Alternatively, to use IAM role-based authentication with an EC2 instance profile, configure the AWS Role ARN and enable IAM authentication.
+Alternatively, to use IAM role-based authentication with an EC2 instance profile, configure the AWS Role ARN, enable IAM authentication, and ensure the EC2 instance has the appropriate IAM instance profile attached.
 +
 .Configure the AWS Role ARN
 [console]
@@ -186,7 +186,7 @@ gadmin config set "System.Backup.S3.RoleARN" "arn:aws:iam::account:role/role-nam
 gadmin config set "System.Backup.S3.IAMAuth" "true"
 ----
 +
-.If your S3 bucket is located in a specific AWS region, configure the region used to sign S3 requests.
+If your S3 bucket is located in a specific AWS region, configure the region used to sign S3 requests. This value should match the region where the S3 bucket is located.
 +
 .Set the AWS S3 region
 [console]
