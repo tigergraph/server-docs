@@ -58,7 +58,7 @@ S3 Role ARN takes priority over access keys. For more information, see link:http
 |`+nan+`
 
 |System.Backup.S3.IAMAuth
-|Enables IAM role-based authentication for AWS S3 backup and restore. When enabled, TigerGraph uses the EC2 instance profile or EKS IAM Roles for Service Accounts (IRSA) instead of access keys.
+|Enables IAM role-based authentication for AWS S3 backup and restore using an EC2 instance profile instead of access keys.
 |`false`
 
 |System.Backup.S3.Region
@@ -146,12 +146,6 @@ To configure backup files to an AWS S3 Bucket for an on-premises TigerGraph Serv
 TigerGraph clusters use long-lived credentials to authenticate to AWS as the IAM user, allowing TigerGraph access to put backup files into the S3 bucket.
 These credentials are also used to read and copy files during a Restore process.
 
-
-. Create an `AccessKeyID` and `SecretAccessKey` for the IAM user
-+
-TigerGraph clusters use long-lived credentials to authenticate to AWS as the IAM user, allowing TigerGraph access to put backup files into the S3 bucket.
-These credentials are also used to read and copy files during a Restore process.
-
 . Configure each of the following parameters on the Linux command line:
 +
 .Enable storing backup data in S3
@@ -178,7 +172,7 @@ gadmin config set "System.Backup.S3.AccessKeyID" "<access-key-id>"
 gadmin config set "System.Backup.S3.SecretAccessKey" "<secret-access-key>"
 ----
 +
-.Alternatively, to use IAM role-based authentication, configure the AWS Role ARN and enable IAM authentication.
+.Alternatively, to use IAM role-based authentication with an EC2 instance profile, configure the AWS Role ARN and enable IAM authentication.
 +
 .Configure the AWS Role ARN
 [console]
