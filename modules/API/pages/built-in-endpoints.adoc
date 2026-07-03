@@ -1670,6 +1670,137 @@ This operation is not reversible.
 The deleted data cannot be recovered.
 ====
 
+=== Retrieve multiple vertices and edges
+
+`POST /restpp/graph/{graph_name}/data_query`
+
+*Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ DATA]
+
+This endpoint retrieves multiple vertices and edges in a single request.
+
+Below is a table of the fields in the request body.
+
+[cols="1,2,4"]
+|===
+| Key | Type | Description
+
+| vertices
+| vertex array
+| List of vertices to retrieve. Each vertex is specified by its vertex `type` and `id`.
+
+| edges
+| edge array
+| List of edges to retrieve. Each edge is specified by its edge `type`, `source`, and `target`. If the edge type has a discriminator, `discriminator` must also be provided.
+|===
+
+If a specified vertex or edge does not exist, or is blocked by a row policy, it is omitted from the `collected` results and listed under `skipped` instead.
+
+==== Sample request:
+
+[tabs]
+====
+Request::
++
+--
+[source.wrap,bash]
+----
+curl -X POST "http://localhost:14240/restpp/graph/socialNet/data_query" -d '
+{
+  "vertices": [
+    { "type": "VidUser", "id": "0" },
+    { "type": "VidUser", "id": "3" },
+    { "type": "VidUser", "id": "898" },
+    { "type": "VidUser", "id": "987" },
+    { "type": "Video", "id": "0" }
+  ],
+  "edges": [
+    {
+      "type": "User_Video",
+      "source": { "type": "Video", "id": "0" },
+      "target": { "type": "VidUser", "id": "0" },
+      "discriminator": { "rating": 6, "date_time": 15000 }
+    },
+    {
+      "type": "User_Video",
+      "source": { "type": "Video", "id": "0" },
+      "target": { "type": "VidUser", "id": "3" },
+      "discriminator": { "rating": 8, "date_time": 16000 }
+    },
+    {
+      "type": "User_Video",
+      "source": { "type": "Video", "id": "0" },
+      "target": { "type": "VidUser", "id": "898" },
+      "discriminator": { "rating": 6, "date_time": 33000 }
+    }
+  ]
+}'
+----
+--
+Response::
++
+--
+[source,json]
+----
+{
+  "version": {
+    "api": "v2",
+    "schema": 0
+  },
+  "error": false,
+  "message": "",
+  "results": {
+    "collected": {
+      "vertices": [
+        { "v_id": "3", "v_type": "VidUser", "attributes": { "name": "Dale" } },
+        { "v_id": "0", "v_type": "Video", "attributes": { "name": "Solo", "year": 2018 } },
+        { "v_id": "0", "v_type": "VidUser", "attributes": { "name": "Angel" } }
+      ],
+      "edges": [
+        {
+          "e_type": "User_Video", "from_id": "0", "from_type": "Video",
+          "to_id": "0", "to_type": "VidUser", "directed": false,
+          "attributes": { "rating": 6, "date_time": 15000 }
+        },
+        {
+          "e_type": "User_Video", "from_id": "0", "from_type": "Video",
+          "to_id": "3", "to_type": "VidUser", "directed": false,
+          "attributes": { "rating": 8, "date_time": 16000 }
+        }
+      ]
+    },
+    "skipped": {
+      "vertices": [
+        { "v_id": "898", "v_type": "VidUser" },
+        { "v_id": "987", "v_type": "VidUser" }
+      ],
+      "edges": [
+        {
+          "e_type": "User_Video", "from_id": "0", "from_type": "Video",
+          "to_id": "898", "to_type": "VidUser",
+          "discriminator": { "rating": 6, "date_time": 33000 }
+        }
+      ]
+    }
+  }
+}
+----
+--
+====
+
+==== Parameters:
+
+|===
+| Name | Required | Description
+
+| `include_vector`
+| No
+| Takes a boolean value. If the value is true, vector embedding attribute values are included in the output. Default is `false`.
+
+| `include_endpoints`
+| No
+| Takes a boolean value. If the value is true, the source and target vertices of each retrieved edge are included in the output. Default is `false`.
+|===
+
 == Vertices
 
 === Insert vertices
