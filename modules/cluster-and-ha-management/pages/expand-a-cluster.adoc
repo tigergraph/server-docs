@@ -24,6 +24,15 @@ WARNING: If your TigerGraph cluster uses a seeded license, please contact mailto
 You must adhere to all of the following requirements.
 ====
 * The new nodes must already have *exactly the same version* of TigerGraph software installed as the nodes you are expanding from.
+* Ensure the following `gadmin` configuration parameters have the same values on both the existing cluster and the new nodes before starting the expansion:
+
+** `System.SSH.User.Username`
+** `System.SSH.User.Password`
+** `System.SSH.User.Privatekey`
+** `System.DataRoot`
+** `System.AppRoot`
+** `System.LogRoot`
+** `System.TempRoot`
 * The new nodes must not have any data you wish to keep.
 * Ensure that the cluster is not using shared storage.
 Cluster expansion does not support shared storage.
