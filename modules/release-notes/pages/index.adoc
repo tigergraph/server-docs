@@ -54,6 +54,8 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 
 * GSQL audit-log improvements with *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_configuration_parameters[new configuration]* `System.Audit.DiscreteJsonFormat`  and additional *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_gsql_service_audit_log_fields[log fields]* (actionType, objectType, graphName).
 
+* Enhanced *xref:4.3@tigergraph-server:troubleshooting:audit-log.adoc#_audit_log_format[audit logs]* by adding a `duration` field to record the execution time of GSQL operations and introducing audit log entries for user logout events initiated from GSQL Shell and GraphStudio.
+
 * Increased the default maximum HTTP request header size from 20 KB to 64 KB to better support large request headers (such as LDAP/SSO scenarios). The new configuration parameter xref:4.3@tigergraph-server:reference:configuration-parameters.adoc#_gsql[`GSQL.MaxHttpRequestHeaderSizeKB`] allows customization.
 
 ** When set to `0` (default), the system uses the default value of 64 KB.
@@ -65,6 +67,8 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 
 ** New configuration parameter `System.Backup.S3.IAMAuth` enables authentication using an AWS EC2 Instance Profile for S3 backup and restore as an alternative to access keys.
 ** New configuration parameter `System.Backup.S3.Region` specifies the AWS Region used to sign requests to the S3 bucket. This value should match the Region where the S3 bucket is located.
+
+
 
 === Security and Access Control Enhancements
 
