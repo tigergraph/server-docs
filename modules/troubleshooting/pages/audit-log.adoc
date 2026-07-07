@@ -144,10 +144,6 @@ You can modify this value by running the following command:
 $ gadmin config set System.Audit.LogConfig.LogRotationFileNumber <file-number>
 ----
 
-
-
-
-
 == Audit Log Format
 
 === General Format
@@ -195,6 +191,7 @@ The GSQL audit log will record any user-triggered activity handled by the GSQL s
 This includes operations such as:
 
 * Log in
+* Log out
 * Change password
 * Create or drop a user
 * Grant/drop a role (the role and target username are logged)
@@ -204,7 +201,7 @@ This includes operations such as:
 * Create a loading job
 * Run a loading job
 
-In general, the log entry include the timestamp, the user id, the action type, and the object being acted on.
+In general, log entries include the timestamp, user ID, action type, and object being acted on.
 The graph name is logged for queries and loading jobs.
 
 [NOTE]
@@ -274,6 +271,10 @@ Each activity will have its own audit log entry and fields.
 | string
 | The exact GSQL command text executed. For GraphStudio or REST requests, this may include request parameters or body. If not applicable, shown as `"N/A"`.
 
+| duration
+| string
+| Time taken to complete the operation (for example, `3ms`).
+
 | status
 | SUCCESS/FAILED
 | Whether the action executed successfully
@@ -297,6 +298,7 @@ Each activity will have its own audit log entry and fields.
     "actionType": "DDL",
     "actionName": "createQuery",
     "object": "Query",
+    "duration": "2ms",
     "status": "SUCCESS",
     "message": "Successfully created query 'query_name'"
 }
@@ -316,12 +318,34 @@ This field indicates how many times this user failed to provide the correct cred
     "clientOSUsername":"tigergraph",
     "userAgent": "GraphStudio",
     "endpoint": "/gsql/simpleauth",
-    "actionType": "Other", 
+    "actionType": "OTHER", 
     "actionName": "login",
-    "graph": "global",
+    "graphName": "global",
     "failedAttempts" : 1,
+    "duration":"3ms",
     "status" : "FAILURE",
     "message": "Username doesn't exist"
+}
+----
+
+.Here is an example of a user logout event:
+[source,json]
+----
+{
+    "timestamp": "2025-08-15T08:51:20.159Z",
+    "userName": "tigergraph",
+    "authType": "USER_PASS",
+    "clientHost": "<IP or FQDN>:<Port>",
+    "clientOSUsername":"OSUser",
+    "userAgent": "GSQL Shell",
+    "endpoint": "/gsql/v1/statements",
+    "actionType": "OTHER",
+    "actionName": "logout",
+    "graphName": "global",
+    "commandText": "exit",
+    "duration": "2ms",
+    "status": "SUCCESS",
+    "message": "logout succeeded"
 }
 ----
 
