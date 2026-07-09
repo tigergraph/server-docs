@@ -365,6 +365,48 @@ If the user configures this claim and the token does not match with a value in t
 Audience strings are case-sensitive.
 ====
 
+==== Security.JWT.UserClaim
+
+Ex: Security.JWT.UserClaim
+
+[source, console]
+----
+$ gadmin config set Security.JWT.UserClaim "upn"
+----
+
+By default, `Security.JWT.UserClaim` is unset (empty), and TigerGraph uses the `sub` claim to resolve the TigerGraph username, as described in *payload*.
+
+If `Security.JWT.UserClaim` is set to a claim name, TigerGraph reads that claim from the JWT payload instead of `sub`, and uses its string value as the TigerGraph username. The value of the configured claim must match an existing TigerGraph username.
+
+GSQL-generated JWT tokens also store the username in the configured claim.
+
+Existing issuer, audience, signature, expiration, graph-scope, dropped-token, and permission checks still apply.
+
+[NOTE]
+====
+After changing `Security.JWT.UserClaim`, existing JWT tokens generated using the previous claim name may fail authentication. Request new JWT tokens after changing this configuration.
+====
+
+For example, given the following JWT payload:
+
+[source, json]
+----
+{
+  "sub": "aad-internal-id-987654",
+  "upn": "john.smith@td.com",
+  "email": "john.smith@td.com"
+}
+----
+
+With `Security.JWT.UserClaim` set to `upn`, TigerGraph resolves the username as `john.smith@td.com` instead of `aad-internal-id-987654`.
+
+To apply this configuration change:
+
+[source, console]
+----
+gadmin config apply -y
+gadmin restart gsql restpp -y --wait-online
+----
 === Interactive
 Additionally, users can set up JWT, interactively, by running this command to begin security configuration:
 `gadmin config` entry security
