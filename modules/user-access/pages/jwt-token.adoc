@@ -382,11 +382,6 @@ GSQL-generated JWT tokens store the username in this same claim.
 
 If you change `Security.JWT.UserClaim`, tokens issued before the change may no longer work. Request new tokens after making this change.
 
-[NOTE]
-====
-After changing `Security.JWT.UserClaim`, existing JWT tokens generated using the previous claim name may fail authentication. Request new JWT tokens after changing this configuration.
-====
-
 For example, given the following JWT payload:
 
 [source, json]
