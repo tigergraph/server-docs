@@ -374,7 +374,7 @@ Ex: Security.JWT.UserClaim
 $ gadmin config set Security.JWT.UserClaim "upn"
 ----
 
-The default value of `Security.JWT.UserClaim` is `sub`. Users can configure this parameter to specify which JWT payload claim TigerGraph uses to resolve the TigerGraph username. If an administrator sets the value to empty, TigerGraph falls back to using the `sub` claim.
+The default value of `Security.JWT.UserClaim` is `sub`. Users can configure this parameter to specify which JWT payload claim TigerGraph uses to resolve the TigerGraph username. If an administrator sets the value to empty, the default value is used.
 
 If `Security.JWT.UserClaim` is set to a claim name, TigerGraph uses the value of that claim as the username, instead of `sub`. This value must match an existing TigerGraph username.
 
