@@ -50,7 +50,7 @@ CREATE LOADING JOB load_simprod FOR GRAPH gsql_demo {
 RUN LOADING JOB load_simprod USING f1="../simprod/data/simprod_data.csv";
 ----
 
-In this example, the input file contains the column names `ProductID`, `ImageHash`, and `Description`. The loading job references these columns using the user-defined names `id`, `hash`, and `words` specified by `DEFINE HEADER` because `USER_DEFINED_HEADER="head1"` is used.
+In this example, the input file contains the column names `ProductID`, `ImageHash`, and `Description` from left to right. The loading job overrides these names with `id`, `hash`, and `words` specified by `DEFINE HEADER` because `USER_DEFINED_HEADER="head1"` is used.
 
 * `SPLIT` is one of GSQL's ETL functions.  It says that there is a multi-valued column, which has a separator character to mark the subfields in that column.
 
