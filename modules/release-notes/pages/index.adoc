@@ -43,10 +43,11 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 ** Added new fields for actions, objects, graphs, and REST/GSQL request details
 ** Removed `databaseName` from the log header by default, with an option to re-enable it
 
-* *xref:4.3@tigergraph-server:cluster-and-ha-management:crr-monitoring.adoc[Cross-Region Replication (CRR) Monitoring and Simplified Failover]*: Added CRR status monitoring and simplified DR failover for faster recovery.
+* *xref:4.3@tigergraph-server:cluster-and-ha-management:crr-monitoring.adoc[CRR Monitoring]* and *xref:4.3@tigergraph-server:cluster-and-ha-management:fail-over.adoc[Simplified DR Failover]*: Added CRR status monitoring and simplified DR failover for faster recovery.
+** Introduced `gadmin crr status` for CRR replication and replay lag metrics
 ** Introduced `gadmin crr status` for CRR replication and replay lag metrics
 ** Consolidated DR failover into a single `gadmin crr stop --promote` command
-** Introduced xref:4.3@tigergraph-server:cluster-and-ha-management:fail-over.adoc#_principle_checkpoint_validation_for_fast_switch[fast-switch] to convert the former Primary cluster into the new DR cluster
+** Introduced *xref:4.3@tigergraph-server:cluster-and-ha-management:fail-over.adoc#_principle_checkpoint_validation_for_fast_switch[fast-switch]* to convert the former Primary cluster into the new DR cluster
 
 == Detailed List of New and Modified Features
 
