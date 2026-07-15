@@ -1593,6 +1593,13 @@ curl -X POST --data-binary @./work_at.csv "http://localhost:9000/ddl/poc_graph?t
 | Boolean value that indicates whether to return concise results of the data loading request. Concise results will only include the number of vertices and edges added or deleted, and will omit information such as the number of valid and invalid lines in the default response.
 |===
 
+[NOTE]
+====
+The `/ddl` endpoint does not use the `separator` or `eol` values defined in the GSQL loading job.
+
+If the loading job defines non-default values for `separator` or `eol`, you must specify the corresponding `sep` and `eol` request parameters when calling the `/ddl` endpoint. Otherwise, the endpoint uses its own default values.
+====
+
 If there are special characters in your parameter values, the special characters should use https://www.w3schools.com/tags/ref_urlencode.asp[URL encoding]. To avoid confusion about whether you should you one or two backslashes, we do not support backslash escapes for the `eol` or `sep` parameter.
 
 The maximum size of data you can upload via this endpoint is controlled by the xref:API:index.adoc#_request_body_size[`Nginx.ClientMaxBodySize`] configuration parameter (default is 200 MB).
