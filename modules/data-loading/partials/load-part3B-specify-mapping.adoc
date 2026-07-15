@@ -23,6 +23,35 @@ LOAD file_Person TO VERTEX Person
 * `$0`, `$1`,...  refer to the first, second, ... columns in each line a data file.
 * `SEPARATOR="|"` says the column separator character is the pipe (`|`). The default is comma (`,`).
 * `HEADER="true"` says that the first line in the source contains column header names instead of data.  These names can be used instead of the columnn numbers.
+
+[[user-defined-header-example]]
+.Example using USER_DEFINED_HEADER
+
+`USER_DEFINED_HEADER` specifies a header defined by `DEFINE HEADER`. The loader uses the user-defined column names instead of the column names in the input file.
+
+.Loading job
+[source,gsql]
+----
+# define the loading job
+CREATE LOADING JOB load_simprod FOR GRAPH gsql_demo {
+  DEFINE HEADER head1 = "id", "hash", "words";
+  DEFINE FILENAME f1;
+
+  LOAD f1
+  TO VERTEX Product VALUES ($"id", $"hash"),
+  TO TEMP_TABLE t (pid, description)
+    VALUES ($"id", FLATTEN($"words", ",", 1))
+  USING QUOTE="double",
+        HEADER="true",
+        USER_DEFINED_HEADER="head1";
+}
+
+# load the data
+RUN LOADING JOB load_simprod USING f1="../simprod/data/simprod_data.csv";
+----
+
+In this example, the input file contains the column names `ProductID`, `ImageHash`, and `Description` from left to right. The loading job overrides these names with `id`, `hash`, and `words` specified by `DEFINE HEADER` because `USER_DEFINED_HEADER="head1"` is used.
+
 * `SPLIT` is one of GSQL's ETL functions.  It says that there is a multi-valued column, which has a separator character to mark the subfields in that column.
 
 Refer to xref:{page-component-version}@gsql-ref:ddl-and-loading:creating-a-loading-job.adoc[] in the GSQL Language Reference for descriptions of all the options for loading jobs.
