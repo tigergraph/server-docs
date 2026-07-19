@@ -206,12 +206,11 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 * Fixed an issue where long-running query installation requests submitted through a follower node could appear to hang if the client connection timed out before the operation completed (GLE-13080).
 * Fixed an issue where failed query installation or reinstallation could leave the query lock unreleased, preventing subsequent query operations until the service was restarted (GLE-13094).
 * Fixed an issue where cluster expansion or shrink operations could continue after a core data import failure instead of stopping with an error (TP-10680).
+* Fixed an issue where JWT authentication always resolved users from the `sub` claim, preventing authentication with identity providers that use a different claim for the TigerGraph username (GLE-13162).
 
 ==== Security
 
-==== Security
-
-* Fixed an issue where SAML SSO certificate validation could not be bypassed when explicitly configured for environments requiring certificate verification to be disabled (GLE-13060).
+* Fixed an issue where SAML SSO ignored the configuration to disable certificate validation (GLE-13060).
 
 * Third-party Vulnerabilities NOT impacting TigerGraph:
 +
