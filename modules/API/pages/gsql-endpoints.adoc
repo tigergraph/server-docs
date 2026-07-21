@@ -3244,6 +3244,39 @@ Sample Response::
 
 '''
 
+[[compare-restpp-gsql-query-endpoints]]
+== Comparing the RESTPP and GSQL query endpoints
+
+TigerGraph provides two endpoints for running installed queries:
+
+* xref:built-in-endpoints.adoc#_run_an_installed_query_post[RESTPP endpoint]
+* xref:gsql-endpoints.adoc#_run_query[GSQL endpoint]
+
+Both endpoints execute installed queries and return the same results. However, they differ in the format used to pass query parameters and how query requests are processed.
+
+[cols="2,3,3",options="header"]
+|===
+|Feature
+|RESTPP endpoint
+|GSQL endpoint
+
+|Endpoint
+|`/query/{graph_name}/{query_name}`
+|`/gsql/v1/queries/{queryName}`
+
+|HTTP method
+|`GET` or `POST`
+|`POST`
+
+|Query parameter format
+|Uses the RESTPP parameter format.
+|Uses the GSQL parameter format.
+
+|Query execution
+|Executes the installed query directly.
+|Internally invokes the RESTPP endpoint to execute the installed query.
+|===
+
 === run query
 
 `POST /gsql/v1/queries/{queryName}`
