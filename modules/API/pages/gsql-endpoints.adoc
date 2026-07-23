@@ -3212,6 +3212,13 @@ Sample Response::
 
 The endpoint is used to run a query by its name.
 
+[NOTE]
+====
+This endpoint provides additional GSQL-specific processing before forwarding the request to the RESTPP query endpoint.
+
+If you only need to run an installed query, TigerGraph recommends using the RESTPP endpoint `GET /query/{graph_name}/{query_name}` for lower request overhead. See xref:api:built-in-endpoints.adoc#_run_an_installed_query_get[Run an installed query (`GET`)].
+====
+
 ==== Endpoint Parameters:
 
 [%autowidth]
