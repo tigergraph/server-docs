@@ -3579,7 +3579,7 @@ Request::
 --
 [source,bash]
 ----
-curl -X GET "localhost:9000/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1561401340785.N&requestid=16973833.RESTPP_1_1.1561401288421.N"
+curl -X GET "localhost:14240/restpp/abortquery/poc_graph?requestid=16842763.RESTPP_1_1.1561401340785.N"
 ----
 --
 Response::
@@ -3601,10 +3601,6 @@ Response::
         {
           "requestid": "16842763.RESTPP_1_1.1561401340785.N",
           "url": "/sleepgpe?milliseconds=110000"
-        },
-        {
-          "requestid": "16973833.RESTPP_1_1.1561401288421.N",
-          "url": "/sleepgpe?milliseconds=100000"
         }
       ]
     }
@@ -3614,6 +3610,7 @@ Response::
 ----
 --
 ====
+
 ==== Parameters:
 
 |===
@@ -3621,12 +3618,17 @@ Response::
 
 | `requestid`
 | No
-| The ID of the query to abort. It can take a single query ID or the string `"all"`. If `requestid` is set to all. It will abort all running queries.
+| The ID of the query to abort. Specify either a single query ID or the string `"all"`. If `requestid` is set to `"all"`, all running queries are aborted.
 
 | `url`
 | No
 | The endpoint whose running queries to abort. You must specify the base of the endpoint's URL, but then use a wildcard to allow for different parameters. For example, to abort all running queries for the endpoint `/sleepgpe`, use `url=/sleepgpe.*`
 |===
+
+[NOTE]
+====
+The `requestid` parameter accepts only a single query ID or the value `"all"`. Specifying multiple `requestid` parameters in the same request is not supported.
+====
 
 === Check query status (Detached Mode)
 
