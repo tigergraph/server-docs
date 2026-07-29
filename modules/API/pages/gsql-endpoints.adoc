@@ -3424,7 +3424,7 @@ Both endpoints execute installed queries and return the same results. They diffe
 
 |`VERTEX` and `SET<VERTEX>` parameter format
 |Uses the RESTPP parameter format. See xref:built-in-endpoints.adoc#_run_an_installed_query_post[Query parameter Passing].
-|Uses the GSQL parameter format. See xref:gsql-endpoints.adoc#format-for-parameters-of-query-being-run[Format for Parameters of Query Being Run].
+|Uses the GSQL parameter format. See xref:gsql-endpoints.adoc#_format_for_parameters_of_query_being_run[Format for Parameters of Query Being Run].
 
 |Query execution
 |Executes the installed query directly.
@@ -3436,6 +3436,15 @@ Both endpoints execute installed queries and return the same results. They diffe
 `POST /gsql/v1/queries/{queryName}`
 
 The endpoint is used to run a query by its name.
+
+[NOTE]
+====
+This endpoint provides a standardized GSQL API for running installed queries. Internally, it forwards requests to the RESTPP endpoint `GET /restpp/query/{graph_name}/{query_name}` to execute the query.
+
+Use this endpoint if you are working with the standardized GSQL API or want consistency with other GSQL endpoints. If your application does not require the standardized GSQL API, consider using the xref:built-in-endpoints.adoc#_run_an_installed_query_get[RESTPP endpoint], which executes installed queries directly without the additional request forwarding.
+
+For a comparison of the RESTPP and GSQL endpoints, including differences in parameter formats and request processing, see xref:#_comparing_the_restpp_and_gsql_query_endpoints[Comparing the RESTPP and GSQL query endpoints].
+====
 
 ==== Endpoint Parameters:
 
