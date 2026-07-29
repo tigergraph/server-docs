@@ -2585,8 +2585,19 @@ If you install all queries and receive a state of `SUCCESS` for one or more quer
 `+GET /restpp/query/{graph_name}/{query_name}+`
 
 Each time a new TigerGraph query is installed, a dynamic endpoint is generated.
-This new endpoint enables the user to run the new TigerGraph query through HTTP requests and giving the parameters in URL or in a data payload.
+This endpoint enables users to run an installed TigerGraph query through HTTP requests by providing parameters in the URL or request payload.
 In the case of a `GET` request, parameters should be passed in through the query string.
+
+[NOTE]
+====
+TigerGraph provides both RESTPP and GSQL endpoints for running installed queries.
+
+This RESTPP endpoint executes installed queries directly. The GSQL xref:gsql-endpoints.adoc#_run_query[Run query endpoint] internally forwards requests to this endpoint as part of the standardized GSQL API introduced in TigerGraph 4.1.
+
+If your application does not require the standardized GSQL API, TigerGraph recommends using this RESTPP endpoint because it executes the query directly without the additional request forwarding.
+
+For a comparison of the RESTPP and GSQL endpoints, including differences in parameter formats and request processing, see xref:gsql-endpoints.adoc#_comparing_the_restpp_and_gsql_query_endpoints[Comparing the RESTPP and GSQL query endpoints].
+====
 
 ==== Parameters:
 
