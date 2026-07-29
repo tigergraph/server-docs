@@ -2536,9 +2536,13 @@ In the case of a `GET` request, parameters should be passed in through the query
 
 [NOTE]
 ====
-This endpoint and the xref:api:gsql-endpoints.adoc#_run_query[GSQL Run query] endpoint perform the same core function of running an installed query.
+TigerGraph provides both RESTPP and GSQL endpoints for running installed queries.
 
-TigerGraph provides the GSQL endpoint as part of a standardized GSQL API. If your application already uses the RESTPP API, you can continue using this endpoint.
+This RESTPP endpoint executes installed queries directly. The GSQL xref:api:gsql-endpoints.adoc#_run_query[Run query endpoint] internally forwards requests to this endpoint as part of the standardized GSQL API introduced in TigerGraph 4.1.
+
+If your application does not require the standardized GSQL API, TigerGraph recommends using this RESTPP endpoint because it executes the query directly without the additional request forwarding.
+
+For a comparison of the RESTPP and GSQL endpoints, including differences in parameter formats and request processing, see xref:api:gsql-endpoints.adoc#_comparing_the_restpp_and_gsql_query_endpoints[Comparing the RESTPP and GSQL query endpoints].
 ====
 
 ==== Parameters:
