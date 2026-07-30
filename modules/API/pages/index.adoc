@@ -342,14 +342,14 @@ curl -X <GET/POST> -H "RESPONSE-LIMIT: <size limit in byte>" '<request_URL>'
 
 You can request a gzip-compressed response for a query by including the `Accept-Encoding: gzip` header in your request. This is supported for query responses larger than 1000 bytes.
 
-Use this option when network bandwidth is low. Gzip compression itself takes some processing time.
+Use this option when network bandwidth is low. gzip compression itself takes some processing time.
 
 [source,bash]
 ----
 curl -X GET -H "Accept-Encoding: gzip" -o /path/to/zip.gz "http://localhost:14240/restpp/query/{graph_name}/{query_name}"
 ----
 
-You can also request a gzip-compressed response when running a query from the GSQL shell , see xref:gsql-ref:querying:query-operations.adoc#_gzip_compression_gzip_option[`-gzip` option] of the `RUN QUERY` command.
+You can also request a gzip-compressed response when running a query from the GSQL shell , see xref:gsql-ref:querying:query-operations.adoc#_options_2[`-gzip` option] of the `RUN QUERY` command.
 
 == `curl` options
 
