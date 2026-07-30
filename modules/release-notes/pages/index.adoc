@@ -107,6 +107,8 @@ Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO a
 
  * Added a *xref:4.3@tigergraph-server:API:built-in-endpoints.adoc#_get_license_info_and_usage[new Informant endpoint]* `GET /informant/licenseinfo` to retrieve license information and usage. 
 
+* Added support for *xref:4.3@tigergraph-server:API:index.adoc#_size_and_time_limits[gzip-compressed query responses]* from RESTPP to the client, reducing transfer size for large results over low-bandwidth connections. 
+
 * Added a xref:4.3@tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[new query routing mode ] `RESTPP.QueryRouting.Mode = 2 `(LocalGPE) to route RESTPP requests directly to the co-located GPE on the same node. This reduces latency for high-QPS workloads by removing an extra network hop.
 
 
