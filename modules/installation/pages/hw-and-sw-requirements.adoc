@@ -65,6 +65,7 @@ The software has been tested on the operating systems listed below:
 | Windows (all version)
 | X
 
+
 | MacOS (Intel and M1 chip)
 | X
 |===
@@ -211,6 +212,120 @@ NOTE: Production systems should consider having replica clusters for redundancy 
 | 10 Gigabit Ethernet adapter
 |===
 
+=== Hardware Sizing Estimates by Dataset Size
+
+The estimates in this section provide general guidance for sizing hardware based on dataset size, workload type, and compression ratio. They are intended to help with initial capacity planning before selecting hardware for a TigerGraph deployment.
+
+Algorithmic workloads, such as PageRank, Community Detection, and Shortest Path, generally require more memory than non-algorithmic workloads because they perform additional graph computations.
+
+==== Example
+
+
+
+The following example demonstrates how workload type and compression ratio affect hardware sizing.
+
+Assumptions:
+
+* Raw dataset size: **500 GB**
+* High Availability deployment
+* Algorithmic workload
+* CPU recommendation: Up to 64 cores
+
+Using the sizing methodology for algorithmic workloads:
+
+* At a 10% compression ratio:
+** Memory: **1.35 TB**
+** Disk per node: **~2 TB**
+
+* At a 40% compression ratio:
+** Memory: **900 GB**
+** Disk per node: **~1.35 TB**
+
+This example illustrates that the same raw dataset may require different hardware depending on the achieved compression ratio.
+
+.Estimated hardware requirements by dataset size
+
+[cols="1,1,1,1,1,1",options="header"]
+|===
+|Raw Data Size
+|Compression Ratio
+|CPU Recommendation
+|Memory (Algorithmic)
+|Memory (Non-Algorithmic)
+|Disk per Node
+
+|100 GB
+|10%
+|Up to 64 cores
+|270 GB
+|180 GB
+|~405 GB
+
+|100 GB
+|40%
+|Up to 64 cores
+|180 GB
+|120 GB
+|~270 GB
+
+|500 GB
+|10%
+|Up to 64 cores
+|1.35 TB
+|900 GB
+|~2 TB
+
+|500 GB
+|40%
+|Up to 64 cores
+|900 GB
+|600 GB
+|~1.35 TB
+
+|1 TB
+|10%
+|Up to 64 cores
+|2.7 TB
+|1.8 TB
+|~4.05 TB
+
+|1 TB
+|40%
+|Up to 64 cores
+|1.8 TB
+|1.2 TB
+|~2.7 TB
+
+|5 TB
+|10%
+|Up to 64 cores
+|13.5 TB
+|9 TB
+|~20.25 TB
+
+|5 TB
+|40%
+|Up to 64 cores
+|9 TB
+|6 TB
+|~13.5 TB
+
+|10 TB
+|10%
+|Up to 64 cores
+|27 TB
+|18 TB
+|~40.5 TB
+
+|10 TB
+|40%
+|Up to 64 cores
+|18 TB
+|12 TB
+|~27 TB
+|===
+
+NOTE: These estimates are intended for initial capacity planning only. Actual hardware requirements vary depending on graph schema, workload characteristics, compression ratio, query complexity, replication factor, partitioning strategy, and performance objectives. For production deployments, consult TigerGraph Solution Architects to determine the appropriate hardware configuration.
 
 === Additional Considerations
 This section describes considerations beyond sizing for the CPU, memory, and storage.
