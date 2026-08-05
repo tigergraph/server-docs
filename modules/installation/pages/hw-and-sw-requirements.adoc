@@ -214,15 +214,15 @@ NOTE: Production systems should consider having replica clusters for redundancy 
 
 === Hardware Sizing Estimates by Dataset Size
 
-The estimates in this section provide general guidance for sizing hardware based on dataset size, workload type, and compression ratio. They are intended to help with initial capacity planning before selecting hardware for a TigerGraph deployment.
+The estimates in this section provide general guidance for sizing hardware based on dataset size, workload type, and compression ratio. They are intended to assist with initial capacity planning for a TigerGraph deployment.
 
 Algorithmic workloads, such as PageRank, Community Detection, and Shortest Path, generally require more memory than non-algorithmic workloads because they perform additional graph computations.
 
-Compression ratio also affects memory and storage requirements. For example, a 10% compression ratio means the stored graph occupies approximately 90% of its original size, while a 40% compression ratio means it occupies approximately 60% of its original size.
+Compression ratio affects both memory and storage requirements. For example, a 10% compression ratio means the stored graph occupies approximately 90% of its original size, while a 40% compression ratio means it occupies approximately 60% of its original size.
 
 ==== Memory and Disk Sizing
 
-Memory recommendations are based on the following workload-specific sizing factors.
+The following workload-specific sizing factors are used to estimate memory requirements.
 
 [cols="2,2",options="header"]
 |===
@@ -236,26 +236,23 @@ Memory recommendations are based on the following workload-specific sizing facto
 |3 (1x for graph size + 2x for compute)
 |===
 
-Disk recommendations:
+*Disk recommendations*
 
 * Disk space per node should be approximately equal to the recommended memory per node.
 * If the deployment stores multiple backups, large data files, or exported data locally, provision approximately 2× the recommended memory size for disk capacity.
 
 ==== Example
 
-The following example demonstrates how workload type and compression ratio affect hardware sizing.
+The following example demonstrates how workload type and compression ratio affect hardware sizing. The memory and disk estimates are calculated per node for the assumed 3-node HA cluster.
 
 Assumptions:
 
 * Raw dataset size: 500 GB
-* 3-node HA cluster
-* Replication factor: 3
+* HA cluster with 3 nodes
 * Algorithmic workload
 * CPU recommendation: Up to 64 cores
 
-The memory and disk estimates in this example are calculated per node.
-
-Using the sizing methodology for algorithmic workloads:
+Using the sizing factors described above:
 
 * At a 10% compression ratio:
 ** Memory: 1.35 TB
@@ -265,9 +262,8 @@ Using the sizing methodology for algorithmic workloads:
 ** Memory: 900 GB
 ** Disk per node: ~1.35 TB
 
-The following estimates represent recommended resources per node for the assumed cluster configuration.
 
-.Estimated hardware requirements by dataset size
+.Estimated hardware requirements per node by dataset size
 
 [cols="1,1,1,1,1,1",options="header"]
 |===
