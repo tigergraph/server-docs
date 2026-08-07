@@ -563,6 +563,27 @@ For more on file policy see xref:security:file-output-policy.adoc[] and/or xref:
 As of 4.1, user secrets are global and not associated with a particular graph.
 When upgrading from an older version to 4.1+, secrets will be converted to global.
 
+=== Query Failures After Rolling Upgrade
+
+After a rolling upgrade between minor versions, installed queries may fail with an error similar to:
+
+[source,console]
+----
+{"version":{"edition":"enterprise","api":"v2","schema":8},"error":true,
+"message":"error_: unknown function error {\"data\":\"\",\"func\":\"queryDispatcher\",
+\"libudf\":\"libudf-ldbc_snb-1\",\"options\":{\"_api_\":\"v2\",\"graph_id\":[\"26\"],
+\"query\":[\"test_query\"]}}"}
+----
+
+==== What to do:
+
+Force-reinstall all queries:
+
+[source,gsql]
+----
+gsql 'install query -force all'
+----
+
 === Other issues
 
 For any other issues encountered please contact support@tigergraph.com.
