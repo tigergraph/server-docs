@@ -212,6 +212,141 @@ NOTE: Production systems should consider having replica clusters for redundancy 
 | 10 Gigabit Ethernet adapter
 |===
 
+=== Hardware Sizing Estimates by Dataset Size
+
+The estimates in this section provide general guidance for sizing hardware based on dataset size, workload type, and compression ratio. They are intended to assist with initial capacity planning for a TigerGraph deployment.
+
+Algorithmic workloads, such as PageRank, Community Detection, and Shortest Path, generally require more memory than non-algorithmic workloads because they perform additional graph computations.
+
+Compression ratio affects both memory and storage requirements. For example, a 10% compression ratio means the stored graph occupies approximately 90% of its original size, while a 40% compression ratio means it occupies approximately 60% of its original size.
+
+==== Memory and Disk Sizing
+
+The following workload-specific sizing factors are used to estimate memory requirements.
+
+[cols="2,2",options="header"]
+|===
+|Workload type
+|Memory sizing factor
+
+|Non-algorithmic
+|2 (1x for graph size + 1x for compute)
+
+|Algorithmic
+|3 (1x for graph size + 2x for compute)
+|===
+
+*Disk recommendations*
+
+* Disk space per node should be approximately equal to the recommended memory per node.
+* If the deployment stores multiple backups, large data files, or exported data locally, provision approximately 2× the recommended memory size for disk capacity.
+
+==== Example
+
+The following example demonstrates how workload type and compression ratio affect hardware sizing. The memory and disk estimates are calculated per node for the assumed 3-node HA cluster.
+
+Assumptions:
+
+* Raw dataset size: 500 GB
+* HA cluster with 3 nodes
+* Algorithmic workload
+* CPU recommendation: Up to 64 cores
+
+Using the sizing factors described above:
+
+* At a 10% compression ratio:
+** Memory: 1.35 TB
+** Disk per node: ~2 TB
+
+* At a 40% compression ratio:
+** Memory: 900 GB
+** Disk per node: ~1.35 TB
+
+
+.Estimated hardware requirements per node by dataset size
+
+[cols="1,1,1,1,1,1",options="header"]
+|===
+|Raw Data Size
+|Compression Ratio
+|CPU Recommendation
+|Memory (Algorithmic)
+|Memory (Non-Algorithmic)
+|Disk per Node
+
+
+|100 GB
+|10%
+|Up to 64 cores
+|270 GB
+|180 GB
+|~405 GB
+
+|100 GB
+|40%
+|Up to 64 cores
+|180 GB
+|120 GB
+|~270 GB
+
+|500 GB
+|10%
+|Up to 64 cores
+|1.35 TB
+|900 GB
+|~2 TB
+
+|500 GB
+|40%
+|Up to 64 cores
+|900 GB
+|600 GB
+|~1.35 TB
+
+|1 TB
+|10%
+|Up to 64 cores
+|2.7 TB
+|1.8 TB
+|~4.05 TB
+
+|1 TB
+|40%
+|Up to 64 cores
+|1.8 TB
+|1.2 TB
+|~2.7 TB
+
+|5 TB
+|10%
+|Up to 64 cores
+|13.5 TB
+|9 TB
+|~20.25 TB
+
+|5 TB
+|40%
+|Up to 64 cores
+|9 TB
+|6 TB
+|~13.5 TB
+
+|10 TB
+|10%
+|Up to 64 cores
+|27 TB
+|18 TB
+|~40.5 TB
+
+|10 TB
+|40%
+|Up to 64 cores
+|18 TB
+|12 TB
+|~27 TB
+|===
+
+NOTE: These estimates are intended for initial capacity planning only. Actual hardware requirements vary depending on graph schema, workload characteristics, compression ratio, query complexity, replication factor, partitioning strategy, and performance objectives. For production deployments, consult TigerGraph Solution Architects to determine the appropriate hardware configuration.
 
 === Additional Considerations
 This section describes considerations beyond sizing for the CPU, memory, and storage.
