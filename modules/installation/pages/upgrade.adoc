@@ -133,7 +133,7 @@ gadmin crr start
 == Rolling Upgrade (Preview)
 
 A rolling upgrade allows you to upgrade your TigerGraph installation with minimal service disruption by upgrading nodes in batches, ensuring that at least one full replica of the cluster remains online throughout the process. Under normal conditions, service interruptions are typically limited to leader switch events, which generally complete within a few seconds to approximately 1–2 minutes, depending on the cluster topology and upgrade strategy.
-If leaders are upgraded together, total disruption is roughly one leader switch; if upgrading one partition at a time, it scales with the number of partitions.
+If leaders are upgraded together, total disruption is roughly one leader switch; if upgrading one partition at a time, it scales with the number of partitions.This upgrade strategy is not user-configurable - it is automatically determined and orchestrated by the Controller (CTRL) to optimize efficiency and minimize query disruption based on the cluster topology.
 
 Each node upgrade also includes a brief pause of about one minute between stopping RESTPP and NGINX, allowing load balancers to detect the change and stop forwarding traffic to that node before it goes offline.
 
