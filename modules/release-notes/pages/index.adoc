@@ -389,6 +389,10 @@ Third-party Vulnerability impacting TigerGraph: None
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦The presence of a forward slash (`/`) in a vertex ID can prevent certain operations, including editing vertex attributes, deleting vertices in Explore Graph, and adding edges to or from vertices containing `/`. In some cases, the UI may also freeze.
+¦4.2.2
+a¦When calling RESTPP endpoints that include vertex IDs containing URL characters, percent-encode the characters in the vertex ID (for example, `%2F` for `/`). There is no workaround for the other affected operations.
+¦TBD
 
 ¦When performing a rolling upgrade from a version between 4.2.0 and 4.2.2 to a later 4.2.x version with `Nginx.SSL.Enable=true`, the upgrade may fail while blocking GSQL long-running operations due to an internal HTTPS request failure.
 ¦4.2.0~4.2.2
