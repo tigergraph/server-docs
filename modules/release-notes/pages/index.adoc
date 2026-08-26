@@ -213,6 +213,7 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 * Fixed an issue where queries using certain user-defined functions (UDFs) could fail during query creation after upgrading from earlier releases (GLE-11304).
 * Fixed an issue where the engine job listener could stop receiving updates after a ZeroMQ connection remained idle for an extended period (CORE-5906).
 * Fixed an issue where loading jobs using Azure Data Lake Storage Gen2 service principal authentication failed because the connector incorrectly required a storage account key (GLE-13224).
+* Fixed an issue where customer NGINX configuration customizations could be lost or newer-version settings could remain after downgrading TigerGraph (CORE-5939).
 
 ==== Security
 
