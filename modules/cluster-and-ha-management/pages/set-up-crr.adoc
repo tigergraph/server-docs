@@ -8,9 +8,7 @@ Changes on the primary cluster are copied over to the DR cluster.
 
 When necessary, you can fail over to a DR cluster, making it the new primary cluster.
 
-
-[#before_you_begin]
-== Prerequsites
+== Prerequisites
 
 * The DR cluster and the primary cluster are running the *same version of TigerGraph (3.10 or higher)*.
 * The DR cluster and the primary cluster have the *same partitioning factor*.
@@ -20,6 +18,9 @@ When necessary, you can fail over to a DR cluster, making it the new primary clu
 * If you choose to enable CRR and your DR cluster is in a different Virtual Private Cloud (VPC) than your primary cluster, make sure that TigerGraph is installed on your cluster with public IPs:
 ** If you xref:installation:bare-metal-install.adoc#_interactive_installation[install interactively], make sure that you supply the public IP of all nodes.
 ** If you xref:installation:bare-metal-install.adoc#_non_interactive_installation[install non-interactively], make sure in the `NodeList` field of `install_conf.json` that you are providing the public IPs for all nodes.
+* If the DR cluster and the primary cluster are deployed in different VPCs, make sure the following ports are open between the clusters:
+** `30002` — Kafka Broker port used for data replication between the primary and DR clusters.
+** `30003` — MirrorMaker 2 port used by the `infr_mm` connector on the DR cluster to coordinate replication tasks.
 
 [WARNING]
 ====
