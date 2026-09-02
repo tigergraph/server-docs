@@ -90,6 +90,8 @@ Scalable storage and similarity search for vector attributes associated with ver
 
 * [4.2.4] Upgraded embedded NGINX to version 1.30.2 for upstream security and reliability fixes.
 
+* [4.2.5] Upgraded embedded NGINX to version 1.30.4 for upstream security and reliability fixes.
+
 
 === Security and Access Control Enhancements
 
@@ -200,6 +202,30 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 ---
 
 == Fixed issues
+
+=== Fixed and Improved in 4.2.5
+
+==== Functionality
+
+* Fixed an issue where rebuilt graph data could fail to load correctly when deleted attributes had non-default values (CORE-5887).
+* Fixed an issue where integer primary IDs with leading zeros were treated as different vertices during data loading (GLE-11687).
+* Fixed an issue where newly expanded nodes in GraphStudio Explore Graph were not automatically centered, making parts of the graph difficult to view (APPS-4489).
+* Fixed an issue where queries using certain user-defined functions (UDFs) could fail during query creation after upgrading from earlier releases (GLE-11304).
+* Fixed an issue where the engine job listener could stop receiving updates after a ZeroMQ connection remained idle for an extended period (CORE-5906).
+* Fixed an issue where loading jobs using Azure Data Lake Storage Gen2 service principal authentication failed because the connector incorrectly required a storage account key (GLE-13224).
+* Fixed an issue where customer NGINX configuration customizations could be lost or newer-version settings could remain after downgrading TigerGraph (CORE-5939).
+
+==== Security
+
+* Fixed a local file inclusion vulnerability in the GraphQL `SearchFile` API that could allow users with database access to access files on the database host (F001).
+* Fixed a secret disclosure vulnerability in the GraphQL `Config` query that could expose decrypted sensitive configuration values to superusers (F004).
+
+* Third-party Vulnerabilities NOT impacting TigerGraph:
++
+Fixed the following security vulnerabilities: CVE-2024-13009, CVE-2024-23944, CVE-2024-31033, CVE-2024-6763, CVE-2025-11143, CVE-2025-14813, CVE-2025-67721, CVE-2025-67735, CVE-2025-68161, CVE-2026-0636, CVE-2026-1002, CVE-2026-22007, CVE-2026-22013, CVE-2026-22016, CVE-2026-22021, CVE-2026-22732, CVE-2026-22737, CVE-2026-24281, CVE-2026-24308, CVE-2026-24734, CVE-2026-24880, CVE-2026-25679, CVE-2026-25680, CVE-2026-27139, CVE-2026-27145, CVE-2026-29146, CVE-2026-29181, CVE-2026-32280, CVE-2026-32281, CVE-2026-32282, CVE-2026-32283, CVE-2026-32288, CVE-2026-32289, CVE-2026-3293, CVE-2026-32990, CVE-2026-33186, CVE-2026-33810, CVE-2026-33811, CVE-2026-33814, CVE-2026-33870, CVE-2026-33871, CVE-2026-34268, CVE-2026-34282, CVE-2026-34477, CVE-2026-34478, CVE-2026-34480, CVE-2026-34483, CVE-2026-34487, CVE-2026-34500, CVE-2026-39820, CVE-2026-39822, CVE-2026-39823, CVE-2026-39825, CVE-2026-39826, CVE-2026-39827, CVE-2026-39829, CVE-2026-39835, CVE-2026-39836, CVE-2026-41284, CVE-2026-41417, CVE-2026-42055, CVE-2026-42198, CVE-2026-42499, CVE-2026-42504, CVE-2026-42505, CVE-2026-42507, CVE-2026-42577, CVE-2026-42578, CVE-2026-42579, CVE-2026-42580, CVE-2026-42581, CVE-2026-42583, CVE-2026-42584, CVE-2026-42585, CVE-2026-42587, CVE-2026-42945, CVE-2026-43513, CVE-2026-44249, CVE-2026-45205, CVE-2026-45416, CVE-2026-45536, CVE-2026-46597, CVE-2026-46598, CVE-2026-46917, CVE-2026-46968, CVE-2026-47010, CVE-2026-47021, CVE-2026-47027, CVE-2026-47059, CVE-2026-47063, CVE-2026-47244, CVE-2026-47838, CVE-2026-48043, CVE-2026-48142, CVE-2026-50010, CVE-2026-50020, CVE-2026-50560, CVE-2026-54291, CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-55831, CVE-2026-55833, CVE-2026-5588, CVE-2026-56740, CVE-2026-56741, CVE-2026-56745, CVE-2026-56746, CVE-2026-59889, CVE-2026-59901, CVE-2026-59921, CVE-2026-60147, CVE-2026-62574, CVE-2026-6790, and CVE-2026-6860.
++
+Third-party Vulnerability impacting TigerGraph: None
+
 
 === Fixed and Improved in 4.2.4
 
