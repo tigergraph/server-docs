@@ -219,8 +219,8 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 
 ==== Security
 
-* Fixed a local file inclusion vulnerability in the GraphQL `SearchFile` API that could allow users with database access to access files on the database host (F001).
-* Fixed a secret disclosure vulnerability in the GraphQL `Config` query that could expose decrypted sensitive configuration values to superusers (F004).
+* Fixed a local file inclusion vulnerability in the GraphQL `SearchFile` API that allowed users with database access to read files owned by the database service account.
+* Fixed a secret disclosure vulnerability in the GraphQL `Config` query that returned decrypted `gadmin` configuration values to superusers.
 
 * Third-party Vulnerabilities NOT impacting TigerGraph:
 +
