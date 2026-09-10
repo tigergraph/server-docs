@@ -221,6 +221,11 @@ Third-party Vulnerability impacting TigerGraph: None
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦GraphStudio may over-enforce `READ_DATA` access controls, preventing users from executing path/search built-ins in Explore Graph when the traversal includes intermediate vertex or edge types for which they do not have `READ_DATA` access.
+¦4.2.3
+a¦Use GSQL as a workaround, as it supports type-level `READ_DATA` access controls and is not subject to this over-enforcement.
+¦
+
 ¦The presence of a forward slash (`/`) in a vertex ID can prevent certain operations, including editing vertex attributes, deleting vertices in Explore Graph, and adding edges to or from vertices containing `/`. In some cases, the UI may also freeze.
 ¦4.2.2
 a¦When calling RESTPP endpoints that include vertex IDs containing URL characters, percent-encode the characters in the vertex ID (for example, `%2F` for `/`). There is no workaround for the other affected operations.
