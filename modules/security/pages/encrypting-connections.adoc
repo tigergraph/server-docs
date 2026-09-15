@@ -233,7 +233,7 @@ If you use mTLS, note these limitations in TigerGraph 4.3.0:
 | Nginx.SSL.Client.OCSP.Responder | Custom OCSP responder URL
 |===
 
-== Configuring TLS for Internal Kafka.
+== Configuring TLS for Internal Kafka
 
 This feature introduces SSL/TLS encryption for TigerGraph’s internal Kafka. It addresses the lack of native encryption and authentication for data in transit within the TigerGraph cluster.
 
@@ -329,6 +329,7 @@ gadmin restart all -y
 | It is the protocol for inter-broker communication. The value can be an empty-string or "plaintext", "ssl". It's overridden by Kafka.Security.ClientConf.ProtocolForAllClients.
 |
 |===
+
 == TLS Versions and Cipher Suites
 
 TigerGraph's Nginx supports TLS 1.2 and TLS 1.3. By default, TLS 1.3 is used for both client-facing and internal cluster communication, offering stronger security and faster connection establishment.
