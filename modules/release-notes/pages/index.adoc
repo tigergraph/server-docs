@@ -82,6 +82,8 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 
 * *xref:4.3@tigergraph-server:security:encrypting-connections.adoc[Mutual TLS (mTLS) Authentication]* enables certificate-based mutual authentication between clients and the server, strengthening connection security for external applications and services.
 
+* *xref:4.3@tigergraph-server:security:encrypting-connections.adoc#_configuring_tls_for_internal_kafka[Internal Kafka TLS Encryption]* enables SSL/TLS encryption for data in transit between TigerGraph services and internal Kafka, enhancing security for communications within the cluster.
+
 * Added *xref:4.3@tigergraph-server:user-access:sso-with-kerberos.adoc[Kerberos]* as an SSO authentication option, alongside existing SAML, OIDC, and LDAP methods.
 Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO authentication methods.
 
@@ -109,8 +111,7 @@ Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO a
 
 * Added support for *xref:4.3@tigergraph-server:API:index.adoc#_size_and_time_limits[gzip-compressed query responses]* from RESTPP to the client, reducing transfer size for large results over low-bandwidth connections. 
 
-* Added a xref:4.3@tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[new query routing mode ] `RESTPP.QueryRouting.Mode = 2 `(LocalGPE) to route RESTPP requests directly to the co-located GPE on the same node. This reduces latency for high-QPS workloads by removing an extra network hop.
-
+* Added a *xref:4.3@tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[new query routing mode ]* `RESTPP.QueryRouting.Mode = 2` (LocalGPE) to route RESTPP requests directly to the co-located GPE on the same node. This reduces latency for high-QPS workloads by removing an extra network hop.
 
 === Query Language Enhancements
 
