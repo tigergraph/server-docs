@@ -106,9 +106,8 @@ GSQL > create user -u user1 -p pass1
 for special case use “`“ username“`“ to include the username
 ====
 
-== View roles assignments and login attempts
-The `SHOW USER` command displays the role assignments, as well as the login attempts,  of the current user.
-If the current user has the `READ_USER` privilege
+== View users, role assignments and login activity
+The `SHOW USER` command displays information about users, including their role assignments and login activity. It displays both local users and proxy users. If the current user has the `READ_USER` privilege, information on all users is displayed. Otherwise, only the current user's information is displayed.
 
 === Syntax
 
@@ -185,18 +184,6 @@ Users:
 Proxy group membership is determined during SSO login based on identity provider attributes.
 Group information may not be available until the proxy user has logged in successfully.
 ====
-
-== View users and login activity
-
-The `SHOW USER` command displays both local users and proxy users.
-
-[source,gsql]
-----
-SHOW USER
-----
-
-If the current user has the`READ_USER` privilege, information for all users (local and proxy) is displayed.
-Otherwise, only the current user is shown.
 
 == View privileges of a user or proxy group
 
@@ -451,7 +438,7 @@ REVOKE <privilegeName1> (, <privilegeName2>)* ON <privilegeObjects>
 [source,text]
 ----
 GSQL > REVOKE WRITE ON ALL ROLES
-        IN GRAPH example_graph TO user1
+        IN GRAPH example_graph FROM user1
 ----
 
 This will revoke the `WRITE_ROLE` privilege from the user `user1` on graph `example_graph.`
