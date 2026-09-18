@@ -443,6 +443,11 @@ a¦Move the `.flip()` logic to the POST-ACCUM block for consistent behavior.
 a¦If this happens, run `gadmin restart gse -y` to release the GPE.
 ¦TBD
 
+¦Graph-level secrets are no longer supported starting with 4.1.0. During an upgrade from a version earlier than 4.1.0, existing graph-level secrets are migrated to global-level secrets. Tokens associated with the migrated graph-level secrets are removed during the migration.
+¦4.1.0+
+a¦N/A
+¦N/A
+
 ¦The `EXECUTE_QUERY` privilege is not enforced on RESTPP endpoints. That is, users who lack `EXECUTE_QUERY` can still run a query via
 
  `POST /restpp/query/{graph_name}/{query_name}`
