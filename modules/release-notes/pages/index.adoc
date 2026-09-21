@@ -469,6 +469,11 @@ a¦Move the `.flip()` logic to the POST-ACCUM block for consistent behavior.
 a¦If this happens, run `gadmin restart gse -y` to release the GPE.
 ¦TBD
 
+¦When upgrading or performing cross-version database export/import from a version earlier than 4.1.0 to 4.1.0 or later, existing graph-level secrets are migrated to global-level secrets, and tokens associated with those secrets are removed. Cross-version database export/import across this version boundary is not recommended.
+¦4.1.0+
+a¦TBD
+¦TBD
+
 ¦The `EXECUTE_QUERY` privilege is not enforced on RESTPP endpoints. That is, users who lack `EXECUTE_QUERY` can still run a query via
 
  `POST /restpp/query/{graph_name}/{query_name}`
