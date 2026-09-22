@@ -16,6 +16,41 @@ In 4.1.0 and later versions, for all TigerGraph Server solutions not on TigerGra
 Please use port 14240 instead.
 ====
 
+== Composite-key IDs in RESTPP endpoints
+
+When a vertex type has a composite key, the following RESTPP endpoints support object, array, and comma-separated string formats for vertex IDs:
+
+* `POST /restpp/graph/{graph_name}/data_query`
+* `POST /restpp/shortestpath/{graph_name}`
+* `POST /restpp/allpaths/{graph_name}`
+
+=== Supported ID formats
+
+A composite key can be specified in any of the following formats:
+
+* *Object form:* A JSON object whose keys are the composite-key attribute names. All composite-key attributes must be present, and field order does not matter.
++
+[source,json]
+----
+{ "type": "Transaction", "id": { "acct_id": "A123", "seq_no": 42 } }
+----
+
+* *Array form:* A JSON array containing the key values in the order in which the composite key is defined in the schema. The number of values must match the number of composite-key attributes.
++
+[source,json]
+----
+{ "type": "Transaction", "id": [ "A123", 42 ] }
+----
+
+* *Comma-separated string form:* A comma-separated string containing the key values in the order in which the composite key is defined in the schema.
++
+[source,json]
+----
+{ "type": "Transaction", "id": "A123,42" }
+----
+
+Values in all three forms are converted to text for the key. If a key value contains a comma, enclose that value in double quotes. Use the object or array form when a key value may contain a comma to avoid ambiguity.
+
 == RESTPP Reload Behavior
 
 RESTPP reload refreshes RESTPP configurations and endpoint metadata when catalog changes affect RESTPP functionality.
@@ -1682,6 +1717,8 @@ The deleted data cannot be recovered.
 `POST /restpp/graph/{graph_name}/data_query`
 
 *Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ DATA]
+
+For supported composite-key ID formats, see xref:built-in-endpoints.adoc#_composite_key_ids_in_restpp_endpoints[Composite-key IDs in RESTPP endpoints].
 
 This endpoint retrieves multiple vertices and edges in a single request.
 
@@ -3955,6 +3992,8 @@ The JSON output is a list of vertices and a list of edges. Each vertex and each 
 
 This endpoint takes a source vertex or a set of source vertices and a target vertex or a set of target vertices. It returns the shortest path between the source and the target. If the source is a set of vertices, the resulting path will begin with one of the vertices in the set. If the target is a set of vertices, the resulting path will end with one of the vertices in the set.
 
+For supported composite-key ID formats, see xref:built-in-endpoints.adoc#_composite_key_ids_in_restpp_endpoints[Composite-key IDs in RESTPP endpoints].
+
 ==== Request body:
 
 This endpoint expects a request body that describes the source and target vertex or vertex set. Below is a table of all the fields in the request body.
@@ -4064,6 +4103,8 @@ This endpoint finds all paths between a source vertex (or vertex set) and target
 ==== Request body:
 
 This endpoint expects a request body that describes the source and target vertex or vertex set. Below is a table of all the fields in the request body.
+
+For supported composite-key ID formats, see xref:built-in-endpoints.adoc#_composite_key_ids_in_restpp_endpoints[Composite-key IDs in RESTPP endpoints].
 
 [%autowidth]
 |===
