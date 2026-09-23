@@ -113,6 +113,8 @@ Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO a
 
 * Added a *xref:4.3@tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[new query routing mode ]* `RESTPP.QueryRouting.Mode = 2` (LocalGPE) to route RESTPP requests directly to the co-located GPE on the same node. This reduces latency for high-QPS workloads by removing an extra network hop.
 
+* * Added support for *xref:4.3@tigergraph-server:API:built-in-endpoints.adoc#_composite_key_ids_in_restpp_endpoints[composite-key IDs]* in the `data_query`, `shortestpath`, and `allpaths` RESTPP endpoints. Composite-key IDs can be specified as JSON objects, arrays, or comma-separated strings.
+
 === Query Language Enhancements
 
 * *xref:4.3@gsql-ref:querying:query-modes.adoc[INTERPRET QUERY `-mode` option]*:
