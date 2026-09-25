@@ -371,6 +371,8 @@ ZSTD_COMPRESSION_LEVEL=4
 
 You can also request a zstd-compressed response when running an installed query from the GSQL shell. See xref:gsql-ref:querying:run-manage-queries.adoc#_zstd_compression[`-zstd` option] of the `RUN QUERY` command.
 
+NOTE: If you submit or run a query in async mode, do not use gzip or zstd compression with the request. Use gzip or zstd compression with the `query_result` API to fetch the actual query result.
+
 == `curl` options
 
 Request examples in this guide are made using https://curl.se/docs/manpage.html[`curl`]. Below is a list of `curl` options used in our code examples:
