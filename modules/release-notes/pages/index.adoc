@@ -280,6 +280,26 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 
 == Fixed issues
 
+=== Fixed and Improved in 4.1.5
+
+==== Functionality
+
+* Fixed an issue where query operations could become blocked when a query installation or reinstallation failed to complete (GLE-13093).
+* Fixed an issue where query creation could fail when queries used templated C++ UDF return types (GLE-13303).
+* Fixed an issue where an unclear error message was returned when installing a query that was not associated with the target graph (GLE-12082).
+* Fixed an issue where customized NGINX configuration was overwritten with default settings when upgrading TigerGraph (CORE-5784).
+* Fixed an issue where NGINX configuration contained unsupported settings when downgrading TigerGraph (CORE-5938).
+* Fixed an issue where Kafka retention could become stuck and cause critical disk usage when a vertex type was dropped in a partitioned cluster (CORE-5436).
+* Fixed an issue where segment binary files could become corrupted when the host machine crashed during a GPE rebuild task (CORE-5726).
+* Fixed an issue where the Upsert Data API could report an incorrect number of accepted vertices when using atomic mode (CORE-5999).
+* Fixed an issue where the engine job listener could stop receiving updates when a ZeroMQ connection remained idle for an extended period (CORE-5905).
+* Fixed an issue where cluster expansion or shrink operations could continue when a core data import failed (TP-10679).
+
+==== Security
+
+* Fixed an issue where stored credentials could be exposed instead of masked when data source GET endpoints returned data source configurations (GLE-13528).
+* Fixed an issue where the password expiration policy could be incorrectly applied to proxy users when they were upgraded from earlier versions (GLE-11849).
+
 === Fixed and Improved in 4.1.4
 
 ==== Functionality
