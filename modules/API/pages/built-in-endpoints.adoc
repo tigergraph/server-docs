@@ -103,7 +103,64 @@ curl -X GET "http://localhost:14240/restpp/echo"
 | `sleep`
 | No
 | Integer that indicates the number of seconds for which the response will be delayed.
+
+| `service`
+| No
+| Service to ping. Currently, only `GPE` is supported. The value is case-insensitive.
+
+| `partition`
+| No
+| GPE partition to ping. Must be greater than or equal to `1`. Required when `service=GPE`.
+
+| `replica`
+| No
+| GPE replica to ping. Must be greater than or equal to `1`. Required when `service=GPE`.
+
+| `timeout_ms`
+| No
+| Time, in milliseconds, to wait for the GPE reply. The default is `5000` milliseconds. The valid range is `1` to `60000` milliseconds.
 |===
+
+==== Check the status of a specific GPE
+
+To check whether a specific GPE instance is responding, specify `service=GPE`, along with the GPE `partition` and `replica`.
+
+[source,console]
+----
+curl -X GET "http://localhost:14240/restpp/echo?service=GPE&partition=1&replica=1"
+----
+
+The response includes the name of the GPE instance under `results`:
+
+[source,json]
+----
+{
+    "error": false,
+    "message": "",
+    "results": {
+        "error": false,
+        "message": "Hello from GPE_1_1"
+    }
+}
+----
+
+Use the `timeout_ms` parameter to specify how long to wait for the GPE to reply. If the GPE does not respond within the specified timeout, the request returns an error.
+
+For example:
+
+[source,console]
+----
+curl -X GET "http://localhost:14240/restpp/echo?service=GPE&partition=1&replica=1&timeout_ms=10000"
+----
+
+==== Error responses
+
+When checking a specific GPE, the `/echo` endpoint can return the following errors with code `REST-30001`:
+
+* `Unsupported service: <name>`
+* `Both 'partition' and 'replica' must be specified (>= 1).`
+* `The parameter 'timeout_ms' should be in the range [1, 60000] milliseconds.`
+* `Invalid GPE target. Partition: <p>, Replica: <r>`
 
 '''
 
