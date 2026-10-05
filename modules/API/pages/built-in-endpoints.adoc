@@ -1200,6 +1200,8 @@ To provide data for a filename variable, put the data in the request body and us
 
 The request body is the data to be loaded (either in CSV or JSON format).
 
+NOTE: This endpoint accepts only CSV or JSON Lines payloads and passes the data to the DDL Loader without format conversion. Parquet and Avro are not supported. To load Parquet files, use a cloud storage loading job with `"file.type": "parquet"`. See xref:data-loading:load-from-cloud.adoc#_filename_parameters[Filename parameters].
+
 Curl allows you to read the data from an input file by using the @ symbol:
 
 `curl -X POST --data-binary @./company.csv "http://…"`
