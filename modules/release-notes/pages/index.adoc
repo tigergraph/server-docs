@@ -294,11 +294,15 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Fixed an issue where the Upsert Data API could report an incorrect number of accepted vertices when using atomic mode (CORE-5999).
 * Fixed an issue where the engine job listener could stop receiving updates when a ZeroMQ connection remained idle for an extended period (CORE-5905).
 * Fixed an issue where cluster expansion or shrink operations could continue when a core data import failed (TP-10679).
+* Fixed an issue where disk space and rebuild time could be unnecessarily increased when rebuilding segments with all vertices deleted (CORE-5355).
+* Fixed an issue where record data could become inconsistent with the current schema when certain sequences of schema changes were followed by a GPE rebuild (CORE-5915).
+* Fixed an issue where long-running query installations could appear stuck when a client connection timed out during installation through a follower node in an HA cluster (GLE-13079).
 
 ==== Security
 
 * Fixed an issue where stored credentials could be exposed instead of masked when data source GET endpoints returned data source configurations (GLE-13528).
 * Fixed an issue where the password expiration policy could be incorrectly applied to proxy users when they were upgraded from earlier versions (GLE-11849).
+* Fixed an issue where SAML SSO ignored the configuration to disable certificate validation (GLE-13134).
 
 === Fixed and Improved in 4.1.4
 
