@@ -28,8 +28,6 @@ image::financialGraph_schema.png[]
 
 Show all the local vertices on a graph or show all the global vertices
 
-NOTE: This endpoint runs GSQL loading jobs, including jobs that read Parquet data from cloud storage using a cloud file descriptor with `file.type` set to `parquet`. See xref:data-loading:load-from-cloud.adoc#_cloud_file_descriptors[Cloud file descriptors].
-
 ==== Parameters:
 //[width="100%",cols="25%,25%,50%",options="header",]
 [%autowidth]
@@ -2158,6 +2156,8 @@ Sample Response::
 === Run a loading job
 
 `POST /gsql/v1/loading-jobs/run`
+
+NOTE: This endpoint runs GSQL loading jobs, including jobs that read Parquet data from cloud storage using a cloud file descriptor with `file.type` set to `parquet`. See xref:data-loading:load-from-cloud.adoc#_cloud_file_descriptors[Cloud file descriptors]
 
 Run a loading job, equivalent to GSQL
 xref:{page-component-version}@gsql-ref:ddl-and-loading:running-a-loading-job.adoc#_run_loading_job[RUN LOADING JOB].
