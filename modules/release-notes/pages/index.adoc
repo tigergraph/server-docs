@@ -6,6 +6,8 @@
 :toc:
 :toclevels:2
 
+https://dl.tigergraph.com/?tab=enterprise[TigerGraph Server 4.1.5] LTS was released on October 9, 2026.
+
 https://dl.tigergraph.com/?tab=enterprise[TigerGraph Server 4.1.4] LTS was released on May 6, 2026.
 
 TigerGraph Server 4.1.3 LTS was released on May 15, 2025.
@@ -284,25 +286,31 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 
 ==== Functionality
 
-* Fixed an issue where query operations could become blocked when a query installation or reinstallation failed to complete (GLE-13093).
+* Fixed an issue where query execution could be blocked following an unsuccessful query installation or reinstallation (GLE-13093).
 * Fixed an issue where query creation could fail when queries used templated C++ UDF return types (GLE-13303).
-* Fixed an issue where an unclear error message was returned when installing a query that was not associated with the target graph (GLE-12082).
+* Improved the error message displayed when installing a query that is not associated with the target graph (GLE-12082).
 * Fixed an issue where customized NGINX configuration was overwritten with default settings when upgrading TigerGraph (CORE-5784).
-* Fixed an issue where NGINX configuration contained unsupported settings when downgrading TigerGraph (CORE-5938).
-* Fixed an issue where Kafka retention could become stuck and cause critical disk usage when a vertex type was dropped in a partitioned cluster (CORE-5436).
-* Fixed an issue where segment binary files could become corrupted when the host machine crashed during a GPE rebuild task (CORE-5726).
+* Fixed an issue where NGINX configuration settings could become incompatible after downgrading TigerGraph (CORE-5938).
+* Fixed an issue affecting Kafka log retention after dropping a vertex type in a partitioned cluster, which could lead to increased disk usage (CORE-5436).
+* Fixed an issue affecting segment file integrity when a host machine crashed during a GPE rebuild (CORE-5726).
 * Fixed an issue where the Upsert Data API could report an incorrect number of accepted vertices when using atomic mode (CORE-5999).
-* Fixed an issue where the engine job listener could stop receiving updates when a ZeroMQ connection remained idle for an extended period (CORE-5905).
-* Fixed an issue where cluster expansion or shrink operations could continue when a core data import failed (TP-10679).
-* Fixed an issue where disk space and rebuild time could be unnecessarily increased when rebuilding segments with all vertices deleted (CORE-5355).
-* Fixed an issue where record data could become inconsistent with the current schema when certain sequences of schema changes were followed by a GPE rebuild (CORE-5915).
-* Fixed an issue where long-running query installations could appear stuck when a client connection timed out during installation through a follower node in an HA cluster (GLE-13079).
+* Fixed an issue where the engine job listener could stop receiving updates after an extended period of inactivity on a ZeroMQ connection (CORE-5905).
+* Fixed an issue where cluster expansion or shrink operations could continue despite a failed core data import (TP-10679).
+* Fixed an issue where rebuilding segments containing only deleted vertices could result in unnecessary disk usage and longer rebuild times (CORE-5355).
+* Fixed an issue affecting record consistency following certain schema changes and subsequent GPE rebuild operations (CORE-5915).
+* Fixed an issue where query installations through a follower node in an HA cluster could appear unresponsive if the client connection timed out (GLE-13079).
+* Fixed an issue where loading jobs using Azure Data Lake Storage Gen2 Service Principal authentication failed because the connector required a storage account key instead of using the configured Service Principal credentials (GLE-13379).
 
 ==== Security
 
-* Fixed an issue where stored credentials could be exposed instead of masked when data source GET endpoints returned data source configurations (GLE-13528).
+* Fixed an issue where data source GET endpoints could return unmasked credential values in configuration responses (GLE-13528).
 * Fixed an issue where the password expiration policy could be incorrectly applied to proxy users when they were upgraded from earlier versions (GLE-11849).
-* Fixed an issue where SAML SSO ignored the configuration to disable certificate validation (GLE-13134).
+* Fixed an issue where SAML SSO did not honor the configured certificate validation setting (GLE-13134).
+* Third-party Vulnerabilities NOT impacting TigerGraph:
++
+Fixed the following security vulnerabilities: CVE-2026-68497, CVE-2026-89407, CVE-2026-89425, CVE-2026-91776, CVE-2026-91777, CVE-2026-19032, CVE-2026-83557, CVE-2026-75596, CVE-2026-75595, CVE-2026-13506, CVE-2026-8763, CVE-2026-78662, CVE-2026-56855, CVE-2026-65182, CVE-2026-65905, CVE-2026-68525, CVE-2026-56854, CVE-2026-55858, CVE-2026-55856, CVE-2026-55857, CVE-2026-59949, CVE-2026-59903, CVE-2026-56859, CVE-2026-56853, CVE-2026-56860, CVE-2026-56862, CVE-2026-56852, CVE-2026-33818, CVE-2026-56858, CVE-2026-39824, CVE-2026-46595, CVE-2026-39834, CVE-2026-39832, CVE-2026-42508, CVE-2026-39829, CVE-2026-46597, CVE-2026-39827, CVE-2026-46598, CVE-2026-42505, CVE-2026-39833, CVE-2026-39828, CVE-2026-39830, CVE-2026-39835, CVE-2026-39822, CVE-2026-39831, CVE-2026-25680, CVE-2025-14813, CVE-2026-54515, CVE-2026-5588, CVE-2026-0636, CVE-2026-54513, CVE-2026-54514, CVE-2026-54512, CVE-2026-54516, CVE-2026-54517, and CVE-2026-54518.
++
+Third-party Vulnerability impacting TigerGraph: None
 
 === Fixed and Improved in 4.1.4
 
