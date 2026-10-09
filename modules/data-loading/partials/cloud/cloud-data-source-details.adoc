@@ -5,8 +5,17 @@ Three cloud source types are supported:
 * xref:_google_cloud_storage[Google Cloud Storage]
 
 Loading jobs that read from cloud storage support CSV, JSON, and Parquet data objects.
-You specify the format for each file with the `file.type` filename parameter, not in the data source configuration.
-For an example that loads Parquet files, see xref:data-loading:load-from-cloud.adoc#_cloud_file_descriptors[Cloud file descriptors].
+Specify the file format with the `file.type` filename parameter in the cloud file descriptor, not in the data source configuration.
+For example, the following file descriptor loads a Parquet file from S3 using the data source `s1`:
+
+[source,gsql]
+----
+DEFINE FILENAME parquet_s3 = """$s1:{
+  "file.uris": "s3://my-bucket/data.parquet",
+  "file.type": "parquet"}""";
+----
+
+For more information, see xref:data-loading:load-from-cloud.adoc#_cloud_file_descriptors[Cloud file descriptors].
 
 === AWS S3
 
