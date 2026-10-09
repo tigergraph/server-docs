@@ -299,7 +299,7 @@ Permit users having the new prilivege `APP_ACCESS_LOG` (included in the `globald
 * Fixed an issue where rebuilding segments containing only deleted vertices could result in unnecessary disk usage and longer rebuild times (CORE-5355).
 * Fixed an issue affecting record consistency following certain schema changes and subsequent GPE rebuild operations (CORE-5915).
 * Fixed an issue where query installations through a follower node in an HA cluster could appear unresponsive if the client connection timed out (GLE-13079).
-* Fixed an issue where loading jobs using Azure Data Lake Storage Gen2 Service Principal authentication failed because the connector required a storage account key instead of using the configured Service Principal credentials (GLE-13379).
+* Fixed an issue where loading jobs using Azure Data Lake Storage Gen2 Service Principal authentication incorrectly required a storage account key instead of the configured Service Principal credentials (GLE-13379).
 
 ==== Security
 
