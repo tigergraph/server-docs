@@ -95,6 +95,8 @@ Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO a
 
 * Added the `Security.JWT.UserClaim` *xref:4.3@tigergraph-server:user-access:jwt-token.adoc#_optional_configurations[configuration parameter]* to specify which JWT claim resolves the TigerGraph username during JWT/OIDC authentication. 
 
+* Nginx now supports TLS 1.3 hybrid xref:4.3@tigergraph-server:security:encrypting-connections.adoc#_post_quantum_hybrid_tls_key_exchange[post-quantum key exchange] (`X25519MLKEM768`) through the bundled OpenSSL 3.5. This support is enabled by default when SSL is enabled.
+
 === Output to Cloud Enhancements
 
 * Writing *xref:4.3@gsql-ref:querying:write-output-to-cloud.adoc[query output]* to S3-compatible storage (such as Ceph, MinIO, and Wasabi) is now supported using a configurable `s3_endpoint`, enabling integration with non-AWS storage systems.
