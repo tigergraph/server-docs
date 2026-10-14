@@ -186,7 +186,62 @@ TLS 1.3 cipher suites are not explicitly configured and use OpenSSL's built-in d
 * `TLS_CHACHA20_POLY1305_SHA256`
 * `TLS_AES_128_GCM_SHA256`
 
+=== Post-Quantum Hybrid TLS Key Exchange
 
+Starting with 4.1.4, when SSL is enabled, TigerGraph's Nginx supports the TLS 1.3 hybrid post-quantum key exchange group `X25519MLKEM768`.
+This group combines classical X25519 with ML-KEM-768 (NIST FIPS 203).
+It is enabled by default and requires no configuration.
+
+This applies to all HTTPS endpoints served by TigerGraph's Nginx, including the RESTPP API, GSQL HTTP endpoints, GraphStudio, Admin Portal, and other web applications on the Nginx ports (by default, `14240` and `9000`).
+
+==== Requirements
+
+* SSL must be enabled (`Nginx.SSL.Enable=true`). See <<_configuring_ssl>>.
+// Verify the anchor ID above against the existing SSL setup section.
+* The client must support `X25519MLKEM768` over TLS 1.3.
+For example, OpenSSL 3.5 or later, or Chrome and Edge 131 or later.
+* TigerGraph bundles OpenSSL 3.5 inside Nginx, so this behavior does not depend on the OpenSSL version installed on the host.
+
+==== Negotiation behavior
+
+[cols="1,1",options="header"]
+|===
+|Client |Key exchange used
+
+|TLS 1.3 client that supports `X25519MLKEM768`
+|Hybrid post-quantum (`X25519MLKEM768`)
+
+|TLS 1.3 client without post-quantum support
+|Classical (for example, X25519). The connection works as before.
+
+|TLS 1.2 client
+|Classical ECDHE. The connection works as before.
+|===
+
+==== Verify post-quantum key exchange
+
+Run the following command from a machine with an OpenSSL 3.5 or later client:
+
+[source,console]
+----
+openssl s_client -connect <host>:14240 -tls1_3 -groups X25519MLKEM768 </dev/null 2>/dev/null | grep "Negotiated TLS1.3 group"
+----
+
+If hybrid key exchange is negotiated, the output is:
+
+[source,console]
+----
+Negotiated TLS1.3 group: X25519MLKEM768
+----
+
+==== Limitations
+
+* Post-quantum key exchange applies only to the HTTPS endpoints served by Nginx.
+TigerGraph's Java-based clients, such as the `gsql` command-line client and the JDBC driver, and other communication paths, such as Kafka, cross-region replication, LDAP and SSO, and intra-cluster traffic, do not currently use post-quantum key exchange.
+* Clients that offer only NIST-curve hybrid groups (`SecP256r1MLKEM768` or `SecP384r1MLKEM1024`), which is typical of FIPS-mode clients, do not negotiate a hybrid group with the default configuration.
+The connection still succeeds, using classical P-256 key exchange.
+* If you replaced the Nginx configuration template (`Nginx.ConfigTemplate`) and restricted `ssl_protocols` to TLS 1.2, or set `ssl_ecdh_curve`, post-quantum key exchange might not be negotiated.
+* Server certificates and signatures are unchanged and continue to use classical RSA or ECDSA.
 
 === Customizing TLS Versions and Cipher Suites
 
