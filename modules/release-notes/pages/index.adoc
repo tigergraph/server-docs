@@ -153,6 +153,31 @@ By default, TigerGraph automatically selects the appropriate mode.
 
 == Fixed issues
 
+=== Fixed and Improved in 4.3.0-rc2
+
+==== Functionality
+
+* Fixed an issue where the Upsert Data API could report an incorrect number of accepted vertices when using atomic mode (CORE-6001).
+* Fixed an issue where upgrades could fail when stale graph entries were encountered during role migration (GLE-13658).
+* Fixed an issue where upgrades to 4.3.0 could fail when the pre-upgrade check attempted to save catalog changes (GLE-13472).
+* Fixed an issue where NGINX and RESTPP failed to start after installing TigerGraph on RHEL 10 (CORE-5931).
+* Fixed an issue where loading jobs using Azure Data Lake Storage Gen2 Service Principal authentication failed because the connector required a storage account key instead of using the configured Service Principal credentials (GLE-13380).
+* Fixed an issue affecting record consistency following certain schema changes and subsequent GPE rebuild operations (CORE-5917).
+* Fixed an issue where query creation could fail when queries used templated C++ UDF return types (GLE-13305).
+
+==== Improvements
+
+* Improved data integrity when stopping TigerGraph services that persist data to storage (TP-10954).
+
+==== Security
+
+* Fixed an issue where data source GET endpoints could return unmasked credential values in configuration responses (GLE-13530).
+* Third-party Vulnerabilities NOT impacting TigerGraph:
++
+Fixed the following security vulnerabilities: CVE-2025-14813, CVE-2026-0636, CVE-2026-106449, CVE-2026-106450, CVE-2026-106452, CVE-2026-106453, CVE-2026-13506, CVE-2026-19032, CVE-2026-25680, CVE-2026-33818, CVE-2026-39821, CVE-2026-39822, CVE-2026-39824, CVE-2026-39827, CVE-2026-39828, CVE-2026-39829, CVE-2026-39830, CVE-2026-39831, CVE-2026-39832, CVE-2026-39833, CVE-2026-39834, CVE-2026-39835, CVE-2026-42055, CVE-2026-42505, CVE-2026-42508, CVE-2026-46595, CVE-2026-46597, CVE-2026-46598, CVE-2026-46600, CVE-2026-46917, CVE-2026-46968, CVE-2026-47010, CVE-2026-47021, CVE-2026-47027, CVE-2026-47059, CVE-2026-47063, CVE-2026-47838, CVE-2026-48142, CVE-2026-49844, CVE-2026-54291, CVE-2026-54399, CVE-2026-54428, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518, CVE-2026-55831, CVE-2026-55833, CVE-2026-55856, CVE-2026-55857, CVE-2026-55858, CVE-2026-5588, CVE-2026-56740, CVE-2026-56741, CVE-2026-56746, CVE-2026-56852, CVE-2026-56853, CVE-2026-56854, CVE-2026-56855, CVE-2026-56857, CVE-2026-56858, CVE-2026-56859, CVE-2026-56860, CVE-2026-56862, CVE-2026-56866, CVE-2026-59889, CVE-2026-59901, CVE-2026-59903, CVE-2026-59949, CVE-2026-60147, CVE-2026-62574, CVE-2026-64607, CVE-2026-65182, CVE-2026-65905, CVE-2026-68497, CVE-2026-68525, CVE-2026-75595, CVE-2026-75596, CVE-2026-78659, CVE-2026-78660, CVE-2026-78662, CVE-2026-78663, CVE-2026-78667, CVE-2026-78669, CVE-2026-83557, CVE-2026-86597, CVE-2026-8763, CVE-2026-89407, CVE-2026-89425, CVE-2026-91776, CVE-2026-91777, CVE-2026-94439, CVE-2026-94440, and CVE-2026-97031.
++
+Third-party Vulnerability impacting TigerGraph: None
+
 === Fixed and Improved in 4.3.0
 
 ==== Functionality
