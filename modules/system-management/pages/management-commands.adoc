@@ -210,6 +210,34 @@ Global Flags:
       --debug   enable debug log output to stdout
 ----
 
+[#_gadmin_backup_verify]
+=== gadmin backup verify
+
+[source, console]
+----
+$ gadmin backup verify -h
+Verify backup integrity by checksum
+
+Usage:
+  gadmin backup verify <tag> [flags]
+
+Description:
+
+  Verify the integrity of a backup by validating the checksum of every archive
+  file.
+
+  Example:
+  gadmin backup verify my-backup-2021-11-04T120000
+  gadmin backup verify --chain my-incremental-backup-2021-11-05T120000
+
+Flags:
+      --chain   Also verify all base backups in the chain up to and including the full backup
+  -h, --help    help for verify
+
+Global Flags:
+      --debug   enable debug log output to stdout
+----
+
 [#_gadmin_backup_restore]
 === gadmin backup restore
 
