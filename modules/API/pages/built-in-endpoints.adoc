@@ -1329,6 +1329,8 @@ To provide data for a filename variable, put the data in the request body and us
 
 The request body is the data to be loaded (either in CSV or JSON format).
 
+NOTE: This endpoint accepts only CSV or JSON-Lines payloads and passes the data to the native loader without format conversion. Parquet and Avro are not supported by this endpoint. To load Parquet files, use a cloud storage loading job with `"file.type": "parquet"`. See xref:data-loading:load-from-cloud.adoc#_filename_parameters[Filename parameters].
+
 Curl allows you to read the data from an input file by using the @ symbol:
 
 `curl -X POST --data-binary @./company.csv "http://…"`
@@ -1779,6 +1781,8 @@ The deleted data cannot be recovered.
 `POST /restpp/graph/{graph_name}/data_query`
 
 *Required privilege*: xref:user-access:rbac-row-policy/row-policy-privileges-table.adoc[Graph-level READ DATA]
+
+For supported composite-key ID formats, see xref:built-in-endpoints.adoc#_composite_key_ids_in_restpp_endpoints[Composite-key IDs in RESTPP endpoints].
 
 This endpoint retrieves multiple vertices and edges in a single request.
 
@@ -4052,6 +4056,8 @@ The JSON output is a list of vertices and a list of edges. Each vertex and each 
 
 This endpoint takes a source vertex or a set of source vertices and a target vertex or a set of target vertices. It returns the shortest path between the source and the target. If the source is a set of vertices, the resulting path will begin with one of the vertices in the set. If the target is a set of vertices, the resulting path will end with one of the vertices in the set.
 
+For supported composite-key ID formats, see xref:built-in-endpoints.adoc#_composite_key_ids_in_restpp_endpoints[Composite-key IDs in RESTPP endpoints].
+
 ==== Request body:
 
 This endpoint expects a request body that describes the source and target vertex or vertex set. Below is a table of all the fields in the request body.
@@ -4161,6 +4167,8 @@ This endpoint finds all paths between a source vertex (or vertex set) and target
 ==== Request body:
 
 This endpoint expects a request body that describes the source and target vertex or vertex set. Below is a table of all the fields in the request body.
+
+For supported composite-key ID formats, see xref:built-in-endpoints.adoc#_composite_key_ids_in_restpp_endpoints[Composite-key IDs in RESTPP endpoints].
 
 [%autowidth]
 |===

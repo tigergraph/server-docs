@@ -85,6 +85,8 @@ Proxy users can now be explicitly created, dropped, and listed, rather than bein
 
 * *xref:4.3@tigergraph-server:security:encrypting-connections.adoc[Mutual TLS (mTLS) Authentication]* enables certificate-based mutual authentication between clients and the server, strengthening connection security for external applications and services.
 
+* *xref:4.3@tigergraph-server:security:encrypting-connections.adoc#_configuring_tls_for_internal_kafka[Internal Kafka TLS Encryption]* enables SSL/TLS encryption for data in transit between TigerGraph services and internal Kafka, enhancing security for communications within the cluster.
+
 * Added *xref:4.3@tigergraph-server:user-access:sso-with-kerberos.adoc[Kerberos]* as an SSO authentication option, alongside existing SAML, OIDC, and LDAP methods.
 Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO authentication methods.
 
@@ -95,6 +97,8 @@ Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO a
 * *xref:4.3@gui:admin-portal:security/sso.adoc#_x509_certificate_and_private_key[SAML SSO]* now supports full X.509 certificate chains for both Service Provider (SP) and Identity Provider (IdP) certificates. Certificate chains can include server, intermediate, and root certificates in a single uploaded file.
 
 * Added the `Security.JWT.UserClaim` *xref:4.3@tigergraph-server:user-access:jwt-token.adoc#_optional_configurations[configuration parameter]* to specify which JWT claim resolves the TigerGraph username during JWT/OIDC authentication. 
+
+* Nginx now supports TLS 1.3 hybrid xref:4.3@tigergraph-server:security:encrypting-connections.adoc#_post_quantum_hybrid_tls_key_exchange[post-quantum key exchange] (`X25519MLKEM768`) through the bundled OpenSSL 3.5. This support is enabled by default when SSL is enabled.
 
 === Output to Cloud Enhancements
 
@@ -117,6 +121,11 @@ Added a new endpoint `GET /gsql/v1/sso/authnrequest` to retrieve available SSO a
 * Added a *xref:4.3@tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[new query routing mode ]* `RESTPP.QueryRouting.Mode = 2` (LocalGPE) to route RESTPP requests directly to the co-located GPE on the same node. This reduces latency for high-QPS workloads by removing an extra network hop.
 
 * [4.3.0-rc2] Enhanced the *xref:4.3@tigergraph-server:API:built-in-endpoints.adoc#_echo[`/echo` RESTPP endpoint]* to check the status of a specific GPE by partition and replica, with a configurable response timeout.
+* Added a *xref:4.3@tigergraph-server:system-management:workload-management.adoc#_query_routing_schemes[new query routing mode ]* `RESTPP.QueryRouting.Mode = 2` (LocalGPE) to route RESTPP requests directly to the co-located GPE on the same node. This reduces latency for high-QPS workloads by removing an extra network hop.
+
+* Added support for *xref:4.3@tigergraph-server:API:built-in-endpoints.adoc#_composite_key_ids_in_restpp_endpoints[composite-key IDs]* in the `data_query`, `shortestpath`, and `allpaths` RESTPP endpoints. Composite-key IDs can be specified as JSON objects, arrays, or comma-separated strings.
+
+* Added endpoints to *xref:4.3@tigergraph-server:API:gsql-endpoints.adoc#_list_running_queries[list running queries]* and *xref:4.3@tigergraph-server:API:gsql-endpoints.adoc#_list_running_loading_jobs[list running loading jobs]* for a specific graph. Each endpoint shows currently running queries or loading jobs, plus a `hasRunning` indicator.
 
 === Query Language Enhancements
 
@@ -253,6 +262,11 @@ Third-party Vulnerability impacting TigerGraph: None
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦GraphStudio may over-enforce `READ_DATA` access controls, preventing users from executing path/search built-ins in Explore Graph when the traversal includes intermediate vertex or edge types for which they do not have `READ_DATA` access.
+¦4.2.3
+a¦Use GSQL as a workaround, as it supports type-level `READ_DATA` access controls and is not subject to this over-enforcement.
+¦
+
 ¦The presence of a forward slash (`/`) in a vertex ID can prevent certain operations, including editing vertex attributes, deleting vertices in Explore Graph, and adding edges to or from vertices containing `/`. In some cases, the UI may also freeze.
 ¦4.2.2
 a¦When calling RESTPP endpoints that include vertex IDs containing URL characters, percent-encode the characters in the vertex ID (for example, `%2F` for `/`). There is no workaround for the other affected operations.
@@ -298,6 +312,11 @@ a¦Move the `.flip()` logic to the POST-ACCUM block for consistent behavior.
 ¦After a cluster expansion, the GPE service may remain in the warmup state.
 ¦4.1.1
 a¦If this happens, run `gadmin restart gse -y` to release the GPE.
+¦TBD
+
+¦When upgrading or performing cross-version database export/import from a version earlier than 4.1.0 to 4.1.0 or later, existing graph-level secrets are migrated to global-level secrets, and tokens associated with those secrets are removed. Cross-version database export/import across this version boundary is not recommended.
+¦4.1.0+
+a¦TBD
 ¦TBD
 
 ¦The `EXECUTE_QUERY` privilege is not enforced on RESTPP endpoints. That is, users who lack `EXECUTE_QUERY` can still run a query via
