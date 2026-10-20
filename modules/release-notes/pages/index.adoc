@@ -164,6 +164,7 @@ By default, TigerGraph automatically selects the appropriate mode.
 * Fixed an issue where loading jobs using Azure Data Lake Storage Gen2 Service Principal authentication failed because the connector required a storage account key instead of using the configured Service Principal credentials (GLE-13380).
 * Fixed an issue affecting record consistency following certain schema changes and subsequent GPE rebuild operations (CORE-5917).
 * Fixed an issue where query creation could fail when queries used templated C++ UDF return types (GLE-13305).
+* Added support for gzip-compressed query responses from RESTPP to the client, reducing data transfer size for large results over low-bandwidth connections.
 
 ==== Improvements
 
