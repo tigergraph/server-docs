@@ -67,7 +67,7 @@ For SASL authentication over SSL, use the following configuration:
   "ssl.truststore.password": "{truststore-password}"
 }
 ----
-[#kafka-kerberos]
+
 ===== Kerberos (SASL_SSL + GSSAPI) Configuration
 
 For Kerberos authentication over TLS, use the `GSSAPI` SASL mechanism with the `SASL_SSL` security protocol.
@@ -122,6 +122,7 @@ For Kafka on Google Cloud with SASL authentication, use the following configurat
 }
 ----
 
+[#kafka-kerberos]
 ==== Kerberos Authentication (SASL_SSL + GSSAPI)
 
 The Kafka connector supports Kerberos authentication to Kafka brokers over TLS using the `SASL_SSL` security protocol and the `GSSAPI` SASL mechanism. TigerGraph authenticates as a Kafka consumer using its Kerberos client principal and the corresponding keytab.
@@ -242,7 +243,7 @@ If you add connector nodes later, make the keytab available on the new nodes. If
 
 ===== Configure the Kafka Data Source
 
-Create a JSON file containing the Kafka connection properties. The following example illustrates the required Kerberos settings and the PEM-encoded CA certificate configuration. Verify that the certificate properties are supported by your Kafka connector version.
+Create a JSON file containing the Kafka connection properties. The following example illustrates the Kerberos settings and the PEM-encoded CA certificate configuration supported by the Kafka connector.
 
 [source,json]
 ----
@@ -260,7 +261,7 @@ Create a JSON file containing the Kafka connection properties. The following exa
 
 Replace the broker addresses, client principal, keytab path, and certificate with the values for your environment. The certificate contents shown are illustrative; replace them with the complete PEM-encoded CA certificate required to validate the broker certificate chain.
 
-If the Kafka broker requires client-certificate authentication (`ssl.client.auth=required`), configure the client certificate and private key using the following additional properties. The private key must be in PKCS#8 format.
+If the Kafka broker requires client-certificate authentication (`ssl.client.auth=required`), configure `ssl.keystore.type`, `ssl.keystore.certificate.chain`, and `ssl.keystore.key` in the same top-level JSON object. The private key must be in PKCS#8 format.
 
 [source,json]
 ----
@@ -273,7 +274,7 @@ If the Kafka broker requires client-certificate authentication (`ssl.client.auth
 
 These properties must be added to the same top-level JSON object as the Kafka connection properties. Do not use them unless the Kafka broker requires client-certificate authentication.
 
-NOTE: Files uploaded through GraphStudio are subject to `GSQL.FileInputPolicy`. If this policy blocks access to the keytab file, GraphStudio cannot be used to supply that file to the Kafka data source. Ensure that the keytab is provisioned on the TigerGraph servers and accessible to the Kafka connector on every node running `KAFKACONN`.
+NOTE: GraphStudio-uploaded files are blocked by `GSQL.FileInputPolicy`. Do not upload the keytab through GraphStudio. Provision the keytab on the TigerGraph servers and ensure that the Kafka connector can read it on every node running `KAFKACONN`.
 
 GSQL reads the data source JSON when the data source is created. If you change the keytab path in the JSON configuration, recreate the data source with the updated configuration so that the connector uses the new path.
 
