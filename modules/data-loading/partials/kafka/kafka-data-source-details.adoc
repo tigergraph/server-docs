@@ -68,6 +68,26 @@ For SASL authentication over SSL, use the following configuration:
 }
 ----
 
+===== Kerberos (SASL_SSL + GSSAPI) Configuration
+
+For Kerberos authentication over TLS, use the `GSSAPI` SASL mechanism with the `SASL_SSL` security protocol.
+
+Before creating the data source, complete the setup described in xref:#kafka-kerberos[Configure Kerberos Authentication].
+
+[source,json]
+----
+{
+  "type": "kafka",
+  "bootstrap.servers": "{broker-addresses}",
+  "security.protocol": "SASL_SSL",
+  "sasl.mechanism": "GSSAPI",
+  "sasl.kerberos.service.name": "{kerberos-service-name}",
+  "sasl.jaas.config": "com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab=\"{keytab-path}\" principal=\"{client-principal}\";",
+  "ssl.truststore.type": "PEM",
+  "ssl.truststore.certificates": "{ca-certificate-pem}"
+}
+----
+
 ===== Amazon MSK Configuration
 For Amazon MSK with IAM authentication, use the following configuration:
 
@@ -101,6 +121,242 @@ For Kafka on Google Cloud with SASL authentication, use the following configurat
   "ssl.truststore.password": "{truststore-password}"
 }
 ----
+
+[#kafka-kerberos]
+==== Kerberos Authentication (SASL_SSL + GSSAPI)
+
+The Kafka connector supports Kerberos authentication to Kafka brokers over TLS using the `SASL_SSL` security protocol and the `GSSAPI` SASL mechanism. TigerGraph authenticates as a Kafka consumer using its Kerberos client principal and the corresponding keytab.
+
+A keytab for the TigerGraph consumer principal is required on every node running `KAFKACONN`. The Kafka Java client cannot authenticate using a password, so Kerberos authentication requires a keytab. TLS CA certificates can be provided inline in the Kafka data source JSON, and Kerberos realm and KDC settings can be configured through JVM options. Therefore, the keytab is the only additional file that must be distributed to the connector nodes when JVM options are sufficient for the Kerberos configuration.
+
+Use the `krb5.conf` option only when you need additional Kerberos configuration, such as a non-standard KDC port or a TCP-only network.
+
+NOTE: This section describes authentication between TigerGraph and Kafka. It is separate from single sign-on (SSO) with Kerberos, which is used for browser-based authentication to TigerGraph.
+
+===== Prerequisites
+
+Before configuring Kerberos authentication, ensure that the following requirements are met:
+
+* Every node running the Kafka connector can reach the Kafka brokers on their configured `SASL_SSL` ports and the Kerberos Key Distribution Center (KDC) on its configured port.
+* The broker hostnames resolve to fully qualified domain names (FQDNs) that match the broker's Kerberos service principals and the hostnames in its TLS certificates.
+* The clocks on the TigerGraph nodes, KDC, and Kafka brokers are synchronized using Network Time Protocol (NTP).
+* The Kerberos client principal used by TigerGraph as its Kafka consumer and the corresponding keytab must be provisioned for TigerGraph. The keytab must be available on every node running `KAFKACONN`.
+* The client principal has the Kafka topic permissions required for the intended operation, including `Read` and `Describe` permissions for the topics being consumed.
+* The CA certificate required to validate the brokers' TLS certificates is available if it is not already trusted by the connector's default Java trust configuration.
+
+===== Choose the Correct Keytab
+
+Use the keytab associated with the Kerberos principal that TigerGraph uses as its Kafka consumer, for example, `tg-loader@EXAMPLE.COM`. This principal identifies TigerGraph when it authenticates to Kafka.
+
+The keytab must be provisioned for TigerGraph and placed on the TigerGraph servers by the administrator responsible for those servers. Do not use a keytab belonging to a Kafka broker or assume that the downstream application team's keytab is appropriate.
+
+For example, do not use a broker's service keytab associated with `kafka/broker1.example.com@EXAMPLE.COM`. That keytab identifies the broker, not the TigerGraph consumer.
+
+The client keytab must be readable by the Kafka connector on every node running `KAFKACONN`. Use the same absolute path on every node.
+
+===== Configure the Kerberos Client
+
+If the connector can already access a valid `/etc/krb5.conf` file for the required Kerberos realm, you may not need to configure the realm and KDC through JVM properties. Otherwise, use one of the following options.
+
+WARNING: Both options set `KafkaConnect.BasicConfig.Env`, replacing its current value. Before changing this setting, check the existing configuration and preserve any other environment variables or JVM options required by your deployment.
+
+[source,bash]
+----
+gadmin config get KafkaConnect.BasicConfig.Env
+----
+
+Keep the `--add-opens=java.base/java.nio=ALL-UNNAMED` option in the `KAFKA_OPTS` value shown in the examples.
+
+Option A: Configure the Realm and KDC Through JVM Properties
+
+Use this option when the KDC uses the standard Kerberos port, `88`, and the default Java Kerberos configuration is suitable for your environment. Ensure that every node running `KAFKACONN` can reach the KDC over UDP port `88`.
+
+Replace `EXAMPLE.COM` and the KDC hostnames with the values for your environment. If multiple KDCs are configured, separate their hostnames with colons.
+
+[source,bash]
+----
+gadmin config set KafkaConnect.BasicConfig.Env "KAFKA_OPTS=--add-opens=java.base/java.nio=ALL-UNNAMED -Djava.security.krb5.realm=EXAMPLE.COM -Djava.security.krb5.kdc=kdc1.example.com:kdc2.example.com"
+gadmin config apply -y
+gadmin restart KAFKACONN -y
+----
+
+Option B: Configure a `krb5.conf` File
+
+Use this option when additional Kerberos configuration is required, such as a non-standard KDC port or a TCP-only network.
+
+. Create a `krb5.conf` file with the realm and KDC configuration. For example:
+
+[source,ini]
+----
+[libdefaults]
+    default_realm = EXAMPLE.COM
+    udp_preference_limit = 1
+
+[realms]
+    EXAMPLE.COM = {
+        kdc = kdc1.example.com:8888
+    }
+----
+
+Replace `EXAMPLE.COM`, `kdc1.example.com`, and `8888` with the values for your environment.
+
+. Copy the configuration file to the same absolute path on every node running `KAFKACONN`. Run the following commands from a node where the source file is available at `/home/tigergraph/secrets/krb5.conf`:
+
+[source,bash]
+----
+grun KAFKACONN "mkdir -p /home/tigergraph/secrets"
+gscp KAFKACONN /home/tigergraph/secrets/krb5.conf /home/tigergraph/secrets/krb5.conf
+----
+
+. Configure the connector JVM to use the file:
+
+[source,bash]
+----
+gadmin config set KafkaConnect.BasicConfig.Env "KAFKA_OPTS=--add-opens=java.base/java.nio=ALL-UNNAMED -Djava.security.krb5.conf=/home/tigergraph/secrets/krb5.conf"
+gadmin config apply -y
+gadmin restart KAFKACONN -y
+----
+
+Ensure that the configured file path is accessible to the connector process on every applicable node.
+
+===== Distribute the Keytab
+
+Copy the client keytab to every node running `KAFKACONN`. The following example assumes that the source keytab exists at `/home/tigergraph/secrets/tg-loader.keytab` on the node where you run the commands.
+
+[source,bash]
+----
+grun KAFKACONN "mkdir -p /home/tigergraph/secrets"
+gscp KAFKACONN /home/tigergraph/secrets/tg-loader.keytab /home/tigergraph/secrets/tg-loader.keytab
+grun KAFKACONN "chmod 600 /home/tigergraph/secrets/tg-loader.keytab"
+----
+
+Ensure that:
+
+* The keytab exists at the specified source path before running the copy command.
+* The keytab is available at the same absolute path on every connector node.
+* The account running the connector can read the keytab.
+* The keytab is protected against unauthorized access.
+
+A shared filesystem mounted at the same path on every connector node can also be used if it meets the deployment's access and security requirements.
+
+If you add connector nodes later, make the keytab available on the new nodes. If you use Option B, also distribute the `krb5.conf` file.
+
+===== Configure the Kafka Data Source
+
+Create a JSON file containing the Kafka connection properties. The following example illustrates the Kerberos settings and the PEM-encoded CA certificate configuration supported by the Kafka connector.
+
+[source,json]
+----
+{
+  "type": "kafka",
+  "bootstrap.servers": "broker1.example.com:9093,broker2.example.com:9093",
+  "security.protocol": "SASL_SSL",
+  "sasl.mechanism": "GSSAPI",
+  "sasl.kerberos.service.name": "kafka",
+  "sasl.jaas.config": "com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true doNotPrompt=true keyTab=\"/home/tigergraph/secrets/tg-loader.keytab\" principal=\"tg-loader@EXAMPLE.COM\";",
+  "ssl.truststore.type": "PEM",
+  "ssl.truststore.certificates": "-----BEGIN CERTIFICATE-----\nREPLACE_WITH_BASE64_ENCODED_CA_CERTIFICATE\n-----END CERTIFICATE-----\n"
+}
+----
+
+Replace the broker addresses, client principal, keytab path, and certificate with the values for your environment. The certificate contents shown are illustrative; replace them with the complete PEM-encoded CA certificate required to validate the broker certificate chain.
+
+If the Kafka broker requires client-certificate authentication (`ssl.client.auth=required`), configure `ssl.keystore.type`, `ssl.keystore.certificate.chain`, and `ssl.keystore.key` in the same top-level JSON object. The private key must be in PKCS#8 format.
+
+[source,json]
+----
+{
+  "ssl.keystore.type": "PEM",
+  "ssl.keystore.certificate.chain": "-----BEGIN CERTIFICATE-----\nREPLACE_WITH_CLIENT_CERTIFICATE\n-----END CERTIFICATE-----\n",
+  "ssl.keystore.key": "-----BEGIN PRIVATE KEY-----\nREPLACE_WITH_PKCS8_PRIVATE_KEY\n-----END PRIVATE KEY-----\n"
+}
+----
+
+These properties must be added to the same top-level JSON object as the Kafka connection properties. Do not use them unless the Kafka broker requires client-certificate authentication.
+
+NOTE: GraphStudio-uploaded files are blocked by `GSQL.FileInputPolicy`. Do not upload the keytab through GraphStudio. Provision the keytab on the TigerGraph servers and ensure that the Kafka connector can read it on every node running `KAFKACONN`.
+
+GSQL reads the data source JSON when the data source is created. If you change the keytab path in the JSON configuration, recreate the data source with the updated configuration so that the connector uses the new path.
+
+The configuration properties serve the following purposes:
+
+* `bootstrap.servers` specifies the Kafka broker addresses. Use the broker FQDNs and ports configured for `SASL_SSL`.
+* `security.protocol` enables SASL authentication over TLS.
+* `sasl.mechanism` selects `GSSAPI` for Kerberos authentication.
+* `sasl.kerberos.service.name` specifies the Kafka service name used to construct the broker's Kerberos service principal.
+* `sasl.jaas.config` configures the Kerberos login module to use the client keytab and principal.
+* `ssl.truststore.type` and `ssl.truststore.certificates` configure the PEM certificate material used to validate the brokers' TLS certificates.
+
+The certificate property must be a JSON string. To encode a PEM certificate file as a JSON string, run:
+
+[source,bash]
+----
+jq -Rs . ca.pem
+----
+
+If the broker certificate chain is already trusted by the connector's default Java trust configuration, omit both `ssl.truststore.type` and `ssl.truststore.certificates`.
+
+If the Kafka brokers require client-certificate authentication, additional TLS client-certificate properties may be necessary. Verify the supported PEM keystore properties for the Kafka connector version before configuring `ssl.keystore.type`, `ssl.keystore.certificate.chain`, and `ssl.keystore.key`.
+
+Save the JSON file on the node where you run GSQL, at a path permitted by the configured local file input policy. For example, save it as `/home/tigergraph/kafka_ds.json`.
+
+Create the data source:
+
+[source,gsql]
+----
+CREATE DATA_SOURCE kafka_src = "/home/tigergraph/kafka_ds.json" FOR GRAPH my_graph
+----
+
+Replace `my_graph` with the name of your graph.
+
+NOTE: Access to local files is controlled by the `GSQL.FileInputPolicy` setting. Ensure that the JSON file's path is permitted by the policy and that the file is accessible to the GSQL operation. Do not assume that a file uploaded through GraphStudio is available as a local file for this command.
+
+After creating the data source, reference `kafka_src` in your Kafka loading job. For instructions on defining and running a loading job, see the existing loading-job documentation.
+
+===== Verify the Connection and Troubleshoot Errors
+
+Run the loading job to test the configuration. If the command returns a job ID, use the supported connector-status command for your TigerGraph version to inspect the job and its tasks. For example:
+
+[source,gsql]
+----
+SHOW CONNECTOR STATUS FOR JOB <job_id>
+----
+
+If the loading job fails, inspect the Kafka connector logs on the relevant nodes:
+
+[source,bash]
+----
+gadmin log KAFKACONN
+----
+
+The connector log file is named `kafkaconn.log`.
+
+The following table describes common errors and troubleshooting steps.
+
+[cols="2,4",options="header"]
+|===
+|Error
+|Possible cause and resolution
+
+|`Could not login: the client is being asked for a password`
+|The keytab may be missing, unreadable, or specified incorrectly in `sasl.jaas.config`. Verify the keytab path, file permissions, client principal, and accessibility on every connector node.
+
+|`PortUnreachableException` or `Cannot contact any KDC`
+|The connector may be unable to reach the KDC, or the configured KDC hostname, port, or transport may be incorrect. Check network access and the Kerberos configuration.
+
+|`No serviceName defined`
+|The Kafka service name may be missing from the data source configuration. Verify that `sasl.kerberos.service.name` is set to the service name configured for the brokers.
+
+|`Server not found in Kerberos database`
+|The broker service principal may not match the hostname used by the client. Verify the broker's Kerberos service principal, DNS resolution, and the FQDNs specified in `bootstrap.servers`.
+
+|`Pre-authentication information was invalid`
+|The client principal or keytab may be incorrect or outdated. Verify that the keytab corresponds to the configured principal and check whether the principal's keys have changed. Check the system clocks and obtain an updated keytab if necessary.
+
+|`PKIX path building failed`
+|The connector cannot build a trusted certificate chain for the broker. Verify the broker's TLS certificate chain and ensure that the appropriate CA certificate is configured or trusted by the connector.
+|===
+
 
 ==== Schema Registry Service
 To load Avro data through a https://docs.confluent.io/platform/current/schema-registry/index.html[schema registry service], include the schema registry details in the data source configuration:
