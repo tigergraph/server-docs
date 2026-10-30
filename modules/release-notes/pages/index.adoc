@@ -205,6 +205,23 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 
 == Fixed issues
 
+=== Fixed and Improved in 4.2.6
+
+==== Functionality
+
+* Fixed an issue where queries with default values for DATETIME parameters failed to compile (GLE-13743).
+* Fixed an issue where stale graph entries in role mappings could block a TigerGraph upgrade (GLE-13657).
+* Fixed an issue where the pre-upgrade check could fail with a NullPointerException while uploading catalog metadata (GLE-13638).
+* Fixed an issue where the Upsert Data endpoint did not report the skipped count when `atomic` mode was enabled (CORE-6000).
+* Fixed an issue where all segment data could be deleted after migrating to Savanna (CORE-6061).
+* Fixed an issue where the Informant (IFM) service could take several minutes to start, causing upgrades to fail with an `Unable to talk to ifm` error.
+The service now reports a `WARMUP` status until it is ready (TP-11015).
+* Added the `ProxyUserPermissionMerge` environment variable for RESTPP. When set to `true`, an existing proxy user also receives the permissions of the local user with the same name, and a new proxy user is not created for that user. By default, proxy users hold only the permissions granted to them directly (GLE-13590).
+
+==== Security
+
+* Fixed an issue where data source GET endpoints exposed credentials in their responses (GLE-13529).
+
 === Fixed and Improved in 4.2.5
 
 ==== Functionality
