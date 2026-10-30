@@ -217,6 +217,7 @@ xref:4.2@tigergraph-server:data-loading:load-from-kafka-mm.adoc[] is still avail
 * Fixed an issue where the Informant (IFM) service could take several minutes to start, causing upgrades to fail with an `Unable to talk to ifm` error.
 The service now reports a `WARMUP` status until it is ready (TP-11015).
 * Added the `ProxyUserPermissionMerge` environment variable for RESTPP. When set to `true`, an existing proxy user also receives the permissions of the local user with the same name, and a new proxy user is not created for that user. By default, proxy users hold only the permissions granted to them directly (GLE-13590).
+* Fixed an issue where loading jobs from Azure Data Lake Storage Gen2 using service principal authentication failed the account permission check when the service principal had only the Storage Blob Data Reader role (GLE-13481).
 
 ==== Security
 
