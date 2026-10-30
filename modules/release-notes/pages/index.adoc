@@ -417,6 +417,11 @@ Third-party Vulnerability impacting TigerGraph: None
 |===
 ¦ Description ¦ Found In ¦ Workaround ¦ Fixed In
 
+¦Data written while a rolling upgrade is in progress may be lost, even if the write was reported as successful. This applies to loading jobs, data sent through RESTPP (upserts and loading requests), and queries that insert data.
+¦4.2.0~4.2.6
+a¦Before starting a rolling upgrade, stop all data writes: pause running loading jobs or wait for them to complete. Resume writes only after the rolling upgrade has finished. See xref:4.2@tigergraph-server:installation:upgrade.adoc#_rolling_upgrade_limitations[Rolling Upgrade Limitations].
+¦TBD
+
 ¦GraphStudio may over-enforce `READ_DATA` access controls, preventing users from executing path/search built-ins in Explore Graph when the traversal includes intermediate vertex or edge types for which they do not have `READ_DATA` access.
 ¦4.2.3
 a¦Use GSQL as a workaround, as it supports type-level `READ_DATA` access controls and is not subject to this over-enforcement.

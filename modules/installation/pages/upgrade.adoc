@@ -152,8 +152,25 @@ Each node upgrade also includes a brief pause of about one minute between stoppi
 
 During a rolling upgrade:
 
-* Loading jobs and running queries will continue to function, with some limitations described in the next section.
+* Loading jobs and running queries will continue to function, with some limitations described in the following section.
 * Occasional slowdowns in queries per second (QPS) may occur.
+
+[#_rolling_upgrade_limitations]
+=== Limitations
+
+[WARNING]
+====
+Data written while a rolling upgrade is in progress may be lost, even if the write was reported as successful.
+
+This applies to:
+
+* Loading jobs
+* Data sent through RESTPP (upserts and loading requests)
+* Queries that insert data
+
+Before starting a rolling upgrade, stop all data writes and pause any running loading jobs, or wait for them to complete. Resume data writes and loading jobs only after the rolling upgrade has finished.
+====
+
 
 === Understanding Query Processing During Rolling Upgrade
 
