@@ -240,6 +240,41 @@ The minor differences are that a proxy user cannot change their password in GSQL
 It is also possible to change the roles of a specific proxy user independently.
 When the roles and privileges of a proxy group changes, the roles and privileges of all the proxy users belonging to this proxy group change accordingly.
 
+[#_merge_local_user_privileges_into_proxy_users]
+==== Merge local user privileges into proxy users
+
+[v4.2.6+] By default, a proxy user holds only the privileges granted to it directly, even if a local user with the same name exists.
+To combine the two, set the `ProxyUserPermissionMerge` environment variable for RESTPP.
+RESTPP then merges the privileges of the local user into the privileges of the proxy user with the same name.
+
+. Get the current value of `RESTPP.BasicConfig.Env`:
++
+[source,console]
+----
+gadmin config get RESTPP.BasicConfig.Env
+----
+
+. Append `ProxyUserPermissionMerge=true` to the existing value, separated by `;`:
++
+[source,console]
+----
+gadmin config set RESTPP.BasicConfig.Env "<current value>;ProxyUserPermissionMerge=true"
+----
+
+. Apply the configuration and restart RESTPP:
++
+[source,console]
+----
+gadmin config apply -y
+gadmin restart restpp -y
+----
+
+[CAUTION]
+====
+`gadmin config set` replaces the entire value.
+Include all existing entries, such as `LD_PRELOAD` and `LD_LIBRARY_PATH`, or RESTPP loses them.
+====
+
 [NOTE]
 ====
 Proxy groups are not included in a  xref:backup-and-restore:database-import-export.adoc[Database Export].
