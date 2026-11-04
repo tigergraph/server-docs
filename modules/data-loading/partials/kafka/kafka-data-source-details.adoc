@@ -68,6 +68,26 @@ For SASL authentication over SSL, use the following configuration:
 }
 ----
 
+===== Kerberos (SASL_SSL + GSSAPI) Configuration
+
+For Kerberos authentication over TLS, use the `GSSAPI` SASL mechanism with the `SASL_SSL` security protocol.
+
+Before creating the data source, complete the setup described in xref:#kafka-kerberos[Configure Kerberos Authentication].
+
+[source,json]
+----
+{
+  "type": "kafka",
+  "bootstrap.servers": "{broker-addresses}",
+  "security.protocol": "SASL_SSL",
+  "sasl.mechanism": "GSSAPI",
+  "sasl.kerberos.service.name": "{kerberos-service-name}",
+  "sasl.jaas.config": "com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true doNotPrompt=true keyTab=\"{keytab-path}\" principal=\"{client-     principal}\";",
+  "ssl.truststore.type": "PEM",
+  "ssl.truststore.certificates": "{ca-certificate-pem}"
+}
+----
+
 ==== Amazon MSK Configuration
 For Amazon MSK with IAM authentication, use the following configuration:
 
