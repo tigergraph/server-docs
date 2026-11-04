@@ -82,7 +82,7 @@ Before creating the data source, complete the setup described in xref:#kafka-ker
   "security.protocol": "SASL_SSL",
   "sasl.mechanism": "GSSAPI",
   "sasl.kerberos.service.name": "{kerberos-service-name}",
-  "sasl.jaas.config": "com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true keyTab=\"{keytab-path}\" principal=\"{client-principal}\";",
+  "sasl.jaas.config": "com.sun.security.auth.module.Krb5LoginModule required useKeyTab=true storeKey=true doNotPrompt=true keyTab=\"{keytab-path}\" principal=\"{client-     principal}\";",
   "ssl.truststore.type": "PEM",
   "ssl.truststore.certificates": "{ca-certificate-pem}"
 }
@@ -173,6 +173,8 @@ Use this option when the KDC uses the standard Kerberos port, `88`, and the defa
 
 Replace `EXAMPLE.COM` and the KDC hostnames with the values for your environment. If multiple KDCs are configured, separate their hostnames with colons.
 
+NOTE: The `java.security.krb5.kdc` value cannot include a port number. Because colons separate KDC hostnames, a value such as `kdc1.example.com:8888` is not interpreted as a host and port. If the KDC uses a port other than `88`, use <<kafka-kerberos-option-b,Option B>> instead.
+
 [source,bash]
 ----
 gadmin config set KafkaConnect.BasicConfig.Env "KAFKA_OPTS=--add-opens=java.base/java.nio=ALL-UNNAMED -Djava.security.krb5.realm=EXAMPLE.COM -Djava.security.krb5.kdc=kdc1.example.com:kdc2.example.com"
@@ -180,6 +182,7 @@ gadmin config apply -y
 gadmin restart KAFKACONN -y
 ----
 
+[#kafka-kerberos-option-b]
 Option B: Configure a `krb5.conf` File
 
 Use this option when additional Kerberos configuration is required, such as a non-standard KDC port or a TCP-only network.
@@ -293,8 +296,6 @@ The certificate property must be a JSON string. To encode a PEM certificate file
 ----
 jq -Rs . ca.pem
 ----
-
-If the broker certificate chain is already trusted by the connector's default Java trust configuration, omit both `ssl.truststore.type` and `ssl.truststore.certificates`.
 
 If the Kafka brokers require client-certificate authentication, additional TLS client-certificate properties may be necessary. Verify the supported PEM keystore properties for the Kafka connector version before configuring `ssl.keystore.type`, `ssl.keystore.certificate.chain`, and `ssl.keystore.key`.
 
