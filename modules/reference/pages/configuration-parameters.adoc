@@ -383,8 +383,6 @@ Use the following command to identify the directories considered for this retent
 `grun_p all "find $(gadmin config get System.DataRoot)/$(gadmin config get Kafka.DataRelativePath) -maxdepth 1 -type d -name '*deltaQ_GPE_*' -exec du -sh {} \;"`
 
 | 40
-|`40`
-
 |===
 
 == GSE
@@ -1532,10 +1530,16 @@ If you use `gadmin config set GPE.BasicConfig.Env` or `gadmin config entry GPE.B
 | [v3.9.2+] Timeout (minutes) for dynamic schema change. Default = 30
 | 30
 
-|RESPP
-| `SSL_CA_CERT`, RESETPP.BasicConfig.Env
+|RESTPP
+| `SSL_CA_CERT`, RESTPP.BasicConfig.Env
 | Set the CA certificate `SSL_CA_CERT` to establish the connection with the URL being set with xref:user-access:jwt-token.adoc[].
 | `SSL_CA_CERT=/home/tigergraph/cacertificate/example/;`
+
+|| `ProxyUserPermissionMerge`, RESTPP.BasicConfig.Env
+a|
+* [v4.2.6+] When set to `true`, RESTPP merges the permissions of a local user into the permissions of a proxy user with the same name.
+* See xref:user-access:ldap.adoc#_merge_local_user_privileges_into_proxy_users[Merge local user privileges into proxy users].
+| `ProxyUserPermissionMerge=true`
 
 |GPE
 | `SegmentMetaFlushAlways`,
