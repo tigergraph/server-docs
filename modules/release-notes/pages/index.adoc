@@ -140,6 +140,11 @@ JWT authentication] for all REST endpoints*, including GSQL endpoints.
 
 * [4.2.3] Added a *xref:4.2@tigergraph-server:API:built-in-endpoints.adoc#_get_license_info_and_usage[new Informant endpoint]* `GET /informant/licenseinfo` to retrieve license information and usage. 
 
+* [4.2.6] Added support for *xref:4.2@tigergraph-server:API:index.adoc#_compressed_responses[gzip-compressed query responses]* from RESTPP to the client, reducing transfer size for large results over low-bandwidth connections.
+
+* [4.2.6] Added support for *xref:4.2@tigergraph-server:API:index.adoc#_compressed_responses[zstd-compressed query responses]* from RESTPP to the client. Zstd compression can be requested through the RESTPP query endpoint or the GSQL `RUN QUERY` command.
+
+
 === Query Language Enhancements
 
 * Multiple enhancements to *Syntax V3*, which combines GSQL + OpenCypher + GQL Pattern Matching:
