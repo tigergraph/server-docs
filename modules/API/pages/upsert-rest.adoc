@@ -195,9 +195,10 @@ This example starts with one `User` vertex (`id6`). Since `id6` contains no attr
 
 Follow the instructions in the Introduction section to xref:API:index.adoc#_formatting_data_in_json[format advanced data types].
 
-For example, the following payload is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
+For example, the following payload
+is used to upsert two `User` vertices with an attribute `coordinates` of type `LIST` and an attribute `measurements` of type `MAP`:
 
-[source,bash]
+[source,json]
 ----
 {
  "vertices": {
@@ -208,8 +209,8 @@ For example, the following payload is used to upsert two `User` vertices with an
          },
         "measurements": {
            "value": {
-             "keyList": ["chest", "waist", "hip"]
-             "valueList": [35, 30, 35]
+             "keylist": ["chest", "waist", "hip"],
+             "valuelist": [35, 30, 35]
            }
          }
       },
@@ -219,8 +220,8 @@ For example, the following payload is used to upsert two `User` vertices with an
          },
         "measurements": {
            "value": {
-             "keyList": ["chest", "waist", "hip"]
-             "valueList": [39, 35, 41]
+             "keylist": ["chest", "waist", "hip"],
+             "valuelist": [39, 35, 41]
            }
          }
       }
@@ -457,16 +458,16 @@ The following JSON array format allows for the insertion of multiple edges with 
 '{"edges":{"User":{"id1":{"Liked":{"User":{"id6":{"weight":{"value":5.0}}}}}}}}'  
 ----
 
-2. *Lists and Sets:*
-* For attributes that store lists or sets, use the following format:
+2. *Maps:*
+* For attributes of type MAP, use the following format:
 
 [source,json]
 ----
 {
   "measurements": {
     "value": {
-      "keyList": ["chest", "waist", "hip"],
-      "valueList": [35, 30, 35]
+      "keylist": ["chest", "waist", "hip"],
+      "valuelist": [35, 30, 35]
     }
   }
 }
