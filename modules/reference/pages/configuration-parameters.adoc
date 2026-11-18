@@ -1131,6 +1131,22 @@ concurrent queries in the delay queue |`20`
 | Configure this JWT Token authentication to verify if the `aud` (recipient for which the JWT is intended) defined in the JWT Token matches the configured one or not for xref:user-access:jwt-token.adoc[].
 | `gadmin config set Security.JWT.Audience "<audience-name>"`
 
+| Security.Kerberos.EnableSSO
+| Enables Kerberos-based SSO. See xref:user-access:sso-with-kerberos.adoc#_configure_kerberos_in_tigergraph[SSO with Kerberos]. Default: `false`
+| `true`
+
+| Security.Kerberos.Keytab
+| The content of, or path to, the Keytab file containing the service credentials. Use `@/path/to/keytab` to read from a file. Default: empty
+| `@/opt/tigergraph/config/tigergraph.keytab`
+
+| Security.Kerberos.Krb5Config
+| The content of, or path to, the `krb5.conf` file. Use `@/path/to/krb5.conf` to read from a file. Default: empty
+| `@/etc/krb5.conf`
+
+| Security.Kerberos.Principal
+| The service principal name used by TigerGraph. Default: empty
+| `HTTP/tg-host.example.com@EXAMPLE.COM`
+
 |Security.LDAP.AdminDN |Configure the DN of LDAP user who has read
 access to the base DN specified above. Empty if everyone has read access
 to LDAP data: default empty |`nan`
