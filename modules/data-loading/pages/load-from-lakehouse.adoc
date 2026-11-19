@@ -33,6 +33,12 @@ See xref:load-from-spark-dataframe.adoc#_load_data_from_delta_lake[from Spark].
 | Spark Connector
 | Read Hudi datasets into Apache Spark and write the data to TigerGraph using the Spark Connector.
 See xref:load-from-spark-dataframe.adoc#_load_data_from_hudi[from Spark].
+
+| Databricks
+| Spark Connector
+| Run the Spark Connector on a Databricks cluster to read Databricks tables, including Delta Lake tables, and write the data to TigerGraph.
+See xref:load-from-spark-dataframe.adoc#_load_data_from_databricks[from Spark].
+
 |===
 
 == Loading Workflow Overview
@@ -48,3 +54,4 @@ The overall loading workflow for lakehouse integrations is similar to other Tige
 For Kafka Connect-based integrations such as Iceberg, TigerGraph uses `DATA_SOURCE` objects and loading jobs.
 
 For Spark-based integrations, TigerGraph uses the xref:load-from-spark-dataframe.adoc[Spark Connector] to write Spark DataFrames into TigerGraph.
+The Spark Connector runs on open-source Apache Spark and on Databricks.

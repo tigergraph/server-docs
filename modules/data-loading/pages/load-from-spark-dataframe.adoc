@@ -19,6 +19,10 @@ xref:data-loading:load-from-spark-dataframe.adoc#_load_data_from_delta_lake[Delt
 xref:data-loading:load-from-spark-dataframe.adoc#_load_data_from_iceberg[Iceberg]
 and xref:data-loading:load-from-spark-dataframe.adoc#_load_data_from_hudi[Hudi]
 
+The connector also runs on Databricks-hosted Spark clusters.
+You can read data from Databricks tables, including Delta Lake tables, into a Spark DataFrame and load it into TigerGraph.
+For an example, see xref:data-loading:load-from-spark-dataframe.adoc#_load_data_from_databricks[Load Data from Databricks].
+
 Alternatively, the TigerGraph Spark Connector provides a xref:data-loading:load-from-spark-dataframe.adoc#_direct_upsert_from_spark_dataframe[Direct Upsert] feature that enables direct upsert of vertices and edges from a Spark DataFrame to a TigerGraph database without the need to create a GSQL loading job beforehand.
 This is particularly useful for ad-hoc data loading, small datasets, or when the data schema is dynamic.
 
@@ -285,9 +289,9 @@ df.writeStream
     .option("loading.job", "load_Comment")
     .option("loading.filename", "file_Comment")
     .option("loading.separator", "|")
-    .start()
     .option("log.level", "2")
     .option("log.file", "/tmp/tigergraph-spark-connector.log")
+    .start()
     .awaitTermination()
 ----
 
@@ -433,6 +437,96 @@ df.writeStream
 ----
 
 For more details on Hudi see https://hudi.apache.org/docs/quick-start-guide/[Spark Guide | Apache Hudi].
+
+=== Load Data from Databricks
+
+You can run the TigerGraph Spark Connector on a Databricks cluster to load data from Databricks tables into TigerGraph.
+
+Before you begin:
+
+* Install the connector on your Databricks cluster as a library.
+You can install it from Maven Central with the coordinates `com.tigergraph:tigergraph-spark-connector:<version>`, or upload the `tigergraph-spark-connector-<version>-jar-with-dependencies.jar` file.
+* Make sure the Databricks cluster can reach the TigerGraph Nginx port (default `14240`).
+
+[TIP]
+====
+Store TigerGraph credentials in a Databricks secret scope instead of in notebook code.
+For example, set `"password" -> dbutils.secrets.get("<scope>", "<key>")` in your `tgOptions`.
+====
+
+==== Batch Write
+
+.Load Databricks table to Spark dataframe:
+[source, scala]
+----
+val df = spark.read
+    .table("<catalog>.<schema>.<table>")
+    .select(
+        "creationDate",
+        "id",
+        "locationIP",
+        "browserUsed",
+        "content",
+        "length"
+    )
+----
+
+.Batch write the data into TigerGraph:
+[source, scala]
+----
+df.write
+    .format("tigergraph")
+    .mode("append")
+    .options(tgOptions)
+    .option("loading.job", "load_Comment")
+    .option("loading.filename", "file_Comment")
+    .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.file", "/tmp/tigergraph-spark-connector.log")
+    .save()
+----
+
+==== Streaming Write(CDC)
+
+NOTE: To stream changes from a Databricks Delta table, enable Change Data Feed on the table by setting the table property `delta.enableChangeDataFeed = true`.
+
+.Streaming read from Databricks table:
+[source, scala]
+----
+val df = spark.readStream
+    .option("readChangeFeed", "true")
+    .table("<catalog>.<schema>.<table>")
+    .filter(
+        $"_change_type" === "insert" || $"_change_type" === "update_postimage"
+    )
+    .select(
+        "creationDate",
+        "id",
+        "locationIP",
+        "browserUsed",
+        "content",
+        "length"
+    )
+----
+
+.Streaming write data to TigerGraph:
+[source, scala]
+----
+df.writeStream
+    .outputMode("append")
+    .format("tigergraph")
+    .option("checkpointLocation", "/path/to/checkpoint")
+    .options(tgOptions)
+    .option("loading.job", "load_Comment")
+    .option("loading.filename", "file_Comment")
+    .option("loading.separator", "|")
+    .option("log.level", "2")
+    .option("log.file", "/tmp/tigergraph-spark-connector.log")
+    .start()
+    .awaitTermination()
+----
+
+For more details on Databricks see https://docs.databricks.com/en/index.html[Databricks documentation].
 
 == Loading Statistics
 When you configure the logging properly and set log level to `info`, the loading statistics will be logged.
