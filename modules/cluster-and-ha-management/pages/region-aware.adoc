@@ -100,15 +100,154 @@ To enable region-aware, the following conditions must be met
 
 == Enable Region Aware
 
-
-
-
 There are two ways to enable region-aware cluster:
 
 * Configure HA settings xref:installation:bare-metal-install.adoc#_step_2_configure_installation_settings[during installation].
 
 * xref:expand-a-cluster.adoc[Expand] or xref:shrink-a-cluster.adoc[Shrink a Cluster] after installation.
 
+
+== Supported Cluster Layouts and Validation Rules
+
+Region-aware clusters must satisfy specific region-layout and partition rules.
+The rules enforced depend on whether the cluster is being installed, resized, upgraded, or reconfigured.
+
+The following terms are used in this section:
+
+* *N*: The number of hosts in the smallest region.
+* *HA*: The replication factor.
+* *Excluded region*: A region that contains hosts and runs Kafka, RESTPP, and other services, but does not run GPE or GSE.
+* *E*: The number of eligible hosts, excluding hosts in the excluded region.
+* *P*: The number of partitions, calculated as the integer part of E divided by HA.
+
+Layouts show the physical host counts of the three regions in descending order.
+For example, `4/4/2` represents regions containing 4, 4, and 2 hosts.
+
+In the supported layout shapes below, `0` marks an excluded region for GPE/GSE placement.
+It does not mean that the physical region contains zero hosts.
+For example, `N/N/0` represents two eligible regions and one excluded region.
+
+=== Region Rules
+
+The following rules apply during installation, cluster resizing, upgrades, and configuration changes:
+
+* The cluster must have exactly three regions, and every host must be assigned to a region.
+* Each region must contain between N and 2N hosts, inclusive.
++
+For example, `4/3/2` is valid, but `5/2/2` is invalid because the largest region exceeds 2N.
+* At most one region can be excluded, and the excluded region must be one of the smallest regions.
++
+For example, in a `4/4/2` layout, only the region with 2 hosts can be excluded.
+
+=== Partition Rules
+
+The following rules apply during installation and cluster resizing:
+
+* HA must be at least 2 and no greater than E.
+* Every region, including an excluded region, must contain at least P hosts.
+
+These requirements ensure that each partition can be assigned replicas across the eligible regions and that the excluded region has sufficient hosts for Kafka topic replicas.
+
+.Partition rule examples
+[cols="1,1,1,3",options="header"]
+|===
+|Layout |HA |P |Result
+
+|`6/6/3`
+|5
+|3
+|Allowed. Every region contains at least 3 hosts.
+
+|`2/2/2`
+|2
+|3
+|Rejected. Each region contains only 2 hosts.
+
+|`1/1/1`
+|2
+|1
+|Allowed by the partition rules. Each region contains 1 host.
+|===
+
+=== Installation
+
+During installation, the region layout must match one of the following supported shapes:
+
+* `N/N/N`
+* `2N/N/N`
+* `2N/2N/N`
+
+If a region is excluded, the supported shapes are:
+
+* `N/N/0`
+* `2N/N/0`
+* `2N/2N/0`
+
+When HA is greater than 2, the following divisibility requirements apply:
+
+* E must be divisible by HA.
+* Each eligible region's host count must be divisible by P.
+
+These requirements ensure that eligible hosts can be assigned to partitions according to the supported layout rules.
+HA must also be a multiple of the pattern size for the selected layout.
+This condition is necessary but not sufficient on its own; all other applicable rules must also be satisfied.
+
+[cols="1,1",options="header"]
+|===
+|Layout shape |Required HA multiple
+
+|`N/N/N`
+|3
+
+|`2N/N/N`
+|4
+
+|`2N/2N/N`
+|5
+
+|`N/N/0`
+|2
+
+|`2N/N/0`
+|3
+
+|`2N/2N/0`
+|2
+|===
+
+For example:
+
+* `6/6/3` with HA 5 is allowed. P is 3, and the region host counts are divisible by P.
+* `4/4/2` with HA 3 is rejected because E is 10, which is not divisible by 3.
+* `6/6/3` with HA 3 is rejected because P is 5, but the region with 3 hosts cannot satisfy the minimum-host requirement.
+* During installation, `3/2/2` is rejected because it does not match a supported installation shape.
+
+HA 2 is exempt from the installation divisibility requirements.
+However, every region, including an excluded region, must still contain at least P hosts.
+
+For the `2N/2N/0` shape, HA 2 does not satisfy the minimum-host requirement for the excluded region: P is 2N, while the excluded region contains N hosts.
+
+=== Cluster Resizing
+
+Cluster resizing does not enforce the installation-specific layout shapes or divisibility requirements.
+
+* If E is not divisible by HA, hosts that cannot be included in the calculated partitions are not assigned to GPE or GSE.
++
+For example, `6/5/3` with HA 4 is allowed by the resizing rules. E is 14, P is 3, and two hosts cannot be included in the calculated partitions.
+* If resizing reduces the number of partitions, specify `--ha` explicitly to confirm the change.
+* The resulting layout must satisfy the applicable region and partition rules.
++
+A region cannot be reduced to zero physical hosts because the cluster must retain exactly three regions.
+
+=== Upgrades and Configuration Changes
+
+Upgrades and `gadmin config apply` validate the region rules only.
+HA and the partition count are not recalculated, so partition-related validation is not reapplied.
+
+An existing cluster that violates a partition rule, such as `2/2/2` with HA 2, can still be upgraded or have its configuration applied.
+However, its next resize is rejected unless the resulting layout and HA satisfy the applicable partition rules.
+
+If a cluster violates a region rule, `gadmin config apply` fails until the region configuration is corrected.
 
 
 === During installation
