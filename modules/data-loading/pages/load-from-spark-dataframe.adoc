@@ -123,8 +123,7 @@ gsql -g demo_graph '
 
 [IMPORTANT]
 ====
-If you are using Spark Connector 0.2.0+, the following configuration parameters are required:
-`version`, `log.level`,`log.path`.
+If you are using Spark Connector 0.2.0+, the `version` configuration parameter is required.
 ====
 
 [separator=¦ ]
@@ -365,7 +364,7 @@ val FILENAME = "file_Comment"
 val SEPARATOR = "|"
 val VERSION = "3.10.1"
 val LOG_LEVEL = "2"
-val LOG_PATH = "/tmp/tigergraph-spark-connector.log"
+val LOG_FILE = "/tmp/tigergraph-spark-connector.log"
 ----
 
 .Read data from any Spark data sources into the dataframe:
@@ -391,7 +390,7 @@ df.write
             "loading.separator" -> SEPARATOR,
             "version" -> VERSION,
             "log.level" -> LOG_LEVEL,
-            "log.path" -> LOG_PATH
+            "log.file" -> LOG_FILE
         )
     )
     .save()
@@ -411,7 +410,7 @@ val FILENAME = "f1"
 val SEPARATOR = "|"
 val VERSION = "3.10.1"
 val LOG_LEVEL = "2"
-val LOG_PATH = "/tmp/tigergraph-spark-connector.log"
+val LOG_FILE = "/tmp/tigergraph-spark-connector.log"
 ----
 
 .Read data from any Spark streaming data sources into the dataframe:
@@ -442,7 +441,7 @@ df.writeStream
             "loading.separator" -> SEPARATOR,
             "version" -> VERSION,
             "log.level" -> LOG_LEVEL,
-            "log.path" -> LOG_PATH
+            "log.file" -> LOG_FILE
         )
     )
     .start()
@@ -485,7 +484,7 @@ df.write
             "loading.separator" -> SEPARATOR,
             "version" -> VERSION,
             "log.level" -> LOG_LEVEL,
-            "log.path" -> LOG_PATH
+            "log.file" -> LOG_FILE
         )
     )
     .save()
@@ -531,7 +530,7 @@ df.writeStream
             "loading.separator" -> SEPARATOR,
             "version" -> VERSION,
             "log.level" -> LOG_LEVEL,
-            "log.path" -> LOG_PATH
+            "log.file" -> LOG_FILE
         )
     )
     .start()
@@ -575,7 +574,7 @@ df.write
             "loading.separator" -> SEPARATOR,
             "version" -> VERSION,
             "log.level" -> LOG_LEVEL,
-            "log.path" -> LOG_PATH
+            "log.file" -> LOG_FILE
         )
     )
     .save()
@@ -618,7 +617,7 @@ df.writeStream
             "loading.separator" -> SEPARATOR,
             "version" -> VERSION,
             "log.level" -> LOG_LEVEL,
-            "log.path" -> LOG_PATH
+            "log.file" -> LOG_FILE
         )
     )
     .start()
@@ -663,7 +662,7 @@ df.write
             "loading.separator" -> SEPARATOR,
             "version" -> VERSION,
             "log.level" -> LOG_LEVEL,
-            "log.path" -> LOG_PATH
+            "log.file" -> LOG_FILE
         )
     )
     .save()
@@ -705,7 +704,7 @@ df.writeStream
             "loading.separator" -> SEPARATOR,
             "version" -> VERSION,
             "log.level" -> LOG_LEVEL,
-            "log.path" -> LOG_PATH
+            "log.file" -> LOG_FILE
         )
     )
     .start()
@@ -738,10 +737,10 @@ Store TigerGraph credentials in a Databricks secret scope instead of in notebook
 For example, `val PASSWORD = dbutils.secrets.get("<scope>", "<key>")`.
 ====
 
-NOTE: The Databricks examples omit the `log.path` option.
+NOTE: The Databricks examples omit the `log.file` option.
 With `log.level` set, the connector writes logs to stderr, and they appear in the cluster's driver and executor logs.
-If you set `log.path`, the file is written to the local disk of each node and is deleted when the cluster terminates.
-Do not set `log.path` to a `/Volumes/...` path, because volumes reject appends and the connector opens the log file in append mode.
+If you set `log.file`, the file is written to the local disk of each node and is deleted when the cluster terminates.
+Do not set `log.file` to a `/Volumes/...` path, because volumes reject appends and the connector opens the log file in append mode.
 
 ==== Batch Write
 
