@@ -31,7 +31,11 @@ You can use this approach for the following data sources:
 See the pages for the specific method that fits your data source.
 
 * *Spark*: The TigerGraph xref:data-loading:load-from-spark-dataframe.adoc[Spark Connector] is used with Apache Spark to read data from a Spark DataFrame (or Data Lake) and write to TigerGraph.
-Users can leverage it to connect TigerGraph to the Spark ecosystem and load data from any Spark data sources
+The connector runs on open-source Apache Spark and on Databricks.
+See xref:data-loading:load-from-spark-dataframe.adoc#_load_data_from_databricks[Load Data from Databricks].
+
++
+This approach allows you to leverage the broader Spark ecosystem and its supported data sources.
 
 ** *Spark/JDBC (Deprecated)*: To load data from other big data platforms, such as Hadoop, the typical method is to use Spark's built-in feature to write a DataFrame to a JDBC target, together with TigerGraph's `POST /ddl` REST endpoint.
 
