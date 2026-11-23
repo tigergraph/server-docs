@@ -4,28 +4,28 @@
 * JAVA 8 or higher.
 
 === Download the TigerGraph Spark Connector
-This connector can be downloaded from the Maven central repository for
-https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector_2.12/overview[Scala 2.12] and https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector_2.13/overview[Scala 2.13]
 
-The connector is available in three formats:
+The connector is published to Maven Central separately for Scala 2.12 and Scala 2.13:
 
+* https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector_2.12/overview[`com.tigergraph:tigergraph-spark-connector_2.12`]
+* https://central.sonatype.com/artifact/com.tigergraph/tigergraph-spark-connector_2.13/overview[`com.tigergraph:tigergraph-spark-connector_2.13`]
 
+The Scala version suffix must match the Scala version of your Spark installation.
+The connector JAR, `tigergraph-spark-connector_<scala_version>-<version>.jar`, includes all dependencies.
 
-* `tigergraph-spark-connector-<version>.jar`: The `JAR` file containing only the compiled classes of the connector, which does not include any dependencies.
-* `tigergraph-spark-connector-<version>-jar-with-dependencies.jar`: The `JAR` file that includes compiled classes, as well as all the dependencies.
-* `tigergraph-spark-connector-<version>.tar.gz`: The compressed `TAR` archive that includes `tigergraph-spark-connector-<version>.jar` and dependencies in separate `JAR` files.
+NOTE: Connector versions 0.2.4 and earlier are published without a Scala suffix, as `com.tigergraph:tigergraph-spark-connector`.
 
 To use the TigerGraph Spark connector in a Spark shell:
 
 .use the `--jars` option:
 [console]
 ----
-spark-shell --jars tigergraph-spark-connector-<version>-jar-with-dependencies.jar
+spark-shell --jars tigergraph-spark-connector_<scala_version>-<version>.jar
 ----
 
 [NOTE]
 ====
-If you want to include the TigerGraph Spark Connector in your Spark installation, add the `JAR` with dependencies to Spark's `jars` folder.
+If you want to include the TigerGraph Spark Connector in your Spark installation, add the connector `JAR` to Spark's `jars` folder.
 ====
 
 === Configure Logging
