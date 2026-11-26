@@ -3,33 +3,22 @@
 
 AI agents can help you work with TigerGraph databases and manage TigerGraph clusters using natural-language instructions. TigerGraph provides plugins that extend AI agents with database connectivity and TigerGraph-specific knowledge.
 
-The TigerGraph plugin marketplace provides two plugins:
-
-* **TigerGraph MCP (`tigergraph`):** Connects an AI agent to a TigerGraph deployment. It allows the agent to explore graph schemas, run GSQL and Cypher queries, load data, and work with vector embeddings.
-* **TigerGraph Skills (`tigergraph-skills`):** Provides instructions that help an AI agent understand TigerGraph cluster operations and use command-line tools such as `gadmin`, `gsql`, and cluster scripts.
-
-You can install either plugin independently or install both, depending on the tasks you want your AI agent to perform.
-
-== Understand the TigerGraph Plugins
-
-The two plugins have different responsibilities.
+The TigerGraph plugin marketplace provides two plugins. Install either one or both.
 
 [cols="1,3,3",options="header"]
 |===
-|Plugin |What it provides |When to use it
+|Plugin |What the agent gets |What it needs
 
-|`tigergraph`
-|A Model Context Protocol (MCP) server that connects an AI agent to a TigerGraph deployment. It provides tools for database operations, including schema exploration, queries, data loading, and vector search.
-|Use this plugin when you want an AI agent to interact with your TigerGraph database.
+|`tigergraph` (MCP server)
+|Tools to explore the schema, run GSQL and Cypher queries, load and change data, and search vector embeddings.
+|Network access to a TigerGraph deployment, its connection details, and `uv` on the agent's machine.
 
 |`tigergraph-skills`
-|Skills that explain how TigerGraph clusters work and how to operate them using command-line tools. They cover cluster services, partitions, replicas, and cluster administration.
-|Use this plugin when you want an AI agent to understand, diagnose, or perform TigerGraph cluster operations.
+|Knowledge of how a TigerGraph cluster works and how to operate it with `gadmin`, `gsql` and the cluster scripts, such as checking status, changing configuration, reading logs and taking backups.
+|No database connection. To act on a cluster, the agent runs on a cluster node as the TigerGraph OS user.
 |===
 
-The Skills plugin does not establish its own database connection. It provides instructions to the AI agent and can be used with any agent that supports loading skills.
-
-You can use the MCP plugin and Skills plugin together. For example, the Skills plugin can help an agent understand cluster operations, while the MCP plugin provides access to database operations.
+Used together, the skills tell the agent how to operate the cluster, and the MCP plugin lets it work with the data.
 
 For additional details, see the link:https://github.com/tigergraph/tigergraph-mcp/tree/main/plugins/tigergraph[TigerGraph MCP plugin documentation^] and the link:https://github.com/tigergraph/tigergraph/blob/main/plugins/tigergraph-skills[TigerGraph Skills plugin documentation^].
 
