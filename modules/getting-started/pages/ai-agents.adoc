@@ -26,8 +26,10 @@ For additional details, see the link:https://github.com/tigergraph/tigergraph-mc
 
 Before installing the plugins, make sure that:
 
-* You have installed one of the supported AI agents: Claude Code, OpenAI Codex, GitHub Copilot CLI, or an agent that supports the Skills CLI, such as Cursor.
+* You have installed one of the supported AI agents: Claude Code, OpenAI Codex, GitHub Copilot CLI, or another agent that loads `SKILL.md` skills, such as Cursor.
 * You have access to a TigerGraph deployment if you plan to use the MCP plugin.
+* You have `uv` on your `PATH` if you plan to use the MCP plugin. The plugin runs the MCP server with `uvx`.
+* You can run the agent on a cluster node as the TigerGraph OS user if you plan to use the Skills plugin for cluster operations. The Skills plugin applies to self-managed clusters; on TigerGraph Savanna, use the MCP plugin.
 * You have the required TigerGraph connection details and authentication credentials for the MCP plugin.
 * You have the necessary permissions to perform the operations you intend to run.
 
