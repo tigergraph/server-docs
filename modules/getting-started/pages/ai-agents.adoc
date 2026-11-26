@@ -315,37 +315,7 @@ The TigerGraph Skills plugin supports TigerGraph 3.10 or later on self-managed c
 
 == Migrate from the Previous TigerGraph MCP Marketplace
 
-If you previously added the marketplace using the following command:
-
-[source,bash]
-----
-claude plugin marketplace add tigergraph/tigergraph-mcp
-----
-
-Your installed plugins continue to work and receive updates. You do not need to make any changes.
-
-If you want to switch to the `tigergraph/tigergraph` marketplace, remove the previous marketplace before adding the new one. A marketplace name can be registered only once.
-
-[IMPORTANT]
-====
-Removing the previous marketplace uninstalls its plugins and removes their saved options. You must install the plugins again and provide your TigerGraph host and credentials.
-====
-
-To switch marketplaces, run the following commands in order:
-
-[source,bash]
-----
-claude plugin marketplace remove tigergraph
-claude plugin marketplace add tigergraph/tigergraph
-claude plugin install tigergraph@tigergraph
-----
-
-If you also need the Skills plugin, install it separately:
-
-[source,bash]
-----
-claude plugin install tigergraph-skills@tigergraph
-----
+If you added the marketplace with `claude plugin marketplace add tigergraph/tigergraph-mcp`, your installed plugins continue to work and receive updates. To switch to the `tigergraph/tigergraph` marketplace, follow the link:https://github.com/tigergraph/tigergraph#already-added-the-marketplace-from-tigergraph-mcp[migration steps^]. Switching uninstalls the plugins, so you enter your connection details again.
 
 == Security Considerations
 
