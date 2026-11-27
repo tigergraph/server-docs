@@ -1,0 +1,335 @@
+
+= TigerGraph Plugins for AI Agents
+
+AI agents can help you work with TigerGraph databases and manage TigerGraph clusters using natural-language instructions. TigerGraph provides plugins that extend AI agents with database connectivity and TigerGraph-specific knowledge.
+
+The TigerGraph plugin marketplace provides two plugins. Install either one or both.
+
+[cols="1,3,3",options="header"]
+|===
+|Plugin |What the agent gets |What it needs
+
+|`tigergraph` (MCP server)
+|Tools to explore the schema, run GSQL and Cypher queries, load and change data, and search vector embeddings.
+|Network access to a TigerGraph deployment, its connection details, and `uv` on the agent's machine.
+
+|`tigergraph-skills`
+|Knowledge of how a TigerGraph cluster works and how to operate it with `gadmin`, `gsql` and the cluster scripts, such as checking status, changing configuration, reading logs and taking backups.
+|No database connection. To act on a cluster, the agent runs on a cluster node as the TigerGraph OS user.
+|===
+
+Used together, the skills tell the agent how to operate the cluster, and the MCP plugin lets it work with the data.
+
+For additional details, see the link:https://github.com/tigergraph/tigergraph-mcp/tree/main/plugins/tigergraph[TigerGraph MCP plugin documentation^] and the link:https://github.com/tigergraph/tigergraph/tree/main/plugins/tigergraph-skills[TigerGraph Skills plugin documentation^].
+
+== Before You Start
+
+Before installing the plugins, make sure that:
+
+* You have installed one of the supported AI agents: Claude Code, OpenAI Codex, GitHub Copilot CLI, or another agent that loads `SKILL.md` skills, such as Cursor.
+* You have access to a TigerGraph deployment if you plan to use the MCP plugin.
+* You have `uv` on your `PATH` if you plan to use the MCP plugin. The plugin runs the MCP server with `uvx`.
+* You can run the agent on a cluster node as the TigerGraph OS user if you plan to use the Skills plugin for cluster operations. The Skills plugin applies to self-managed clusters; on TigerGraph Savanna, use the MCP plugin.
+* You have the required TigerGraph connection details and authentication credentials for the MCP plugin.
+* You have the necessary permissions to perform the operations you intend to run.
+
+For the TigerGraph versions supported by the plugins, see <<_compatibility,Compatibility>>.
+
+CAUTION: Start on a test cluster, and review the agent's actions before it changes data, schema or configuration.
+
+== Install the TigerGraph Plugins
+
+The TigerGraph plugins are available through the `tigergraph/tigergraph` marketplace. Select your AI agent to view the installation instructions.
+
+[tabs]
+====
+Claude Code::
++
+--
+. Add the TigerGraph marketplace:
++
+[source,bash]
+----
+claude plugin marketplace add tigergraph/tigergraph
+----
+
+. Install the MCP plugin:
++
+[source,bash]
+----
+claude plugin install tigergraph@tigergraph
+----
+
+. Install the Skills plugin:
++
+[source,bash]
+----
+claude plugin install tigergraph-skills@tigergraph
+----
+
+To update an installed plugin, run:
+
+[source,bash]
+----
+claude plugin update <plugin>@tigergraph
+----
+
+Replace `<plugin>` with `tigergraph` or `tigergraph-skills`.
+--
+
+
+OpenAI Codex::
++
+--
+. Add the TigerGraph marketplace:
++
+[source,bash]
+----
+codex plugin marketplace add tigergraph/tigergraph
+----
+
+. Install the MCP plugin:
++
+[source,bash]
+----
+codex plugin add tigergraph@tigergraph
+----
+
+. Install the Skills plugin:
++
+[source,bash]
+----
+codex plugin add tigergraph-skills@tigergraph
+----
+--
+
+GitHub Copilot CLI::
++
+--
+. Add the TigerGraph marketplace:
++
+[source,bash]
+----
+copilot plugin marketplace add tigergraph/tigergraph
+----
+
+. Install the MCP plugin:
++
+[source,bash]
+----
+copilot plugin install tigergraph@tigergraph
+----
+
+. Install the Skills plugin:
++
+[source,bash]
+----
+copilot plugin install tigergraph-skills@tigergraph
+----
+--
+
+Cursor and Other Agents::
++
+--
+To install the TigerGraph Skills plugin with the Skills CLI, run:
+
+[source,bash]
+----
+npx skills add tigergraph/tigergraph
+----
+
+NOTE: This command installs the TigerGraph Skills. It does not install or configure the TigerGraph MCP server.
+
+For MCP installation in other agents, follow the installation and configuration instructions supported by the respective agent.
+--
+====
+
+
+== Configure the TigerGraph MCP Plugin
+
+After installing the MCP plugin, configure its connection to your TigerGraph deployment.
+
+The configuration process depends on the AI agent you are using.
+
+=== Configure Claude Code
+
+If Claude Code did not ask for the connection details when you installed the plugin, set them with the following command in a Claude Code session, or with `claude plugin configure tigergraph@tigergraph` from your shell:
+
+[source,text]
+----
+/plugin configure tigergraph@tigergraph
+----
+
+The plugin has the following options:
+
+* *TigerGraph host:* The address of your TigerGraph deployment. This is required.
+* *Username:* The TigerGraph username used for authentication.
+* *Password:* The password associated with the username.
+* *Default graph:* The graph to use by default. This is optional.
+* *API token:* An alternative authentication method. This is optional.
+* *Tools to offer:* The MCP tools to make available to the agent. Leave this empty to make all tools available.
+
+The password and API token are masked and stored securely rather than in a settings file. If you provide an API token, it takes precedence over the password.
+
+To change the connection settings later:
+
+. Run `/plugin`.
+. Open the *Installed* tab.
+. Select *TigerGraph (Self-Managed MCP)*.
+. Select *Configure options* and update the required values.
+
+You do not need to reinstall the plugin to change its configuration.
+
+=== Configure OpenAI Codex and GitHub Copilot CLI
+
+Codex and GitHub Copilot CLI do not prompt for TigerGraph connection details. Configure the connection using a `.env` file.
+
+Create a `.env` file and add the connection details for your TigerGraph deployment.
+
+For username and password authentication, use the following configuration:
+
+[source,properties]
+----
+TG_HOST=http://<host>
+TG_USERNAME=<username>
+TG_PASSWORD=<password>
+TG_GRAPHNAME=<graph>
+----
+
+`TG_GRAPHNAME` is optional and specifies the default graph for the connection.
+
+For API token authentication, use the following configuration instead of the username and password:
+
+[source,properties]
+----
+TG_HOST=http://<host>
+TG_GRAPHNAME=<graph>
+TG_API_TOKEN=<api-token>
+----
+
+You can also use `TG_JWT_TOKEN` for JWT-based authentication.
+
+When `TG_API_TOKEN` or `TG_JWT_TOKEN` is configured, the MCP server uses token-based authentication and ignores the username and password.
+
+The MCP server automatically loads the first `.env` file it finds in its working directory or a parent directory. Environment variables take precedence over values in the `.env` file.
+
+The plugin's working directory differs between the two agents:
+
+* *OpenAI Codex:* The plugin runs from its installation directory under your home directory.
+* *GitHub Copilot CLI:* The plugin runs from the directory where you launch the CLI.
+
+Therefore:
+
+* You can place `.env` in your home directory for Codex and for Copilot CLI when working under that directory.
+* For GitHub Copilot CLI, you can also place `.env` in your project directory and launch the CLI from that directory.
+
+For additional connection settings, including custom ports, certificates, and multiple connection profiles, see the link:https://github.com/tigergraph/tigergraph-mcp/blob/main/README.md#configuration[TigerGraph MCP configuration documentation^].
+
+== Verify the Connection
+
+After configuring the MCP plugin, verify that your AI agent can access TigerGraph.
+
+Open your AI agent and enter the following prompt:
+
+[source,text]
+----
+List the graphs available in my TigerGraph deployment.
+----
+
+You can also test schema access by asking:
+
+[source,text]
+----
+Show the schema of graph Social.
+----
+
+Replace `Social` with the name of a graph in your deployment.
+
+If the agent cannot access TigerGraph, verify the host address, authentication details, and graph configuration. In Claude Code, run `/mcp` to check whether the `tigergraph` server is connected.
+
+== Use the TigerGraph Plugins
+
+After installation, you can interact with TigerGraph using natural-language instructions.
+
+=== Use the MCP Plugin
+
+The MCP plugin provides tools for interacting with your TigerGraph database.
+
+For example, you can ask your AI agent to:
+
+* List the available graphs.
+* Explore a graph schema.
+* Retrieve vertex and edge counts.
+* Run GSQL and Cypher queries.
+* Add, retrieve, or delete vertices and edges.
+* Create and run loading jobs.
+* Search vector embeddings.
+
+Example prompt:
+
+[source,text]
+----
+Show the schema of graph <graph_name> and retrieve the number of vertices.
+----
+
+The operations available to the agent depend on the tools provided by the MCP plugin and the permissions of the configured TigerGraph user.
+
+=== Use the Skills Plugin
+
+The Skills plugin provides instructions that help an AI agent understand TigerGraph cluster administration and command-line operations.
+
+It includes the following skills:
+
+[cols="1,3",options="header"]
+|===
+|Skill |Description
+
+|`tigergraph-cli`
+|Explains how to use `gadmin`, `gsql`, and cluster scripts on a TigerGraph node.
+
+|`tigergraph-cluster`
+|Explains cluster services, partitions, replicas, and how queries and loading operations flow through a cluster.
+|===
+
+For example, you can ask your AI agent:
+
+[source,text]
+----
+Check the health of this TigerGraph cluster and tell me if anything needs attention.
+----
+
+You can also ask:
+
+[source,text]
+----
+Help me investigate why a backup failed.
+----
+
+The Skills plugin helps the agent understand the relevant TigerGraph commands and cluster concepts. The agent still needs access to the appropriate cluster environment and command-line tools to perform operations.
+
+== Compatibility
+
+The TigerGraph MCP server requires TigerGraph 4.1 or later. TigerGraph 4.2 or later is recommended for TigerVector and advanced hybrid retrieval features.
+
+The TigerGraph Skills plugin supports TigerGraph 3.10 or later on self-managed clusters. Features that need a newer release are marked in the skills.
+
+== Migrate from the Previous TigerGraph MCP Marketplace
+
+If you added the marketplace with `claude plugin marketplace add tigergraph/tigergraph-mcp`, your installed plugins continue to work and receive updates. To switch to the `tigergraph/tigergraph` marketplace, follow the link:https://github.com/tigergraph/tigergraph#already-added-the-marketplace-from-tigergraph-mcp[migration steps^]. Switching uninstalls the plugins, so you enter your connection details again.
+
+== Security Considerations
+
+The MCP plugin provides tools that can read and modify TigerGraph data. Some operations can also create or remove graphs, modify schemas, and run queries or loading jobs.
+
+The Skills plugin can guide an AI agent through cluster administration tasks, including configuration changes and backup operations.
+
+Follow these precautions:
+
+* Use a TigerGraph account with only the permissions required for the intended operations.
+* Test the plugins in a non-production environment before using them in production.
+* Review the agent's proposed commands and actions before allowing operations that modify data or cluster configuration.
+* Take particular care with operations that remove data, change schemas, restart services, or restore backups because they can cause data loss or downtime.
+* Do not expose passwords, API tokens, or other credentials in prompts or conversation messages.
+* Review the permissions granted to the AI agent and the tools made available to it.
+
+Installing the plugins does not replace TigerGraph's existing authentication and authorization controls. The Skills plugin provides instructions but does not independently enforce permissions or prevent commands from being executed.
