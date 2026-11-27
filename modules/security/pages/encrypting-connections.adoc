@@ -169,6 +169,21 @@ Each of the above parameters provides an extra layer of verification.
 For basic testing, you can leave them unset and rely only on the client certificate signature.
 ====
 
+=== Encrypted client private keys
+
+[NOTE]
+====
+Starting in 4.3.1, if you connect with the GSQL client using an encrypted client private key in PKCS#8 format created with OpenSSL's default settings (for example, `openssl pkcs8 -topk8 -v2 aes-256-cbc` or `openssl genpkey -aes256`), run the GSQL client with Java 8u342 or later, or Java 11 or later.
+Older Java 8 builds reject the key, and some report `The key password provided is incorrect.` even when the password is correct.
+
+On Java 8u312 to 8u332, you can instead re-encrypt the key with SHA-1 key derivation:
+
+[source.wrap,console]
+----
+openssl pkcs8 -topk8 -v2 aes-256-cbc -v2prf hmacWithSHA1 -in <key_file> -out <new_key_file>
+----
+====
+
 == Testing Your Connection
 
 To test SSL/TLS or mTLS:
